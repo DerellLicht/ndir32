@@ -1,0 +1,546 @@
+//***************************************************************************************
+//  Copyright (c) 1998-2006 Daniel D. Miller                       
+//  mp3.parser.cpp - mp3 file parser
+//***************************************************************************************
+// From The File Extension Source. 
+// The standards document for the MP3_ENC bitstream (ISO/IEC 11172-3:1993, 
+// section 2.4.2.3, p. 20) states that MPEG-1 audio headers begins 
+// with "1111 1111 1111" (syncword) followed by "1" (for this standard), followed 
+// by "01" for layer III, followed by "1" if the stream has no redundancy, and 
+// then provides bits that indicate stream's bitrate. The bitstream "1111 1111 
+// 1111 1011" has "FFFB" as its hexadecimal equivalent.
+// 
+// When ID3 metadata is placed in a MP3_FF file, established conventions call 
+// for the use of the ID3 marker which consists of the string "3DI". For ID3v1, 
+// the marker is positioned 10 bytes preceding the metadata. For ID3v2 data, the 
+// marker is positioned in the first 3 bytes of the file when the metadata is 
+// pre-pended and 10 bytes from the end of a file when it is post-pended.
+//***************************************************************************************
+// from: http://www.dv.co.yu/mpgscript/mpeghdr.htm
+//  
+// How to calculate frame length 
+// 
+// First, let's distinguish two terms frame size and frame length. 
+// Frame size is the number of samples contained in a frame. 
+// It is constant and always 384 samples for Layer I and 1152 samples 
+// for Layer II and Layer III. 
+// Frame length is length of a frame when compressed.  It is calculated 
+// in slots.  One slot is 4 bytes long for Layer I, and one byte long 
+// for Layer II and Layer III.  When you are reading MPEG file you must 
+// calculate this to be able to find each consecutive frame. 
+// Remember, frame length may change from frame to frame due to padding 
+// or bitrate switching. 
+// 
+// Read the BitRate, SampleRate and Padding of the frame header. 
+// 
+// For Layer I files use this formula: 
+// 
+//     FrameLengthInBytes = (12 * BitRate / SampleRate + Padding) * 4 
+// 
+// For Layer II & III files use this formula: 
+// 
+//     FrameLengthInBytes = 144 * BitRate / SampleRate + Padding 
+// 
+// Example:
+// Layer III, BitRate=128000, SampleRate=441000, Padding=0
+//       ==>  FrameSize=417 bytes 
+//***************************************************************************************
+//  Another excellent analytical tool is Konrad Windszus's MpegAudioInfo :
+//  http://www.codeproject.com/audio/MPEGAudioInfo.asp
+//***************************************************************************************
+//  To compile this module as a stand-alone utility:
+//  g++ -Wall -s -O3 -DDO_CONSOLE mp3.parser.cpp -o mp3parse.exe
+//***************************************************************************************
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <unistd.h>  //  read()
+#include <windows.h>
+
+#include "ndir32.h"
+
+typedef unsigned char  u8 ;
+typedef unsigned int   u32 ;
+
+#define  RD_BFR_SZ   (4 * 1024)
+static u8 rd_bfr[RD_BFR_SZ] ;
+
+typedef struct mp3_frame_header_s {
+   unsigned emphasis : 2 ;
+   unsigned original_media : 1 ;
+   unsigned copyrighted : 1 ;
+   unsigned mode_ext : 2 ; //  Joint stereo only
+   unsigned channel_mode : 2 ;
+   unsigned private_info : 1 ;
+   unsigned padding : 1 ;
+   unsigned sample_freq : 2 ;
+   unsigned bitrate_index : 4 ;
+   unsigned crc_protection : 1 ;
+   unsigned layer_desc : 2 ;
+   unsigned mpeg_audio_version_id : 2 ;
+   unsigned frame_sync : 11 ;
+} mp3_frame_header_t ;
+
+typedef union mp3_parser_u {
+   unsigned raw ;
+   mp3_frame_header_t h ;
+} mp3_parser_t ;
+
+//***************************************************************************************
+typedef struct mp3_frame_s {
+   struct mp3_frame_s *next ;
+   unsigned offset ;
+   // unsigned status ;
+   unsigned mpeg_version ; //  1=1, 2=2, 3=2.5
+   unsigned mpeg_layer ;
+   unsigned bitrate ;
+   unsigned sample_rate ;
+   unsigned prot_bit ;
+   unsigned padding_bit ;
+   unsigned csum_bit ;
+   unsigned private_bit ;
+   unsigned channel_mode ;
+   unsigned mode_ext ;
+   unsigned copyright ;
+   unsigned original_media ;
+   unsigned emphasis ;
+   unsigned frame_length_in_bytes ;
+   double play_time ;
+} mp3_frame_t, *mp3_frame_p ;
+
+static mp3_frame_p frame_list = 0 ;
+static mp3_frame_p frame_tail = 0 ;
+
+//***************************************************************************************
+// char *audio_ver[4] = { "MPEG 2.5", "reserved", "MPEG2", "MPEG1" } ;
+// char *mpeg_layer[4] = { "reserved", "III", "II", "I" } ;
+
+// int audio_ver_idx[4] = { 2, 0, 2, 1 } ;
+static int audio_ver_idx2[4] = { 3, 0, 2, 1 } ;
+static int mpeg_layer_idx[4] = { 0, 3, 2, 1 } ;
+
+static unsigned brtable[5][16] = {
+{ 0, 32, 64, 96, 128, 160, 192, 224, 256, 288, 320, 352, 384, 416, 448, 0 },
+{ 0, 32, 48, 56,  64,  80,  96, 112, 128, 160, 192, 224, 256, 320, 384, 0 },
+{ 0, 32, 40, 48,  56,  64,  80,  96, 112, 128, 160, 192, 224, 256, 320, 0 },
+{ 0, 32, 48, 56,  64,  80,  96, 112, 128, 144, 160, 176, 192, 224, 256, 0 },
+{ 0,  8, 16, 24,  32,  40,  48,  56,  64,  80,  96, 112, 128, 144, 160, 0 }} ;
+
+static unsigned samprate_table[3][4] = {
+{ 44100, 48000, 32000, 0 },   
+{ 22050, 24000, 16000, 0 },   
+{ 11025, 12000,  8000, 0}} ;
+
+//***************************************************************************************
+static unsigned get_id3_size(u8 *uptr)
+{
+   u8 p3 = (u8) *uptr++ ;
+   u8 p2 = (u8) *uptr++ ;
+   u8 p1 = (u8) *uptr++ ;
+   u8 p0 = (u8) *uptr++ ;
+   // printf("size bytes=%02X:%02X:%02X:%02X\n", p3, p2, p1, p0) ;
+
+   u32 isize = p3 ;
+   isize = (isize << 7) + p2 ;
+   isize = (isize << 7) + p1 ;
+   isize = (isize << 7) + p0 ;
+   return isize ;
+}
+
+//***************************************************************************************
+static u32 get_mp3_header(u8 *rbfr)
+{
+   ul2uc_t uconv ;
+   uconv.uc[3] = *rbfr++ ;
+   uconv.uc[2] = *rbfr++ ;
+   uconv.uc[1] = *rbfr++ ;
+   uconv.uc[0] = *rbfr ;
+   return uconv.ul ;
+}
+
+//***************************************************************************************
+static int parse_mp3_frame(u8 *rbfr, unsigned offset)
+{
+   // static unsigned fcount = 0 ;
+   mp3_parser_t mp ;
+   mp.raw = get_mp3_header(rbfr) ;
+   if (mp.h.frame_sync != 0x7FF)
+      return 0;
+
+   mp3_frame_p mtemp = new mp3_frame_t ;
+   if (mtemp == 0)   //lint !e774
+      return -ENOMEM;
+   memset((char *) mtemp, 0, sizeof(mp3_frame_t)) ;
+   mtemp->offset = offset ;
+
+   //  mp.h.datum contain the relevint info!!
+   // printf("raw header: 0x%08X\n", mp.raw) ;
+   // printf("mpeg version %s, layer %s\n", 
+   //    audio_ver[mp.h.mpeg_audio_version_id],
+   //    mpeg_layer[mp.h.layer_desc]) ;
+   // int avidx = audio_ver_idx[mp.h.mpeg_audio_version_id] ;
+   mtemp->mpeg_version = audio_ver_idx2[mp.h.mpeg_audio_version_id] ;
+   mtemp->mpeg_layer = mpeg_layer_idx[mp.h.layer_desc] ;
+   // printf("0x%08X [%u,%u]: mpeg version/layer=%u/%u\n", 
+   //    mp.raw, 
+   //    mp.h.mpeg_audio_version_id,mp.h.layer_desc,
+   //    mtemp->mpeg_version, mtemp->mpeg_layer) ;
+   // if (mp.h.crc_protection)
+   //    csum_count++ ;
+   int bridx = mp.h.bitrate_index ;
+   if (bridx == 0  ||  bridx == 15  ||  mtemp->mpeg_version == 0  ||  mtemp->mpeg_layer == 0) {
+      printf("bad header (offset 0x%08X) [%08X]: avidx=%d, mlidx=%d, bridx=%d\n", 
+         offset, mp.raw, 
+         mp.h.mpeg_audio_version_id, mtemp->mpeg_layer, bridx) ;
+      // mtemp->status = EINVAL ;
+      delete mtemp ;
+      return -EINVAL;
+   }
+   mtemp->mpeg_version-- ;
+   mtemp->mpeg_layer-- ;   // convert to base 0
+   int brtbl_idx ;
+   if (mtemp->mpeg_version == 0) {
+      brtbl_idx = mtemp->mpeg_layer ; //  0, 1, 2
+   } else { //  avidx == 1
+      brtbl_idx = (mtemp->mpeg_layer == 0) ? 3 : 4 ;
+   }
+   mtemp->bitrate = brtable[brtbl_idx][bridx] ;
+   mtemp->sample_rate = samprate_table[mtemp->mpeg_version][mp.h.sample_freq] ;
+   mtemp->padding_bit = (unsigned) mp.h.padding ;        //lint !e571 Suspicious cast
+   mtemp->csum_bit    = (unsigned) mp.h.crc_protection ; //lint !e571 Suspicious cast
+
+   //  Frame length in bytes
+   // For Layer I files use this formula: 
+   //     FrameLengthInBytes = (12 * BitRate / SampleRate + Padding) * 4 
+   if (mtemp->mpeg_layer == 0) {
+      mtemp->frame_length_in_bytes =
+         ((12 * (mtemp->bitrate * 1000) / mtemp->sample_rate) + mtemp->padding_bit) * 4 ;
+   }
+   // For Layer II & III files use this formula: 
+   //     FrameLengthInBytes = 144 * BitRate / SampleRate + Padding 
+   else {
+      mtemp->frame_length_in_bytes =
+         (144 * (mtemp->bitrate * 1000) / mtemp->sample_rate) + mtemp->padding_bit;
+   }
+   // printf("\r%u: bitrate [table %d] = %u Kbps, sample rate=%u Hz, frame len=%u", 
+   //    fcount++, brtbl_idx, 
+   //    mtemp->bitrate, mtemp->sample_rate, mtemp->frame_length_in_bytes) ;
+
+   mtemp->play_time = (double) (mtemp->frame_length_in_bytes * 8.0) / 
+                      (double) (mtemp->bitrate * 1000.0) ;
+
+   //  add frame to list
+   if (frame_list == 0)
+      frame_list = mtemp ;
+   else
+      frame_tail->next = mtemp ;
+   frame_tail = mtemp ;
+
+   return mtemp->frame_length_in_bytes;
+}
+
+//***************************************************************************************
+static bool is_mp3_header_valid(u32 mheader)
+{
+   mp3_parser_t mp ;
+   mp.raw = mheader ;
+   if (mp.h.frame_sync != 0x7FF)
+      return 0;
+   if (mp.h.bitrate_index == 0  ||  mp.h.bitrate_index == 15)
+      return 0;
+   return 1;
+}
+
+//***************************************************************************************
+//  This function is used to find the FIRST frame in the file;
+//  subsequent frames are found by calculating frame length.
+//***************************************************************************************
+static int find_mp3_signature(u8 *rbfr, unsigned rlen, int id3_offset)
+{
+   mp3_parser_t mp ;
+   unsigned mp3_offset ;
+   //  if ID3 offset is negative, then no such tag is present,
+   //  so we *should* find the first mp3 header at offset 0.
+   //  if this is not true, then scan specifically for 0xFFFB
+   if (id3_offset < 0) {
+      mp.raw = get_mp3_header(rbfr) ;
+      if (is_mp3_header_valid(mp.raw))
+         return 0;
+      
+      for (mp3_offset = 0; mp3_offset < rlen; mp3_offset++) {
+         if (*(rbfr+mp3_offset) == 0xFF) {
+            mp.raw = get_mp3_header(rbfr+mp3_offset) ;
+
+            //  QUOTE (jonboy @ Aug 14 2006, 18:13) *
+            //  Well, it turns out that the particular mp3 file I was testing uses "FFF3" 
+            //  instead of "FFFB" to mark the headers.
+            //  Does this mean no checksum? Is this pretty standard?
+            // 
+            //  Yeah. It means no checksum and it's actually MPEG2 
+            //  (either 24000, 22050, or 16000 KHz)
+            // if ((mp.raw & 0xFFFF0000) == 0xFFFB0000) {
+            if ((mp.raw & 0xFFE00000) == 0xFFE00000) {
+               // printf("offset %u, data=0x%08X\n", mp3_offset, mp.raw) ;
+               return mp3_offset;
+            }
+         }
+      }
+   } else {
+      for (mp3_offset = 0; mp3_offset < rlen; mp3_offset++) {
+         if (*(rbfr+mp3_offset) == 0xFF) {
+            mp.raw = get_mp3_header(rbfr+mp3_offset) ;
+            if (!is_mp3_header_valid(mp.raw))
+               continue;
+            return mp3_offset;
+         }
+      }
+   }
+   return -1;
+}
+
+//***************************************************************************************
+#ifndef DO_CONSOLE
+static void clear_existing_list(void)
+{
+   mp3_frame_p mkill ;
+   mp3_frame_p mtemp = frame_list; 
+   frame_list = 0 ;
+   while (mtemp != 0) {
+      mkill = mtemp ;
+      mtemp = mtemp->next ;
+      delete mkill ;
+   }
+   
+}
+#endif
+
+//***************************************************************************************
+//  note that this function is *not* optimized for performance.
+//  It does a new lseek() to locate each frame, and mp3 files tend to have
+//  MANY frames.  It would be more efficient to buffer large chunks of
+//  data and work thru the buffers, but that would make for more complex
+//  code, partially because of allowing for frames (especially headers)
+//  overlapping end of buffer.
+//***************************************************************************************
+static int read_mp3_file(char *fname)
+{
+   //  open file and start reading
+//       int open(const char *pathname, int flags);
+   int hdl = open(fname, O_BINARY | O_RDONLY) ;
+   if (hdl < 0) {
+      perror(fname) ;
+      return -(int)errno;
+   }
+   // unsigned total_bytes = 0 ;
+   int result = 0 ;
+   int mp3_offset ;
+   // unsigned prev_seek = 0 ;
+   unsigned seek_byte = 0 ;
+   unsigned first_pass = 1 ;
+   // unsigned passct = 0 ;
+   while (1) {
+      // printf("pass %u: seek_byte=%X, prev_seek=%X, diff=%u\n", 
+      //    passct++, seek_byte, prev_seek, seek_byte-prev_seek) ;
+      // ssize_t read(int fd, void *buf, size_t count);
+      int rdbytes = read(hdl, rd_bfr, RD_BFR_SZ) ;
+      if (rdbytes <= 0) {
+         // printf("rdbytes=%d\n", rdbytes) ;
+         //  rdbytes == 0  indicates EOF
+         if (rdbytes < 0) {
+            printf("offset %u: %s\n", seek_byte, strerror(errno)) ;
+            result = -(int)errno;
+         }
+         break;
+      }
+      if (first_pass) {
+         int id3size = -1 ;
+         //  if there's an id3 header present, we need to 
+         //  skip past it before looking for mp3 headers.
+         if (rd_bfr[0] == 'I'  &&  
+             rd_bfr[1] == 'D'  &&  
+             rd_bfr[2] == '3') {
+            id3size = get_id3_size(&rd_bfr[6]) ;
+            seek_byte = id3size ;
+            // printf("id3 tag size=%u/0x%X bytes\n", id3size, id3size) ;
+            lseek(hdl, seek_byte, SEEK_SET) ;
+            rdbytes = read(hdl, rd_bfr, RD_BFR_SZ) ;
+            if (rdbytes <= 0) {
+               // printf("rdbytes=%d\n", rdbytes) ;
+               //  rdbytes == 0  indicates EOF
+               if (rdbytes < 0) {
+                  printf("re-seek: offset %u: %s\n", seek_byte, strerror(errno)) ;
+                  result = -(int)errno;
+               }
+               break;
+            }
+         }
+      // }
+      // 
+      // //  scan current buffer for mp3 data signature
+      // if (first_pass) {
+         mp3_offset = find_mp3_signature(rd_bfr, rdbytes, id3size) ;
+         if (mp3_offset < 0) {
+            printf("%s: no first frame found...\n", fname) ;
+            // return -EINVAL;
+            result = -(int)EINVAL;
+            break;
+         }
+#ifdef DO_CONSOLE
+         printf("first frame at offset %u\n", mp3_offset) ;
+#endif
+      } 
+      //  otherwise, read should already be at correct offset
+      else {
+         mp3_offset = 0 ;
+      }
+      //  if you find an invalid frame, you probably found end-of-data.
+      //  some files have ID data at end of file vs beginning.
+      result = parse_mp3_frame(rd_bfr+mp3_offset, seek_byte) ;
+      if (result <= 0) {
+         if (result < 0) 
+            printf("parse_frame: %s\n", strerror(-result)) ;
+         break;
+      }
+      // prev_seek = seek_byte ;
+      if (first_pass) 
+         seek_byte += (unsigned) mp3_offset ;
+      seek_byte += (unsigned) result ;
+      lseek(hdl, seek_byte, SEEK_SET) ;
+      first_pass = 0 ;
+   }
+   close(hdl) ;
+   return result ;
+}
+
+#ifdef DO_CONSOLE
+//***************************************************************************************
+void usage(void)
+{
+   puts("Usage: mymp3 mp3_filename") ;
+}
+
+//***************************************************************************************
+int main(int argc, char **argv)
+{
+   char fname[1024] ;
+   //  parse command line
+   int j ;
+   char *p ;
+   fname[0] = 0 ;
+   for (j=1; j<argc; j++) {
+      p = argv[j] ;
+      strncpy(fname, p, sizeof(fname)) ;
+   }
+
+   //  validate arguments
+   if (fname[0] == 0) {
+      usage() ;
+      return 1;
+   }
+
+   printf("input: %s\n", fname) ;
+   int result = read_mp3_file(fname) ;
+   
+   //***************************************************************
+   //  now, see how many frames we found,
+   //  and summarize the file information
+   //***************************************************************
+   if (result >= 0) {
+      mp3_frame_p mtemp = frame_list; 
+      unsigned bitrate  = mtemp->bitrate ;
+      unsigned samprate = mtemp->sample_rate ;
+      unsigned vbr = 0 ;   //  if bitrate changes, set this to TRUE
+
+      unsigned frame_count = 0 ;
+      double play_secs = 0.0 ;
+      for (mtemp = frame_list; mtemp != 0; mtemp = mtemp->next) {
+         frame_count++ ;
+         play_secs += mtemp->play_time ;
+         if (mtemp->bitrate != bitrate) 
+            vbr = 1 ;
+      }
+      char *layer_str[3] = { "I", "II", "III" } ;
+      char *verid_str[3] = { "1", "2", "2.5" } ;
+      printf("found %u frames\n", frame_count) ;
+      mtemp = frame_list; 
+   // unsigned mpeg_version ; //  1=1, 2=2, 3=2.5
+   // unsigned mpeg_layer ;
+      printf("mpegV%s, layer %s\n", 
+         verid_str[mtemp->mpeg_version],
+         layer_str[mtemp->mpeg_layer]) ;
+      if (vbr) {
+         printf("bitrate=variable\n") ;
+      } else {
+         printf("bitrate=%uKbps\n", bitrate) ;
+      }
+      printf("sample rate=%u Hz\n", samprate) ;
+
+      unsigned uplay_secs = (unsigned) play_secs ;
+      unsigned uplay_mins = uplay_secs / 60 ;
+      uplay_secs = uplay_secs % 60 ;
+      printf("total play time=%u:%02u\n", uplay_mins, uplay_secs) ;
+   }
+   
+   return 0;
+}
+#else
+//*********************************************************
+int get_mp3_info(char *fname, char *mlstr)
+{
+   int result ;
+   char fpath[260] ;
+
+   clear_existing_list() ;
+   //    431,340 44100 hz,  2.45 seconds     Bell1.wav
+   sprintf(fpath, "%s\\%s", base_path, fname) ;
+
+   result = read_mp3_file(fpath);
+   if (result < 0) {
+      sprintf(mlstr, "%-28s", "cannot parse file") ;
+      return 0;
+   }
+
+   mp3_frame_p mtemp = frame_list; 
+   unsigned bitrate  = mtemp->bitrate ;
+   // unsigned samprate = mtemp->sample_rate ;
+   unsigned vbr = 0 ;   //  if bitrate changes, set this to TRUE
+
+   // unsigned frame_count = 0 ;
+   double play_secs = 0.0 ;
+   for (mtemp = frame_list; mtemp != 0; mtemp = mtemp->next) {
+      // frame_count++ ;
+      play_secs += mtemp->play_time ;
+      if (mtemp->bitrate != bitrate) 
+         vbr = 1 ;
+   }
+   // char *layer_str[3] = { "I", "II", "III" } ;
+   // char *verid_str[3] = { "1", "2", "2.5" } ;
+   // printf("found %u frames\n", frame_count) ;
+   // mtemp = frame_list; 
+   // printf("mpegV%s, layer %s\n", 
+   //    verid_str[mtemp->mpeg_version],
+   //    layer_str[mtemp->mpeg_layer]) ;
+   // if (vbr) {
+   //    printf("bitrate=variable\n") ;
+   // } else {
+   //    printf("bitrate=%uKbps\n", bitrate) ;
+   // }
+   // printf("sample rate=%u Hz\n", samprate) ;
+
+   total_ptime += play_secs ;
+   unsigned uplay_secs = (unsigned) play_secs ;
+   unsigned uplay_mins = uplay_secs / 60 ;
+   uplay_secs = uplay_secs % 60 ;
+   // sprintf(mlstr, "%5u hz, %5.2f seconds     ", srate, ptime) ;
+   if (vbr) {
+      sprintf(mlstr, "var Kbps, %3u:%02u minutes    ", uplay_mins, uplay_secs) ;
+   } else {
+      sprintf(mlstr, "%3u Kbps, %3u:%02u minutes    ", bitrate, uplay_mins, uplay_secs) ;
+   }
+   return 0;
+}
+
+#endif
