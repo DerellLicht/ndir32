@@ -1,3 +1,5 @@
 *.txt
 *.ini
 _lint.tmp
+*.o
+ndir32.exe
