@@ -1,5 +1,5 @@
 //*********************************************************************
-//  Copyright (c) 1995-2015  Daniel D Miller
+//  Copyright (c) 1995-2016  Daniel D Miller
 //  DISKPARM.CPP - Display partition information about disk drive.     
 //                                                                     
 //  Written by:   Daniel D. Miller                                     
@@ -207,9 +207,9 @@ void display_drive_summary (void)
 	nput_line (n.colorframe, '=');
 
 	nputs (n.colornhead,
-      "   file sys     total space         free space     [Cluster Size] UNC path \n");
+      "   file sys      total space          free space     [Cluster Size] UNC path \n");
 	nputs (n.colornhead,
-      "   ========  =================  =================  ========================\n");
+      "   ========  ==================  ==================  ========================\n");
 
    ULONGLONG lfree = 0;
    ULONGLONG ltotal = 0;
@@ -240,7 +240,7 @@ void display_drive_summary (void)
          )) {                   //     );
          
          wsprintf (tempstr, 
-            "%c: %-9s %17s  %17s          no media present\n", 
+            "%c: %-9s %18s  %18s          no media present\n", 
             dchar, 
             get_drive_type_string(dtype, dchar),
             " ", " ") ;
@@ -293,7 +293,7 @@ void display_drive_summary (void)
 			UNCpaths.uptr = UNCpaths.ustr;
 			bufsize = PATH_MAX;
 
-         wsprintf (tempstr, "%c: %-9s %17s  %17s  ", dchar, fsnbfr, disktotal, diskavail);
+         wsprintf (tempstr, "%c: %-9s %18s  %18s  ", dchar, fsnbfr, disktotal, diskavail);
 			nputs (n.colordir, tempstr);
 
 			// if (WNetGetUniversalName(dpath, REMOTE_NAME_INFO_LEVEL, 
@@ -309,7 +309,7 @@ void display_drive_summary (void)
 		}
       else {
       // else if (dtype == DRIVE_FIXED) {
-         wsprintf (tempstr, "%c: %-9s %17s  %17s  ", dchar, fsnbfr, disktotal, diskavail);
+         wsprintf (tempstr, "%c: %-9s %18s  %18s  ", dchar, fsnbfr, disktotal, diskavail);
 			nputs (n.colordefalt, tempstr);
 
          // unsigned cluster_size = get_cluster_size(dpath[0]);
@@ -322,7 +322,7 @@ void display_drive_summary (void)
 			nputs (n.colordefalt, tempstr);
 		}
       // else {
-      //   sprintf (tempstr, "%c: %-8s  %17s  %17s  ", dpath[0], fsnbfr,
+      //   sprintf (tempstr, "%c: %-8s  %18s  %18s  ", dpath[0], fsnbfr,
       //      disktotal.putstr (), diskavail.putstr ());
       //   nputs (n.colorsize, tempstr);
       // 
@@ -338,7 +338,7 @@ void display_drive_summary (void)
    convert_to_commas(lfree, diskavail);
 
 	nput_line (n.colorframe, '*');
-   wsprintf (tempstr, "             %17s  %17s", disktotal, diskavail);
+   wsprintf (tempstr, "             %18s  %18s", disktotal, diskavail);
 	nputs (n.colorxhead, tempstr);
    wsprintf (tempstr, "  Total Physical space\n\r");
 	nputs (n.colornhead, tempstr);

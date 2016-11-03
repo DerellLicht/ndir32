@@ -73,6 +73,9 @@
 //    Better solution was to switch to GCC/TDM V4.4.1; 
 //    This required replacing %llu with %I64u, but it worked,
 //    without an increase in file size
+// 
+//  Version 2.44, 11/03/16 
+//    Modify /i to support >9TB drives
 //***************************************************************************
 
 #include <windows.h>
@@ -85,7 +88,7 @@
 #include "ndir32.h"
 #include "conio32.hpp"
 
-#define  VER_NUMBER "2.43"
+#define  VER_NUMBER "2.44"
 
 char *Version = " NDIR.EXE, Version " VER_NUMBER " " ;
 char *ShortVersion = " NDIR " VER_NUMBER " " ;
