@@ -55,7 +55,11 @@ clean:
 
 source:
 	rm -f *.zip
-	zip -D ndir32src.zip *
+	zip -D ndir32src.zip *.cpp *.h *.cpp readme.txt revisions.txt makefile
+   
+dist:
+	rm -f ndir.zip
+	zip ndir.zip ndir32.exe readme.txt revisions.txt   
 
 lint:
 	cmd /C "c:\lint9\lint-nt +v -width(160,4) $(LiFLAGS) -ic:\lint9 mingw.lnt -os(_lint.tmp) lintdefs.cpp $(CPPSRC)"
