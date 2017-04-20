@@ -240,7 +240,7 @@ void display_drive_summary (void)
          )) {                   //     );
          
          wsprintf (tempstr, 
-            "%c: %-9s %18s  %18s          no media present\n", 
+            "%c: %-9s %18s  %18s           no media present\n", 
             dchar, 
             get_drive_type_string(dtype, dchar),
             " ", " ") ;
@@ -318,7 +318,7 @@ void display_drive_summary (void)
          // ltotal += totals1.QuadPart;
          lfree  += frees1 ;
          ltotal += totals1 ;
-         wsprintf (tempstr, "[%5u] %s\n", (unsigned) clbytes, vnbfr);
+         wsprintf (tempstr, "[%6u] %s\n", (unsigned) clbytes, vnbfr);
 			nputs (n.colordefalt, tempstr);
 		}
       // else {

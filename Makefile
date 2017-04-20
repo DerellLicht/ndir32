@@ -53,7 +53,7 @@ all: ndir32.exe
 clean:
 	rm -f *.o ndir32.exe *~ *.zip
 
-source:
+source src:
 	rm -f *.zip
 	zip -D ndir32src.zip *.cpp *.h *.cpp readme.txt revisions.txt makefile
    
@@ -62,7 +62,7 @@ dist:
 	zip ndir.zip ndir32.exe readme.txt revisions.txt   
 
 lint:
-	cmd /C "c:\lint9\lint-nt +v -width(160,4) $(LiFLAGS) -ic:\lint9 mingw.lnt -os(_lint.tmp) lintdefs.cpp $(CPPSRC)"
+	cmd /C "\lint9\lint-nt +v -width(160,4) $(LiFLAGS) -i\lint9 mingw.lnt -os(_lint.tmp) lintdefs.cpp $(CPPSRC)"
 
 depend: 
 	makedepend $(CSRC) $(CPPSRC)
