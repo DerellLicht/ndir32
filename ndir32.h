@@ -22,12 +22,15 @@
 
 typedef  unsigned char  uchar ;
 typedef  unsigned long  ulong ;
+typedef  unsigned int   uint ;
 
 #define MAXLINE   260
 
+#define  LOOP_FOREVER   true
+
 //*********************************************************
-#define  MAX_EXT  200
-#define  MAX_EXT_SIZE   6
+#define  MAX_EXT        200
+#define  MAX_EXT_SIZE   8
 struct attrib_list {
    uchar  attr ;
    char  ext[MAX_EXT_SIZE+1] ;

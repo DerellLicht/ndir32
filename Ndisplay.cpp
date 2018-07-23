@@ -14,8 +14,6 @@
 #include "conio32.hpp"
 #include "file_fmts.hpp"
 
-typedef unsigned int  uint ;
-
 extern int get_mp3_info(char *fname, char *mlstr);
 //lint -e626   argument inconsistent with format
 //lint -e559   Size of argument no. 3 inconsistent with format

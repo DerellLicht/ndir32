@@ -79,6 +79,9 @@
 // 
 //  Version 2.45, 12/04/17 
 //    Remove incorrect limitation on length of exclusion extensions
+// 
+//  Version 2.46, 07/23/18 
+//    Modify to accept extensions in INI file, with *or* without the '.'
 //***************************************************************************
 
 #include <windows.h>
@@ -91,7 +94,7 @@
 #include "ndir32.h"
 #include "conio32.hpp"
 
-#define  VER_NUMBER "2.45"
+#define  VER_NUMBER "2.46"
 
 char *Version = " NDIR.EXE, Version " VER_NUMBER " " ;
 char *ShortVersion = " NDIR " VER_NUMBER " " ;
@@ -761,7 +764,8 @@ static void parse_color_entry(char *iniptr)
    attrib_list *aptr ;
 
    //  check for multiple-color-entry forms...
-   // 0x32:.com,.bat,.btm,.sys
+   //0x32:.com,.bat,.btm,.sys
+   //14:.arc,.tgz,.tar,.gz,.z,.zip,.bz2,.rar,.7z,.iso,.zcp
    hdptr = strchr(iniptr, ':') ;
    if (hdptr != 0) {
       *hdptr++ = 0 ; //  terminate attribute, point to first extension
@@ -769,29 +773,39 @@ static void parse_color_entry(char *iniptr)
       if (atr == 0)
          return ;
       
-      while (1) {
+      while (LOOP_FOREVER) {
          //  make sure we don't overrun our table
          if (attrib_count >= MAX_EXT)
             return ;
-         if (*hdptr != '.')
-            return ;
+         // if (*hdptr != '.')
+         //    return ;
          tlptr = strchr(hdptr, ',') ;
-         //  assume we're at end of line
+         //  see if we're at end of line
+         if (tlptr != 0) {
+            *tlptr++ = 0 ; //  NULL-term extension
+         }
+         //  check for too-long extensions in INI file
+         //  If extension in INI file is too long, just discard it
+         uint extlen = (*hdptr == '.') ? MAX_EXT_SIZE : MAX_EXT_SIZE-1 ;
+         if (strlen(hdptr) <= extlen) {
+            aptr = &attr_table[attrib_count++] ;
+            if (*hdptr == '.') {
+               strcpy(aptr->ext, hdptr) ;
+            }
+            else {
+               sprintf(aptr->ext, ".%s", hdptr) ;
+            }
+            aptr->attr = atr ;
+         }
          if (tlptr == 0) {
-            aptr = &attr_table[attrib_count++] ;
-            strncpy(aptr->ext, hdptr, MAX_EXT_SIZE) ;
-            aptr->attr = atr ;
-            return ;
-         } else {
-            *tlptr++ = 0 ;
-            aptr = &attr_table[attrib_count++] ;
-            strncpy(aptr->ext, hdptr, MAX_EXT_SIZE) ;
-            aptr->attr = atr ;
+            break;
          }
          hdptr = tlptr ;
       }
       
    }
+   //  handle single-color entries
+   //.FAQ=2
    else {
       //  make sure we don't overrun our table
       if (attrib_count >= MAX_EXT)
