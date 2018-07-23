@@ -76,6 +76,9 @@
 // 
 //  Version 2.44, 11/03/16 
 //    Modify /i to support >9TB drives
+// 
+//  Version 2.45, 12/04/17 
+//    Remove incorrect limitation on length of exclusion extensions
 //***************************************************************************
 
 #include <windows.h>
@@ -88,7 +91,7 @@
 #include "ndir32.h"
 #include "conio32.hpp"
 
-#define  VER_NUMBER "2.44"
+#define  VER_NUMBER "2.45"
 
 char *Version = " NDIR.EXE, Version " VER_NUMBER " " ;
 char *ShortVersion = " NDIR " VER_NUMBER " " ;

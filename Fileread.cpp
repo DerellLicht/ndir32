@@ -267,14 +267,18 @@ search_next_file:
 }
 
 //*************************************************************
-static char excl[20][PATH_MAX] ; //  allocate dynamically??
+#define  MAX_EXCL_COUNT    20
+static char excl[MAX_EXCL_COUNT][MAX_EXT_SIZE+1] ; //  allocate dynamically??
 static int  exclcount = 0 ;     //  number of exclusion filespecs
 
 //*************************************************************
 void update_exclusion_list(char *extptr)
 {
-   strcpy (excl[exclcount], extptr);
-   exclcount++;
+   if (exclcount < MAX_EXCL_COUNT) {
+      strncpy (excl[exclcount], extptr, MAX_EXT_SIZE);
+      excl[exclcount][MAX_EXT_SIZE] = 0 ;
+      exclcount++;
+   }
 }
 
 //*************************************************************

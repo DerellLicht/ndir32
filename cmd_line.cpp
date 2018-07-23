@@ -168,8 +168,12 @@ void parse_command_string (char *cmdstr)
 
 			//  process exclusion extentions...
 			extptr = strrchr (tempstr, '.');
-         if (extptr != 0 && strlen (extptr) <= 4) 
+         //  why worry about length of extension??
+         // if (extptr != 0 && strlen (extptr) <= 4) 
+         if (extptr != 0) 
+         {
             update_exclusion_list(extptr) ;
+         }
 			break;
 
 		default:
