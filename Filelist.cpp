@@ -465,7 +465,7 @@ static void filehead(void)
          sprintf(tempstr, "%-49s   ", base_path) ;
       nputs(n.colornhead, tempstr) ;
 
-      if (_where_x() < 52) {
+      if (_where_x() < (wincols - 28)) {
          nputs(n.colornhead, "Volume label is ") ;
          nputs(n.colorxhead, volume_name) ;
       }

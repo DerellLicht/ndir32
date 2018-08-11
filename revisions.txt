@@ -228,5 +228,6 @@ Version 2.46, 07/23/18
   Modify to accept extensions in INI file, with *or* without the '.'
 
 Version 2.47, 08/11/18 
-  Modify directory tree to support consoles > 80 chars wide
+  - Modify directory tree to support consoles > 80 chars wide
+  - tweak positioning of Volume Label on wide consoles
 

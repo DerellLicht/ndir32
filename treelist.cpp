@@ -797,12 +797,12 @@ static void printdirheader (void)
 	sprintf (tempstr, "%s", base_path);
 	nputs (n.colorxhead, tempstr);
 
-   int vnlen = 16 + strlen(volume_name) ;
-   int blen  = 13 + strlen(base_path) ;
-   if ((blen + vnlen) >= 80) 
+   uint vnlen = 16 + strlen(volume_name) ; //  16 is length of 'Volume label is '
+   uint blen  = 13 + strlen(base_path) ;   //  13 is length of 'Directory of '
+   if ((blen + vnlen) >= wincols) 
       ncrlf ();
    else
-      nput_char (n.colornhead, ' ', (80 - blen - vnlen - 1));
+      nput_char (n.colornhead, ' ', (wincols - blen - vnlen - 1));
    nputs (n.colornhead, "Volume label is "); //  len = 16
 	nputs (n.colorxhead, volume_name);
 	ncrlf ();
