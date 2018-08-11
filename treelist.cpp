@@ -1,5 +1,5 @@
 //*****************************************************************
-//  Copyright (c) 1995-2015  Daniel D Miller
+//  Copyright (c) 1995-2018  Daniel D Miller
 //  TREELIST.CPP: Read and display directory tree                  
 //*****************************************************************
 
@@ -19,15 +19,23 @@
 #include "conio32.hpp"
 
 static char *dhdr =
-	"                         쳐컴컴컴컴컴쩡컴컴컴컴컴탠컴컴컴컴컴컴컫컴컴컴컴컴컴컴";
+   "쳐컴컴컴컴컴쩡컴컴컴컴컴탠컴컴컴컴컴컴컫컴컴컴컴컴컴컴";
 
 static char *dhdrl =
-   "                         +-----------+-----------+--------------+--------------";
+   "+-----------+-----------+--------------+--------------";
 
+//0         1         2
+//012345678901234567890123456789
+//=========================+===========+===========+==============+==============
 static void sort_trees (void);
 
 static char formstr[50];
 static char levelstr[PATH_MAX];
+static uint wincols      = 80 ;
+static uint name_end_col = 25 ;
+static uint center_col   = 37 ;
+static uint left_div     = 49 ;
+static uint right_div    = 64 ;
 
 //  instantiate ultosc class as required
 //lint -e747 
@@ -514,6 +522,23 @@ static dirs *new_dir_node (void)
 //*********************************************************
 static void draw_dir_tree (void)
 {
+   wincols = get_window_cols() ;
+   //  this is necessary because if redirection is in place,
+   //  'console width' may not be valid`
+   if (is_redirected()) {
+      wincols = 80 ;
+   }
+
+   if (wincols != 80) {
+      name_end_col = wincols - (80-25) ;
+      center_col   = wincols - (80-37) ;
+      left_div     = wincols - (80-49) ;
+      right_div    = wincols - (80-64) ;
+      // 135: 80, 92, 104, 119
+      // syslog("%u: %u, %u, %u, %u\n", wincols,
+      //    name_end_col, center_col, left_div, right_div);
+   }
+
 	printdirheader ();
 	display_dir_tree (top);
    print_dir_end ();
@@ -522,36 +547,36 @@ static void draw_dir_tree (void)
 //**********************************************************
 static void display_tree_filename (char *lstr, char *frmstr)
 {
-	int slen = strlen (lstr);
+   uint slen = strlen (lstr);
 
 	//  if directory name, etc., is too long, make separate line
-	if (slen > 37) {
-		sprintf (tempstr, "%-64s", lstr);	//  write filename
+   if (slen > center_col) {
+      sprintf (tempstr, "%-*s", right_div, lstr); //  write filename
 		nputs (dtree_colors[level], tempstr);
 
 		//  insert blank line
 		nputc (n.colorframe, vline);
 		ncrlf ();
 
-		sprintf (tempstr, "%-26s", frmstr);
+      sprintf (tempstr, "%-*s", name_end_col+1, frmstr);
 		nputs (dtree_colors[level], tempstr);	//  spaces
 	}
-	else if (slen > 25) {
-		sprintf (tempstr, "%-37s", lstr);	//  write filename
+   else if (slen > name_end_col) {
+      sprintf (tempstr, "%-*s", center_col, lstr); //  write filename
 		nputs (dtree_colors[level], tempstr);
 
 		//  insert blank line
 		nputc (n.colorframe, vline);
-		sprintf (tempstr, "%26s", "");
+      sprintf (tempstr, "%*s", name_end_col+1, "");
 		nputs (dtree_colors[level], tempstr);	//  spaces
 
 		nputc (n.colorframe, vline);
 		ncrlf ();
-		sprintf (tempstr, "%-26s", frmstr);
+      sprintf (tempstr, "%-*s", name_end_col+1, frmstr);
 		nputs (dtree_colors[level], tempstr);	//  spaces
 	}
 	else {
-		sprintf (tempstr, "%-26s", lstr);
+      sprintf (tempstr, "%-*s", name_end_col+1, lstr);
 		nputs (dtree_colors[level], tempstr);
 	}
 }
@@ -785,9 +810,9 @@ static void printdirheader (void)
 	//**************************************
 	//  Heading line 1
 	//**************************************
-	memset (&tempstr[0], dline, 79);
-	tempstr[79] = 0;
-	tempstr[25] = tempstr[49] = tline;
+   memset (&tempstr[0], dline, wincols-1);
+   tempstr[wincols-1] = 0;
+   tempstr[name_end_col] = tempstr[left_div] = tline;
 	nputs (n.colorframe, tempstr);
 	ncrlf ();
 
@@ -796,7 +821,7 @@ static void printdirheader (void)
 			//**************************************
 			//  Heading line 2
 			//**************************************
-			nput_char (n.colornhead, ' ', 25);
+         nput_char (n.colornhead, ' ', name_end_col);
 			nputc (n.colorframe, vline);
 			nputs (n.colornhead, "   size of requested   ");
 			nputc (n.colorframe, vline);
@@ -806,7 +831,7 @@ static void printdirheader (void)
 			//**************************************
 			//  Heading line 3
 			//**************************************
-			nput_char (n.colornhead, ' ', 25);
+         nput_char (n.colornhead, ' ', name_end_col);
 			// nputs (n.colornhead, "Subdirectory names       ");
 			nputc (n.colorframe, vline);
 			nputs (n.colornhead, "       directory       ");
@@ -819,7 +844,7 @@ static void printdirheader (void)
 			//**************************************
 			//  Heading line 2
 			//**************************************
-			nput_char (n.colornhead, ' ', 25);
+         nput_char (n.colornhead, ' ', name_end_col);
 			nputc (n.colorframe, vline);
 			nputs (n.colornhead, " files and directories ");
 			nputc (n.colorframe, vline);
@@ -829,7 +854,7 @@ static void printdirheader (void)
 			//**************************************
 			//  Heading line 3
 			//**************************************
-			nput_char (n.colornhead, ' ', 25);
+         nput_char (n.colornhead, ' ', name_end_col);
 			nputc (n.colorframe, vline);
 			nputs (n.colornhead, " in current directory  ");
 			nputc (n.colorframe, vline);
@@ -841,7 +866,7 @@ static void printdirheader (void)
 			//**************************************
 			//  Heading line 2
 			//**************************************
-			nput_char (n.colornhead, ' ', 25);
+         nput_char (n.colornhead, ' ', name_end_col);
 			nputc (n.colorframe, vline);
 			nputs (n.colornhead, " files and directories ");
 			nputc (n.colorframe, vline);
@@ -851,7 +876,7 @@ static void printdirheader (void)
 			//**************************************
 			//  Heading line 3
 			//**************************************
-			nput_char (n.colornhead, ' ', 25);
+         nput_char (n.colornhead, ' ', name_end_col);
 			nputc (n.colorframe, vline);
 			nputs (n.colornhead, "   cumulative counts   ");
 			nputc (n.colorframe, vline);
@@ -866,13 +891,16 @@ static void printdirheader (void)
 	//**************************************
 	//  Heading line 4
 	//**************************************
+   nput_char (n.colornhead, ' ', name_end_col);
    nputs (n.colorframe, (n.low_ascii) ? dhdrl : dhdr);
 	ncrlf ();
 
 	//**************************************
 	//  Heading line 5
 	//**************************************
-	nputs (n.colornhead, "Subdirectory names       ");
+   // nputs (n.colornhead, "Subdirectory names       ");
+   sprintf(tempstr,"%-*s", name_end_col, "Subdirectory names");
+   nputs (n.colornhead, tempstr);
 	nputc (n.colorframe, vline);
 	switch (n.tree) {
 		case 1:
@@ -915,10 +943,10 @@ static void printdirheader (void)
 	//**************************************
 	//  Heading line 6
 	//**************************************
-	memset (&tempstr[0], dline, 79);
-	tempstr[79] = 0;
-	tempstr[25] = tempstr[49] = bline;
-	tempstr[37] = tempstr[64] = xline;
+   memset (&tempstr[0], dline, wincols-1);
+   tempstr[wincols-1] = 0;
+   tempstr[name_end_col] = tempstr[left_div] = bline;
+   tempstr[center_col] = tempstr[right_div] = xline;
 	nputs (n.colorframe, tempstr);
 	ncrlf ();
 }
@@ -927,9 +955,9 @@ static void printdirheader (void)
 static void print_dir_end (void)
 {
 	//  draw divider line for bottom of data
-	memset (&tempstr[0], dline, 79);
-	tempstr[79] = 0;
-	tempstr[37] = tempstr[64] = bline;
+   memset (&tempstr[0], dline, wincols-1);
+   tempstr[wincols-1] = 0;
+   tempstr[center_col] = tempstr[right_div] = bline;
 	nputs (n.colorframe, tempstr);
 	ncrlf ();
 

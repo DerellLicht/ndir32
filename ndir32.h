@@ -251,6 +251,7 @@ extern double total_ptime ;
 //  ndir.cpp
 int  strcmpiwc(const char *onestr, const char *twostr);
 void set_lines(int lines);
+int syslog(const char *fmt, ...);
 
 // ULLONG_MAX = 18,446,744,073,709,551,615
 #define  MAX_ULL_COMMA_LEN  26

@@ -1,232 +1,232 @@
-//*************************************************************************
 //  Revision history for NDIR.EXE
-//
 //*************************************************************************
-//    1.73  --/--/--    The last time this WASN'T done.
-//
-//    1.74  08/18/91    - Fix duplicate filespec problems.
-//          01/17/92    - Change my address to new one.
-//
-//    1.75  01/20/92    - Fix minor bug in exclusion-list processing.
-//
-//    1.76  02/04/92    - Modify directory tree display to include disk space
-//                        used by ALL directories, not just empty ones.
-//
-//                      - Modify directory tree search to also count
-//                        system, hidden, read_only files.
-//
-//                      - Show file sizes with commas in /1 display.
-//
-//    1.77  02/12/92    - Optimize some routines for better speed.
-//                      - Implement preliminary no-sort file-list option.
-//                      - Fix low-ascii option, which apparently hasn't
-//                        worked for a LONG time!!
-//
-//    1.78  09/10/92    - Convert NDIR to linked-list method of handling
-//                        file data.  ***  NEVER RELEASED  ***
-//
-//    1.79  10/05/92    - Miscellaneous code optimization.
-//                        ***  NEVER RELEASED  ***
-//    
-//    1.80  08/04/93    - Convert to new C++ libraries.
-//          ??/??/??    - Added /m switch
-//          07-22-95    - Fix bug in /dk display
-//          08-19-95    - Misc bug fixes
-//                        ***  NEVER RELEASED  ***
-//    
-//    1.81  01-13-96    - Added -i switch for disk drive summary.
-//                      - Changed line characters in directory tree display.
-//                      - Directory tree now skips hidden directories.
-//    
-//    1.82  02-02-96    - Revised -i to recognize network drives.
-//                      - Increased number of file extensions to 77.
-//                      - Revised NDIRMOD to support the increased extensions.
-//                      - File extension color specs can now include '?' 
-//                        wildcard.
-//                      - Color can be specified for no-extension files.
-//                      - NDIRMOD now performs installation function,
-//                        so NDINSTAL has been removed.
-// 
-//    1.83  03-31-97    - Support for long filenames in MSDOS 7.00+.  
-//         
-//                      - Added -l switch to force old DOS 8.3 filenames.
-// 
-//                      - Added -w switch to give different colors to 
-//                        S/H/R files.
-// 
-//                      - Directory tree can be sorted by filename or 
-//                        directory size (ascending or descending).
-// 
-//                      - Option to define colors for new extensions on the 
-//                        commandline or environment variables:  =.FAQ=2
-// 
-//                      - Display either LAST_MODIFIED date/time or 
-//                        FILE_CREATED date/time (MSDOS 7.00+ only).
-// 
-//    1.84  04-05-97    - Fixed TREE display to recognize uppercase flag
-//                        when long filenames are disabled.
-//                      - Hacked NDIRMOD to clear screen on exit, so
-//                        screen colors are restored correctly.
-//          04-23-97    - Make EXT sort case-insensitive.
-// 
-//    1.85  04-27-97    - Fix short-filename bug.
-// 
-//    1.86  12-02-97    - Fix bug in handling filenames beginning with '.'
-//                      - Fix "year 2000" bugs
-// 
-//    2.00  03/01/99    - volume_name[] needs to be _MAX_PATH in size,
-//                        for Win32 support; RedHat Linux CD was over-
-//                        running our buffer.
-//
-//    2.01  07/05/00    - Converted get_cluster_size() to use the undocumented
-//                        WinNT function from the ntfsinfo utility,  
-//                        Copyright (C) 1997 Mark Russinovich
-//  
-//    1.90/2.03         - Mainly, converting to INI files for configuration,
-//                        instead of NDIRMOD.
-//                      - A variety of minor bug fixes that I never documented
-// 
-//    1.91/2.04         - Expand -o to support all three file date/time
-//                        options.  -o now has an optional following number.
-// 
-//  1.91/2.05/2.05      - Add the NDIRH html lister
-//                      - Fix a variety of minor display bugs
-// 
-//  1.92/2.08/2.06      - Change my email and web addresses
-//                      - ndir32: fix a bug with WinNT windows that had
-//                        screen buffer larger than displayed size.
-//  
-//  1.93/2.13/2.06      - Fix screen scrolling with ndir32 on Win9x.
-//                      - The Steven Bensky mod (1) - restore -q listing to
-//                        ndir32 - also, improve it with long filenames
-//                        in both implementations.
-//                      - The Steven Bensky mod (2) - Implement short 
-//                        filename display in ndir32.
-//                      - Restore prompt color properly in ndir32, on Win9x
-//                        systems which don't run ANSI.SYS.
-// 
-//  1.93/2.15/1.02      - Replace ndirh with wndir.
-//                      - Release current software.
-// 
-//  1.94/2.16/1.02      - Remove extra blank line at end of multiple-
-//                        filespec listings.
-//                      - ndir16: fix decade-old bug in LFNFindFile,
-//                        where I wasn't restoring DS before using it.
-// 
-//  1.95/2.17/1.03      - Fix bugs in parsing of INI file
-//                      - Fix ancient display bug in 16-bit program
-// 
-//  1.96/2.19/1.04      - Change Email address and web site
-//                      - Added -d2 command, which displays directory tree
-//                        with *counts* of files and directories,
-//                        rather than *sizes* of files and directories.
-//                        (NDIR32 only)
-//                      - Added "," switch to /d listing, to display only
-//                        one level of directory summary.  This makes it
-//                        easier to see where disk usage is concentrated.
-//                        (NDIR32 and WNDIR only)
-//                      - Modified ndir32 to support screen widths
-//                        other than 80 columns (mostly for WinNT).
-//  
-//  1.98/2.22/1.04      - Add some support for UNC paths
-//                      - adding new color-spec format to ndir.ini
-//                      - Added -d3 command, which displays combined
-//                        file/directory counts and file sizes.
-//                      - Fix dir-tree alignment on long path names
-//                      - In Directory Tree, show large sizes in KBytes
-//                      - In Directory Tree, show progress bar while
-//                        reading all the data.
-//  
-//  1.98/2.23/1.04      - Fix a problem with directory tree on Win2K
-//                        when read from WinNT4 directory.
-//                      - Allow ESCAPE key to cleanly exit from reading
-//                        files in the directory tree.  It will display
-//                        all files that were read up to that point.
-//  
-//  1.98/2.24/1.04      - add -mm (multimedia) mode, which display special
-//                        info about special files.  Currently, only .wav,
-//                        .jpg, and .gif will be supported.
-//                      - Update email and website data
-//  
-//  1.98/2.25/1.04      
-//    - Jason Hood: Fix scrolling problem when buffer size
-//      is greater than screen size
-//    - Eliminate html-redirection; this is broken in Bash shells
-//  
-//  1.98/2.27/1.04      
-//    - Fix "disk params" display so it aligns correctly for sizes > 99GB
-//  
-//  1.98/2.28/1.04      
-//    - Fix low_ascii display in directory tree
-//    - Add -a1 option to show file attributes as HEX value
-//  
-//  1.98/2.29/1.04      07/24/06 
-//    Linted code, possibly introducing bugs
-//  
-//  1.98/2.30/1.04      08/15/06 
-//    Add options to size display, to show as KB/MB
-//  
-//  Version 2.31, 08/18/06 20:21
-//    = Fix handling of volume label in directory tree with color disabled
-//    - Fix a but in the size-display option from version 2.30,
-//      which caused -1 display to show all sizes as 0.
-//  
-//  Version 2.32, 12/22/06 10:06
-//    - Add total playing time for Wave files in /mm display
-//    - Add mp3 support to /mm option
-//    - Add total playing time for mp3 files in /mm display
-//  
-//  Version 2.33, 06/17/07 17:17
-//    - Update disk-params report to recognize more drives
-//  
-//  Version 2.34, 10/10/07 00:28
-//    - fix computation of MFT size.  On large drives, the MFT info
-//      documented by Sysinternals' ntfsinfo does not give meaningful
-//      results, so I'm forced to skip my free-disk correction.
-//  
-//  Version 2.35, 01/04/09 15:27
-//    Re-implement redirection flag, so output files are useable.
-//  
-//  Version 2.36, 06/17/07 17:17
-//    - /mm, added support for .ico and .cur files
-//    - linted the code
-// 
-//  Version 2.37, 01/13/11 
-//    /mm - added support for .sid files (well, partially)
-// 
-//  Version 2.38, 05/27/11 
-//    /i now tries to determine more specific info on CD-type devices.
-//    At this point, it still does not detect BluRay devices as such.
-// 
-//  Version 2.39, 10/23/12 
-//    - /i now properly identifies many BluRay devices
-//    - /i now allows enough space for terabyte drive sizes
-// 
-//  Version 2.40, 04/02/13 
-//    Convert file data/time computations from FileTimeToDosDateTime()
-//    to FileTimeToSystemTime(); This provides 1-second resolution on
-//    file timestamps
-// 
-//  Version 2.41, 12/17/13
-//    Once again, try to get sector/cluster sizes right
-// 
-//  Version 2.42, 02/17/15
-//    replace i64tostr class with a simple C function
-// 
-//  Version 2.43, 03/12/15
-//    Fix problem with %llu not actually printing u64 correctly.
-//    First fix was to add -std=c++98, but this added over 30% to file size.
-//    Better solution was to switch to GCC/TDM V4.4.1; 
-//    This required replacing %llu with %I64u, but it worked,
-//    without an increase in file size
-// 
-//  Version 2.44, 11/03/16 
-//    Modify /i to support >9TB drives
-// 
-//  Version 2.45, 12/04/17 
-//    Remove incorrect limitation on length of exclusion extensions
-// 
-//  Version 2.46, 07/23/18 
-//    Modify to accept extensions in INI file, with *or* without the '.'
-//*************************************************************************//  
+1.73  --/--/--  The last time this WASN'T done.
+
+1.74  08/18/91  - Fix duplicate filespec problems.
+      01/17/92  - Change my address to new one.
+
+1.75  01/20/92  - Fix minor bug in exclusion-list processing.
+
+1.76  02/04/92  - Modify directory tree display to include disk space
+                  used by ALL directories, not just empty ones.
+
+                - Modify directory tree search to also count
+                  system, hidden, read_only files.
+
+                - Show file sizes with commas in /1 display.
+
+1.77  02/12/92  - Optimize some routines for better speed.
+                - Implement preliminary no-sort file-list option.
+                - Fix low-ascii option, which apparently hasn't
+                  worked for a LONG time!!
+
+1.78  09/10/92  - Convert NDIR to linked-list method of handling
+                  file data.  ***  NEVER RELEASED  ***
+
+1.79  10/05/92  - Miscellaneous code optimization.
+                  ***  NEVER RELEASED  ***
+
+1.80  08/04/93  - Convert to new C++ libraries.
+      ??/??/??  - Added /m switch
+      07-22-95  - Fix bug in /dk display
+      08-19-95  - Misc bug fixes
+                  ***  NEVER RELEASED  ***
+
+1.81  01-13-96  - Added -i switch for disk drive summary.
+                - Changed line characters in directory tree display.
+                - Directory tree now skips hidden directories.
+
+1.82  02-02-96  - Revised -i to recognize network drives.
+                - Increased number of file extensions to 77.
+                - Revised NDIRMOD to support the increased extensions.
+                - File extension color specs can now include '?' 
+                  wildcard.
+                - Color can be specified for no-extension files.
+                - NDIRMOD now performs installation function,
+                  so NDINSTAL has been removed.
+
+1.83  03-31-97  - Support for long filenames in MSDOS 7.00+.  
+     
+                - Added -l switch to force old DOS 8.3 filenames.
+
+                - Added -w switch to give different colors to 
+                  S/H/R files.
+
+                - Directory tree can be sorted by filename or 
+                  directory size (ascending or descending).
+
+                - Option to define colors for new extensions on the 
+                  commandline or environment variables:  =.FAQ=2
+
+                - Display either LAST_MODIFIED date/time or 
+                  FILE_CREATED date/time (MSDOS 7.00+ only).
+
+1.84  04-05-97  - Fixed TREE display to recognize uppercase flag
+                  when long filenames are disabled.
+                - Hacked NDIRMOD to clear screen on exit, so
+                  screen colors are restored correctly.
+      04-23-97  - Make EXT sort case-insensitive.
+
+1.85  04-27-97  - Fix short-filename bug.
+
+1.86  12-02-97  - Fix bug in handling filenames beginning with '.'
+                - Fix "year 2000" bugs
+
+2.00  03/01/99  - volume_name[] needs to be _MAX_PATH in size,
+                  for Win32 support; RedHat Linux CD was over-
+                  running our buffer.
+
+2.01  07/05/00  - Converted get_cluster_size() to use the undocumented
+                  WinNT function from the ntfsinfo utility,  
+                  Copyright (C) 1997 Mark Russinovich
+
+1.90/2.03       - Mainly, converting to INI files for configuration,
+                  instead of NDIRMOD.
+                - A variety of minor bug fixes that I never documented
+
+1.91/2.04       - Expand -o to support all three file date/time
+                  options.  -o now has an optional following number.
+
+1.91/2.05/2.05  - Add the NDIRH html lister
+                - Fix a variety of minor display bugs
+
+1.92/2.08/2.06  - Change my email and web addresses
+                - ndir32: fix a bug with WinNT windows that had
+                  screen buffer larger than displayed size.
+
+1.93/2.13/2.06  - Fix screen scrolling with ndir32 on Win9x.
+                - The Steven Bensky mod (1) - restore -q listing to
+                  ndir32 - also, improve it with long filenames
+                  in both implementations.
+                - The Steven Bensky mod (2) - Implement short 
+                  filename display in ndir32.
+                - Restore prompt color properly in ndir32, on Win9x
+                  systems which don't run ANSI.SYS.
+
+1.93/2.15/1.02  - Replace ndirh with wndir.
+                - Release current software.
+
+1.94/2.16/1.02  - Remove extra blank line at end of multiple-
+                  filespec listings.
+                - ndir16: fix decade-old bug in LFNFindFile,
+                  where I wasn't restoring DS before using it.
+
+1.95/2.17/1.03  - Fix bugs in parsing of INI file
+                - Fix ancient display bug in 16-bit program
+
+1.96/2.19/1.04  - Change Email address and web site
+                - Added -d2 command, which displays directory tree
+                  with *counts* of files and directories,
+                  rather than *sizes* of files and directories.
+                  (NDIR32 only)
+                - Added "," switch to /d listing, to display only
+                  one level of directory summary.  This makes it
+                  easier to see where disk usage is concentrated.
+                  (NDIR32 and WNDIR only)
+                - Modified ndir32 to support screen widths
+                  other than 80 columns (mostly for WinNT).
+
+1.98/2.22/1.04  - Add some support for UNC paths
+                - adding new color-spec format to ndir.ini
+                - Added -d3 command, which displays combined
+                  file/directory counts and file sizes.
+                - Fix dir-tree alignment on long path names
+                - In Directory Tree, show large sizes in KBytes
+                - In Directory Tree, show progress bar while
+                  reading all the data.
+
+1.98/2.23/1.04  - Fix a problem with directory tree on Win2K
+                  when read from WinNT4 directory.
+                - Allow ESCAPE key to cleanly exit from reading
+                  files in the directory tree.  It will display
+                  all files that were read up to that point.
+
+1.98/2.24/1.04  - add -mm (multimedia) mode, which display special
+                  info about special files.  Currently, only .wav,
+                  .jpg, and .gif will be supported.
+                - Update email and website data
+
+1.98/2.25/1.04      
+  - Jason Hood: Fix scrolling problem when buffer size
+    is greater than screen size
+  - Eliminate html-redirection; this is broken in Bash shells
+
+1.98/2.27/1.04      
+  - Fix "disk params" display so it aligns correctly for sizes > 99GB
+
+1.98/2.28/1.04      
+  - Fix low_ascii display in directory tree
+  - Add -a1 option to show file attributes as HEX value
+
+1.98/2.29/1.04      07/24/06 
+  Linted code, possibly introducing bugs
+
+1.98/2.30/1.04      08/15/06 
+  Add options to size display, to show as KB/MB
+
+Version 2.31, 08/18/06 20:21
+  = Fix handling of volume label in directory tree with color disabled
+  - Fix a but in the size-display option from version 2.30,
+    which caused -1 display to show all sizes as 0.
+
+Version 2.32, 12/22/06 10:06
+  - Add total playing time for Wave files in /mm display
+  - Add mp3 support to /mm option
+  - Add total playing time for mp3 files in /mm display
+
+Version 2.33, 06/17/07 17:17
+  - Update disk-params report to recognize more drives
+
+Version 2.34, 10/10/07 00:28
+  - fix computation of MFT size.  On large drives, the MFT info
+    documented by Sysinternals' ntfsinfo does not give meaningful
+    results, so I'm forced to skip my free-disk correction.
+
+Version 2.35, 01/04/09 15:27
+  Re-implement redirection flag, so output files are useable.
+
+Version 2.36, 06/17/07 17:17
+  - /mm, added support for .ico and .cur files
+  - linted the code
+
+Version 2.37, 01/13/11 
+  /mm - added support for .sid files (well, partially)
+
+Version 2.38, 05/27/11 
+  /i now tries to determine more specific info on CD-type devices.
+  At this point, it still does not detect BluRay devices as such.
+
+Version 2.39, 10/23/12 
+  - /i now properly identifies many BluRay devices
+  - /i now allows enough space for terabyte drive sizes
+
+Version 2.40, 04/02/13 
+  Convert file data/time computations from FileTimeToDosDateTime()
+  to FileTimeToSystemTime(); This provides 1-second resolution on
+  file timestamps
+
+Version 2.41, 12/17/13
+  Once again, try to get sector/cluster sizes right
+
+Version 2.42, 02/17/15
+  replace i64tostr class with a simple C function
+
+Version 2.43, 03/12/15
+  Fix problem with %llu not actually printing u64 correctly.
+  First fix was to add -std=c++98, but this added over 30% to file size.
+  Better solution was to switch to GCC/TDM V4.4.1; 
+  This required replacing %llu with %I64u, but it worked,
+  without an increase in file size
+
+Version 2.44, 11/03/16 
+  Modify /i to support >9TB drives
+
+Version 2.45, 12/04/17 
+  Remove incorrect limitation on length of exclusion extensions
+
+Version 2.46, 07/23/18 
+  Modify to accept extensions in INI file, with *or* without the '.'
+
+Version 2.47, 08/11/18 
+  Modify directory tree to support consoles > 80 chars wide
 

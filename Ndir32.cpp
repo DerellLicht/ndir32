@@ -9,80 +9,6 @@
 //*************************************************************************
 //  DAN:  Please update revisions.txt with each change.            
 //*************************************************************************
-//  Version 2.27, 12/24/05 23:23
-//    - Fix "disk params" display so it aligns correctly for
-//      sizes > 99GB
-//  
-//  Version 2.28, 07/21/06 10:30
-//    - Fix low_ascii display in directory tree
-//    - Add -a1 option to show file attributes as HEX value
-//  
-//  Version 2.29, 07/24/06 13:54
-//    Linted code, possibly introducing bugs
-//  
-//  Version 2.30, 08/15/06 15:34
-//    Add options to size display, to show as KB/MB
-//  
-//  Version 2.31, 08/17/06 12:57
-//    - Fix handling of volume label in directory tree with color disabled
-//    - Fix a but in the size-display option from version 2.30,
-//      which caused -1 display to show all sizes as 0.
-//  
-//  Version 2.32, 12/22/06 10:06
-//    - Add total playing time for Wave files in /mm display
-//    - Add mp3 support to /mm option
-//    - Add total playing time for mp3 files in /mm display
-//  
-//  Version 2.33, 06/17/07 17:17
-//    - Update disk-params report to recognize more drives
-//  
-//  Version 2.34, 10/10/07 00:28
-//    - fix computation of MFT size.  On large drives, the MFT info
-//      documented by Sysinternals' ntfsinfo does not give meaningful
-//      results, so I'm forced to skip my free-disk correction.
-//  
-// Version 2.35
-//    - Re-implement redirection flag, so output files are useable.
-// 
-//  Version 2.36, 06/17/07 
-//    - /mm - added support for .ico, .cur, .ani files
-// 
-//  Version 2.37, 01/13/11 
-//    - /mm - added support for .sid files
-// 
-//  Version 2.38, 05/27/11 
-//    /i now tries to determine more specific info on CD-type devices.
-//    At this point, it still does not detect Blu-Ray devices as such.
-// 
-//  Version 2.39, 10/23/12 
-//    /i now allows enough space for terabyte drive sizes
-// 
-//  Version 2.40, 04/02/13 
-//    Convert file data/time computations from FileTimeToDosDateTime()
-//    to FileTimeToSystemTime()
-// 
-//  Version 2.41, 12/17/13
-//    Once again, try to get sector/cluster sizes right
-// 
-//  Version 2.42, 02/17/15
-//    replace i64tostr class with a simple C function
-// 
-//  Version 2.43, 03/12/15
-//    Fix problem with %llu not actually printing u64 correctly.
-//    First fix was to add -std=c++98, but this added over 30% to file size.
-//    Better solution was to switch to GCC/TDM V4.4.1; 
-//    This required replacing %llu with %I64u, but it worked,
-//    without an increase in file size
-// 
-//  Version 2.44, 11/03/16 
-//    Modify /i to support >9TB drives
-// 
-//  Version 2.45, 12/04/17 
-//    Remove incorrect limitation on length of exclusion extensions
-// 
-//  Version 2.46, 07/23/18 
-//    Modify to accept extensions in INI file, with *or* without the '.'
-//***************************************************************************
 
 #include <windows.h>
 #define __STDC_FORMAT_MACROS
@@ -94,7 +20,7 @@
 #include "ndir32.h"
 #include "conio32.hpp"
 
-#define  VER_NUMBER "2.46"
+#define  VER_NUMBER "2.47"
 
 char *Version = " NDIR.EXE, Version " VER_NUMBER " " ;
 char *ShortVersion = " NDIR " VER_NUMBER " " ;
@@ -949,4 +875,31 @@ static void read_config_file(void)
    //  try to read again, after writing defaults
    read_ini_file(ini_path) ;
 }
+
+//********************************************************************
+//  On Windows platform, try to redefine printf/fprintf
+//  so we can output code to a debug window.
+//  Also, shadow syslog() within OutputDebugStringA()
+//  Note: printf() remapping was unreliable,
+//  but syslog worked great.
+//********************************************************************
+//lint -esym(714, syslog)
+//lint -esym(759, syslog)
+//lint -esym(765, syslog)
+int syslog(const char *fmt, ...)
+{
+   char consoleBuffer[3000] ;
+   va_list al; //lint !e522
+
+//lint -esym(526, __builtin_va_start)
+//lint -esym(628, __builtin_va_start)
+   va_start(al, fmt);   //lint !e1055 !e530
+   vsprintf(consoleBuffer, fmt, al);   //lint !e64
+   // if (common_logging_enabled)
+   //    fprintf(cmlogfd, "%s", consoleBuffer) ;
+   OutputDebugStringA(consoleBuffer) ;
+   va_end(al);
+   return 1;
+}
+
 

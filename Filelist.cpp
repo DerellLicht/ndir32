@@ -92,6 +92,8 @@ static void lfn_get_columns(void)
    }
 
    wincols = get_window_cols() ;
+   //  this is necessary because if redirection is in place,
+   //  'console width' may not be valid`
    if (is_redirected()) {
       wincols = 80 ;
    }
