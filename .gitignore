@@ -2,5 +2,6 @@
 _lint.tmp
 *.o
 ndir32.exe
+ndir64.exe
 *.mp4
 *.zip

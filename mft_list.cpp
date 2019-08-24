@@ -23,14 +23,18 @@
 //
 // return code type
 //
+#ifndef USE_64BIT
 typedef UINT NTSTATUS;
+#endif
 
 //
 // Error codes returned by NtFsControlFile (see NTSTATUS.H)
 //
 #define STATUS_SUCCESS                   ((NTSTATUS)0x00000000L)
 #define STATUS_BUFFER_OVERFLOW           ((NTSTATUS)0x80000005L)
+#ifndef USE_64BIT
 #define STATUS_INVALID_PARAMETER         ((NTSTATUS)0xC000000DL)
+#endif
 #define STATUS_BUFFER_TOO_SMALL          ((NTSTATUS)0xC0000023L)
 #define STATUS_ALREADY_COMMITTED         ((NTSTATUS)0xC0000021L)
 #define STATUS_INVALID_DEVICE_REQUEST    ((NTSTATUS)0xC0000010L)
@@ -77,6 +81,7 @@ static NTSTATUS (__stdcall *NtFsControlFile)(
 //
 // NTFS volume information
 //
+#ifndef USE_64BIT
 typedef struct {
 	LARGE_INTEGER    	SerialNumber;
 	LARGE_INTEGER    	NumberOfSectors;
@@ -87,12 +92,13 @@ typedef struct {
 	ULONG    			BytesPerCluster;
 	ULONG    			BytesPerMFTRecord;
 	ULONG    			ClustersPerMFTRecord;
-	LARGE_INTEGER    	MFTLength;
+   LARGE_INTEGER     MftValidDataLength;
 	LARGE_INTEGER    	MFTStart;
 	LARGE_INTEGER    	MFTMirrorStart;
-	LARGE_INTEGER    	MFTZoneStart;
-	LARGE_INTEGER    	MFTZoneEnd;
+   LARGE_INTEGER     MftZoneStart;
+   LARGE_INTEGER     MftZoneEnd;
 } NTFS_VOLUME_DATA_BUFFER, *PNTFS_VOLUME_DATA_BUFFER;
+#endif
 
 //--------------------------------------------------------------------
 //                      F U N C T I O N S
@@ -191,6 +197,8 @@ static BOOLEAN LocateNTDLLCalls()
 //  determine how much of the total disk free space was actually
 //  mft unused space.  Unfortunately, that information doesn't 
 //  appear to actually be available on Win XP.
+//  
+//  Later note:  Also, on NTFS file system, MFT is not even defined!
 //--------------------------------------------------------------------
 ULONGLONG get_nt_free_space(char dltr)
 {
@@ -211,9 +219,9 @@ ULONGLONG get_nt_free_space(char dltr)
 
    fb = volumeInfo.FreeClusters.QuadPart * volumeInfo.BytesPerCluster ; // free bytes
 
-   mb = volumeInfo.MFTLength.QuadPart * volumeInfo.BytesPerCluster ; //  mft bytes
+   mb = volumeInfo.MftValidDataLength.QuadPart * volumeInfo.BytesPerCluster ; //  mft bytes
 
-   mub = (volumeInfo.MFTZoneEnd.QuadPart - volumeInfo.MFTZoneStart.QuadPart) * volumeInfo.BytesPerCluster ;
+   mub = (volumeInfo.MftZoneEnd.QuadPart - volumeInfo.MftZoneStart.QuadPart) * volumeInfo.BytesPerCluster ;
    if (mub > mb)
       return 0;
 

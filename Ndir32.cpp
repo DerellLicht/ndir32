@@ -517,7 +517,7 @@ void set_lines(int crt_lines)
    //  if used with "don't clear screen" in a large window.
    //  Neither method is exactly correct in all cases,
    //  but will probably suffice most times...
-   SMALL_RECT newwin = { 0, 0, 79, crt_lines-1 } ;
+   SMALL_RECT newwin = { 0, 0, 79, (SHORT) (crt_lines-1) } ;
    SetConsoleWindowInfo(hStdOut, TRUE, &newwin) ;
    }
 

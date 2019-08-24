@@ -4,9 +4,15 @@
 #include <initguid.h>   // Guid definition
 // #include <devguid.h>    // Device guids
 // #include <setupapi.h>   // for SetupDiXxx functions.
+#ifdef USE_64BIT
+#include <cfgmgr32.h>   // for SetupDiXxx functions.
+#include <ntdddisk.h>
+#include <ntddscsi.h>
+#else
 #include <ddk/cfgmgr32.h>   // for SetupDiXxx functions.
 #include <ddk/ntdddisk.h>
 #include <ddk/ntddscsi.h>
+#endif
 
 #include "scsi_defs.h"
 

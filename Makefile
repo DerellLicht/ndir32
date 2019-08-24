@@ -1,5 +1,13 @@
 SHELL=cmd.exe
 USE_DEBUG = NO
+USE_64BIT = NO
+
+ifeq ($(USE_64BIT),YES)
+TOOLS=c:\tdm64\bin
+else
+TOOLS=c:\mingw\bin
+endif
+
 LIBS=-lmpr -lshlwapi
 
 ifeq ($(USE_DEBUG),YES)
@@ -11,6 +19,9 @@ LFLAGS = -s -O3
 endif
 CFLAGS += -Weffc++
 CFLAGS += -Wno-write-strings
+ifeq ($(USE_64BIT),YES)
+CFLAGS += -DUSE_64BIT
+endif
 #***************************************************************
 #  gcc options
 #  Without c99:   (but %llu doesn't work)
@@ -46,7 +57,7 @@ OBJS = $(CSRC:.c=.o) $(CPPSRC:.cpp=.o)
 
 #*************************************************************************
 %.o: %.cpp
-	g++ $(CFLAGS) $<
+	$(TOOLS)\g++ $(CFLAGS) $<
 
 all: ndir32.exe
 
@@ -68,8 +79,10 @@ depend:
 	makedepend $(CSRC) $(CPPSRC)
 
 ndir32.exe: $(OBJS)
-	g++ $(OBJS) $(LFLAGS) -o ndir32.exe $(LIBS) 
+	$(TOOLS)\g++ $(OBJS) $(LFLAGS) -o ndir32.exe $(LIBS) 
+ifeq ($(USE_64BIT),NO)
 	upx -9 ndir32.exe
+endif
 
 # DO NOT DELETE
 

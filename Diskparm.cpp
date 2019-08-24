@@ -158,6 +158,7 @@ int get_disk_info(char *dstr)
       //  On WinNT systems, however, the latter will include
       //  so-called "free space" in the MFT (Master File Table),
       //  which is *never* available for normal use.
+      //  Later note:  Also, on NTFS file system, MFT is not even defined!
       diskfree = get_nt_free_space(dpath[0]) ;
       if (diskfree == 0) {
          diskfree = frees1 ;
