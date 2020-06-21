@@ -5,3 +5,14 @@ ndir32.exe
 ndir64.exe
 *.mp4
 *.zip
+*.wav
+*.mp3
+MP3 Frame header.htm
+b17.parse.txt
+ba_exit.parse.txt
+bouncing drum.hex
+cbrew.parse.txt
+framed.txt
+mp3parse.exe
+summaries.parse.txt
+

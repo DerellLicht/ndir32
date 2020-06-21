@@ -230,21 +230,28 @@ static int parse_mp3_frame(u8 *rbfr, unsigned offset)
    //    csum_count++ ;
    int bridx = mp.h.bitrate_index ;
    if (bridx == 0  ||  bridx == 15  ||  mtemp->mpeg_version == 0  ||  mtemp->mpeg_layer == 0) {
+#ifdef DO_CONSOLE
       printf("bad header (offset 0x%08X) [%08X]: avidx=%d, mlidx=%d, bridx=%d\n", 
          offset, mp.raw, 
          mp.h.mpeg_audio_version_id, mtemp->mpeg_layer, bridx) ;
+#endif
       // mtemp->status = EINVAL ;
       delete mtemp ;
-      return -EINVAL;
+      // return -EINVAL;
+      return 0;
    }
    mtemp->mpeg_version-- ;
-   mtemp->mpeg_layer-- ;   // convert to base 0
+   mtemp->mpeg_layer-- ;   // convert to base 0, as index
    int brtbl_idx ;
    if (mtemp->mpeg_version == 0) {
       brtbl_idx = mtemp->mpeg_layer ; //  0, 1, 2
    } else { //  avidx == 1
       brtbl_idx = (mtemp->mpeg_layer == 0) ? 3 : 4 ;
    }
+#ifdef DO_CONSOLE
+   printf("mpV=%u, mpL=%u, btidx=%u, bridx=%u\n",
+      mtemp->mpeg_version, mtemp->mpeg_layer, brtbl_idx, bridx);
+#endif
    mtemp->bitrate = brtable[brtbl_idx][bridx] ;
    mtemp->sample_rate = samprate_table[mtemp->mpeg_version][mp.h.sample_freq] ;
    mtemp->padding_bit = (unsigned) mp.h.padding ;        //lint !e571 Suspicious cast
@@ -262,44 +269,54 @@ static int parse_mp3_frame(u8 *rbfr, unsigned offset)
       // For Layer II & III files use this formula: 
       //     FrameLengthInBytes = 144 * BitRate / SampleRate + Padding 
       else {
-         mtemp->frame_length_in_bytes =
-            (144 * (mtemp->bitrate * 1000) / mtemp->sample_rate) + mtemp->padding_bit;
-         //  For mpeg V2.5 (mtemp->mpeg_version == 2),
-         //  this length is off by 1 (sometimes)
-         //  Actually, for V2 files this is also sometimes the case.
-         //  for b17.mp3, this increment worked for 24 frames, then failed...
-         // if (mtemp->mpeg_version == 2) 
+         u8 *next_frame ;
+         u8 b1, b2 ;
          {
+            //  well, unfortunately, for 'bouncing drum.mp3', 
+            //  this computation is completely incorrect !!
+            //  This calculates 418 bytes, actual is 208 bytes.
+            //  However, all of the equation components appear to be correct...
+            mtemp->frame_length_in_bytes =
+               (144 * (mtemp->bitrate * 1000) / mtemp->sample_rate) + mtemp->padding_bit;
+            //  For mpeg V2.5 (mtemp->mpeg_version == 2),
+            //  this length is off by 1 (sometimes)
+            //  Actually, for V2 files this is also sometimes the case.
+            //  for b17.mp3, this increment worked for 24 frames, then failed...
+            // if (mtemp->mpeg_version == 2) 
             u32 bump_len = 0 ;
-            u8 *next_frame = rbfr + mtemp->frame_length_in_bytes ;
-            u8 b1 = *next_frame++ ;
-            u8 b2 = *next_frame ;
+try_again:
+            next_frame = rbfr + mtemp->frame_length_in_bytes ;
+            b1 = *next_frame++ ;
+            b2 = *next_frame ;
             //  This worked for V2.5 files, but not with V2.0,
             //  so cbrew.mp3 (for example) still failed
             if (mtemp->mpeg_version == 2) 
             {
-               if (b1 != 0xFF  ||  (b2 & 0xF0) != 0xE0) {
+               if (b1 != 0xFF  ||  (b2 & 0xF0) != 0xE0  ||  b2 == 0xFF) {
                   mtemp->frame_length_in_bytes ++ ;
-                  bump_len = 1 ;
+                  bump_len++;
+                  goto try_again;
                }
             }
             // if (mtemp->mpeg_version == 1) 
             else {
-               if (b1 != 0xFF  ||  (b2 & 0xF3) != 0xF3) {
+               if (b1 != 0xFF  ||  (b2 & 0xF3) != 0xF3  ||  b2 == 0xFF) {
                   mtemp->frame_length_in_bytes ++ ;
-                  bump_len = 1 ;
+                  bump_len++;
+                  goto try_again;
                }
             }
 #ifdef DO_CONSOLE
+            printf("bitrate=%u, sample_rate=%u, pad=%u, bytes=%u\n", 
+               mtemp->bitrate, mtemp->sample_rate, mtemp->padding_bit,
+               mtemp->frame_length_in_bytes);
+               
             next_frame = rbfr + mtemp->frame_length_in_bytes ;
             printf("parse_frame: next [%u]: [%02X] %02X %02X %02X %02X\n", bump_len, b1,
                (u8) *next_frame, (u8) *(next_frame+1), (u8) *(next_frame+2), 
                (u8) *(next_frame+3));
 #endif
          }         
-         // if (mtemp->mpeg_version == 2  &&  mtemp->padding_bit == 0) {
-         //    mtemp->frame_length_in_bytes ++ ;
-         // }
       }
 #ifdef DO_CONSOLE
       printf("%u: bitrate [table %d] = %u Kbps, sample rate=%u Hz, frame len=%u, pad=%u\n", 
