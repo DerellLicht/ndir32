@@ -272,17 +272,23 @@ static int parse_mp3_frame(u8 *rbfr, unsigned offset)
          u8 *next_frame ;
          u8 b1, b2 ;
          {
-            //  well, unfortunately, for 'bouncing drum.mp3', 
-            //  this computation is completely incorrect !!
-            //  This calculates 418 bytes, actual is 208 bytes.
-            //  However, all of the equation components appear to be correct...
+            //  Updated notes...
+            //  For various reasons, most of which I do not understand,
+            //  a small number of mp3 files do *not* calculate a correct
+            //  byte length via this formula; this is especially seen
+            //  on small audio files.
+            //  First issue is that computations may be short by one byte;
+            //  this is the issue that is addressed by the hacked code below.
+            //  Second issue is that for some files, this computation gives
+            //  a length which is 2 or 3 times the actual bytes to next header.
+            //  This seems to be more common with ID3 files,
+            //  and is also seen mostly in small files.
             mtemp->frame_length_in_bytes =
                (144 * (mtemp->bitrate * 1000) / mtemp->sample_rate) + mtemp->padding_bit;
             //  For mpeg V2.5 (mtemp->mpeg_version == 2),
             //  this length is off by 1 (sometimes)
             //  Actually, for V2 files this is also sometimes the case.
             //  for b17.mp3, this increment worked for 24 frames, then failed...
-            // if (mtemp->mpeg_version == 2) 
 #ifdef DO_CONSOLE
             u32 bump_len = 0 ;
 #endif
