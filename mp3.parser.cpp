@@ -283,7 +283,9 @@ static int parse_mp3_frame(u8 *rbfr, unsigned offset)
             //  Actually, for V2 files this is also sometimes the case.
             //  for b17.mp3, this increment worked for 24 frames, then failed...
             // if (mtemp->mpeg_version == 2) 
+#ifdef DO_CONSOLE
             u32 bump_len = 0 ;
+#endif
 try_again:
             next_frame = rbfr + mtemp->frame_length_in_bytes ;
             b1 = *next_frame++ ;
@@ -294,7 +296,9 @@ try_again:
             {
                if (b1 != 0xFF  ||  (b2 & 0xF0) != 0xE0  ||  b2 == 0xFF) {
                   mtemp->frame_length_in_bytes ++ ;
+#ifdef DO_CONSOLE
                   bump_len++;
+#endif
                   goto try_again;
                }
             }
@@ -302,7 +306,9 @@ try_again:
             else {
                if (b1 != 0xFF  ||  (b2 & 0xF3) != 0xF3  ||  b2 == 0xFF) {
                   mtemp->frame_length_in_bytes ++ ;
+#ifdef DO_CONSOLE
                   bump_len++;
+#endif
                   goto try_again;
                }
             }
