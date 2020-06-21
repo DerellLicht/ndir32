@@ -80,8 +80,10 @@ depend:
 
 ndir32.exe: $(OBJS)
 	$(TOOLS)\g++ $(OBJS) $(LFLAGS) -o ndir32.exe $(LIBS) 
+ifeq ($(USE_DEBUG),NO)
 ifeq ($(USE_64BIT),NO)
 	upx -9 ndir32.exe
+endif
 endif
 
 # DO NOT DELETE
