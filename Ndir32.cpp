@@ -20,13 +20,13 @@
 #include "ndir32.h"
 #include "conio32.hpp"
 
-#define  VER_NUMBER "2.47"
+#define  VER_NUMBER "2.48"
 
 char *Version = " NDIR.EXE, Version " VER_NUMBER " " ;
 char *ShortVersion = " NDIR " VER_NUMBER " " ;
 
 //  per Jason Hood, this turns off MinGW's command-line expansion, 
-//  so we can handle wildcards like we want to.
+//  so we can handle wildcards like we want to.                    
 //lint -e765  external '_CRT_glob' (line 134, file Ndir32.cpp) could be made static
 //lint -e714  Symbol '_CRT_glob' (line 134, file Ndir32.cpp) not referenced
 int _CRT_glob = 0 ;
