@@ -1,5 +1,5 @@
 //***************************************************************************************
-//  Copyright (c) 1998-2006 Daniel D. Miller                       
+//  Copyright (c) 1998-2020 Daniel D. Miller                       
 //  mp3.parser.cpp - mp3 file parser
 //***************************************************************************************
 // From The File Extension Source. 
@@ -17,6 +17,8 @@
 // pre-pended and 10 bytes from the end of a file when it is post-pended.
 //***************************************************************************************
 // from: http://www.dv.co.yu/mpgscript/mpeghdr.htm
+// Note: as of June 2020, the preceding site non-existent.
+// replacement site is: http://mpgedit.org/mpgedit/mpeg_format/mpeghdr.htm
 //  
 // How to calculate frame length 
 // 
@@ -82,17 +84,17 @@ static u8 rd_bfr[RD_BFR_SZ] ;
 // 0000 0010 00 00 00 00 00 49 6e 66  6f 00 00 00 0f 00 00 01 
 
 typedef struct mp3_frame_header_s {
-   unsigned emphasis : 2 ;
-   unsigned original_media : 1 ;
-   unsigned copyrighted : 1 ;
-   unsigned mode_ext : 2 ; //  Joint stereo only
-   unsigned channel_mode : 2 ;
-   unsigned private_info : 1 ;
-   unsigned padding : 1 ;
-   unsigned sample_freq : 2 ;
-   unsigned bitrate_index : 4 ;
-   unsigned crc_protection : 1 ;
-   unsigned layer_desc : 2 ;
+   unsigned emphasis : 2 ;                                                 // 0,1
+   unsigned original_media : 1 ;                                           // 2
+   unsigned copyrighted : 1 ;                                              // 3
+   unsigned mode_ext : 2 ; //  Joint stereo only                           // 4,5
+   unsigned channel_mode : 2 ;                                             // 6,7
+   unsigned private_info : 1 ;                                             // 
+   unsigned padding : 1 ;                                                  // 
+   unsigned sample_freq : 2 ;                                              // 
+   unsigned bitrate_index : 4 ;                                            // 
+   unsigned crc_protection : 1 ;                                           // 
+   unsigned layer_desc : 2 ;                                               // 
    //  DDM note: Per ISO-IEC-11172-3, these first two fields are different,
    //  as shown in these comments.  Coments from MP3 Tech site:
    //  Note: MPEG Version 2.5 was added lately to the MPEG 2 standard. 
@@ -195,9 +197,6 @@ static int parse_mp3_frame(u8 *rbfr, unsigned offset)
    printf("parse_frame: rbuf: %02X %02X %02X %02X\n", 
       (u8) *rbfr, (u8) *(rbfr+1), (u8) *(rbfr+2), (u8) *(rbfr+3));
 #endif
-   if (*rbfr != 0xFF) {
-      rbfr++ ;
-   }
    mp.raw = get_mp3_header(rbfr) ;
    if (mp.h.frame_sync != REF_FRAME_SYNC) {
 #ifdef DO_CONSOLE
@@ -220,12 +219,6 @@ static int parse_mp3_frame(u8 *rbfr, unsigned offset)
    // int avidx = audio_ver_idx[mp.h.mpeg_audio_version_id] ;
    mtemp->mpeg_version = audio_ver_idx2[mp.h.mpeg_audio_version_id] ;
    mtemp->mpeg_layer = mpeg_layer_idx[mp.h.layer_desc] ;
-#ifdef DO_CONSOLE
-   printf("0x%08X [%u,%u]: mpeg version/layer=%u/%u\n", 
-      mp.raw, 
-      mp.h.mpeg_audio_version_id,mp.h.layer_desc,
-      mtemp->mpeg_version, mtemp->mpeg_layer) ;
-#endif
    // if (mp.h.crc_protection)
    //    csum_count++ ;
    int bridx = mp.h.bitrate_index ;
@@ -235,7 +228,6 @@ static int parse_mp3_frame(u8 *rbfr, unsigned offset)
          offset, mp.raw, 
          mp.h.mpeg_audio_version_id, mtemp->mpeg_layer, bridx) ;
 #endif
-      // mtemp->status = EINVAL ;
       delete mtemp ;
       // return -EINVAL;
       return 0;
@@ -256,6 +248,8 @@ static int parse_mp3_frame(u8 *rbfr, unsigned offset)
    mtemp->sample_rate = samprate_table[mtemp->mpeg_version][mp.h.sample_freq] ;
    mtemp->padding_bit = (unsigned) mp.h.padding ;        //lint !e571 Suspicious cast
    mtemp->csum_bit    = (unsigned) mp.h.crc_protection ; //lint !e571 Suspicious cast
+   mtemp->channel_mode = (unsigned) mp.h.channel_mode ;
+   mtemp->mode_ext     = (unsigned) mp.h.mode_ext     ;
 
    //  Frame length in bytes
    if (mtemp->sample_rate != 0  &&  mtemp->bitrate != 0) {
@@ -289,42 +283,46 @@ static int parse_mp3_frame(u8 *rbfr, unsigned offset)
             //  this length is off by 1 (sometimes)
             //  Actually, for V2 files this is also sometimes the case.
             //  for b17.mp3, this increment worked for 24 frames, then failed...
-#ifdef DO_CONSOLE
-            u32 bump_len = 0 ;
-#endif
-try_again:
-            next_frame = rbfr + mtemp->frame_length_in_bytes ;
-            b1 = *next_frame++ ;
-            b2 = *next_frame ;
-            //  This worked for V2.5 files, but not with V2.0,
-            //  so cbrew.mp3 (for example) still failed
-            if (mtemp->mpeg_version == 2) 
-            {
-               if (b1 != 0xFF  ||  (b2 & 0xF0) != 0xE0  ||  b2 == 0xFF) {
-                  mtemp->frame_length_in_bytes ++ ;
-#ifdef DO_CONSOLE
-                  bump_len++;
-#endif
-                  goto try_again;
+            u32 advance = 0 ;
+            u32 retries ;
+#define  MAX_RETRIES    5
+            for (retries=0; retries < MAX_RETRIES; retries++) {
+               next_frame = rbfr + mtemp->frame_length_in_bytes + advance;
+               b1 = *next_frame++ ;
+               b2 = *next_frame ;
+               //  This worked for V2.5 files, but not with V2.0,
+               //  so cbrew.mp3 (for example) still failed
+               if (mtemp->mpeg_version == 2) 
+               {
+                  if (b1 != 0xFF  ||  (b2 & 0xF0) != 0xE0  ||  b2 == 0xFF) {
+                     advance++ ;
+                  }
+                  else {
+                     break;
+                  }
+               }
+               // if (mtemp->mpeg_version == 1) 
+               else {
+                  if (b1 != 0xFF  ||  (b2 & 0xF3) != 0xF3  ||  b2 == 0xFF) {
+                        advance++ ;
+                  }
+                  else {
+                     break;
+                  }
                }
             }
-            // if (mtemp->mpeg_version == 1) 
-            else {
-               if (b1 != 0xFF  ||  (b2 & 0xF3) != 0xF3  ||  b2 == 0xFF) {
-                  mtemp->frame_length_in_bytes ++ ;
-#ifdef DO_CONSOLE
-                  bump_len++;
-#endif
-                  goto try_again;
-               }
+            //  if we did *not* find the desired pattern by advancing,
+            //  leave frame length at original value
+            if (retries < MAX_RETRIES) {
+               mtemp->frame_length_in_bytes += advance ;
             }
 #ifdef DO_CONSOLE
-            printf("bitrate=%u, sample_rate=%u, pad=%u, bytes=%u\n", 
+            printf("bitrate: %u, sample_rate: %u, pad: %u, bytes: %u, retries: %u\n", 
                mtemp->bitrate, mtemp->sample_rate, mtemp->padding_bit,
-               mtemp->frame_length_in_bytes);
+               mtemp->frame_length_in_bytes, retries);
                
             next_frame = rbfr + mtemp->frame_length_in_bytes ;
-            printf("parse_frame: next [%u]: [%02X] %02X %02X %02X %02X\n", bump_len, b1,
+            printf("parse_frame: next [%u]: [%02X] %02X %02X %02X %02X\n", retries, b1,
                (u8) *next_frame, (u8) *(next_frame+1), (u8) *(next_frame+2), 
                (u8) *(next_frame+3));
 #endif
@@ -406,13 +404,12 @@ static int find_mp3_signature(u8 *rbfr, unsigned rlen, int id3_offset)
          }
       }
    } else {
-      for (mp3_offset = 0; mp3_offset < rlen; mp3_offset++) {
-         if (*(rbfr+mp3_offset) == 0xFF) {
-            mp.raw = get_mp3_header(rbfr+mp3_offset) ;
-            if (!is_mp3_header_valid(mp.raw))
-               continue;
+      u8 *tl = rbfr + id3_offset;
+      for (mp3_offset = id3_offset; mp3_offset < rlen; mp3_offset++) {
+         if (*(tl) == 0xFF  &&  (*(tl+1) & 0xE0) == 0xE0) {
             return mp3_offset;
          }
+         tl++ ;
       }
    }
    return -1;
@@ -479,25 +476,11 @@ static int read_mp3_file(char *fname)
          int id3size = -1 ;
          //  if there's an id3 header present, we need to 
          //  skip past it before looking for mp3 headers.
-         if (rd_bfr[0] == 'I'  &&  
-             rd_bfr[1] == 'D'  &&  
-             rd_bfr[2] == '3') {
+         if (rd_bfr[0] == 'I'  &&  rd_bfr[1] == 'D'  &&  rd_bfr[2] == '3') {
             id3size = get_id3_size(&rd_bfr[6]) ;
-            seek_byte = id3size ;
 #ifdef DO_CONSOLE
             printf("id3 tag size=%u/0x%X bytes\n", id3size, id3size) ;
 #endif
-            lseek(hdl, seek_byte, SEEK_SET) ;
-            rdbytes = read(hdl, rd_bfr, RD_BFR_SZ) ;
-            if (rdbytes <= 0) {
-               // printf("rdbytes=%d\n", rdbytes) ;
-               //  rdbytes == 0  indicates EOF
-               if (rdbytes < 0) {
-                  printf("re-seek: offset %u: %s\n", seek_byte, strerror(errno)) ;
-                  result = -(int)errno;
-               }
-               break;
-            }
          }
          //  scan current buffer for mp3 data signature
          mp3_offset = find_mp3_signature(rd_bfr, rdbytes, id3size) ;
@@ -508,8 +491,9 @@ static int read_mp3_file(char *fname)
             break;
          }
 #ifdef DO_CONSOLE
-         printf("first frame at offset %u\n", mp3_offset) ;
+         printf("first frame at offset 0x%X\n", mp3_offset) ;
 #endif
+
       } 
       //  otherwise, read should already be at correct offset
       else {
@@ -526,6 +510,10 @@ static int read_mp3_file(char *fname)
       // prev_seek = seek_byte ;
       if (first_pass) {
          seek_byte += (unsigned) mp3_offset ;
+#ifdef DO_CONSOLE
+         printf("seek_byte: 0x%X, offset: 0x%X\n", seek_byte, mp3_offset) ;
+#endif
+         //  copy desired reference values
       }
       seek_byte += (unsigned) result ;
       lseek(hdl, seek_byte, SEEK_SET) ;
@@ -588,9 +576,11 @@ int main(int argc, char **argv)
       mtemp = frame_list; 
    // unsigned mpeg_version ; //  1=1, 2=2, 3=2.5
    // unsigned mpeg_layer ;
-      printf("mpegV%s, layer %s\n", 
+      printf("mpegV%s, layer %s, chnl_mode: %u, mode_ext: %u\n", 
          verid_str[mtemp->mpeg_version],
-         layer_str[mtemp->mpeg_layer]) ;
+         layer_str[mtemp->mpeg_layer],
+         mtemp->channel_mode,
+         mtemp->mode_ext);
       if (vbr) {
          printf("bitrate=variable\n") ;
       } else {

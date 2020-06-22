@@ -7,10 +7,10 @@ ndir64.exe
 *.zip
 *.wav
 *.mp3
+*.hex
 MP3 Frame header.htm
 b17.parse.txt
 ba_exit.parse.txt
-bouncing drum.hex
 cbrew.parse.txt
 framed.txt
 mp3parse.exe
