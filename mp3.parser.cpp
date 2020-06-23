@@ -62,7 +62,20 @@
 #include <unistd.h>  //  read()
 #include <windows.h>
 
+#ifdef DO_CONSOLE
+
+#define  LOOP_FOREVER   true
+
+//*********************************************************************
+typedef union ul2uc_u {
+   unsigned       ul ;
+   unsigned short us[2] ;
+   unsigned char  uc[4] ;
+} ul2uc_t;
+
+#else
 #include "ndir32.h"
+#endif
 
 typedef unsigned char  u8 ;
 typedef unsigned int   u32 ;
@@ -451,26 +464,24 @@ static void clear_existing_list(void)
 static int read_mp3_file(char *fname)
 {
    //  open file and start reading
-//       int open(const char *pathname, int flags);
    int hdl = open(fname, O_BINARY | O_RDONLY) ;
    if (hdl < 0) {
       perror(fname) ;
       return -(int)errno;
    }
-   // unsigned total_bytes = 0 ;
    int result = 0 ;
-   int mp3_offset ;
-   // unsigned prev_seek = 0 ;
-   unsigned seek_byte = 0 ;
+   int mp3_offset ;           //  file offset to current frame (negative on error)
+   unsigned seek_byte = 0 ;   //  file offset to next frame
    unsigned first_pass = 1 ;
-   // unsigned passct = 0 ;
-   while (1) {
+   
+   //********************************************************************
+   //  each pass through this loop, processes the current frame,
+   //  and then seeks to the next frame.
+   //********************************************************************
+   while (LOOP_FOREVER) {
 #ifdef DO_CONSOLE
       puts("");
 #endif
-      // printf("pass %u: seek_byte=%X, prev_seek=%X, diff=%u\n", 
-      //    passct++, seek_byte, prev_seek, seek_byte-prev_seek) ;
-      // ssize_t read(int fd, void *buf, size_t count);
       int rdbytes = read(hdl, rd_bfr, RD_BFR_SZ) ;
       if (rdbytes <= 0) {
          // printf("rdbytes=%d\n", rdbytes) ;
@@ -481,6 +492,9 @@ static int read_mp3_file(char *fname)
          }
          break;
       }
+      //********************************************************************
+      //  on first pass, skip ID3 block if present
+      //********************************************************************
       if (first_pass) {
          int id3size = -1 ;
          //  if there's an id3 header present, we need to 
@@ -502,28 +516,33 @@ static int read_mp3_file(char *fname)
 #ifdef DO_CONSOLE
          printf("first frame at offset 0x%X\n", mp3_offset) ;
 #endif
-
-      } 
+      }  //  if first_pass 
       //  otherwise, read should already be at correct offset
       else {
          mp3_offset = 0 ;
       }
+      
+      //********************************************************************
       //  if you find an invalid frame, you probably found end-of-data.
       //  some files have ID data at end of file vs beginning.
+      //********************************************************************
       result = parse_mp3_frame(rd_bfr+mp3_offset, seek_byte) ;
       if (result <= 0) {
-         if (result < 0) 
+         if (result < 0) {
             printf("parse_frame: %s\n", strerror(-result)) ;
+         } 
          break;
       }
-      // prev_seek = seek_byte ;
+      //  on first pass, optionally skip past ID3 block
       if (first_pass) {
          seek_byte += (unsigned) mp3_offset ;
       }
+      
+      //  seek to next frame in file
       seek_byte += (unsigned) result ;
       lseek(hdl, seek_byte, SEEK_SET) ;
       first_pass = 0 ;
-   }
+   }  //  end of reads from mp3 file
    close(hdl) ;
    return result ;
 }
