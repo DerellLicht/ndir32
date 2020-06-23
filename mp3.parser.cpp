@@ -605,10 +605,8 @@ int get_mp3_info(char *fname, char *mlstr)
 
    mp3_frame_p mtemp = frame_list; 
    unsigned bitrate  = mtemp->bitrate ;
-   // unsigned samprate = mtemp->sample_rate ;
    unsigned vbr = 0 ;   //  if bitrate changes, set this to TRUE
 
-   // unsigned frame_count = 0 ;
    double play_secs = 0.0 ;
    for (mtemp = frame_list; mtemp != 0; mtemp = mtemp->next) {
       // frame_count++ ;
@@ -616,29 +614,26 @@ int get_mp3_info(char *fname, char *mlstr)
       if (mtemp->bitrate != bitrate) 
          vbr = 1 ;
    }
-   // char *layer_str[3] = { "I", "II", "III" } ;
-   // char *verid_str[3] = { "1", "2", "2.5" } ;
-   // printf("found %u frames\n", frame_count) ;
-   // mtemp = frame_list; 
-   // printf("mpegV%s, layer %s\n", 
-   //    verid_str[mtemp->mpeg_version],
-   //    layer_str[mtemp->mpeg_layer]) ;
-   // if (vbr) {
-   //    printf("bitrate=variable\n") ;
-   // } else {
-   //    printf("bitrate=%uKbps\n", bitrate) ;
-   // }
-   // printf("sample rate=%u Hz\n", samprate) ;
 
-   total_ptime += play_secs ;
+   total_ptime += play_secs ; //  total play time of *all* measured files
    unsigned uplay_secs = (unsigned) play_secs ;
    unsigned uplay_mins = uplay_secs / 60 ;
    uplay_secs = uplay_secs % 60 ;
-   // sprintf(mlstr, "%5u hz, %5.2f seconds     ", srate, ptime) ;
+   double dplay_secs = play_secs - (double) (uplay_mins * 60.0) ;
    if (vbr) {
-      sprintf(mlstr, "var Kbps, %3u:%02u minutes    ", uplay_mins, uplay_secs) ;
+      if (uplay_mins == 0) {
+         sprintf(mlstr, "var Kbps, %6.2f seconds   ", dplay_secs) ;
+      }
+      else {
+         sprintf(mlstr, "var Kbps, %3u:%02u minutes [%5.2f sec]   ", uplay_mins, uplay_secs, dplay_secs) ;
+      }
    } else {
-      sprintf(mlstr, "%3u Kbps, %3u:%02u minutes    ", bitrate, uplay_mins, uplay_secs) ;
+      if (uplay_mins == 0) {
+         sprintf(mlstr, "%3u Kbps, %6.2f seconds    ", bitrate, dplay_secs) ;
+      } 
+      else {
+         sprintf(mlstr, "%3u Kbps, %3u:%02u minutes [%5.2f sec]   ", bitrate, uplay_mins, uplay_secs, dplay_secs) ;
+      }
    }
    return 0;
 }
