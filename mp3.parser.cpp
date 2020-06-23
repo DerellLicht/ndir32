@@ -274,7 +274,8 @@ static int parse_mp3_frame(u8 *rbfr, unsigned offset)
          {
             mtemp->frame_length_in_bytes =
                (144 * (mtemp->bitrate * 1000) / mtemp->sample_rate) + mtemp->padding_bit;
-               
+
+            //*********************************************************************************               
             //  Issues in computing offset to next frame
             //  
             //  For various reasons, most of which I do not understand, a small number of 
@@ -286,11 +287,12 @@ static int parse_mp3_frame(u8 *rbfr, unsigned offset)
             //  this is the issue that is addressed by the hacked code below.
             //  NDIR hacks this be searching ahead by a few bytes, to find the
             //  11-bits-of-1s mask
-            //  This was first seem in MPEG V2.5, but have been seen in V2 as well.
+            //  This was first seen in MPEG V2.5, but has been seen in V2 as well.
             //  
             //  2. length is multiple of actual offset to next frame
             //  Second issue is that for some files, this computation gives
             //  a length which is 2 or 3 times the actual bytes to next header.
+            //*********************************************************************************               
             u32 advance = 0 ;
             u32 retries ;
 #define  MAX_RETRIES    5
@@ -325,11 +327,10 @@ static int parse_mp3_frame(u8 *rbfr, unsigned offset)
                mtemp->frame_length_in_bytes += advance ;
             }
 #ifdef DO_CONSOLE
+            next_frame = rbfr + mtemp->frame_length_in_bytes ;
             printf("bitrate: %u, sample_rate: %u, pad: %u, bytes: %u, retries: %u\n", 
                mtemp->bitrate, mtemp->sample_rate, mtemp->padding_bit,
                mtemp->frame_length_in_bytes, retries);
-               
-            next_frame = rbfr + mtemp->frame_length_in_bytes ;
             printf("parse_frame: next [%u]: [%02X] %02X %02X %02X %02X\n", retries, b1,
                (u8) *next_frame, (u8) *(next_frame+1), (u8) *(next_frame+2), 
                (u8) *(next_frame+3));
