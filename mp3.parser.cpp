@@ -191,6 +191,7 @@ static const u32 m_dwCoefficients[2][3] =
       72    // Layer3
    }  
 };
+
 //***************************************************************************************
 static unsigned get_id3_size(u8 *uptr)
 {
@@ -244,12 +245,6 @@ static int parse_mp3_frame(u8 *rbfr, unsigned offset)
    memset((char *) mtemp, 0, sizeof(mp3_frame_t)) ;
    mtemp->offset = offset ;
 
-   //  mp.h.datum contain the relevint info!!
-   // printf("raw header: 0x%08X\n", mp.raw) ;
-   // printf("mpeg version %s, layer %s\n", 
-   //    audio_ver[mp.h.mpeg_audio_version_id],
-   //    mpeg_layer[mp.h.layer_desc]) ;
-   // int avidx = audio_ver_idx[mp.h.mpeg_audio_version_id] ;
    mtemp->mpeg_version = audio_ver_idx2[mp.h.mpeg_audio_version_id] ;
    mtemp->mpeg_layer = mpeg_layer_idx[mp.h.layer_desc] ;
    // if (mp.h.crc_protection)
@@ -287,11 +282,11 @@ static int parse_mp3_frame(u8 *rbfr, unsigned offset)
 #endif
 
    //  Frame length in bytes
+   //  add tests to avoid divide-by-zero situations
    if (mtemp->sample_rate != 0  &&  mtemp->bitrate != 0) {
       u32 fl_mult ;
       // For Layer I files use this formula: 
       //     FrameLengthInBytes = (12 * BitRate / SampleRate + Padding) * 4 
-      //  add tests to avoid divide-by-zero situations
       if (mtemp->mpeg_layer == 0) {
          fl_mult = m_dwCoefficients[0][mtemp->mpeg_layer] ;
 #ifdef DO_CONSOLE
@@ -303,74 +298,19 @@ static int parse_mp3_frame(u8 *rbfr, unsigned offset)
       // For Layer II & III files use this formula: 
       //     FrameLengthInBytes = 144 * BitRate / SampleRate + Padding 
       else {
-         u8 *next_frame ;
-         u8 b1, b2 ;
          {
             u32 mpegv = (mtemp->mpeg_version == 0) ? 0 : 1 ;
             fl_mult = m_dwCoefficients[mpegv][mtemp->mpeg_layer] ;
-#ifdef DO_CONSOLE
-            printf("MPEG2+ layer %u, fl_mult: %u\n", mtemp->mpeg_layer+1, fl_mult);
-#endif
             mtemp->frame_length_in_bytes =
                (fl_mult * (mtemp->bitrate * 1000) / mtemp->sample_rate) + mtemp->padding_bit;
 
-            //*********************************************************************************               
-            //  Issues in computing offset to next frame
-            //  
-            //  For various reasons, most of which I do not understand, a small number of 
-            //  mp3 files do *not* calculate a correct byte length via this formula; 
-            //  these are especially seen on small audio files.
-            //  
-            //  1. length is off by 1 or 2 bytes
-            //  First issue is that computations may be short by one byte;
-            //  this is the issue that is addressed by the hacked code below.
-            //  NDIR hacks this be searching ahead by a few bytes, to find the
-            //  11-bits-of-1s mask
-            //  This was first seen in MPEG V2.5, but has been seen in V2 as well.
-            //  
-            //  2. length is multiple of actual offset to next frame
-            //  Second issue is that for some files, this computation gives
-            //  a length which is 2 or 3 times the actual bytes to next header.
-            //*********************************************************************************               
-            u32 advance = 0 ;
-            u32 retries ;
-#define  MAX_RETRIES    5
-            for (retries=0; retries < MAX_RETRIES; retries++) {
-               next_frame = rbfr + mtemp->frame_length_in_bytes + advance;
-               b1 = *next_frame++ ;
-               b2 = *next_frame ;
-               //  This worked for V2.5 files, but not with V2.0,
-               //  so cbrew.mp3 (for example) still failed
-               if (mtemp->mpeg_version == 2) 
-               {
-                  if (b1 != 0xFF  ||  (b2 & 0xF0) != 0xE0  ||  b2 == 0xFF) {
-                     advance++ ;
-                  }
-                  else {
-                     break;
-                  }
-               }
-               // if (mtemp->mpeg_version == 1) 
-               else {
-                  if (b1 != 0xFF  ||  (b2 & 0xF3) != 0xF3  ||  b2 == 0xFF) {
-                        advance++ ;
-                  }
-                  else {
-                     break;
-                  }
-               }
-            }
-            //  if we did *not* find the desired pattern by advancing,
-            //  leave frame length at original value
-            if (retries < MAX_RETRIES) {
-               mtemp->frame_length_in_bytes += advance ;
-            }
 #ifdef DO_CONSOLE
-            next_frame = rbfr + mtemp->frame_length_in_bytes ;
-            printf("bitrate: %u, sample_rate: %u, pad: %u, bytes: %u, retries: %u\n", 
+            printf("MPEG2+ layer %u, fl_mult: %u\n", mtemp->mpeg_layer+1, fl_mult);
+            u8 *next_frame = rbfr + mtemp->frame_length_in_bytes ;
+            printf("bitrate: %u, sample_rate: %u, pad: %u, bytes: %u\n", 
                mtemp->bitrate, mtemp->sample_rate, mtemp->padding_bit,
-               mtemp->frame_length_in_bytes, retries);
-            printf("parse_frame: next [%u]: [%02X] %02X %02X %02X %02X\n", retries, b1,
+               mtemp->frame_length_in_bytes);
+            printf("parse_frame: next: %02X %02X %02X %02X\n", 
                (u8) *next_frame, (u8) *(next_frame+1), (u8) *(next_frame+2), 
                (u8) *(next_frame+3));
 #endif
@@ -382,7 +322,6 @@ static int parse_mp3_frame(u8 *rbfr, unsigned offset)
          mtemp->bitrate, mtemp->sample_rate, mtemp->frame_length_in_bytes,
          mtemp->padding_bit) ;
 #endif
-
       mtemp->play_time = (double) (mtemp->frame_length_in_bytes * 8.0) / 
                          (double) (mtemp->bitrate * 1000.0) ;
    }
