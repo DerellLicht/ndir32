@@ -41,7 +41,7 @@
 // 
 // For Layer II & III files use this formula: 
 // 
-//     FrameLengthInBytes = 144 * BitRate / SampleRate + Padding 
+//     FrameLengthInBytes = ((144 * BitRate) / SampleRate) + Padding 
 // 
 // Example:
 // Layer III, BitRate=128000, SampleRate=441000, Padding=0
