@@ -44,7 +44,7 @@
 //     FrameLengthInBytes = ((144 * BitRate) / SampleRate) + Padding 
 // 
 // Example:
-// Layer III, BitRate=128000, SampleRate=441000, Padding=0
+// Layer III, BitRate=128000, SampleRate=44100, Padding=0
 //       ==>  FrameSize=417 bytes 
 //***************************************************************************************
 //  Another excellent analytical tool is Konrad Windszus's MpegAudioInfo :
