@@ -83,16 +83,19 @@ static u8 rd_bfr[RD_BFR_SZ] ;
 // 0000 0000 ff fb 50 c4 00 00 00 00  00 00 00 00 00 00 00 00 
 // 0000 0010 00 00 00 00 00 49 6e 66  6f 00 00 00 0f 00 00 01 
 
+// 00000:  FF F3 40 C4 
 typedef struct mp3_frame_header_s {
    unsigned emphasis : 2 ;                                                 // 0,1
    unsigned original_media : 1 ;                                           // 2
    unsigned copyrighted : 1 ;                                              // 3
    unsigned mode_ext : 2 ; //  Joint stereo only                           // 4,5
    unsigned channel_mode : 2 ;                                             // 6,7
+   
    unsigned private_info : 1 ;                                             // 
    unsigned padding : 1 ;                                                  // 
    unsigned sample_freq : 2 ;                                              // 
-   unsigned bitrate_index : 4 ;                                            // 
+   unsigned bitrate_index : 4 ;                                            //
+    
    unsigned crc_protection : 1 ;                                           // 
    unsigned layer_desc : 2 ;                                               // 
    //  DDM note: Per ISO-IEC-11172-3, these first two fields are different,
@@ -133,6 +136,7 @@ typedef struct mp3_frame_s {
    unsigned emphasis ;
    unsigned frame_length_in_bytes ;
    double play_time ;
+   u32 raw ;
 } mp3_frame_t, *mp3_frame_p ;
 
 static mp3_frame_p frame_list = 0 ;
@@ -192,12 +196,12 @@ static u32 get_mp3_header(u8 *rbfr)
 static int parse_mp3_frame(u8 *rbfr, unsigned offset)
 {
    mp3_parser_t mp ;
+   mp.raw = get_mp3_header(rbfr) ;
 #ifdef DO_CONSOLE
    static unsigned fcount = 0 ;
-   printf("parse_frame: rbuf: %02X %02X %02X %02X\n", 
-      (u8) *rbfr, (u8) *(rbfr+1), (u8) *(rbfr+2), (u8) *(rbfr+3));
+   printf("parse_frame: rbuf: %02X %02X %02X %02X; raw: 0x%08X\n", 
+      (u8) *rbfr, (u8) *(rbfr+1), (u8) *(rbfr+2), (u8) *(rbfr+3), mp.raw);
 #endif
-   mp.raw = get_mp3_header(rbfr) ;
    if (mp.h.frame_sync != REF_FRAME_SYNC) {
 #ifdef DO_CONSOLE
       printf("invalid frame sync A: %04X / %08X\n", mp.h.frame_sync, mp.raw);
@@ -240,16 +244,18 @@ static int parse_mp3_frame(u8 *rbfr, unsigned offset)
    } else { //  avidx == 1
       brtbl_idx = (mtemp->mpeg_layer == 0) ? 3 : 4 ;
    }
-#ifdef DO_CONSOLE
-   printf("mpV=%u, mpL=%u, btidx=%u, bridx=%u\n",
-      mtemp->mpeg_version, mtemp->mpeg_layer, brtbl_idx, bridx);
-#endif
-   mtemp->bitrate = brtable[brtbl_idx][bridx] ;
-   mtemp->sample_rate = samprate_table[mtemp->mpeg_version][mp.h.sample_freq] ;
-   mtemp->padding_bit = (unsigned) mp.h.padding ;        //lint !e571 Suspicious cast
-   mtemp->csum_bit    = (unsigned) mp.h.crc_protection ; //lint !e571 Suspicious cast
+   mtemp->bitrate      = brtable[brtbl_idx][bridx] ;
+   mtemp->sample_rate  = samprate_table[mtemp->mpeg_version][mp.h.sample_freq] ;
+   mtemp->padding_bit  = (unsigned) mp.h.padding ;        //lint !e571 Suspicious cast
+   mtemp->csum_bit     = (unsigned) mp.h.crc_protection ; //lint !e571 Suspicious cast
    mtemp->channel_mode = (unsigned) mp.h.channel_mode ;
    mtemp->mode_ext     = (unsigned) mp.h.mode_ext     ;
+   mtemp->raw          = mp.raw ;
+#ifdef DO_CONSOLE
+   printf("mpV=%u, mpL=%u, btidx=%u, bridx=%u, cm: %u, me: %u\n",
+      // mtemp->mpeg_version, mtemp->mpeg_layer, brtbl_idx, bridx, mtemp->channel_mode, mtemp->mode_ext);
+      mtemp->mpeg_version, mtemp->mpeg_layer, brtbl_idx, bridx, mp.h.channel_mode, mp.h.mode_ext);
+#endif
 
    //  Frame length in bytes
    if (mtemp->sample_rate != 0  &&  mtemp->bitrate != 0) {
@@ -266,23 +272,25 @@ static int parse_mp3_frame(u8 *rbfr, unsigned offset)
          u8 *next_frame ;
          u8 b1, b2 ;
          {
-            //  Updated notes...
-            //  For various reasons, most of which I do not understand,
-            //  a small number of mp3 files do *not* calculate a correct
-            //  byte length via this formula; this is especially seen
-            //  on small audio files.
-            //  First issue is that computations may be short by one byte;
-            //  this is the issue that is addressed by the hacked code below.
-            //  Second issue is that for some files, this computation gives
-            //  a length which is 2 or 3 times the actual bytes to next header.
-            //  This seems to be more common with ID3 files,
-            //  and is also seen mostly in small files.
             mtemp->frame_length_in_bytes =
                (144 * (mtemp->bitrate * 1000) / mtemp->sample_rate) + mtemp->padding_bit;
-            //  For mpeg V2.5 (mtemp->mpeg_version == 2),
-            //  this length is off by 1 (sometimes)
-            //  Actually, for V2 files this is also sometimes the case.
-            //  for b17.mp3, this increment worked for 24 frames, then failed...
+               
+            //  Issues in computing offset to next frame
+            //  
+            //  For various reasons, most of which I do not understand, a small number of 
+            //  mp3 files do *not* calculate a correct byte length via this formula; 
+            //  these are especially seen on small audio files.
+            //  
+            //  1. length is off by 1 or 2 bytes
+            //  First issue is that computations may be short by one byte;
+            //  this is the issue that is addressed by the hacked code below.
+            //  NDIR hacks this be searching ahead by a few bytes, to find the
+            //  11-bits-of-1s mask
+            //  This was first seem in MPEG V2.5, but have been seen in V2 as well.
+            //  
+            //  2. length is multiple of actual offset to next frame
+            //  Second issue is that for some files, this computation gives
+            //  a length which is 2 or 3 times the actual bytes to next header.
             u32 advance = 0 ;
             u32 retries ;
 #define  MAX_RETRIES    5
@@ -510,10 +518,6 @@ static int read_mp3_file(char *fname)
       // prev_seek = seek_byte ;
       if (first_pass) {
          seek_byte += (unsigned) mp3_offset ;
-#ifdef DO_CONSOLE
-         printf("seek_byte: 0x%X, offset: 0x%X\n", seek_byte, mp3_offset) ;
-#endif
-         //  copy desired reference values
       }
       seek_byte += (unsigned) result ;
       lseek(hdl, seek_byte, SEEK_SET) ;
@@ -591,7 +595,8 @@ int main(int argc, char **argv)
       unsigned uplay_secs = (unsigned) play_secs ;
       unsigned uplay_mins = uplay_secs / 60 ;
       uplay_secs = uplay_secs % 60 ;
-      printf("total play time=%u:%02u\n", uplay_mins, uplay_secs) ;
+      printf("total play time=%u:%02u; raw first header: 0x%08X, fname: %s\n", 
+         uplay_mins, uplay_secs, frame_list->raw, fname) ;
    }
    
    return 0;
