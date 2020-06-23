@@ -622,7 +622,7 @@ int get_mp3_info(char *fname, char *mlstr)
    double dplay_secs = play_secs - (double) (uplay_mins * 60.0) ;
    if (vbr) {
       if (uplay_mins == 0) {
-         sprintf(mlstr, "var Kbps, %6.2f seconds   ", dplay_secs) ;
+         sprintf(mlstr, "var Kbps, %6.2f seconds    ", dplay_secs) ;
       }
       else {
          sprintf(mlstr, "var Kbps, %3u:%02u minutes [%5.2f sec]   ", uplay_mins, uplay_secs, dplay_secs) ;
