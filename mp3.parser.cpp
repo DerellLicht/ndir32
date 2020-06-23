@@ -176,6 +176,22 @@ static unsigned samprate_table[3][4] = {
 { 11025, 12000,  8000, 0}} ;
 
 //***************************************************************************************
+//  This reference data is from MPEGAudioInfo app
+// Samples per Frame / 8
+static const u32 m_dwCoefficients[2][3] =
+{
+   {  // MPEG 1
+      12,   // Layer1   (must be multiplied with 4, because of slot size)
+      144,  // Layer2
+      144   // Layer3
+   },
+   {  // MPEG 2, 2.5
+      12,   // Layer1   (must be multiplied with 4, because of slot size)
+      144,  // Layer2
+      72    // Layer3
+   }  
+};
+//***************************************************************************************
 static unsigned get_id3_size(u8 *uptr)
 {
    u8 p3 = (u8) *uptr++ ;
@@ -272,12 +288,17 @@ static int parse_mp3_frame(u8 *rbfr, unsigned offset)
 
    //  Frame length in bytes
    if (mtemp->sample_rate != 0  &&  mtemp->bitrate != 0) {
+      u32 fl_mult ;
       // For Layer I files use this formula: 
       //     FrameLengthInBytes = (12 * BitRate / SampleRate + Padding) * 4 
       //  add tests to avoid divide-by-zero situations
       if (mtemp->mpeg_layer == 0) {
+         fl_mult = m_dwCoefficients[0][mtemp->mpeg_layer] ;
+#ifdef DO_CONSOLE
+         printf("MPEG1 layer %u, fl_mult: %u\n", mtemp->mpeg_layer+1, fl_mult);
+#endif
          mtemp->frame_length_in_bytes =
-            ((12 * (mtemp->bitrate * 1000) / mtemp->sample_rate) + mtemp->padding_bit) * 4 ;
+            ((fl_mult * (mtemp->bitrate * 1000) / mtemp->sample_rate) + mtemp->padding_bit) * 4 ;
       }
       // For Layer II & III files use this formula: 
       //     FrameLengthInBytes = 144 * BitRate / SampleRate + Padding 
@@ -285,8 +306,13 @@ static int parse_mp3_frame(u8 *rbfr, unsigned offset)
          u8 *next_frame ;
          u8 b1, b2 ;
          {
+            u32 mpegv = (mtemp->mpeg_version == 0) ? 0 : 1 ;
+            fl_mult = m_dwCoefficients[mpegv][mtemp->mpeg_layer] ;
+#ifdef DO_CONSOLE
+            printf("MPEG2+ layer %u, fl_mult: %u\n", mtemp->mpeg_layer+1, fl_mult);
+#endif
             mtemp->frame_length_in_bytes =
-               (144 * (mtemp->bitrate * 1000) / mtemp->sample_rate) + mtemp->padding_bit;
+               (fl_mult * (mtemp->bitrate * 1000) / mtemp->sample_rate) + mtemp->padding_bit;
 
             //*********************************************************************************               
             //  Issues in computing offset to next frame
