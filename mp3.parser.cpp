@@ -284,13 +284,17 @@ static int parse_mp3_frame(u8 *rbfr, unsigned offset)
    //  Frame length in bytes
    //  add tests to avoid divide-by-zero situations
    if (mtemp->sample_rate != 0  &&  mtemp->bitrate != 0) {
+#ifdef DO_CONSOLE
+      static char *verid_str[3] = { "1", "2", "2.5" } ;
+#endif
+    
       u32 fl_mult ;
       // For Layer I files use this formula: 
       //     FrameLengthInBytes = (12 * BitRate / SampleRate + Padding) * 4 
       if (mtemp->mpeg_layer == 0) {
          fl_mult = m_dwCoefficients[0][mtemp->mpeg_layer] ;
 #ifdef DO_CONSOLE
-         printf("MPEG1 layer %u, fl_mult: %u\n", mtemp->mpeg_layer+1, fl_mult);
+         printf("MPEG%s layer %u, fl_mult: %u\n", verid_str[mtemp->mpeg_version], mtemp->mpeg_layer+1, fl_mult);
 #endif
          mtemp->frame_length_in_bytes =
             ((fl_mult * (mtemp->bitrate * 1000) / mtemp->sample_rate) + mtemp->padding_bit) * 4 ;
@@ -305,7 +309,7 @@ static int parse_mp3_frame(u8 *rbfr, unsigned offset)
                (fl_mult * (mtemp->bitrate * 1000) / mtemp->sample_rate) + mtemp->padding_bit;
 
 #ifdef DO_CONSOLE
-            printf("MPEG2+ layer %u, fl_mult: %u\n", mtemp->mpeg_layer+1, fl_mult);
+            printf("MPEG%s layer %u, fl_mult: %u\n", verid_str[mtemp->mpeg_version], mtemp->mpeg_layer+1, fl_mult);
             u8 *next_frame = rbfr + mtemp->frame_length_in_bytes ;
             printf("bitrate: %u, sample_rate: %u, pad: %u, bytes: %u\n", 
                mtemp->bitrate, mtemp->sample_rate, mtemp->padding_bit,
@@ -369,8 +373,9 @@ static int find_mp3_signature(u8 *rbfr, unsigned rlen, int id3_offset)
    //  if this is not true, then scan specifically for 0xFFFB
    if (id3_offset < 0) {
       mp.raw = get_mp3_header(rbfr) ;
-      if (is_mp3_header_valid(mp.raw))
+      if (is_mp3_header_valid(mp.raw)) {
          return 0;
+      }
       
       for (mp3_offset = 0; mp3_offset < rlen; mp3_offset++) {
          if (*(rbfr+mp3_offset) == 0xFF) {
@@ -459,6 +464,10 @@ static int read_mp3_file(char *fname)
       }
       //********************************************************************
       //  on first pass, skip ID3 block if present
+      //  
+      //  06/29/20 Note: it is quite possible for ID3 header block to be
+      //  larger than RD_BFR_SZ !!  In this case, we currently just fail.
+      //  We probably should just do a new read at end of ID3 block size.
       //********************************************************************
       if (first_pass) {
          int id3size = -1 ;
@@ -469,7 +478,26 @@ static int read_mp3_file(char *fname)
 #ifdef DO_CONSOLE
             printf("id3 tag size=%u/0x%X bytes\n", id3size, id3size) ;
 #endif
+            if (id3size > 0) {
+               //  seek to next frame in file
+               seek_byte += (unsigned) id3size ;
+               lseek(hdl, seek_byte, SEEK_SET) ;
+               id3size = 0 ;
+               rdbytes = read(hdl, rd_bfr, RD_BFR_SZ) ;
+               if (rdbytes <= 0) {
+                  // printf("rdbytes=%d\n", rdbytes) ;
+                  //  rdbytes == 0  indicates EOF
+                  if (rdbytes < 0) {
+                     printf("offset %u: %s\n", seek_byte, strerror(errno)) ;
+                     result = -(int)errno;
+                     exit (errno);
+                  }
+                  /* break; */
+               }
+               // continue;
+            }
          }
+
          //  scan current buffer for mp3 data signature
          mp3_offset = find_mp3_signature(rd_bfr, rdbytes, id3size) ;
          if (mp3_offset < 0) {
@@ -565,9 +593,9 @@ int main(int argc, char **argv)
       mtemp = frame_list; 
    // unsigned mpeg_version ; //  1=1, 2=2, 3=2.5
    // unsigned mpeg_layer ;
-      printf("mpegV%s, layer %s, chnl_mode: %u, mode_ext: %u\n", 
-         verid_str[mtemp->mpeg_version],
-         layer_str[mtemp->mpeg_layer],
+      printf("mpegV%s [%u], layer %s [%u], chnl_mode: %u, mode_ext: %u\n", 
+         verid_str[mtemp->mpeg_version], mtemp->mpeg_version,
+         layer_str[mtemp->mpeg_layer], mtemp->mpeg_layer,
          mtemp->channel_mode,
          mtemp->mode_ext);
       if (vbr) {
