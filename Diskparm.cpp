@@ -182,10 +182,6 @@ static char *get_drive_type_string(UINT gdt, char dchar)
    case DRIVE_REMOTE     : return "remote" ;
    case DRIVE_CDROM      : 
       return get_cd_device_desc(dchar) ;
-      // if (cd_type < 0)
-      //    cd_type = 0 ;
-      // return cd_names[cd_type];
-      // return "cdrom" ;
 
    case DRIVE_RAMDISK    : return "ramdisk" ;
    case DRIVE_UNKNOWN    : 

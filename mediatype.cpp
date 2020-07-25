@@ -1,3 +1,8 @@
+//************************************************************************
+//  This file uses the legacy SCSI interface to determine internal
+//  drive details of optical drives.
+//************************************************************************
+
 #include <stddef.h>     //  offsetof
 #include <windows.h>
 #include <stdio.h>
@@ -172,11 +177,11 @@ static char *cd_names[4] = {
 
 int main (void)
 {
-	char szTemp[4096], szName[64];
+   char szTemp[4096], szName[64];
    HANDLE hCD = CreateFile ("\\\\.\\D:",
       GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
 
-	GetCDDeviceName (hCD, szTemp, szName);
+   GetCDDeviceName (hCD, szTemp, szName);
    // printf("szTemp=[%s]\n", szTemp) ;
    printf("szName=[%s]\n", szName) ;
    //           1         2         3
@@ -193,9 +198,9 @@ int main (void)
       printf("CD type is %s\n", cd_names[cd_type]) ;
    }
 
-	CloseHandle (hCD);
+   CloseHandle (hCD);
 
-	return 0;
+   return 0;
 }
 #else
 char *get_cd_device_desc(char drv)
