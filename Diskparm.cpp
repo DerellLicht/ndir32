@@ -10,7 +10,7 @@
 //  linked into the application (otherwise the compile fails).         
 //*********************************************************************
 
-#include <stdlib.h>				  //  ultoa()
+#include <stdlib.h>             //  ultoa()
 #include <windows.h>
 #include "ndir32.h"
 #include "conio32.hpp"
@@ -33,8 +33,8 @@ extern char *get_cd_device_desc(char drv);
 // static char UNCname[PATH_MAX] ;
 struct UNC
 {
-	char *uptr;
-	char ustr[PATH_MAX];
+   char *uptr;
+   char ustr[PATH_MAX];
 };
 
 static char fsn_bfr[32] ;      //  buffer for name of lfn file system
@@ -195,23 +195,23 @@ void display_drive_summary (void)
 {
    DWORD vsernbr, mclen, fsflags ;
    unsigned dtype;
-	unsigned long bufsize;
+   unsigned long bufsize;
 
-	//  draw header
-	nput_line (n.colorframe, '*');
-	nputs (n.colornhead,
-		"                               Disk Drive Summary                              \n\r");
-	nput_line (n.colorframe, '=');
+   //  draw header
+   nput_line (n.colorframe, '*');
+   nputs (n.colornhead,
+      "                               Disk Drive Summary                              \n\r");
+   nput_line (n.colorframe, '=');
 
-	nputs (n.colornhead,
+   nputs (n.colornhead,
       "   file sys      total space          free space     [Cluster Size] UNC path \n");
-	nputs (n.colornhead,
+   nputs (n.colornhead,
       "   ========  ==================  ==================  ========================\n");
 
    ULONGLONG lfree = 0;
    ULONGLONG ltotal = 0;
-	// i64tostr diskavail (0);		  //lint !e747 
-	// i64tostr disktotal (0);		  //lint !e747
+   // i64tostr diskavail (0);      //lint !e747 
+   // i64tostr disktotal (0);      //lint !e747
 
    // puts("trying GetLogicalDrives:") ;
    DWORD gld_return = GetLogicalDrives() ;
@@ -284,30 +284,30 @@ void display_drive_summary (void)
       convert_to_commas(totals1, disktotal);
       convert_to_commas(frees1, diskavail);
 
-		//  if network, pull the UNC name, otherwise show drive type
-		if (dtype == DRIVE_REMOTE) {
-			UNC UNCpaths;
-			UNCpaths.uptr = UNCpaths.ustr;
-			bufsize = PATH_MAX;
+      //  if network, pull the UNC name, otherwise show drive type
+      if (dtype == DRIVE_REMOTE) {
+         UNC UNCpaths;
+         UNCpaths.uptr = UNCpaths.ustr;
+         bufsize = PATH_MAX;
 
          wsprintf (tempstr, "%c: %-9s %18s  %18s  ", dchar, fsnbfr, disktotal, diskavail);
-			nputs (n.colordir, tempstr);
+         nputs (n.colordir, tempstr);
 
-			// if (WNetGetUniversalName(dpath, REMOTE_NAME_INFO_LEVEL, 
-			if (WNetGetUniversalName (dpath, UNIVERSAL_NAME_INFO_LEVEL,
-					&UNCpaths, &bufsize) != NO_ERROR) {
-				nputs (n.colordir, "Network Drive\n");
-				// return 1;
-			}
-			else {
+         // if (WNetGetUniversalName(dpath, REMOTE_NAME_INFO_LEVEL, 
+         if (WNetGetUniversalName (dpath, UNIVERSAL_NAME_INFO_LEVEL,
+               &UNCpaths, &bufsize) != NO_ERROR) {
+            nputs (n.colordir, "Network Drive\n");
+            // return 1;
+         }
+         else {
             wsprintf (tempstr, "%s\n", UNCpaths.uptr);
-				nputs (n.colordir, tempstr);
-			}
-		}
+            nputs (n.colordir, tempstr);
+         }
+      }
       else {
       // else if (dtype == DRIVE_FIXED) {
          wsprintf (tempstr, "%c: %-9s %18s  %18s  ", dchar, fsnbfr, disktotal, diskavail);
-			nputs (n.colordefalt, tempstr);
+         nputs (n.colordefalt, tempstr);
 
          // unsigned cluster_size = get_cluster_size(dpath[0]);
          // get_disk_info(dpath) ;  //  why are you calling this again??
@@ -316,8 +316,8 @@ void display_drive_summary (void)
          lfree  += frees1 ;
          ltotal += totals1 ;
          wsprintf (tempstr, "[%6u] %s\n", (unsigned) clbytes, vnbfr);
-			nputs (n.colordefalt, tempstr);
-		}
+         nputs (n.colordefalt, tempstr);
+      }
       // else {
       //   sprintf (tempstr, "%c: %-8s  %18s  %18s  ", dpath[0], fsnbfr,
       //      disktotal.putstr (), diskavail.putstr ());
@@ -326,17 +326,17 @@ void display_drive_summary (void)
       //   sprintf (tempstr, "%s\n", drive_types[dtype]);
       //   nputs (n.colorsize, tempstr);
       // }
-	}
+   }
 
-	//  display drive summary
-	// disktotal.convert (ltotal);
-	// diskavail.convert (lfree);
+   //  display drive summary
+   // disktotal.convert (ltotal);
+   // diskavail.convert (lfree);
    convert_to_commas(ltotal, disktotal);
    convert_to_commas(lfree, diskavail);
 
-	nput_line (n.colorframe, '*');
+   nput_line (n.colorframe, '*');
    wsprintf (tempstr, "             %18s  %18s", disktotal, diskavail);
-	nputs (n.colorxhead, tempstr);
+   nputs (n.colorxhead, tempstr);
    wsprintf (tempstr, "  Total Physical space\n\r");
-	nputs (n.colornhead, tempstr);
+   nputs (n.colornhead, tempstr);
 }
