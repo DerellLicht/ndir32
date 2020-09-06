@@ -235,3 +235,6 @@ Version 2.48, 06/20/20
   - Fix parsing error with small mp3 files; in some case, 
     offset to next frame is off by 1 byte.
 
+Version 2.49, 09/06/20
+  - fix mis-handled dir-tree level-limiting operation
+
