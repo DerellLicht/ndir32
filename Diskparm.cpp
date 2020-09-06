@@ -82,22 +82,25 @@ unsigned get_cluster_size(char dltr)
    //  because GetDiskFreeSpace() is u32, not u64.
 }   
 
-//*****************************************************************
+//**************************************************************************
 //  this function determines the following information:
 //    - What file system is in use??
 //    - Total partition size in bytes
 //    - Free partition space in bytes
 //    - Cluster size for active partition
 //    - Volume label for requested partition
-//*****************************************************************
-// int get_disk_totals(char dchar)
-int get_disk_info(char *dstr)
+//  
+//  NOTE: This function originally returned a boolean value which was
+//        defined as: is_FAT32_present
+//        I no longer recall what the purpose of this information was,
+//        but it is no longer generated now.
+//**************************************************************************
+bool get_disk_info(char *dstr)
 {
    DWORD vsernbr, mclen, fsflags ;
    // UINT dtype ;
    char *dirptr ;
 
-   //#############################################################
    dpath[0] = *dstr ;
    if (*(dstr+1) == ':')
       dirptr = dpath ;
@@ -125,8 +128,9 @@ int get_disk_info(char *dstr)
       volume_name[0] = 0 ; //  try to keep going...
    }
 
-   if (strlen(volume_name) == 0)
+   if (strlen(volume_name) == 0) {
       strcpy(volume_name, "undefined") ;
+   }
 
    // dtype = GetDriveType(dpath) ;
 
@@ -164,7 +168,7 @@ int get_disk_info(char *dstr)
          diskfree = frees1 ;
       }
    }
-   return 0;
+   return false;
 }
 
 //**********************************************************

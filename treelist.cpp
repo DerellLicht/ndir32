@@ -46,10 +46,10 @@ static uint right_div    = 64 ;
 extern void put_disk_summary (void);
 
 //************************************************************
-static int FAT32_present;
+static bool FAT32_present = false;
 
 static char dirpath[PATH_MAX];
-static int level;
+static unsigned level;
 
 //**********************************************************
 //  directory structure for directory_tree routines
@@ -822,6 +822,8 @@ static void print_dir_end (void)
 	ncrlf ();
 
 	//  now show disk totals
+   //  NOTE: FAT32_present is *always* false now,
+   //  so the resulting function will never be called
 	if (FAT32_present) {
 		put_disk_summary ();
 	}

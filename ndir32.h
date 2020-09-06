@@ -264,7 +264,7 @@ void verify_flags(void);
 
 //  filelist.cpp
 void display_files(void);
-int  get_disk_info(char *dstr);
+bool get_disk_info(char *dstr);
 
 //  fileread.cpp
 void file_listing(void);
