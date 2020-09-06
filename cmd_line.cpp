@@ -121,7 +121,10 @@ static int update_switches (char *argstr)
       case '3':  n.format = 5;  break;
       case '5':  n.ega_keep ^= 1;  break;
 
-      case ',':  n.tree_short ^= 1;  break;
+      case ',':  
+         n.tree_short = 1;  
+         tree_level_limit++ ;
+         break;
 
 		case '?':
 // nputs(0x13, "I see question mark") ;

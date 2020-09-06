@@ -50,7 +50,7 @@ ndir_data n =
    0, //  display disk_drive summary
    0, //  file-date option (MSDOS 7.00+ only)
    0, //  1 = force old DOS 8.3 filenames in MSDOS 7.00+
-   0, //  0=normal tree, 1=show only one level of children
+   0, //  0=normal tree, 1=show limited level of children
    0, //  uchar long_attr: show full attribute as hex data
    0  //  0=bytes/normal, 1=KB, 2=MB
 };
@@ -58,6 +58,8 @@ ndir_data n =
 attrib_list attr_table[MAX_EXT] ;
 unsigned attrib_count = 0 ;
 uchar dtree_colors[MAX_DIR_ENTRY] ;
+
+unsigned tree_level_limit = 0 ;
 
 //*****************************************************************
 //              END OF CONFIGURATION VARIABLES
@@ -167,7 +169,8 @@ char *helptxt[] = {
 "   -g *     List directories FIRST.",
 "   -h *     List files horizontally.",
 "   -f *     List files only (No directories).",
-"   -, *     Dir Tree: show only one level of subdirectories.",
+"   -, *     Dir Tree: show only L level of subdirectories.",
+"               L is incremented for each additional comma",
 " ",
 "   -b       Batch mode;  files listed in one column.",
 "            (This format can be redirected to a batch file)",

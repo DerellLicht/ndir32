@@ -103,11 +103,13 @@ struct ndir_data {
    uchar drive_summary ;
    uchar fdate_option ; //  0 = LAST_MODIFY, 1 = FILE_CREATE (MSDOS 7.00+ only)
    uchar lfn_off ;      //  0 = force DOS 8.3 filenames (MSDOS 7.00+ only)
-   uchar tree_short ;   //  0=normal tree, 1=show only one level of children
+   uchar tree_short ;   //  0=normal tree, 1=show limited level of children
    uchar long_attr ;
    uchar size_display ; //  0=bytes/normal, 1=KB, 2=MB
 };
 extern ndir_data n ;
+
+extern unsigned tree_level_limit ;
 
 //  fdate_option flags
 #define  FDATE_LAST_WRITE     0

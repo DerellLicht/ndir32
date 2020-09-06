@@ -636,7 +636,7 @@ static void display_dir_tree (dirs * ktop)
 
 		//  process any sons
 		level++;
-		if (!n.tree_short || level < 2) {
+      if (!n.tree_short || level <= tree_level_limit) {
 			display_dir_tree (ktemp->sons);
 		}
 		formstr[--level] = (char) NULL;
