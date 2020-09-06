@@ -27,8 +27,6 @@ static char *dhdrl =
 //0         1         2
 //012345678901234567890123456789
 //=========================+===========+===========+==============+==============
-static void sort_trees (void);
-
 static char formstr[50];
 static char levelstr[PATH_MAX];
 static uint wincols      = 80 ;
@@ -47,11 +45,11 @@ static uint right_div    = 64 ;
 //  from FILELIST.CPP
 extern void put_disk_summary (void);
 
-//  from NDIR.CPP
-// extern void get_volume_label(char dchar);
-
 //************************************************************
 static int FAT32_present;
+
+static char dirpath[PATH_MAX];
+static int level;
 
 //**********************************************************
 //  directory structure for directory_tree routines
@@ -93,20 +91,12 @@ static int tree_init_sort (void);
 
 static dirs *top = NULL;
 
-//**********************************************************
-static char dirpath[PATH_MAX];
-static int level;
-
 //***************  function prototypes  ***************
-static int build_dir_tree (char *tpath);
-static int read_dir_tree (dirs * cur_node);
-static void draw_dir_tree (void);
-static void display_dir_tree (dirs * top);
-static void printdirheader (void);
-static void print_dir_end (void);
 static dirs *new_dir_node (void);
 
-//**********************************************************
+//*****************************************************************
+//  this was used for debugging directory-tree read and build
+//*****************************************************************
 #ifdef  DESPERATE
 void debug_dump(char *fname, char *msg)
 {
@@ -120,31 +110,6 @@ void debug_dump(char *fname, char *msg)
    fclose(fd) ;
 }
 #endif
-
-//*****************************************************************
-//  no filename may be specified here...
-//*****************************************************************
-void tree_listing (void)
-{
-	if (z == 0)
-		tree_init_sort ();
-
-	for (unsigned l = 0; l < tcount; l++) {
-		//  check for validity of long_filename functions
-		dname[0] = *target[l];
-
-		lfn_supported = 1 - n.lfn_off;
-
-		//  read and build the dir tree
-      build_dir_tree (target[l]) ;
-
-      //  sort the tree list
-      sort_trees ();
-
-      //  now display the resulting directory tree
-      draw_dir_tree ();
-   }
-}
 
 //*********************************************************
 //  "waiting" pattern generator
@@ -177,69 +142,6 @@ static void pattern_update(void)
    dircount++ ;
    sprintf(pucount, "%u", dircount) ;
    dprints(lrow, lcol, pucount) ;
-}
-
-//**********************************************************
-static int build_dir_tree (char *tpath)
-{
-   int result ;
-	char *strptr;
-	level = 0;
-
-	//  Extract base path from first filespec,
-	//  and strip off filename
-	strcpy (base_path, tpath);
-	strptr = strrchr (base_path, '\\');
-	if (strptr != 0)
-		*(++strptr) = 0;			  //  strip off filename
-
-	FAT32_present = get_disk_info (base_path);
-	// get_volume_label(*tpath) ;
-
-	//  allocate struct for dir listing
-	top = new_dir_node ();
-
-	//  Extract base path from first filespec,
-	//  and strip off filename
-	strcpy (base_path, tpath);
-	strptr = strrchr (base_path, '\\');
-	strptr++;						  //  skip past backslash, to filename
-	*strptr = 0;					  //  strip off filename
-	base_len = strlen (base_path);
-
-	//  derive root path name
-	if (strlen (base_path) == 3) {
-      top->name = (char *) malloc(8) ;
-		if (top->name == 0)
-			error_exit (OUT_OF_MEMORY, NULL);
-		strcpy (top->name, "<root>");
-	}
-	else {
-		strcpy (tempstr, base_path);
-		tempstr[base_len - 1] = 0;	//  strip off tailing backslash
-		strptr = strrchr (tempstr, '\\');
-		strptr++;					  //  skip past backslash, to filename
-
-      top->name = (char *) malloc(strlen (strptr) + 1);
-		if (top->name == 0)
-			error_exit (OUT_OF_MEMORY, NULL);
-		strcpy (top->name, strptr);
-	}
-
-	// top->attrib = 0 ;   //  top-level dir is always displayed
-
-	if (n.ucase)
-		strupr (top->name);
-
-	strcpy (dirpath, tpath);
-
-   pattern_init("wait; reading directory ") ;
-   result = read_dir_tree (top);
-#ifdef  DESPERATE
-debug_dump("exit", "returned from read_dir_tree") ;
-#endif
-   pattern_reset() ;
-   return result ;
 }
 
 //**********************************************************
@@ -328,24 +230,6 @@ debug_dump(dirpath, tempstr) ;
 	//  loop on find_next
    done = 0;
 	while (!done) {
-      //************************************************************************************
-      //  special-case test for "System Volume Information" ??
-      //  Do quick test (for one character) before doing long, slow test...
-      //  09/18/13 - This test was added some time in antiquity, because a customer
-      //  discovered that if they executed "ndir32 -dsr \", the program would crash
-      //  when it tried to read that directory.  This issue no longer occurs;
-      //  I probably fixed this issue implicitly by using WinAPI function calls
-      //  to traverse the directories.
-      //************************************************************************************
-//       if (fdata.cFileName[0] == 'S') {
-//          if (strncmp(fdata.cFileName, "System Volume Information", 25) == 0) {
-//             err = ERROR_ACCESS_DENIED ;
-// #ifdef  DESPERATE
-// debug_dump(fdata.cFileName, "skipping SVI !!!") ;
-// #endif
-//          }
-//       }
-      
 		if (!err) {
 			//  we found a directory
 			if (fdata.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
@@ -519,31 +403,6 @@ static dirs *new_dir_node (void)
 	return dtemp;
 }
 
-//*********************************************************
-static void draw_dir_tree (void)
-{
-   wincols = get_window_cols() ;
-   //  this is necessary because if redirection is in place,
-   //  'console width' may not be valid`
-   if (is_redirected()) {
-      wincols = 80 ;
-   }
-
-   if (wincols != 80) {
-      name_end_col = wincols - (80-25) ;
-      center_col   = wincols - (80-37) ;
-      left_div     = wincols - (80-49) ;
-      right_div    = wincols - (80-64) ;
-      // 135: 80, 92, 104, 119
-      // syslog("%u: %u, %u, %u, %u\n", wincols,
-      //    name_end_col, center_col, left_div, right_div);
-   }
-
-	printdirheader ();
-	display_dir_tree (top);
-   print_dir_end ();
-}
-
 //**********************************************************
 static void display_tree_filename (char *lstr, char *frmstr)
 {
@@ -632,6 +491,7 @@ static void display_dir_tree (dirs * ktop)
 			}
 		}
 		sprintf (levelstr, "%s%s", formstr, ktemp->name);
+      // syslog("l%u %s\n", level, levelstr) ;
 
 		//*****************************************************************
 		//                display data for this level                      
@@ -1137,3 +997,118 @@ static void sort_trees (void)
 	//  now, sort the data
 	top = tree_sort_walk (top);
 }
+
+//**********************************************************
+static int build_dir_tree (char *tpath)
+{
+   int result ;
+   char *strptr;
+   level = 0;
+
+   //  Extract base path from first filespec,
+   //  and strip off filename
+   strcpy (base_path, tpath);
+   strptr = strrchr (base_path, '\\');
+   if (strptr != 0)
+      *(++strptr) = 0;          //  strip off filename
+
+   FAT32_present = get_disk_info (base_path);
+
+   //  allocate struct for dir listing
+   top = new_dir_node ();
+
+   //  Extract base path from first filespec,
+   //  and strip off filename
+   strcpy (base_path, tpath);
+   strptr = strrchr (base_path, '\\');
+   strptr++;                    //  skip past backslash, to filename
+   *strptr = 0;                 //  strip off filename
+   base_len = strlen (base_path);
+
+   //  derive root path name
+   if (strlen (base_path) == 3) {
+      top->name = (char *) malloc(8) ;
+      if (top->name == 0)
+         error_exit (OUT_OF_MEMORY, NULL);
+      strcpy (top->name, "<root>");
+   }
+   else {
+      strcpy (tempstr, base_path);
+      tempstr[base_len - 1] = 0; //  strip off tailing backslash
+      strptr = strrchr (tempstr, '\\');
+      strptr++;                 //  skip past backslash, to filename
+
+      top->name = (char *) malloc(strlen (strptr) + 1);
+      if (top->name == 0)
+         error_exit (OUT_OF_MEMORY, NULL);
+      strcpy (top->name, strptr);
+   }
+
+   // top->attrib = 0 ;   //  top-level dir is always displayed
+
+   if (n.ucase)
+      strupr (top->name);
+
+   strcpy (dirpath, tpath);
+
+   pattern_init("wait; reading directory ") ;
+   result = read_dir_tree (top);
+#ifdef  DESPERATE
+debug_dump("exit", "returned from read_dir_tree") ;
+#endif
+   pattern_reset() ;
+   return result ;
+}
+
+//*********************************************************
+static void draw_dir_tree (void)
+{
+   level = 0;
+   wincols = get_window_cols() ;
+   //  this is necessary because if redirection is in place,
+   //  'console width' may not be valid`
+   if (is_redirected()) {
+      wincols = 80 ;
+   }
+
+   if (wincols != 80) {
+      name_end_col = wincols - (80-25) ;
+      center_col   = wincols - (80-37) ;
+      left_div     = wincols - (80-49) ;
+      right_div    = wincols - (80-64) ;
+      // 135: 80, 92, 104, 119
+      // syslog("%u: %u, %u, %u, %u\n", wincols,
+      //    name_end_col, center_col, left_div, right_div);
+   }
+
+   // syslog("level before displaying: %u\n", level);
+   printdirheader ();
+   display_dir_tree (top);
+   print_dir_end ();
+}
+
+//*****************************************************************
+//  no filename may be specified here...
+//*****************************************************************
+void tree_listing (void)
+{
+   if (z == 0)
+      tree_init_sort ();
+
+   for (unsigned l = 0; l < tcount; l++) {
+      //  check for validity of long_filename functions
+      dname[0] = *target[l];
+
+      lfn_supported = 1 - n.lfn_off;
+
+      //  read and build the dir tree
+      build_dir_tree (target[l]) ;
+
+      //  sort the tree list
+      sort_trees ();
+
+      //  now display the resulting directory tree
+      draw_dir_tree ();
+   }
+}
+

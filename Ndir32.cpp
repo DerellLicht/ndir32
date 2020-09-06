@@ -20,7 +20,7 @@
 #include "ndir32.h"
 #include "conio32.hpp"
 
-#define  VER_NUMBER "2.48"
+#define  VER_NUMBER "2.49"
 
 char *Version = " NDIR.EXE, Version " VER_NUMBER " " ;
 char *ShortVersion = " NDIR " VER_NUMBER " " ;
@@ -268,7 +268,6 @@ static void process_filespecs(void)
       base_len = strlen(base_path) ;
 
       //**************************************************
-      // get_volume_label(base_path[0]) ;
       get_disk_info(base_path) ;
 
       //**************************************************
