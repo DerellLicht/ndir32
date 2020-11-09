@@ -229,8 +229,8 @@ static int parse_mp3_frame(u8 *rbfr, unsigned offset)
    mp.raw = get_mp3_header(rbfr) ;
 #ifdef DO_CONSOLE
    static unsigned fcount = 0 ;
-   printf("parse_frame: rbuf: %02X %02X %02X %02X; raw: 0x%08X\n", 
-      (u8) *rbfr, (u8) *(rbfr+1), (u8) *(rbfr+2), (u8) *(rbfr+3), mp.raw);
+   printf("parse_frame: rbuf: %02X %02X %02X %02X; raw: 0x%08X, ofs: 0x%X (%u)\n", 
+      (u8) *rbfr, (u8) *(rbfr+1), (u8) *(rbfr+2), (u8) *(rbfr+3), mp.raw, offset, offset);
 #endif
    if (mp.h.frame_sync != REF_FRAME_SYNC) {
 #ifdef DO_CONSOLE
@@ -650,14 +650,14 @@ int get_mp3_info(char *fname, char *mlstr)
    double dplay_secs = play_secs - (double) (uplay_mins * 60.0) ;
    if (vbr) {
       if (uplay_mins == 0) {
-         sprintf(mlstr, "var Kbps, %6.2f seconds    ", dplay_secs) ;
+         sprintf(mlstr, "var Kbps,                 %5.2f sec    ", dplay_secs) ;
       }
       else {
          sprintf(mlstr, "var Kbps, %3u:%02u minutes [%5.2f sec]   ", uplay_mins, uplay_secs, dplay_secs) ;
       }
    } else {
       if (uplay_mins == 0) {
-         sprintf(mlstr, "%3u Kbps, %6.2f seconds    ", bitrate, dplay_secs) ;
+         sprintf(mlstr, "%3u Kbps,                 %5.2f sec    ", bitrate, dplay_secs) ;
       } 
       else {
          sprintf(mlstr, "%3u Kbps, %3u:%02u minutes [%5.2f sec]   ", bitrate, uplay_mins, uplay_secs, dplay_secs) ;
