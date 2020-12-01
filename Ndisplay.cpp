@@ -130,11 +130,11 @@ void display_logo (void)
 typedef struct mm_lookup_s {
    char  ext[MAX_EXT_SIZE] ;
    int (*func)(char *fname, char *mlstr) ;
-} mm_lookup_t, *mm_lookup_p ;
+} mm_lookup_t ;
 
 #define  IDX_WAV  2
 
-static mm_lookup_t mm_lookup[] = {
+static mm_lookup_t const mm_lookup[] = {
 { "jpg", get_jpeg_info },
 { "gif", get_gif_info },
 { "wav", get_wave_info },

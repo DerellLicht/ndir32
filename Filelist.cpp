@@ -40,6 +40,8 @@ static void (*fprint[7])(ffdata *fptr) =
    print6,
 } ;
 
+//  DDM: I'm not quite sure how I need to do this!!
+//lint -esym(843, fprint, lfn_fprint)  could be declared as const
 static void (*lfn_fprint[7])(ffdata *fptr) = 
 {
    print_null,

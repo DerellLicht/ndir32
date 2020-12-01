@@ -18,10 +18,10 @@
 #include "ndir32.h"
 #include "conio32.hpp"
 
-static char *dhdr =
+static char const * const dhdr =
    "쳐컴컴컴컴컴쩡컴컴컴컴컴탠컴컴컴컴컴컴컫컴컴컴컴컴컴컴";
 
-static char *dhdrl =
+static char const * const dhdrl =
    "+-----------+-----------+--------------+--------------";
 
 //0         1         2

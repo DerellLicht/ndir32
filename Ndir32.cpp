@@ -22,6 +22,7 @@
 
 #define  VER_NUMBER "2.49"
 
+//lint -esym(843, Version, ShortVersion) could be declared as const
 char *Version = " NDIR.EXE, Version " VER_NUMBER " " ;
 char *ShortVersion = " NDIR " VER_NUMBER " " ;
 
@@ -536,7 +537,7 @@ static attrib_list attr_default_list[] = {
 } ;
 
 //  default directory colors
-static uchar dir_default_list[MAX_DIR_ENTRY] = {
+static uchar const dir_default_list[MAX_DIR_ENTRY] = {
 3, 4, 5, 6, 7, 8, 9, 0x0A,
 3, 4, 5, 6, 7, 8, 9, 0x0A,
 3, 4, 5, 6 } ;
@@ -625,7 +626,7 @@ struct ini_entry {
    char  *lvalue ;
    uchar *rvalue ;
 };
-static ini_entry ndir_ini[] = {
+static ini_entry const ndir_ini[] = {
 { "ucase",        &n.ucase },
 { "sort",         &n.sort },
 { "reverse",      &n.reverse },
@@ -759,7 +760,7 @@ static void parse_dir_color_entry(char *iniptr)
 }
 
 //*********************************************************************
-static int read_ini_file(char *ini_str)
+static int read_ini_file(char const * ini_str)
 {
    FILE *ofile ;
    int slen ;
@@ -823,7 +824,7 @@ static int read_ini_file(char *ini_str)
 }
 
 //*********************************************************************
-static char *local_ini_name = ".\\ndir.ini" ;
+static char const local_ini_name[] = ".\\ndir.ini" ;
 static char ini_path[PATH_MAX] ;
 
 static void read_config_file(void)

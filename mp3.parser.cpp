@@ -77,9 +77,6 @@ typedef union ul2uc_u {
 #include "ndir32.h"
 #endif
 
-typedef unsigned char  u8 ;
-typedef unsigned int   u32 ;
-
 //  this buffer needs to be large enough to completely read one frame.
 //  An lseek() will be used to point to the next frame.
 #define  RD_BFR_SZ   (4 * 1024)
@@ -160,17 +157,17 @@ static mp3_frame_p frame_tail = 0 ;
 // char *mpeg_layer[4] = { "reserved", "III", "II", "I" } ;
 
 // int audio_ver_idx[4] = { 2, 0, 2, 1 } ;
-static int audio_ver_idx2[4] = { 3, 0, 2, 1 } ; //  3 is actually 2.5
-static int mpeg_layer_idx[4] = { 0, 3, 2, 1 } ;
+static int const audio_ver_idx2[4] = { 3, 0, 2, 1 } ; //  3 is actually 2.5
+static int const mpeg_layer_idx[4] = { 0, 3, 2, 1 } ;
 
-static unsigned brtable[5][16] = {
+static unsigned const brtable[5][16] = {
 { 0, 32, 64, 96, 128, 160, 192, 224, 256, 288, 320, 352, 384, 416, 448, 0 },
 { 0, 32, 48, 56,  64,  80,  96, 112, 128, 160, 192, 224, 256, 320, 384, 0 },
 { 0, 32, 40, 48,  56,  64,  80,  96, 112, 128, 160, 192, 224, 256, 320, 0 },
 { 0, 32, 48, 56,  64,  80,  96, 112, 128, 144, 160, 176, 192, 224, 256, 0 },
 { 0,  8, 16, 24,  32,  40,  48,  56,  64,  80,  96, 112, 128, 144, 160, 0 }} ;
 
-static unsigned samprate_table[3][4] = {
+static unsigned const samprate_table[3][4] = {
 { 44100, 48000, 32000, 0 },   
 { 22050, 24000, 16000, 0 },   
 { 11025, 12000,  8000, 0}} ;
@@ -178,7 +175,7 @@ static unsigned samprate_table[3][4] = {
 //***************************************************************************************
 //  This reference data is from MPEGAudioInfo app
 // Samples per Frame / 8
-static const u32 m_dwCoefficients[2][3] =
+static u32 const m_dwCoefficients[2][3] =
 {
    {  // MPEG 1
       12,   // Layer1   (must be multiplied with 4, because of slot size)

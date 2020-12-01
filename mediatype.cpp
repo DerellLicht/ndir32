@@ -21,7 +21,6 @@
 
 #include "scsi_defs.h"
 
-typedef unsigned char u8 ;
 typedef unsigned int  uint ;
 
 //lint -e40  Undeclared identifier, which it obviously is not
@@ -31,9 +30,9 @@ typedef unsigned int  uint ;
 typedef struct ProfileInfo_s {
    char *description ;
    uint profile_code ;
-} ProfileInfo_t, *ProfileInfo_p ;
+} ProfileInfo_t ;
 
-ProfileInfo_t ProfileInfo[] = {
+ProfileInfo_t const ProfileInfo[] = {
 { "CDROM",     0x08 },  // CD-ROM Read only Compact Disc capable
 { "CDR",       0x09 },  // CD-R Write once Compact Disc capable
 { "CDRW",      0x0A },  // CD-RW Re-writable Compact Disc capable
@@ -56,18 +55,6 @@ ProfileInfo_t ProfileInfo[] = {
 { "HDDVDR",    0x51 },  // HD DVD-R Write-once HD DVD
 { "HDDVDRAM",  0x52 },  // HD DVD-RAM Rewritable HD DVD
 { "Unknown",   0 } } ;
-
-//*************************************************************************
-char *get_dev_name(uint profile_code)
-{
-   uint idx ;
-   for (idx=0; ProfileInfo[idx].profile_code != 0; idx++) {
-      if (ProfileInfo[idx].profile_code == profile_code) {
-         return ProfileInfo[idx].description ;
-      }
-   }
-   return "Unknown" ;
-}
 
 //****************************************************************************
 static unsigned get_cd_cfg(BOOL Status, PSCSI_PASS_THROUGH_WITH_BUFFERS Psptwb )
@@ -166,6 +153,18 @@ static int GetDeviceConfig(HANDLE hCD)
    // uint dbuflen = (uint) sptwb.DataBuf[3] ;
    // hex_dump((u8 *) sptwb.DataBuf, dbuflen+8) ;
    return get_cd_cfg(status, &sptwb); 
+}
+
+//*************************************************************************
+char *get_dev_name(uint profile_code)
+{
+   uint idx ;
+   for (idx=0; ProfileInfo[idx].profile_code != 0; idx++) {
+      if (ProfileInfo[idx].profile_code == profile_code) {
+         return ProfileInfo[idx].description ;
+      }
+   }
+   return "Unknown" ;
 }
 
 //****************************************************************************

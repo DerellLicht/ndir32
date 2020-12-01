@@ -23,6 +23,10 @@
 typedef  unsigned char  uchar ;
 typedef  unsigned long  ulong ;
 typedef  unsigned int   uint ;
+typedef  unsigned char  u8  ;
+typedef  unsigned short u16 ;
+typedef  unsigned int   u32 ;
+
 
 #define MAXLINE   260
 
@@ -129,7 +133,7 @@ extern ULONGLONG diskbytes, diskfree, clbytes ;
 extern WIN32_FIND_DATA fdata ;
 
 // extern char fsn_bfr[32] ;  //  buffer for name of lfn file system
-extern char *dname ;       //  used by is_lfn_supported() call
+extern char * const dname ;       //  used by is_lfn_supported() call
 
 extern int lfn_supported ; //  always true for 32-bit version
 

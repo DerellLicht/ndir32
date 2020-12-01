@@ -66,11 +66,8 @@ static int read_into_dbuffer(char *fname)
 //  buffers/functions for compiling size subtotals
 //***************************************************************************
 
-typedef unsigned char  u8  ;
-typedef unsigned short u16 ;
-typedef unsigned int   u32 ;
-
 //**********************************************************************
+//lint -esym(751, icon_entry_t)  variable not referenced
 typedef struct icon_entry_s {
    u8 Width ;        //  Cursor Width (16, 32 or 64)
    u8 Height ;       //  Cursor Height (16, 32 or 64 , most commonly = Width)
@@ -173,7 +170,7 @@ int get_cur_info(char *fname, char *mlstr)
 //    sometimes called YUV, colour).
 //************************************************************************
 
-static char *jpeg_fmt[3] = {
+static char const * const jpeg_fmt[3] = {
    "Jpeg", "Jfif", "Exif" 
 } ;
 
@@ -438,6 +435,7 @@ int get_sid_info(char *fname, char *mlstr)
 }
 
 //************************************************************************
+//lint -esym(751, gif_info_t)  variable not referenced
 typedef struct gif_info_s {
    unsigned width  : 16 ;
    unsigned height : 16 ;

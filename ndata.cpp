@@ -68,7 +68,7 @@ unsigned tree_level_limit = 0 ;
 WIN32_FIND_DATA fdata ; //  long-filename file struct
 
 static char dnamestr[4] = "c:\\" ;
-char *dname = &dnamestr[0] ;  //  used by is_lfn_supported() call
+char * const dname = &dnamestr[0] ;  //  used by is_lfn_supported() call
 
 int lfn_supported = 1 ; //  always true for 32-bit version
 

@@ -14,7 +14,7 @@
 #include "ndir32.h"
 #include "conio32.hpp"
 
-static char *error_text[4] = {
+static char const * const error_text[4] = {
    "Type 'NDIR /?' for help", //  not actually used in this program
    "Out of memory",
    "Invalid drive or path specified",

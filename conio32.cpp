@@ -38,9 +38,6 @@
 #include <stdlib.h>
 #include "conio32.hpp"
 
-typedef  unsigned char  uchar ;
-typedef  unsigned long  ulong ;
-
 #ifndef false
 #define false  0
 #endif
