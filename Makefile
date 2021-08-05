@@ -96,9 +96,9 @@ Filelist.o: conio32.hpp ndir32.h
 Fileread.o: ndir32.h
 ndata.o: ndir32.h
 Ndir32.o: ndir32.h conio32.hpp
-Ndisplay.o: ndir32.h conio32.hpp file_fmts.hpp
+Ndisplay.o: ndir32.h conio32.hpp file_fmts.h
 nsort.o: ndir32.h
 treelist.o: ndir32.h conio32.hpp
 mp3.parser.o: ndir32.h
-file_fmts.o: ndir32.h file_fmts.hpp
+file_fmts.o: ndir32.h file_fmts.h
 mediatype.o: scsi_defs.h

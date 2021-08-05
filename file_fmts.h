@@ -12,4 +12,5 @@ int get_avi_info(char *fname, char *mlstr);
 int get_ico_info(char *fname, char *mlstr);
 int get_cur_info(char *fname, char *mlstr);
 int get_sid_info(char *fname, char *mlstr);
+int get_webp_info(char *fname, char *mlstr);
 

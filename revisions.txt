@@ -239,3 +239,5 @@ Version 2.49, 09/06/20
   - fix mis-handled dir-tree level-limiting operation
   - Add option to alter level limit, using multiple commas
 
+Version 2.50, 08/05/21
+  /mm - Add support for webp extension

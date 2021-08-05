@@ -15,7 +15,7 @@
 #include <sys/stat.h>
 
 #include "ndir32.h"
-#include "file_fmts.hpp"
+#include "file_fmts.h"
 
 //*********************************************************************
 static unsigned short get2bytes(unsigned char *p)
@@ -350,6 +350,63 @@ int get_wave_info(char *fname, char *mlstr)
          // ptime /= 60.0 ;
          sprintf(mlstr, "%5u hz, %3u:%02u minutes    ", srate, uplay_mins, uplay_secs) ;
       }
+   }
+   return 0;
+}
+
+//*********************************************************
+// WebP file header:
+//  0                   1                   2                   3
+//  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+// |      'R'      |      'I'      |      'F'      |      'F'      |
+// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+// |                           File Size                           |
+// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+// |      'W'      |      'E'      |      'B'      |      'P'      |
+// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+// 
+// Extended WebP file header:
+// 
+//  0                   1                   2                   3
+//  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+// |                   WebP file header (12 bytes)                 |
+// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+// |                      ChunkHeader('VP8X')                      |
+// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+// |Rsv|I|L|E|X|A|R|                   Reserved                    |
+// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+// |          Canvas Width Minus One               |             ...
+// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+// ...  Canvas Height Minus One    |
+// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+int get_webp_info(char *fname, char *mlstr)
+{
+   sprintf(fpath, "%s\\%s", base_path, fname) ;
+   int result = read_into_dbuffer(fname) ;
+   if (result != 0) {
+      sprintf(mlstr, "%-28s", "unreadable WebP") ;
+   } 
+      //  first, search for the "fmt" string
+   else if (strncmp((char *)  dbuffer,    "RIFF", 4) != 0  ||
+            strncmp((char *) &dbuffer[8], "WEBP", 4) != 0) {
+      sprintf(mlstr, "%-28s", "unknown webp format") ;
+   }
+   else {
+      ul2uc_t uconv ;
+      char *hd = (char *) &dbuffer[24] ;
+      uconv.ul = 0;
+      uconv.uc[0] = *hd++ ;
+      uconv.uc[1] = *hd++ ;
+      uconv.uc[2] = *hd++ ;
+      unsigned width = uconv.ul + 1;
+      uconv.ul = 0;
+      uconv.uc[0] = *hd++ ;
+      uconv.uc[1] = *hd++ ;
+      unsigned height = uconv.ul + 1;
+      
+      sprintf(mlstr, "%4u x %4u                 ", width, height) ;
    }
    return 0;
 }

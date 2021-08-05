@@ -12,7 +12,7 @@
 
 #include "ndir32.h"
 #include "conio32.hpp"
-#include "file_fmts.hpp"
+#include "file_fmts.h"
 
 extern int get_mp3_info(char *fname, char *mlstr);
 //lint -e626   argument inconsistent with format
@@ -46,7 +46,7 @@ extern char *ShortVersion;
 static uchar attrclr;
 
 static char monthstr[12][4] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-	"Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+   "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
 };
 
 //*********************************************************
@@ -54,47 +54,47 @@ static char monthstr[12][4] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun",
 //*********************************************************
 static void testpause (void)
 {
-	if (!n.pause)
-		return;
+   if (!n.pause)
+      return;
    if (is_redirected ())
      return;
 
-	if (++linecnt >= lines - 1) {
-		nputs (n.colornhead, "Press any key to continue (or ESC to exit)");
-		unsigned inkey = get_scode ();
-		if (inkey == 27) {
-			if ((curlines != lines) && (!(n.ega_keep)))
-				set_lines (25);
-			error_exit (DATA_OKAY, NULL);
-		}
+   if (++linecnt >= lines - 1) {
+      nputs (n.colornhead, "Press any key to continue (or ESC to exit)");
+      unsigned inkey = get_scode ();
+      if (inkey == 27) {
+         if ((curlines != lines) && (!(n.ega_keep)))
+            set_lines (25);
+         error_exit (DATA_OKAY, NULL);
+      }
 
-		if (n.color) {
-			dreturn ();				  // CR only!! 
-			dclreol ();
-		}
-		else {
-			printf ("\n");
-		}
-		linecnt = 1;
-	}
+      if (n.color) {
+         dreturn ();            // CR only!! 
+         dclreol ();
+      }
+      else {
+         printf ("\n");
+      }
+      linecnt = 1;
+   }
 }
 
 /*****************************************************************/
 void ngotoxy (int x, int y)
 {
-	if (n.color)
-		dgotoxy (x, y);
+   if (n.color)
+      dgotoxy (x, y);
 }
 
 //**************************************************
 void info (char *data[])
 {
-	unsigned j = 0;
+   unsigned j = 0;
 
-	while (data[j] != NULL) {
-		nputs (n.colordefalt, data[j++]);
-		ncrlf ();
-	}
+   while (data[j] != NULL) {
+      nputs (n.colordefalt, data[j++]);
+      ncrlf ();
+   }
 }
 
 //**************************************************
@@ -102,26 +102,26 @@ void info (char *data[])
 //**************************************************
 void display_logo (void)
 {
-	if (n.batch)
-		return;
+   if (n.batch)
+      return;
 
    if (n.clear && !is_redirected ())
    // if (n.clear)
-		dclrscr ();
+      dclrscr ();
 
-	linecnt = 0;
+   linecnt = 0;
 
-	if (n.minimize) {
-		ngotoxy (0, _where_y ());
-		nputs (n.colorlogo, ShortVersion);
-	}
-	else {
-		ngotoxy ((80 - strlen (Version)) / 2, _where_y ());
-		nputs (n.colorlogo, Version);
-		ncrlf ();
-	}
-	// nputs(n.colordefalt, ShortVersion) ;
-	set_text_attr (n.colordefalt);
+   if (n.minimize) {
+      ngotoxy (0, _where_y ());
+      nputs (n.colorlogo, ShortVersion);
+   }
+   else {
+      ngotoxy ((80 - strlen (Version)) / 2, _where_y ());
+      nputs (n.colorlogo, Version);
+      ncrlf ();
+   }
+   // nputs(n.colordefalt, ShortVersion) ;
+   set_text_attr (n.colordefalt);
 }
 
 //************************************************************************
@@ -145,6 +145,7 @@ static mm_lookup_t const mm_lookup[] = {
 { "ico", get_ico_info },
 { "cur", get_cur_info },
 { "sid", get_sid_info },
+{ "webp", get_webp_info },
 { "", 0 }} ;
 
 //************************************************************************
@@ -154,9 +155,9 @@ void print1 (ffdata * fptr)
 {
    char mlstr[30] ;
    int show_normal_info ;
-	uchar SHRattr = fptr->attrib & 7;
+   uchar SHRattr = fptr->attrib & 7;
    FILETIME lft;
-	FileTimeToLocalFileTime (&(fptr->ft), &lft);
+   FileTimeToLocalFileTime (&(fptr->ft), &lft);
    // parse_time outdt;
    // // outdt.dtime[0] = fptr->ftime ;
    // // outdt.dtime[1] = fptr->fdate ;
@@ -177,7 +178,7 @@ void print1 (ffdata * fptr)
    long year = sdt.wYear   ;
 
    char attr[12];
-	//  detect non-standard file attributes and display specially.
+   //  detect non-standard file attributes and display specially.
    // if ((fptr->attrib) > 0x3F) {
    //   sprintf (attr, " 0x%2X ", fptr->attrib);
    //   attrclr = 0x0C;
@@ -202,40 +203,40 @@ void print1 (ffdata * fptr)
 
    mlstr[0] = 0 ;
    show_normal_info = 1 ;
-	//  display directory entry
-	if (fptr->dirflag) {
-		sprintf (tempstr, "%14s ", "");
-		nputs (n.colorsize, tempstr);
-		nputs (attrclr, attr);
-		if (lfn_supported) {
-			//sprintf(tempstr, "%02d-%02d-%04lu ", month, day, year);
-			sprintf (tempstr, "%3s %02d, %04lu ", monthstr[month - 1], day,
-				year);
-			nputs (n.colordate, tempstr);
-			sprintf (tempstr, "%02d:%02d:%02d ", hour, mins, secs);
-			nputs (n.colortime, tempstr);
-			sprintf (tempstr, "[%s]", fptr->filename);
-		}
-		else {
-			sprintf (tempstr, "%3s %02d, %04lu ", monthstr[month - 1], day,
-				year);
-			nputs (n.colordate, tempstr);
-			sprintf (tempstr, "%02d:%02d:%02d ", hour, mins, secs);
-			nputs (n.colortime, tempstr);
-			sprintf (tempstr, "[%-8s%-4s]", fptr->name, fptr->ext);
-			if (strlen (fptr->name) == 0) {
-				sprintf (tempstr, "[NoShortName ]");
-			}
-		}
-		//  display filename in appropriate color...
-		if (SHRattr != 0 && n.showSHRfiles)
-			nputs (n.colorSHR | SHRattr, tempstr);
-		else
-			nputs (n.colordir, tempstr);
-	}
+   //  display directory entry
+   if (fptr->dirflag) {
+      sprintf (tempstr, "%14s ", "");
+      nputs (n.colorsize, tempstr);
+      nputs (attrclr, attr);
+      if (lfn_supported) {
+         //sprintf(tempstr, "%02d-%02d-%04lu ", month, day, year);
+         sprintf (tempstr, "%3s %02d, %04lu ", monthstr[month - 1], day,
+            year);
+         nputs (n.colordate, tempstr);
+         sprintf (tempstr, "%02d:%02d:%02d ", hour, mins, secs);
+         nputs (n.colortime, tempstr);
+         sprintf (tempstr, "[%s]", fptr->filename);
+      }
+      else {
+         sprintf (tempstr, "%3s %02d, %04lu ", monthstr[month - 1], day,
+            year);
+         nputs (n.colordate, tempstr);
+         sprintf (tempstr, "%02d:%02d:%02d ", hour, mins, secs);
+         nputs (n.colortime, tempstr);
+         sprintf (tempstr, "[%-8s%-4s]", fptr->name, fptr->ext);
+         if (strlen (fptr->name) == 0) {
+            sprintf (tempstr, "[NoShortName ]");
+         }
+      }
+      //  display filename in appropriate color...
+      if (SHRattr != 0 && n.showSHRfiles)
+         nputs (n.colorSHR | SHRattr, tempstr);
+      else
+         nputs (n.colordir, tempstr);
+   }
 
-	//  display file entry
-	else {
+   //  display file entry
+   else {
       // i64tostr fsize(0);   //lint !e747
       char *p ;
       unsigned idx ;
@@ -378,57 +379,57 @@ void print2 (ffdata * fptr)
 //*********************************************************
 void print3 (ffdata * fptr)
 {
-	parse_time outdt;
-	uchar SHRattr = fptr->attrib & 7;
-	// outdt.dtime[0] = fptr->ftime ;
-	// outdt.dtime[1] = fptr->fdate ;
-	//  how to convert FILETIME to my format??
-	outdt.dtime[0] = '?';
-	outdt.dtime[1] = '?';
-	int month = outdt.outdata.ft_month;
-	long year = 1980L + (long) outdt.outdata.ft_year;
+   parse_time outdt;
+   uchar SHRattr = fptr->attrib & 7;
+   // outdt.dtime[0] = fptr->ftime ;
+   // outdt.dtime[1] = fptr->fdate ;
+   //  how to convert FILETIME to my format??
+   outdt.dtime[0] = '?';
+   outdt.dtime[1] = '?';
+   int month = outdt.outdata.ft_month;
+   long year = 1980L + (long) outdt.outdata.ft_year;
    ULONGLONG fsize = fptr->fsize;
 
-	if (fptr->dirflag) {
+   if (fptr->dirflag) {
       sprintf (tempstr, "%-8s%-4s  [DIR] ", fptr->name, fptr->ext);
-		if (strlen (fptr->name) == 0) {
+      if (strlen (fptr->name) == 0) {
          sprintf (tempstr, "NoShortName   [DIR] ");
-		}
-		//  display filename in appropriate color...
-		if (SHRattr != 0 && n.showSHRfiles)
-			nputs (n.colorSHR | SHRattr, tempstr);
-		else
-			nputs (n.colordir, tempstr);
-	}
-	else {
-		sprintf (tempstr, "%-8s%-4s ", fptr->name, fptr->ext);
-		if (strlen (fptr->name) == 0) {
-			sprintf (tempstr, "NoShortName  ");
-		}
-		//  display filename in appropriate color...
-		if (SHRattr != 0 && n.showSHRfiles)
-			nputs (n.colorSHR | SHRattr, tempstr);
-		else
-			nputs (fptr->color, tempstr);
+      }
+      //  display filename in appropriate color...
+      if (SHRattr != 0 && n.showSHRfiles)
+         nputs (n.colorSHR | SHRattr, tempstr);
+      else
+         nputs (n.colordir, tempstr);
+   }
+   else {
+      sprintf (tempstr, "%-8s%-4s ", fptr->name, fptr->ext);
+      if (strlen (fptr->name) == 0) {
+         sprintf (tempstr, "NoShortName  ");
+      }
+      //  display filename in appropriate color...
+      if (SHRattr != 0 && n.showSHRfiles)
+         nputs (n.colorSHR | SHRattr, tempstr);
+      else
+         nputs (fptr->color, tempstr);
 
-		if (fsize > 99999999L) {
+      if (fsize > 99999999L) {
          sprintf (tempstr, "%5u", (uint) (fsize / 1000000L));
-			nputs (n.colorsize, tempstr);
-			nputs (n.colorsize ^ 0x08, "M ");
-		}
-		else if (fsize > 999999L) {
+         nputs (n.colorsize, tempstr);
+         nputs (n.colorsize ^ 0x08, "M ");
+      }
+      else if (fsize > 999999L) {
          sprintf (tempstr, "%5u", (uint) (fsize / 1000L));
-			nputs (n.colorsize, tempstr);
-			nputs (n.colorsize ^ 0x08, "K ");
-		}
-		else {
+         nputs (n.colorsize, tempstr);
+         nputs (n.colorsize ^ 0x08, "K ");
+      }
+      else {
          sprintf (tempstr, "%6u ", (uint) (fsize));
-			nputs (n.colorsize, tempstr);
-		}
-	}
+         nputs (n.colorsize, tempstr);
+      }
+   }
 
-	sprintf (tempstr, "%02d-%02d", month, (int) (year % 100));
-	nputs (n.colordate, tempstr);
+   sprintf (tempstr, "%02d-%02d", month, (int) (year % 100));
+   nputs (n.colordate, tempstr);
 
    //  put the name last
    if (fptr->dirflag) {
@@ -475,88 +476,88 @@ void print3 (ffdata * fptr)
 void print4 (ffdata * fptr)
 {
    ULONGLONG fsize = fptr->fsize;
-	uchar SHRattr = fptr->attrib & 7;
+   uchar SHRattr = fptr->attrib & 7;
 
-	if (fptr->dirflag) {
+   if (fptr->dirflag) {
       sprintf (tempstr, "%-8s%-4s  [DIR]", fptr->name, fptr->ext);
-		//  display filename in appropriate color...
-		if (strlen (fptr->name) == 0) {
+      //  display filename in appropriate color...
+      if (strlen (fptr->name) == 0) {
          sprintf (tempstr, "NoShortName   [DIR]");
-		}
-		if (SHRattr != 0 && n.showSHRfiles)
-			nputs (n.colorSHR | SHRattr, tempstr);
-		else
-			nputs (n.colordir, tempstr);
-	}
-	else {
-		sprintf (tempstr, "%-8s%-4s ", fptr->name, fptr->ext);
-		if (strlen (fptr->name) == 0) {
-			sprintf (tempstr, "NoShortName  ");
-		}
-		//  display filename in appropriate color...
-		if (SHRattr != 0 && n.showSHRfiles)
-			nputs (n.colorSHR | SHRattr, tempstr);
-		else
-			nputs (fptr->color, tempstr);
+      }
+      if (SHRattr != 0 && n.showSHRfiles)
+         nputs (n.colorSHR | SHRattr, tempstr);
+      else
+         nputs (n.colordir, tempstr);
+   }
+   else {
+      sprintf (tempstr, "%-8s%-4s ", fptr->name, fptr->ext);
+      if (strlen (fptr->name) == 0) {
+         sprintf (tempstr, "NoShortName  ");
+      }
+      //  display filename in appropriate color...
+      if (SHRattr != 0 && n.showSHRfiles)
+         nputs (n.colorSHR | SHRattr, tempstr);
+      else
+         nputs (fptr->color, tempstr);
 
-		if (fsize > 99999999L) {
+      if (fsize > 99999999L) {
          sprintf (tempstr, "%5u", (uint) (fsize / 1000000L));
-			nputs (n.colorsize, tempstr);
-			nputs (n.colorsize ^ 0x08, "M");
-		}
-		else if (fsize > 999999L) {
+         nputs (n.colorsize, tempstr);
+         nputs (n.colorsize ^ 0x08, "M");
+      }
+      else if (fsize > 999999L) {
          sprintf (tempstr, "%5u", (uint) (fsize / 1000L));
-			nputs (n.colorsize, tempstr);
-			nputs (n.colorsize ^ 0x08, "K");
-		}
-		else {
+         nputs (n.colorsize, tempstr);
+         nputs (n.colorsize ^ 0x08, "K");
+      }
+      else {
          sprintf (tempstr, "%6u", (uint) (fsize));
-			nputs (n.colorsize, tempstr);
-		}
-	}
+         nputs (n.colorsize, tempstr);
+      }
+   }
 }
 
 /*****************************************************************/
 void print6 (ffdata * fptr)
 {
-	uchar SHRattr = fptr->attrib & 7;
-	if (fptr->dirflag) {
-		sprintf (tempstr, "%-8s%-4s", fptr->name, fptr->ext);
-		if (strlen (fptr->name) == 0) {
-			sprintf (tempstr, "NoShortName ");
-		}
-		//  display filename in appropriate color...
-		if (SHRattr != 0 && n.showSHRfiles)
-			nputs (n.colorSHR | SHRattr, tempstr);
-		else
-			nputs (n.colordir, tempstr);
-	}
-	else {
-		sprintf (tempstr, "%-8s%-4s", fptr->name, fptr->ext);
-		if (strlen (fptr->name) == 0) {
-			sprintf (tempstr, "NoShortName ");
-		}
-		//  display filename in appropriate color...
-		if (SHRattr != 0 && n.showSHRfiles)
-			nputs (n.colorSHR | SHRattr, tempstr);
-		else
-			nputs (fptr->color, tempstr);
-	}
+   uchar SHRattr = fptr->attrib & 7;
+   if (fptr->dirflag) {
+      sprintf (tempstr, "%-8s%-4s", fptr->name, fptr->ext);
+      if (strlen (fptr->name) == 0) {
+         sprintf (tempstr, "NoShortName ");
+      }
+      //  display filename in appropriate color...
+      if (SHRattr != 0 && n.showSHRfiles)
+         nputs (n.colorSHR | SHRattr, tempstr);
+      else
+         nputs (n.colordir, tempstr);
+   }
+   else {
+      sprintf (tempstr, "%-8s%-4s", fptr->name, fptr->ext);
+      if (strlen (fptr->name) == 0) {
+         sprintf (tempstr, "NoShortName ");
+      }
+      //  display filename in appropriate color...
+      if (SHRattr != 0 && n.showSHRfiles)
+         nputs (n.colorSHR | SHRattr, tempstr);
+      else
+         nputs (fptr->color, tempstr);
+   }
 }
 
 //*********************************************************
 //  from FILELIST.CPP
 //  global vars for file size calculations
 //*********************************************************
-extern char tempfmtstr[6];		  //  for forming strings of the form %nnld
+extern char tempfmtstr[6];      //  for forming strings of the form %nnld
 
 //*********************************************************
 void lfn_print2 (ffdata * fptr)
 {
-	uchar SHRattr = fptr->attrib & 7;
+   uchar SHRattr = fptr->attrib & 7;
 
    FILETIME lft;
-	FileTimeToLocalFileTime (&(fptr->ft), &lft);
+   FileTimeToLocalFileTime (&(fptr->ft), &lft);
    // parse_time outdt;
    // FileTimeToDosDateTime (&lft, &(outdt.dtime[1]), &(outdt.dtime[0]));
    // int mins = outdt.outdata.ft_min;
@@ -575,169 +576,169 @@ void lfn_print2 (ffdata * fptr)
 
    ULONGLONG fsize = fptr->fsize;
 
-	if (fptr->dirflag) {
+   if (fptr->dirflag) {
       nputs (n.colordir, " [DIR] ");
-		sprintf (tempstr, "%02d-%3s-%02d ", day, monthstr[month - 1],
-			(int) (year % 100));
-		nputs (n.colordate, tempstr);
-		sprintf (tempstr, "%02d:%02d ", hour, mins);
-		nputs (n.colortime, tempstr);
+      sprintf (tempstr, "%02d-%3s-%02d ", day, monthstr[month - 1],
+         (int) (year % 100));
+      nputs (n.colordate, tempstr);
+      sprintf (tempstr, "%02d:%02d ", hour, mins);
+      nputs (n.colortime, tempstr);
 
-		sprintf (tempstr, tempfmtstr, fptr->filename);
-		if (SHRattr != 0 && n.showSHRfiles)
-			nputs (n.colorSHR | SHRattr, tempstr);
-		else
-			nputs (n.colordir, tempstr);
-	}
-	else {
-		//  print file size
+      sprintf (tempstr, tempfmtstr, fptr->filename);
+      if (SHRattr != 0 && n.showSHRfiles)
+         nputs (n.colorSHR | SHRattr, tempstr);
+      else
+         nputs (n.colordir, tempstr);
+   }
+   else {
+      //  print file size
       if (fsize > 99999999L  ||  n.size_display == 2) {
          sprintf (tempstr, "%5u", (uint) (fsize / 1000000ULL));
-			nputs (n.colorsize, tempstr);
-			nputs (n.colorsize ^ 0x08, "M ");
-		}
+         nputs (n.colorsize, tempstr);
+         nputs (n.colorsize ^ 0x08, "M ");
+      }
       else if (fsize > 999999L  ||  n.size_display == 1) {
          sprintf (tempstr, "%5u", (uint) (fsize / 1000ULL));
-			nputs (n.colorsize, tempstr);
-			nputs (n.colorsize ^ 0x08, "K ");
-		}
-		else {
+         nputs (n.colorsize, tempstr);
+         nputs (n.colorsize ^ 0x08, "K ");
+      }
+      else {
          sprintf (tempstr, "%6u ", (uint) fsize);
-			nputs (n.colorsize, tempstr);
-		}
+         nputs (n.colorsize, tempstr);
+      }
 
-		sprintf (tempstr, "%02d-%3s-%02d ", day, monthstr[month - 1],
-			(int) (year % 100));
-		nputs (n.colordate, tempstr);
-		sprintf (tempstr, "%02d:%02d ", hour, mins);
-		nputs (n.colortime, tempstr);
+      sprintf (tempstr, "%02d-%3s-%02d ", day, monthstr[month - 1],
+         (int) (year % 100));
+      nputs (n.colordate, tempstr);
+      sprintf (tempstr, "%02d:%02d ", hour, mins);
+      nputs (n.colortime, tempstr);
 
-		//  generate filename
-		sprintf (tempstr, tempfmtstr, fptr->filename);
-		if (SHRattr != 0 && n.showSHRfiles)
-			nputs (n.colorSHR | SHRattr, tempstr);
-		else
-			nputs (fptr->color, tempstr);
-	}
+      //  generate filename
+      sprintf (tempstr, tempfmtstr, fptr->filename);
+      if (SHRattr != 0 && n.showSHRfiles)
+         nputs (n.colorSHR | SHRattr, tempstr);
+      else
+         nputs (fptr->color, tempstr);
+   }
 }
 
 /*****************************************************************/
 void lfn_print4 (ffdata * fptr)
 {
    ULONGLONG fsize = fptr->fsize;
-	uchar SHRattr = fptr->attrib & 7;
+   uchar SHRattr = fptr->attrib & 7;
 
-	if (fptr->dirflag) {
+   if (fptr->dirflag) {
       nputs (n.colordir, " [DIR] ");
-		sprintf (tempstr, tempfmtstr, fptr->filename);
-		if (SHRattr != 0 && n.showSHRfiles)
-			nputs (n.colorSHR | SHRattr, tempstr);
-		else
-			nputs (n.colordir, tempstr);
-	}
-	else {
-		//  print file size
+      sprintf (tempstr, tempfmtstr, fptr->filename);
+      if (SHRattr != 0 && n.showSHRfiles)
+         nputs (n.colorSHR | SHRattr, tempstr);
+      else
+         nputs (n.colordir, tempstr);
+   }
+   else {
+      //  print file size
       if (fsize > 99999999L  ||  n.size_display == 2) {
          sprintf (tempstr, "%5u", (uint) (fsize / 1000000L));
-			nputs (n.colorsize, tempstr);
-			nputs (n.colorsize ^ 0x08, "M ");
-		}
+         nputs (n.colorsize, tempstr);
+         nputs (n.colorsize ^ 0x08, "M ");
+      }
       else if (fsize > 999999L  ||  n.size_display == 1) {
          sprintf (tempstr, "%5u", (uint) (fsize / 1000L));
-			nputs (n.colorsize, tempstr);
-			nputs (n.colorsize ^ 0x08, "K ");
-		}
-		else {
+         nputs (n.colorsize, tempstr);
+         nputs (n.colorsize ^ 0x08, "K ");
+      }
+      else {
          sprintf (tempstr, "%6u ", (uint) fsize);
-			nputs (n.colorsize, tempstr);
-		}
+         nputs (n.colorsize, tempstr);
+      }
 
-		//  generate filename
-		sprintf (tempstr, tempfmtstr, fptr->filename);
-		if (SHRattr != 0 && n.showSHRfiles)
-			nputs (n.colorSHR | SHRattr, tempstr);
-		else
-			nputs (fptr->color, tempstr);
-	}
+      //  generate filename
+      sprintf (tempstr, tempfmtstr, fptr->filename);
+      if (SHRattr != 0 && n.showSHRfiles)
+         nputs (n.colorSHR | SHRattr, tempstr);
+      else
+         nputs (fptr->color, tempstr);
+   }
 }
 
 /*****************************************************************/
 void lfn_print6 (ffdata * fptr)
 {
-	uchar SHRattr = fptr->attrib & 7;
-	if (fptr->dirflag) {
-		sprintf (tempstr, tempfmtstr, fptr->filename);
-		if (SHRattr != 0 && n.showSHRfiles)
-			nputs (n.colorSHR | SHRattr, tempstr);
-		else
-			nputs (n.colordir, tempstr);
-	}
-	else {
-		sprintf (tempstr, tempfmtstr, fptr->filename);
-		if (SHRattr != 0 && n.showSHRfiles)
-			nputs (n.colorSHR | SHRattr, tempstr);
-		else
-			nputs (fptr->color, tempstr);
-	}
+   uchar SHRattr = fptr->attrib & 7;
+   if (fptr->dirflag) {
+      sprintf (tempstr, tempfmtstr, fptr->filename);
+      if (SHRattr != 0 && n.showSHRfiles)
+         nputs (n.colorSHR | SHRattr, tempstr);
+      else
+         nputs (n.colordir, tempstr);
+   }
+   else {
+      sprintf (tempstr, tempfmtstr, fptr->filename);
+      if (SHRattr != 0 && n.showSHRfiles)
+         nputs (n.colorSHR | SHRattr, tempstr);
+      else
+         nputs (fptr->color, tempstr);
+   }
 }
 
 /******************************************************************/
 void ncrlf (void)
 {
-	if (n.color)
+   if (n.color)
       dnewline ();
-	else
-		printf ("\n");
-	testpause ();
+   else
+      printf ("\n");
+   testpause ();
 }
 
 /******************************************************************/
 void nputc (uchar attr, const uchar outchr)
 {
    // unsigned hattr ;
-	if (n.color) {
+   if (n.color) {
       set_text_attr (attr);
       dputc (outchr);
-	}
-	else
-		printf ("%c", outchr);
+   }
+   else
+      printf ("%c", outchr);
 }
 
 /******************************************************************/
 void nputs (uchar attr, const char *outstr)
 {
-	if (n.color) {
+   if (n.color) {
       set_text_attr (attr);
       dputs (outstr);
-	}
-	else
+   }
+   else
       printf ("%s", outstr);
 }
 
 /******************************************************************/
 void nput_char (uchar attr, char chr, int count)
 {
-	if (n.color) {
+   if (n.color) {
       dputnchar (chr, attr, count);
-	}
-	else {
-		for (int j = 0; j < count; j++)
-			putchar (chr);
-	}
+   }
+   else {
+      for (int j = 0; j < count; j++)
+         putchar (chr);
+   }
 }
 
 /******************************************************************/
 void nput_line (uchar attr, char chr)
 {
    int j, wincols = get_window_cols() - 1 ;
-	if (n.color) {
+   if (n.color) {
       dputnchar (chr, attr, wincols);
-	}
-	else {
+   }
+   else {
       for (j = 0; j < wincols; j++)
-			putchar (chr);
-	}
-	ncrlf ();
+         putchar (chr);
+   }
+   ncrlf ();
 }
 
 //lint +e559   Size of argument no. 3 inconsistent with format
