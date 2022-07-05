@@ -1,12 +1,12 @@
-                 NDIR - The Ultimate Color Directory Program
+NDIR - The Ultimate Color Directory Program
 
-                              Written by:
-                         Daniel D. Miller
-                         4835 Coco Palm Drive
-                         Fremont, CA  94538
+Written by:
+Daniel D. Miller
+4835 Coco Palm Drive
+Fremont, CA  94538
 
-                     Email: derelict@comcast.net
-                     Web:   derelllicht.com
+Email: derelict@comcast.net
+Web:   derelllicht.com
 
 The NDIR utility is released as Freeware. 
 Please feel free to distribute it anywhere that you wish!!  
@@ -17,7 +17,7 @@ project, personal or commercial.
 
 ***************************************************************************
 
-                        NDIR - The directory lister.
+NDIR - The directory lister.
 
 This program is a color directory lister with many options.  In addition
 to the standard file-display options, it also offers special display
@@ -44,8 +44,9 @@ I also am abandoning the ndirh utility, which was never particularly impressive.
                                 Installation
 
 The only installation required by NDIR is to place *.EXE and NDIR.INI
-somewhere in your path, so they can be located when you run them from
-a DOS prompt.
+somewhere in your path, so they can be located when you run them from a DOS prompt.
+If ndir.ini does not exist in the location where the .exe file is located,
+it will be created with default values, the first time the program is run.
 
 ***************************************************************************
 
@@ -55,7 +56,6 @@ Ndir is now configured via a configuration file, called NDIR.INI.
 *All* of the executables use the same configuration file.  A default INI
 file is included with this distribution; I recommend copying the INI file and
 the appropriate executable files to a directory that is in your path. 
-C:\WINDOWS (or C:\WINNT) should work fine.
 
 When NDIR first executes, it searches for NDIR.INI.  The search method is:
 
@@ -122,7 +122,7 @@ file attributes:
 
 ***************************************************************************
 
-         WHAT DOES NDIR DO THAT EVERY DIR LISTER DOESN'T ? ?
+WHAT DOES NDIR DO THAT EVERY DIR LISTER DOESN'T ? ?
 
 Here are some of the features of NDIR, a summary of which can be
 obtained by typing NDIR -? :
@@ -156,7 +156,7 @@ obtained by typing NDIR -? :
 - A "batch" mode which can assist you in creating batch files.
 
 
-     WHAT DOESN'T NDIR DO THAT EVERY DIR LISTER DOES OR DOESN'T ? ?
+WHAT DOESN'T NDIR DO THAT EVERY DIR LISTER DOES OR DOESN'T ? ?
 
 Functions that are NOT supported (because I ran out of time before other
 projects developed), but may be added if interest is shown, are:
@@ -177,20 +177,12 @@ projects developed), but may be added if interest is shown, are:
 
 ***************************************************************************
 
-                 WHO ARE YOU ? ?  (who-who. who-who.)
+WHO ARE YOU ? ?  (who-who. who-who.)
 
-I am a Software Engineer, living in Fremont, CA.  I started out as a
+I am a retired Software Engineer, living in Fremont, CA.  I started out as a
 digital hardware engineer, but discovered that software is more fun!!!
 I have professional experience with C (mostly), numerous assemblers, 
 PASCAL, Visual Basic (but I got better), and DBASE III (don't laugh).  
-
-NDIR was written in MS C++ version 8.00 and MASM 6.13, with assistance from 
-the excellent Spontaneous Assembly extended libraries.  These excellent 
-libraries, unfortunately, are no longer available commercially, more's the 
-loss.
-
-NDIR32 and NDIRH were written in Visual C++ V6, with no after-market libraries 
-at all...
 
 ***************************************************************************
 

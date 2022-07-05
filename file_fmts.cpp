@@ -381,6 +381,37 @@ int get_wave_info(char *fname, char *mlstr)
 // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 // ...  Canvas Height Minus One    |
 // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+// VP8X format:  1800x1200 = 0x0708, 0x04b0, off by 1
+// https://www.ietf.org/id/draft-zern-webp-07.html#name-riff-file-format
+// 0000 0000 52 49 46 46 30 bb 05 00  57 45 42 50 56 50 38 58  RIFF0+.WEBPVP8X
+// 0000 0010 0a 00 00 00 20 00 00 00  07 07 00 af 04 00 49 43  .... ....».IC
+
+// VP8 format:   576x768 = x0240, 0x0300, off by 0
+// 0000 0000 52 49 46 46 4c b9 01 00  57 45 42 50 56 50 38 20  RIFFL¦.WEBPVP8
+// 0000 0010 40 b9 01 00 10 dd 04 9d  01 2a 40 02 00 03 3e 51  @¦.¦¥*@.>Q
+//                                         |wwwww|lllll|
+
+// Future note:
+// VP8L format:
+// The beginning of the header has the RIFF container. This consists of the following 21 bytes:
+// 
+//    String "RIFF"
+//    A little-endian 32 bit value of the block length, the whole size of the block 
+//    controlled by the RIFF header. Normally this equals the payload size 
+//    (file size minus 8 bytes: 4 bytes for the 'RIFF' identifier and 4 bytes for 
+//    storing the value itself).
+//    String "WEBP" (RIFF container name).
+//    String "VP8L" (chunk tag for lossless encoded image data).
+//    A little-endian 32-bit value of the number of bytes in the lossless stream.
+//    One byte signature 0x2f.
+// 
+// The first 28 bits of the bitstream specify the width and height of the image. 
+// Width and height are decoded as 14-bit integers as follows:
+// 
+// int image_width = ReadBits(14) + 1;
+// int image_height = ReadBits(14) + 1;
+
 int get_webp_info(char *fname, char *mlstr)
 {
    sprintf(fpath, "%s\\%s", base_path, fname) ;
@@ -395,18 +426,50 @@ int get_webp_info(char *fname, char *mlstr)
    }
    else {
       ul2uc_t uconv ;
-      char *hd = (char *) &dbuffer[24] ;
-      uconv.ul = 0;
-      uconv.uc[0] = *hd++ ;
-      uconv.uc[1] = *hd++ ;
-      uconv.uc[2] = *hd++ ;
-      unsigned width = uconv.ul + 1;
-      uconv.ul = 0;
-      uconv.uc[0] = *hd++ ;
-      uconv.uc[1] = *hd++ ;
-      unsigned height = uconv.ul + 1;
+      char *hd ;
+      unsigned width, height ;
+      switch (dbuffer[15]) {
+      case 'X':
+         hd = (char *) &dbuffer[24] ;
+         uconv.ul = 0;
+         uconv.uc[0] = *hd++ ;
+         uconv.uc[1] = *hd++ ;
+         uconv.uc[2] = *hd++ ;
+         width = uconv.ul + 1;
+         uconv.ul = 0;
+         uconv.uc[0] = *hd++ ;
+         uconv.uc[1] = *hd++ ;
+         height = uconv.ul + 1;
+         sprintf(mlstr, "%4u x %4u   VP8X format   ", width, height) ;
+         break ;
+         
+      case ' ':
+         if (dbuffer[23] == 0x9D  &&
+             dbuffer[24] == 0x01  &&
+             dbuffer[25] == 0x2A) {
+            hd = (char *) &dbuffer[26] ;
+            uconv.ul = 0;
+            uconv.uc[0] = *hd++ ;
+            uconv.uc[1] = *hd++ ;
+            width = uconv.ul ;
+            uconv.ul = 0;
+            uconv.uc[0] = *hd++ ;
+            uconv.uc[1] = *hd++ ;
+            height = uconv.ul ;
+            sprintf(mlstr, "%4u x %4u   VP8 format    ", width, height) ;
+         } else {
+            sprintf(mlstr, "VP8X bad sync code    ") ;
+         }
+         break ;
       
-      sprintf(mlstr, "%4u x %4u                 ", width, height) ;
+      case 'L':
+         sprintf(mlstr, "VP8L format - need support   ") ;
+         break ;
+
+      default:
+         sprintf(mlstr, "VP8%c format - need support   ", dbuffer[15]) ;
+         break ;      
+      }
    }
    return 0;
 }

@@ -241,3 +241,8 @@ Version 2.49, 09/06/20
 
 Version 2.50, 08/05/21
   /mm - Add support for webp extension
+  
+Version 2.51, 07/04/22
+  /mm - Add support for other webp variants
+  
+  
