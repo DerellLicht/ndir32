@@ -245,4 +245,7 @@ Version 2.50, 08/05/21
 Version 2.51, 07/04/22
   /mm - Add support for other webp variants
   
+Version 2.52, 07/15/22
+  /ii - show used space, vs free space, in disk summary
+  
   

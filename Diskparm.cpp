@@ -207,10 +207,12 @@ void display_drive_summary (void)
       "                               Disk Drive Summary                              \n\r");
    nput_line (n.colorframe, '=');
 
-   nputs (n.colornhead,
-      "   file sys      total space          free space     [Cluster Size] UNC path \n");
-   nputs (n.colornhead,
-      "   ========  ==================  ==================  ========================\n");
+   if (n.drive_summary == 1) {
+      nputs (n.colornhead, "   file sys      total space          free space     [Cluster Size] UNC path \n");
+   } else {
+      nputs (n.colornhead, "   file sys      total space          used space     [Cluster Size] UNC path \n");
+   }
+   nputs (n.colornhead, "   ========  ==================  ==================  ========================\n");
 
    ULONGLONG lfree = 0;
    ULONGLONG ltotal = 0;
@@ -285,6 +287,9 @@ void display_drive_summary (void)
 
       // disktotal.convert (totals1);
       // diskavail.convert (frees1);
+      if (n.drive_summary == 2) {
+         frees1 = totals1 - frees1 ;
+      }
       convert_to_commas(totals1, disktotal);
       convert_to_commas(frees1, diskavail);
 

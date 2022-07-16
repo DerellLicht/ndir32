@@ -157,6 +157,7 @@ char *helptxt[] = {
 "   -4          \"    four  \"   ,   with name/size.",
 "   -6          \"    six   \"   ,   with name only.",
 "   -i       Display drive summary for all drives in system.",
+"   -ii      Display drive summary for all drives in system, with used vs free space.",
 "   -l *     Toggle long-filename enable flag (NDIR16 and MSDOS 7.00+ only)",
 "   -k *     Toggle color mode.",
 "   -j *     Use standard ASCII (for redirection). (forces -k)",

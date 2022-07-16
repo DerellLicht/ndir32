@@ -20,7 +20,7 @@
 #include "ndir32.h"
 #include "conio32.hpp"
 
-#define  VER_NUMBER "2.51"
+#define  VER_NUMBER "2.52"
 
 //lint -esym(843, Version, ShortVersion) could be declared as const
 char *Version = " NDIR.EXE, Version " VER_NUMBER " " ;
@@ -199,7 +199,7 @@ int main(int argc, char **argv)
       info(helptxt) ;
    else if (n.info)
       info(idtxt) ;
-   else if (n.drive_summary)
+   else if (n.drive_summary > 0)
       display_drive_summary() ;
    else {
       //  If no filespec was given, insert current path with *.*
