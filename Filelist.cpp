@@ -514,7 +514,6 @@ static void filehead(void)
 /*****************************************************************/
 void put_disk_summary(void)
 {
-   // i64tostr itemp64(0) ;   //lint !e747 
    nputs(n.colornhead, "Total disk space = ") ;
    // itemp64.convert(diskbytes) ;
    nputs(n.colorxhead, convert_to_commas(diskbytes, NULL)) ;
@@ -533,7 +532,6 @@ static void fileend(void)
    ULONGLONG dirsecbytes, clusters ;
    ULONGLONG dbytes, dsbytes ;
    ffdata *ftemp ;
-   // i64tostr itemp64(0) ;   //lint !e747 
    int wincols = get_window_cols() - 1 ;
 
    //  get directory info

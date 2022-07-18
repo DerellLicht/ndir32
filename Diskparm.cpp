@@ -216,8 +216,6 @@ void display_drive_summary (void)
 
    ULONGLONG lfree = 0;
    ULONGLONG ltotal = 0;
-   // i64tostr diskavail (0);      //lint !e747 
-   // i64tostr disktotal (0);      //lint !e747
 
    // puts("trying GetLogicalDrives:") ;
    DWORD gld_return = GetLogicalDrives() ;

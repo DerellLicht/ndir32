@@ -237,7 +237,6 @@ void print1 (ffdata * fptr)
 
    //  display file entry
    else {
-      // i64tostr fsize(0);   //lint !e747
       char *p ;
       unsigned idx ;
 
