@@ -47,9 +47,6 @@ extern void parse_command_args(int start, int argc, char** argv);
 //  from QUALIFY.CPP
 extern unsigned qualify(char *argptr, int lfn_off);
 
-// extern void output_html_header(char *title);
-// extern void output_html_footer(void);
-
 //***************  function prototypes  ***************
 static void process_filespecs(void);
 static void sort_target_paths(void);
@@ -67,8 +64,9 @@ char *convert_to_commas(ULONGLONG uli, char *outstr)
    char *strptr ;
    char temp_ull_str[MAX_ULL_COMMA_LEN+1] ;
    static char local_ull_str[MAX_ULL_COMMA_LEN+1] ;
-   if (outstr == NULL)
+   if (outstr == NULL) {
        outstr = local_ull_str ;
+   }
 
    sprintf(temp_ull_str, "%"PRIu64"", uli);
    // sprintf(temp_ull_str, "%llu", uli);
@@ -97,25 +95,27 @@ char *convert_to_commas(ULONGLONG uli, char *outstr)
 //  DEBUG function: insert filespecs in display list
 //***********************************************************
 void insert_target_filespec(char *fstr)
-   {
+{
    // target[tcount] = new char[PATH_MAX] ;
    target[tcount] = (char *) malloc(PATH_MAX) ;
-   if (target[tcount] == NULL)
+   if (target[tcount] == NULL) {
       error_exit(OUT_OF_MEMORY, NULL) ;
+   }
    strcpy(target[tcount], fstr) ;
 
    unsigned result = qualify(target[tcount], n.lfn_off) ;
-   if (result == QUAL_INV_DRIVE)
+   if (result == QUAL_INV_DRIVE) {
       error_exit(INV_DRIVE, target[tcount]) ;
+   }
 
    tcount++ ;
-   }
+}
 
 //*****************************************************************
 static char ininame[PATH_MAX] ;
 
 int main(int argc, char **argv)
-   {
+{
    console_init(Version) ;
 
    //***********************************************************
@@ -163,8 +163,9 @@ int main(int argc, char **argv)
       strptr++ ;  //lint !e613:  skip backslash
       strcpy(exename, strptr) ;  //lint !e613
       strptr = strchr(exename, '.') ;
-      if (strptr != 0) 
+      if (strptr != 0) {
          *strptr = 0 ;  //  strip the extension
+      }
    }
 
    char* options = getenv(exename) ; 
@@ -213,7 +214,7 @@ int main(int argc, char **argv)
    // output_html_footer();
    error_exit(DATA_OKAY, NULL) ;
    return 0 ;
-   }
+}
 
 /**********************************************************************/
 /**                     File listing routines                        **/        
