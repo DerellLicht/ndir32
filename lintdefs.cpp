@@ -10,7 +10,7 @@
 //lint -e705  Argument nominally inconsistent with format (int vs. unsigned int)
 //lint -e1786 Implicit conversion to Boolean (return) (int to bool)
 
-//lint -e87   expression too complicated for #ifdef or #ifndef
+//lint -e87   expression too complicated for #ifdef or #ifndef  (rejecting >= )
 
 //lint -esym(526, __offsetof__)
 //lint -esym(628, __offsetof__)
