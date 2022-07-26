@@ -10,7 +10,7 @@
 //  linked into the application (otherwise the compile fails).         
 //*********************************************************************
 
-#include <stdlib.h>             //  ultoa()
+// #include <stdlib.h>             //  ultoa()
 #include <windows.h>
 #include "ndir32.h"
 #include "conio32.hpp"
@@ -20,12 +20,9 @@ char dpath[4] = "d:\\";
 static char vnbfr[PATH_MAX];
 static char fsnbfr[PATH_MAX];
 
-//  from mft_list.c
+//  from mft_list.cpp
 // extern "C" unsigned get_nt_cluster_size(char dltr);
 extern ULONGLONG get_nt_free_space(char dltr);
-
-//  from filelist.cpp
-extern unsigned get_cluster_size(char dltr);
 
 //  mediatype.cpp
 extern char *get_cd_device_desc(char drv);
@@ -42,7 +39,7 @@ static char fsn_bfr[32] ;      //  buffer for name of lfn file system
 static char diskavail[MAX_ULL_COMMA_LEN+1]; 
 static char disktotal[MAX_ULL_COMMA_LEN+1]; 
 //*****************************************************************
-unsigned get_cluster_size(char dltr)
+static unsigned get_cluster_size(char dltr)
 {
    char dirpath[4] = "c:\\" ;
    unsigned cl_bytes = 4096 ;

@@ -21,10 +21,6 @@ static void print_null(ffdata *fptr)
 {
 }
 
-//  from mft_list.cpp
-// extern unsigned get_nt_cluster_size(char dltr);
-// extern ULONGLONG get_nt_free_space(char dltr);
-
 extern void lfn_print2(ffdata *fptr);
 extern void lfn_print4(ffdata *fptr);
 extern void lfn_print6(ffdata *fptr);

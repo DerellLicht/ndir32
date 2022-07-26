@@ -1,6 +1,6 @@
 //====================================================================
 //
-// mft_list.c
+// mft_list.cpp
 // Derived from 'ntfsinfo.c',
 // Copyright (C) 1997 Mark Russinovich, http://www.sysinternals.com
 //
@@ -18,7 +18,7 @@
 //
 // File System Control command for getting NTFS information
 //
-#define FSCTL_GET_VOLUME_INFORMATION	0x90064
+#define FSCTL_GET_VOLUME_INFORMATION   0x90064
 
 //
 // return code type
@@ -52,10 +52,10 @@ typedef struct _IO_STATUS_BLOCK {
 // Apc Routine (see NTDDK.H)
 //
 typedef VOID (*PIO_APC_ROUTINE) (
-				PVOID ApcContext,
-				PIO_STATUS_BLOCK IoStatusBlock,
-				ULONG Reserved
-			);
+            PVOID ApcContext,
+            PIO_STATUS_BLOCK IoStatusBlock,
+            ULONG Reserved
+         );
 
 //
 // The undocumented NtFsControlFile
@@ -65,17 +65,17 @@ typedef VOID (*PIO_APC_ROUTINE) (
 // in ntdll.dll (ntdll.lib), a file shipped with the NTDDK.
 //
 static NTSTATUS (__stdcall *NtFsControlFile)( 
-					HANDLE FileHandle,
-					HANDLE Event,					// optional
-					PIO_APC_ROUTINE ApcRoutine,		// optional
-					PVOID ApcContext,				// optional
-					PIO_STATUS_BLOCK IoStatusBlock,	
-					ULONG FsControlCode,
-					PVOID InputBuffer,				// optional
-					ULONG InputBufferLength,
-					PVOID OutputBuffer,				// optional
-					ULONG OutputBufferLength
-			); 
+               HANDLE FileHandle,
+               HANDLE Event,              // optional
+               PIO_APC_ROUTINE ApcRoutine,      // optional
+               PVOID ApcContext,          // optional
+               PIO_STATUS_BLOCK IoStatusBlock,  
+               ULONG FsControlCode,
+               PVOID InputBuffer,            // optional
+               ULONG InputBufferLength,
+               PVOID OutputBuffer,           // optional
+               ULONG OutputBufferLength
+         ); 
 
 
 //
@@ -83,18 +83,18 @@ static NTSTATUS (__stdcall *NtFsControlFile)(
 //
 #ifndef USE_64BIT
 typedef struct {
-	LARGE_INTEGER    	SerialNumber;
-	LARGE_INTEGER    	NumberOfSectors;
-	LARGE_INTEGER    	TotalClusters;
-	LARGE_INTEGER    	FreeClusters;
-	LARGE_INTEGER    	Reserved;
-	ULONG    			BytesPerSector;
-	ULONG    			BytesPerCluster;
-	ULONG    			BytesPerMFTRecord;
-	ULONG    			ClustersPerMFTRecord;
+   LARGE_INTEGER     SerialNumber;
+   LARGE_INTEGER     NumberOfSectors;
+   LARGE_INTEGER     TotalClusters;
+   LARGE_INTEGER     FreeClusters;
+   LARGE_INTEGER     Reserved;
+   ULONG             BytesPerSector;
+   ULONG             BytesPerCluster;
+   ULONG             BytesPerMFTRecord;
+   ULONG             ClustersPerMFTRecord;
    LARGE_INTEGER     MftValidDataLength;
-	LARGE_INTEGER    	MFTStart;
-	LARGE_INTEGER    	MFTMirrorStart;
+   LARGE_INTEGER     MFTStart;
+   LARGE_INTEGER     MFTMirrorStart;
    LARGE_INTEGER     MftZoneStart;
    LARGE_INTEGER     MftZoneEnd;
 } NTFS_VOLUME_DATA_BUFFER, *PNTFS_VOLUME_DATA_BUFFER;
@@ -109,41 +109,41 @@ typedef struct {
 //--------------------------------------------------------------------
 static BOOLEAN GetNTFSInfo( int DriveId, PNTFS_VOLUME_DATA_BUFFER VolumeInfo ) 
 {
-	static char			volumeName[] = "\\\\.\\A:";
-	HANDLE				volumeHandle;
-	IO_STATUS_BLOCK		ioStatus;
-	NTSTATUS			status;
+   static char       volumeName[] = "\\\\.\\A:";
+   HANDLE            volumeHandle;
+   IO_STATUS_BLOCK      ioStatus;
+   NTSTATUS       status;
 
-	//
-	// open the volume
-	//
-	volumeName[4] = DriveId + 'A'; 
-	volumeHandle = CreateFile( volumeName, GENERIC_READ, 
-					FILE_SHARE_READ|FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 
-					0, 0 );
-	if( volumeHandle == INVALID_HANDLE_VALUE )	{
+   //
+   // open the volume
+   //
+   volumeName[4] = DriveId + 'A'; 
+   volumeHandle = CreateFile( volumeName, GENERIC_READ, 
+               FILE_SHARE_READ|FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 
+               0, 0 );
+   if( volumeHandle == INVALID_HANDLE_VALUE )   {
 
       // printf("\nError opening volume: ");
       // PrintWin32Error( GetLastError() );
-		return FALSE;
-	}
+      return FALSE;
+   }
 
-	// Query the volume information
-	status = NtFsControlFile( volumeHandle, NULL, NULL, 0, &ioStatus,
-						FSCTL_GET_VOLUME_INFORMATION,
-						NULL, 0,
-						VolumeInfo, sizeof( NTFS_VOLUME_DATA_BUFFER ) );
+   // Query the volume information
+   status = NtFsControlFile( volumeHandle, NULL, NULL, 0, &ioStatus,
+                  FSCTL_GET_VOLUME_INFORMATION,
+                  NULL, 0,
+                  VolumeInfo, sizeof( NTFS_VOLUME_DATA_BUFFER ) );
 
-	if( status != STATUS_SUCCESS ) {
+   if( status != STATUS_SUCCESS ) {
       // printf("\nError obtaining NTFS information: ");
       // PrintNtError( status );
-		CloseHandle( volumeHandle );
-		return FALSE;
-	}
+      CloseHandle( volumeHandle );
+      return FALSE;
+   }
 
-	// Close the volume
-	CloseHandle( volumeHandle );
-	return TRUE;
+   // Close the volume
+   CloseHandle( volumeHandle );
+   return TRUE;
 }
 
 //--------------------------------------------------------------------
@@ -167,9 +167,9 @@ static BOOLEAN LocateNTDLLCalls()
          ) 
    ) GetProcAddress( GetModuleHandle("ntdll.dll"), "NtFsControlFile" )) ) {   //lint !e820
    // mft_list.cpp  160  Info 820: Boolean test of a parenthesized assignment
-		return FALSE;
-	}
-	return TRUE;
+      return FALSE;
+   }
+   return TRUE;
    //lint +e611 +e720 
 }
 
@@ -207,7 +207,7 @@ ULONGLONG get_nt_free_space(char dltr)
 
    if (!LocateNTDLLCalls() ) {
       return 0 ;  //  return 0 on fail
-	}
+   }
    dltr = (int) tolower(dltr) - 'a' ;
 
    if (!GetNTFSInfo(dltr, &volumeInfo ))
