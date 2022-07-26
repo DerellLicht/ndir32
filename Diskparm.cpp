@@ -226,22 +226,19 @@ void display_drive_summary (void)
       dpath[0] = dchar ;
       dtype = GetDriveType (dpath);
 
-      if (!GetVolumeInformation (  // GetVolumeInformation(
-           dpath,              //     LPCSTR lpRootPathName,
-           (LPSTR) vnbfr,      //     LPSTR lpVolumeNameBuffer,            //  I use this
+      if (!GetVolumeInformation (
+           dpath,             //     LPCSTR lpRootPathName,
+           (LPSTR) vnbfr,     //     LPSTR lpVolumeNameBuffer,            //  I use this
            PATH_MAX,          //     DWORD nVolumeNameSize,
-           &vsernbr,           //     LPDWORD lpVolumeSerialNumber,
-           &mclen,             //     LPDWORD lpMaximumComponentLength,
-           &fsflags,           //     LPDWORD lpFileSystemFlags,
-           (LPSTR) fsnbfr,     //     LPSTR lpFileSystemNameBuffer,        //  I use this
+           &vsernbr,          //     LPDWORD lpVolumeSerialNumber,
+           &mclen,            //     LPDWORD lpMaximumComponentLength,
+           &fsflags,          //     LPDWORD lpFileSystemFlags,
+           (LPSTR) fsnbfr,    //     LPSTR lpFileSystemNameBuffer,        //  I use this
            PATH_MAX           //     DWORD nFileSystemNameSize
-         )) {                   //     );
+         )) {                 //     );
          
-         wsprintf (tempstr, 
-            "%c: %-9s %18s  %18s           no media present\n", 
-            dchar, 
-            get_drive_type_string(dtype, dchar),
-            " ", " ") ;
+         wsprintf (tempstr, "%c: %-9s %18s  %18s           no media present\n", 
+            dchar, get_drive_type_string(dtype, dchar), " ", " ") ;
          nputs (n.colordefalt, tempstr);
          continue;
       }
