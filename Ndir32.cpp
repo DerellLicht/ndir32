@@ -200,7 +200,7 @@ int main(int argc, char **argv)
       info(helptxt) ;
    else if (n.info)
       info(idtxt) ;
-   else if (n.drive_summary > 0)
+   else if (n.drive_summary > DSUMMARY_NONE)
       display_drive_summary() ;
    else {
       //  If no filespec was given, insert current path with *.*

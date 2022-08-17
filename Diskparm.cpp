@@ -204,7 +204,7 @@ void display_drive_summary (void)
       "                               Disk Drive Summary                              \n\r");
    nput_line (n.colorframe, '=');
 
-   if (n.drive_summary == 1) {
+   if (n.drive_summary == DSUMMARY_FREE) {
       nputs (n.colornhead, "   file sys      total space          free space     [Cluster Size] UNC path \n");
    } else {
       nputs (n.colornhead, "   file sys      total space          used space     [Cluster Size] UNC path \n");
@@ -279,7 +279,7 @@ void display_drive_summary (void)
 
       // disktotal.convert (totals1);
       // diskavail.convert (frees1);
-      if (n.drive_summary == 2) {
+      if (n.drive_summary == DSUMMARY_USED) {
          frees1 = totals1 - frees1 ;
       }
       convert_to_commas(totals1, disktotal);

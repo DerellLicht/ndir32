@@ -66,11 +66,11 @@ static int update_switches (char *argstr)
       case 'h':  n.horz ^= 1;  break;
       case 'i':  
          if (*argstr == 'i') {
-            n.drive_summary = 2;
+            n.drive_summary = DSUMMARY_USED;
             argstr++;
             slen++ ;
          } else {
-            n.drive_summary = 1;
+            n.drive_summary = DSUMMARY_FREE;
          }         
          break;
       case 'j':  n.low_ascii ^= 1;  break;
@@ -305,7 +305,7 @@ void verify_flags (void)
    }
 
    /*  Set 'dir tree' conditions  */
-   if (n.tree == 1 || n.tree == 4 || n.tree == 5 || n.drive_summary > 0)
+   if (n.tree == 1 || n.tree == 4 || n.tree == 5 || n.drive_summary > DSUMMARY_NONE)
       n.minimize = 0;
 
    /* If not 'find all'  then don't use attr bits = 0x27  */

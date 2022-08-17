@@ -64,6 +64,10 @@ typedef union ul2uc_u {
    unsigned char  uc[4] ;
 } ul2uc_t;
 
+#define DSUMMARY_NONE   0
+#define DSUMMARY_FREE   1
+#define DSUMMARY_USED   2
+
 //*****************************************************************
 //                  CONFIGURATION VARIABLES (new style)
 //
