@@ -277,8 +277,7 @@ void display_drive_summary (void)
          }
       }
 
-      // disktotal.convert (totals1);
-      // diskavail.convert (frees1);
+      //  convert free space to used space
       if (n.drive_summary == DSUMMARY_USED) {
          frees1 = totals1 - frees1 ;
       }
