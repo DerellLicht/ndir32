@@ -39,14 +39,26 @@ static char fsn_bfr[32] ;      //  buffer for name of lfn file system
 static char diskavail[MAX_ULL_COMMA_LEN+1]; 
 static char disktotal[MAX_ULL_COMMA_LEN+1]; 
 //*****************************************************************
+const unsigned int DEFAULT_CLUSTER_SIZE = 4096 ;
+
 static unsigned get_cluster_size(char dltr)
 {
    char dirpath[4] = "c:\\" ;
-   unsigned cl_bytes = 4096 ;
+   unsigned cl_bytes = DEFAULT_CLUSTER_SIZE ;
 
    //  12/17/13 
    //  Experimenting with older function to get sector/cluster data...
    //  Okay, this gives good data even on large volumes...
+
+   //  EARLY NOTES: this still needs to be developed.
+   //  If NTFS,  use lookup table.
+   //  If FAT16, use GetDiskFreeSpace()
+   //  If FAT32, try to figure some way to get to INT functions
+   //  
+   //  12/17/13 Actually, *all* of these formats can use GetDiskFreeSpace()
+   //  for bytes/sector and sectors/cluster.  
+   //  Only the total-size fields are conditional, 
+   //  because GetDiskFreeSpace() is u32, not u64.
 // c:\: 8, 512, 112671991, 152672853
 // d:\: 1, 2048, 0, 191731
 // g:\: 32, 512, 922615, 945313
@@ -67,16 +79,6 @@ static unsigned get_cluster_size(char dltr)
       cl_bytes = secperclus * bytespersec ;
    } 
    return cl_bytes ;
-
-   //  this still needs to be developed.
-   //  If NTFS, use lookup table.
-   //  If FAT16, use GetDiskFreeSpace()
-   //  If FAT32, try to figure some way to get to INT functions
-   //  
-   //  12/17/13 Actually, *all* of these formats can use GetDiskFreeSpace()
-   //  for bytes/sector and sectors/cluster.  
-   //  Only the total-size fields are conditional, 
-   //  because GetDiskFreeSpace() is u32, not u64.
 }   
 
 //**************************************************************************
@@ -252,10 +254,6 @@ void display_drive_summary (void)
          (ULARGE_INTEGER *) &freec1, 
          (ULARGE_INTEGER *) &totals1, 
          (ULARGE_INTEGER *) &frees1)) {
-         // sprintf(tempstr, "can't get free disk space [%s]\n", dstr) ;
-         // nputs(n.colordefalt, tempstr) ;
-         // error_exit(DATA_OKAY, 0) ;
-         
          //  emergency handling when this function fails
          freec1 = 0 ;
          totals1 = 0 ;
