@@ -183,7 +183,7 @@ union parse_time {
 /************************************************************/
 struct ffdata {
    //  uchar          attrib ;
-   u16            attrib ; //  expand this to allow for extended fileattributes
+   u16            attrib ; //  expand this to allow for extended file attributes
    // unsigned       ftime ;
    // unsigned       fdate ;
    FILETIME       ft ;
