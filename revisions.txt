@@ -248,4 +248,6 @@ Version 2.51, 07/04/22
 Version 2.52, 07/15/22
   /ii - show used space, vs free space, in disk summary
   
+Version 2.53, 09/30/22
+  In -1 display, add support for symlink files
   

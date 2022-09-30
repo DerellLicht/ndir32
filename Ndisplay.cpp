@@ -149,6 +149,57 @@ static mm_lookup_t const mm_lookup[] = {
 { "", 0 }} ;
 
 //************************************************************************
+//  return final filename from symlink
+//  sadly, this will only work with a 64-bit build
+//************************************************************************
+//  found in kernel32.dll
+// #define USE_64BIT_BUILD    1
+#ifdef USE_64BIT_BUILD
+extern DWORD GetFinalPathNameByHandleA(
+  HANDLE hFile,
+  LPSTR  lpszFilePath,
+  DWORD  cchFilePath,
+  DWORD  dwFlags
+);
+
+#define  FILE_NAME_NORMALIZED    0
+
+char *GetLinkTarget(char const * const symlink_name) 
+{
+   static char final_file[1024] = "";
+   // Define smart pointer type for automatic HANDLE cleanup.
+   // typedef std::unique_ptr<std::remove_pointer<HANDLE>::type,
+   //                         decltype( &::CloseHandle )> FileHandle;
+   // Open file for querying only (no read/write access).
+   HANDLE hdl = CreateFile( symlink_name, 0,
+                                FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+                                NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL );
+                 // &::CloseHandle );
+   if ( hdl == INVALID_HANDLE_VALUE ) {
+      // h.release();
+      // throw std::runtime_error( "CreateFileW() failed." );
+      sprintf(final_file, "cannot create file");
+   }
+   else {
+
+      const size_t requiredSize = GetFinalPathNameByHandleA( hdl, NULL, 0,
+                                                             FILE_NAME_NORMALIZED );
+      if ( requiredSize == 0 ) {
+         sprintf(final_file, "dest file size is 0");
+      }
+      else {
+      // std::vector<wchar_t> buffer( requiredSize );
+      GetFinalPathNameByHandleA( hdl, final_file,
+                                1024,
+                                FILE_NAME_NORMALIZED );
+      }
+
+   }
+   return final_file;
+}
+#endif
+
+//************************************************************************
 extern unsigned multimedia_listing ;
 
 void print1 (ffdata * fptr)
@@ -191,13 +242,14 @@ void print1 (ffdata * fptr)
    if (n.long_attr) {
       sprintf(attr, "%08X ", fptr->attrib) ;
    } else {
-      attr[0] = (fptr->attrib & FILE_ATTRIBUTE_ARCHIVE)   ? 'a' : '_' ;
-      attr[1] = (fptr->attrib & FILE_ATTRIBUTE_DIRECTORY) ? 'd' : '_' ;
-      attr[2] = (fptr->attrib & FILE_ATTRIBUTE_SYSTEM)    ? 's' : '_' ;
-      attr[3] = (fptr->attrib & FILE_ATTRIBUTE_HIDDEN)    ? 'h' : '_' ;
-      attr[4] = (fptr->attrib & FILE_ATTRIBUTE_READONLY)  ? 'r' : '_' ;
-      attr[5] = ' ';
-      attr[6] = '\0';
+      attr[0] = (fptr->attrib & FILE_ATTRIBUTE_ARCHIVE)        ? 'a' : '_' ;
+      attr[1] = (fptr->attrib & FILE_ATTRIBUTE_DIRECTORY)      ? 'd' : '_' ;
+      attr[2] = (fptr->attrib & FILE_ATTRIBUTE_SYSTEM)         ? 's' : '_' ;
+      attr[3] = (fptr->attrib & FILE_ATTRIBUTE_HIDDEN)         ? 'h' : '_' ;
+      attr[4] = (fptr->attrib & FILE_ATTRIBUTE_READONLY)       ? 'r' : '_' ;
+      attr[5] = (fptr->attrib & FILE_ATTRIBUTE_REPARSE_POINT)  ? 'l' : '_' ;
+      attr[6] = ' ';
+      attr[7] = '\0';
    }
    attrclr = n.colorattr;
 
@@ -305,6 +357,17 @@ void print1 (ffdata * fptr)
          nputs (n.colorSHR | SHRattr, tempstr);
       else
          nputs (fptr->color, tempstr);
+         
+#ifdef USE_64BIT_BUILD
+      //  if this file is a symlink, try to display the actual file
+      if ((fptr->attrib & FILE_ATTRIBUTE_REPARSE_POINT)) {
+         ncrlf() ;
+         nputs (n.colorsize, "               ");
+         nputs (attrclr, "=====> ");
+         sprintf (tempstr, "%s ", "[show linked file here]");
+         nputs (fptr->color, tempstr);
+      }
+#endif      
    }
 }
 
