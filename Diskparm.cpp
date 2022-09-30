@@ -22,6 +22,7 @@ static char fsnbfr[PATH_MAX];
 
 //  from mft_list.cpp
 // extern "C" unsigned get_nt_cluster_size(char dltr);
+//  NOTE: this function always returns 0
 extern ULONGLONG get_nt_free_space(char dltr);
 
 //  mediatype.cpp

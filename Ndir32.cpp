@@ -20,7 +20,7 @@
 #include "ndir32.h"
 #include "conio32.hpp"
 
-#define  VER_NUMBER "2.53"
+#define  VER_NUMBER "2.54"
 
 //lint -esym(843, Version, ShortVersion) could be declared as const
 char *Version = " NDIR.EXE, Version " VER_NUMBER " " ;
@@ -301,7 +301,7 @@ static void process_filespecs(void)
       int temp_columns = columns ;
 
       start = 0 ;
-      while (1)
+      while (LOOP_FOREVER)
          {
          //  Extract base path from first filespec,
          //  and strip off filename

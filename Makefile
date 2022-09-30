@@ -1,9 +1,9 @@
 SHELL=cmd.exe
 USE_DEBUG = NO
-USE_64BIT = NO
+USE_64BIT = YES
 
 ifeq ($(USE_64BIT),YES)
-TOOLS=c:\tdm64\bin
+TOOLS=d:\tdm64\bin
 else
 TOOLS=c:\mingw\bin
 endif
@@ -59,10 +59,16 @@ OBJS = $(CSRC:.c=.o) $(CPPSRC:.cpp=.o)
 %.o: %.cpp
 	$(TOOLS)\g++ $(CFLAGS) $<
 
-all: ndir32.exe
+ifeq ($(USE_64BIT),NO)
+BIN = ndir32.exe
+else
+BIN = ndir64.exe
+endif
+
+all: $(BIN)
 
 clean:
-	rm -f *.o ndir32.exe *~ *.zip
+	rm -f *.o ndir*.exe *~ *.zip
 
 source src:
 	rm -f *.zip
@@ -70,7 +76,7 @@ source src:
    
 dist:
 	rm -f ndir.zip
-	zip ndir.zip ndir32.exe readme.txt revisions.txt   
+	zip ndir.zip ndir*.exe readme.txt revisions.txt   
 
 wc:
 	wc -l *.cpp
@@ -81,11 +87,11 @@ lint:
 depend: 
 	makedepend $(CSRC) $(CPPSRC)
 
-ndir32.exe: $(OBJS)
-	$(TOOLS)\g++ $(OBJS) $(LFLAGS) -o ndir32.exe $(LIBS) 
+$(BIN): $(OBJS)
+	$(TOOLS)\g++ $(OBJS) $(LFLAGS) -o $(BIN) $(LIBS) 
 ifeq ($(USE_DEBUG),NO)
 ifeq ($(USE_64BIT),NO)
-	upx -9 ndir32.exe
+	upx -9 $(BIN)
 endif
 endif
 

@@ -251,3 +251,6 @@ Version 2.52, 07/15/22
 Version 2.53, 09/30/22
   In -1 display, add support for symlink files
   
+Version 2.54, 09/30/22
+  This is built with 64-bit compiler (ndir64.exe), to support symlink name resolution
+    

@@ -1,9 +1,8 @@
 NDIR - The Ultimate Color Directory Program
 
 Written by:
-Daniel D. Miller
-4835 Coco Palm Drive
-Fremont, CA  94538
+Derell Licht
+Fremont, CA
 
 Email: derelict@comcast.net
 Web:   derelllicht.com
@@ -15,7 +14,10 @@ archives, as long as all included files are retained in the package.
 The source code is released as unrestricted freeware, for use in any
 project, personal or commercial. 
 
-***************************************************************************
+****************************************************************************************
+NOTE: As of version 2.54 (Sep 2022), NDIR is now a 64-bit program.
+This was necessary in order to support resolving target filename from symlinks
+****************************************************************************************
 
 NDIR - The directory lister.
 
@@ -36,7 +38,7 @@ It properly handles long filenames under WinNT.
 
 Effective with release of version 2.44, in Nov 2016, I am no longer distributing
 the 16-bit version of NDIR.  Nothing has changed with that version since 2003,
-I no longer have the ability to build nor run that version.
+and I no longer have the ability to either build or run that version.
 I also am abandoning the ndirh utility, which was never particularly impressive.    
 
 ***************************************************************************
@@ -151,7 +153,7 @@ obtained by typing NDIR -? :
 - A separate configuration program, for customizing default options,
   as well as all color and extension settings.
 
-- EGA 43-line support (50 lines on VGA).
+- Support for various console rows/columns
 
 - A "batch" mode which can assist you in creating batch files.
 

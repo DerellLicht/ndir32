@@ -1,13 +1,19 @@
 //*****************************************************************
-//  Copyright (c) 1998-2015 Daniel D. Miller                       
+//  Copyright (c) 1998-2022 Daniel D. Miller                       
 //  NDISPLAY.CPP - NDIR display handlers                           
 //*****************************************************************
 
 #undef __STRICT_ANSI__
+#ifdef USE_64BIT
+#define  _WIN32_WINNT    0x0600
+#endif
 #include <windows.h>
 #include <stdio.h>
 #ifdef _lint
 #include <stdlib.h>  //  PATH_MAX
+#endif
+#ifdef USE_64BIT
+#include <fileapi.h>
 #endif
 
 #include "ndir32.h"
@@ -153,17 +159,7 @@ static mm_lookup_t const mm_lookup[] = {
 //  sadly, this will only work with a 64-bit build
 //************************************************************************
 //  found in kernel32.dll
-// #define USE_64BIT_BUILD    1
-#ifdef USE_64BIT_BUILD
-extern DWORD GetFinalPathNameByHandleA(
-  HANDLE hFile,
-  LPSTR  lpszFilePath,
-  DWORD  cchFilePath,
-  DWORD  dwFlags
-);
-
-#define  FILE_NAME_NORMALIZED    0
-
+#ifdef USE_64BIT
 char *GetLinkTarget(char const * const symlink_name) 
 {
    static char final_file[1024] = "";
@@ -182,14 +178,14 @@ char *GetLinkTarget(char const * const symlink_name)
    }
    else {
 
-      const size_t requiredSize = GetFinalPathNameByHandleA( hdl, NULL, 0,
+      const size_t requiredSize = GetFinalPathNameByHandle( hdl, NULL, 0,
                                                              FILE_NAME_NORMALIZED );
       if ( requiredSize == 0 ) {
          sprintf(final_file, "dest file size is 0");
       }
       else {
       // std::vector<wchar_t> buffer( requiredSize );
-      GetFinalPathNameByHandleA( hdl, final_file,
+      GetFinalPathNameByHandle( hdl, final_file,
                                 1024,
                                 FILE_NAME_NORMALIZED );
       }
@@ -358,13 +354,14 @@ void print1 (ffdata * fptr)
       else
          nputs (fptr->color, tempstr);
          
-#ifdef USE_64BIT_BUILD
+#ifdef USE_64BIT
       //  if this file is a symlink, try to display the actual file
       if ((fptr->attrib & FILE_ATTRIBUTE_REPARSE_POINT)) {
          ncrlf() ;
          nputs (n.colorsize, "               ");
          nputs (attrclr, "=====> ");
-         sprintf (tempstr, "%s ", "[show linked file here]");
+         char *lptr = GetLinkTarget(fptr->filename) ;
+         sprintf (tempstr, "%s ", lptr);
          nputs (fptr->color, tempstr);
       }
 #endif      
