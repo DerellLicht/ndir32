@@ -40,8 +40,8 @@ endif
 #    76288 ->     33280   43.62%    win32/pe     ndir32.exe
 #  With c++98: %llu works
 #    96768 ->     44544   46.03%    win32/pe     ndir32.exe
-#CFLAGS += -std=c++98
-#LFLAGS += -std=c++98
+CFLAGS += -std=c++98
+LFLAGS += -std=c++98
 #  Interesting... if I undefine this here, it appears to circumvent -std=c++98,
 #  and thus printf("%llu") remains broken.
 #  However, if I include it in each of the files which call functions

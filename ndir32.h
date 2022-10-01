@@ -3,8 +3,6 @@
 //                                                            
 //    Written by:  Daniel D. Miller                           
 //                                                            
-//    Last Update: 05/31/02 16:57                             
-//                                                            
 //************************************************************
 
 // #include <windows.h>
@@ -20,12 +18,13 @@
 // #define PATH_MAX  260
 // #endif
 
-typedef  unsigned char  uchar ;
-typedef  unsigned long  ulong ;
-typedef  unsigned int   uint ;
-typedef  unsigned char  u8  ;
-typedef  unsigned short u16 ;
-typedef  unsigned int   u32 ;
+typedef  unsigned long long   u64 ;
+typedef  unsigned char        uchar ;
+typedef  unsigned long        ulong ;
+typedef  unsigned int         uint ;
+typedef  unsigned char        u8  ;
+typedef  unsigned short       u16 ;
+typedef  unsigned int         u32 ;
 
 
 #define MAXLINE   260

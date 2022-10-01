@@ -539,7 +539,8 @@ static void fileend(void)
       clusters = ftemp->fsize / clbytes ;
       if ((ftemp->fsize % clbytes) > 0)  clusters++ ; //lint !e79 bad type for % operator
 
-      dirsecbytes = (clusters * (__int64) clbytes) ;
+      // dirsecbytes = (clusters * (__int64) clbytes) ;
+      dirsecbytes = (clusters * (u64) clbytes) ;
       dsbytes += dirsecbytes ;
 
       ftemp = ftemp->next ;

@@ -136,7 +136,8 @@ bool get_disk_info(char *dstr)
 
    clbytes = get_cluster_size(dpath[0]) ;   //  assume dpath[] is valid
    //  that worked okay... now, get the disk summary
-   unsigned __int64 freec1, frees1, totals1 ;
+   // unsigned __int64 freec1, frees1, totals1 ;
+   u64 freec1, frees1, totals1 ;
    // LPCSTR dptr = dirptr ;
    // if (!GetDiskFreeSpaceEx(dptr, 
    if (!GetDiskFreeSpaceEx(dstr, 
@@ -248,7 +249,8 @@ void display_drive_summary (void)
 
       clbytes = get_cluster_size(dchar) ;
       //  that worked okay... now, get the disk summary
-      unsigned __int64 freec1, frees1, totals1 ;
+      // unsigned __int64 freec1, frees1, totals1 ;
+      u64 freec1, frees1, totals1 ;
       // LPCSTR dptr = dirptr ;
       // if (!GetDiskFreeSpaceEx(dptr, 
       if (!GetDiskFreeSpaceEx(dpath, 
