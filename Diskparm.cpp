@@ -70,10 +70,8 @@ static unsigned get_cluster_size(char dltr)
 // u:\: 8, 512, 204827101, 488279551
 // v:\: 8, 512, 204827101, 488279551
    dirpath[0] = dltr ;
-   // bool gdfs_is_valid = false ;
    DWORD secperclus, bytespersec, numfreeclus, numtotalclus ;
    if (GetDiskFreeSpace(dirpath, &secperclus, &bytespersec, &numfreeclus, &numtotalclus) != 0) {
-      // gdfs_is_valid = true ;
       // sprintf(msgstr, "%s: %u, %u, %u, %u\n", 
       //    dpath, (uint) secperclus, (uint) bytespersec, (uint) numfreeclus, (uint) numtotalclus) ;
       // OutputDebugString(msgstr) ; 
