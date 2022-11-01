@@ -92,6 +92,8 @@ $(BIN): $(OBJS)
 ifeq ($(USE_DEBUG),NO)
 ifeq ($(USE_64BIT),NO)
 	upx -9 $(BIN)
+else
+	upx64 -9 $(BIN)
 endif
 endif
 
