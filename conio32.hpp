@@ -18,7 +18,7 @@ void hide_cursor(void);
 void perr(PCHAR szFileName, int line, PCHAR szApiName, DWORD dwError) ;
 
 void restore_console_attribs(void);
-int is_redirected(void);
+bool is_redirected(void);
 CHAR get_char(void);
 WORD get_scode(void);
 unsigned get_window_rows(void);

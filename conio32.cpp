@@ -38,18 +38,11 @@
 #include <stdlib.h>
 #include "conio32.hpp"
 
-#ifndef false
-#define false  0
-#endif
-#ifndef true
-#define true   1
-#endif
-
 HANDLE hStdOut, hStdIn ;
 
 static CONSOLE_SCREEN_BUFFER_INFO sinfo ;
 
-static int redirected = 0 ;
+static bool redirected = false ;
 
 static WORD original_attribs = 3 ;
 
@@ -78,7 +71,7 @@ BOOL control_handler(DWORD dwCtrlType)
    }   
 
 //***************************************************************************
-int is_redirected(void)
+bool is_redirected(void)
 {
    return redirected ;
 }         
@@ -93,16 +86,16 @@ void console_init(char *title)
 
    /* get the standard handles */
    hStdOut = GetStdHandle(STD_OUTPUT_HANDLE); 
-	if (hStdOut == INVALID_HANDLE_VALUE) {
+   if (hStdOut == INVALID_HANDLE_VALUE) {
       printf("GetStdHandle(STD_OUTPUT_HANDLE): %s\n", get_system_message()) ;
       exit(1) ;
-	}
+   }
    // PERR(hStdOut != INVALID_HANDLE_VALUE, "GetStdHandle");
    hStdIn = GetStdHandle(STD_INPUT_HANDLE);
-	if (hStdIn == INVALID_HANDLE_VALUE) {
+   if (hStdIn == INVALID_HANDLE_VALUE) {
       printf("GetStdHandle(STD_INPUT_HANDLE): %s\n", get_system_message()) ;
       exit(1) ;
-	}
+   }
    // PERR(hStdIn != INVALID_HANDLE_VALUE, "GetStdHandle");
 
    //  Put up a meaningful console title.
@@ -120,17 +113,17 @@ void console_init(char *title)
    if (bSuccess == false) {
       // printf("GetConsoleScreenBufferInfo: %s\n", get_system_message()) ;
       // exit(1) ;
-		//  if we cannot get console info for StdOut, 
-		//  most likely StdOut is redirected to a file.
-		//  Let's see if we can get info for StdIn
-   	// bSuccess = GetConsoleScreenBufferInfo(hStdIn, &sinfo) ;
-		// if (!bSuccess) {
-		// 	printf("darn, can't get info on stdin either...\n") ;
-		// }
-		//  Nope, that doesn't work either.  I guess I just can't get
-		//  console info (in particular, console width) when we're redirecting output.
-		
-      redirected = 1 ;
+      //  if we cannot get console info for StdOut, 
+      //  most likely StdOut is redirected to a file.
+      //  Let's see if we can get info for StdIn
+      // bSuccess = GetConsoleScreenBufferInfo(hStdIn, &sinfo) ;
+      // if (!bSuccess) {
+      //    printf("darn, can't get info on stdin either...\n") ;
+      // }
+      //  Nope, that doesn't work either.  I guess I just can't get
+      //  console info (in particular, console width) when we're redirecting output.
+      
+      redirected = true ;
       return ; 
    }
    //  on systems without ANSI.SYS, this is apparently 0...
