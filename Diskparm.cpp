@@ -1,14 +1,14 @@
-//*********************************************************************
+//*****************************************************************************
 //  Copyright (c) 1995-2022  Daniel D Miller
 //  DISKPARM.CPP - Display partition information about disk drive.     
 //                                                                     
 //  Written by:   Daniel D. Miller                                     
-//*********************************************************************
-//  Note on DISKPARM build:  The function WNetGetUniversalName()       
-//  brings several problems with it.  First, it reportedly is not      
-//  valid on Win95 drives.  Second, it requires MPR.LIB to be          
-//  linked into the application (otherwise the compile fails).         
-//*********************************************************************
+//*****************************************************************************
+//  Note on DISKPARM build:  
+//  The function WNetGetUniversalName() brings several problems with it.  
+//  First, it reportedly is not valid on Win95 drives.  
+//  Second, it requires MPR.LIB to be linked into the application
+//*****************************************************************************
 
 // #include <stdlib.h>             //  ultoa()
 #include <windows.h>
@@ -23,7 +23,7 @@ static char fsnbfr[PATH_MAX];
 //  from mft_list.cpp
 // extern "C" unsigned get_nt_cluster_size(char dltr);
 //  NOTE: this function always returns 0
-extern ULONGLONG get_nt_free_space(char dltr);
+// extern ULONGLONG get_nt_free_space(char dltr);
 
 //  mediatype.cpp
 extern char *get_cd_device_desc(char drv);
@@ -39,6 +39,17 @@ static char fsn_bfr[32] ;      //  buffer for name of lfn file system
 
 static char diskavail[MAX_ULL_COMMA_LEN+1]; 
 static char disktotal[MAX_ULL_COMMA_LEN+1]; 
+
+//*************************************************************************
+//  This function was previously defined in mft_list.cpp, but is not
+//  relevant at all in NTFS systems, so is simply obsolete now.
+//*************************************************************************
+//lint -esym(715, dltr)    // Symbol not referenced
+static ULONGLONG get_nt_free_space(char dltr)
+{
+   return 0 ;
+}
+
 //*****************************************************************
 const unsigned int DEFAULT_CLUSTER_SIZE = 4096 ;
 
@@ -60,15 +71,15 @@ static unsigned get_cluster_size(char dltr)
    //  for bytes/sector and sectors/cluster.  
    //  Only the total-size fields are conditional, 
    //  because GetDiskFreeSpace() is u32, not u64.
-// c:\: 8, 512, 112671991, 152672853
-// d:\: 1, 2048, 0, 191731
-// g:\: 32, 512, 922615, 945313
-// l:\: 8, 512, 204827101, 488279551
-// n:\: 8, 512, 204827101, 488279551
-// p:\: 8, 512, 204827101, 488279551
-// t:\: 8, 512, 204827101, 488279551
-// u:\: 8, 512, 204827101, 488279551
-// v:\: 8, 512, 204827101, 488279551
+// c:\:  8,  512, 112671991, 152672853
+// d:\:  1, 2048, 0, 191731
+// g:\: 32,  512, 922615, 945313
+// l:\:  8,  512, 204827101, 488279551
+// n:\:  8,  512, 204827101, 488279551
+// p:\:  8,  512, 204827101, 488279551
+// t:\:  8,  512, 204827101, 488279551
+// u:\:  8,  512, 204827101, 488279551
+// v:\:  8,  512, 204827101, 488279551
    dirpath[0] = dltr ;
    DWORD secperclus, bytespersec, numfreeclus, numtotalclus ;
    if (GetDiskFreeSpace(dirpath, &secperclus, &bytespersec, &numfreeclus, &numtotalclus) != 0) {
@@ -110,14 +121,14 @@ bool get_disk_info(char *dstr)
    // getchar() ;
    //  NOTE:  GetVolumeInformation() requires a filename ending
    //    with a backslash.  No wildcards are supported.
-   if (!GetVolumeInformation( dirptr,                   //     LPCSTR lpRootPathName,
+   if (!GetVolumeInformation( dirptr,                 //     LPCSTR lpRootPathName,
                               (LPSTR) volume_name,    //     LPSTR lpVolumeNameBuffer,
-                              PATH_MAX,              //     DWORD nVolumeNameSize,
+                              PATH_MAX,               //     DWORD nVolumeNameSize,
                               &vsernbr,               //     LPDWORD lpVolumeSerialNumber,
                               &mclen,                 //     LPDWORD lpMaximumComponentLength,
                               &fsflags,               //     LPDWORD lpFileSystemFlags,
                               (LPSTR) fsn_bfr,        //     LPSTR lpFileSystemNameBuffer,
-                              PATH_MAX               //     DWORD nFileSystemNameSize
+                              PATH_MAX                //     DWORD nFileSystemNameSize
                             )) {                      //     );
       // printf("cannot read volume information from %c:\n", dpath[0]) ;
       // sprintf(tempstr, "cannot read volume info from %s:\n", dirptr) ;
@@ -137,7 +148,6 @@ bool get_disk_info(char *dstr)
    // unsigned __int64 freec1, frees1, totals1 ;
    u64 freec1, frees1, totals1 ;
    // LPCSTR dptr = dirptr ;
-   // if (!GetDiskFreeSpaceEx(dptr, 
    if (!GetDiskFreeSpaceEx(dstr, 
       (ULARGE_INTEGER *) &freec1, 
       (ULARGE_INTEGER *) &totals1, 
@@ -262,7 +272,7 @@ void display_drive_summary (void)
          diskbytes = 0 ;
          diskfree = 0 ;
       } 
-      //  if GetDiskFreeSpaceEx succeeds, proceed normally
+      //  if GetDiskFreeSpaceEx succeeds, proceed normally 
       else {
          diskbytes = totals1 ;
          //  first try to get free disk space from NT info,

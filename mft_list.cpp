@@ -7,6 +7,8 @@
 // Shows NTFS volume information.
 // Note: This function requires linking mpr.lib
 //
+//  Later note: The code in this module is obsolete in NTFS world.
+//  It is no longer included in the code base.
 //====================================================================
 #include <windows.h>
 #include <ctype.h>
@@ -199,6 +201,9 @@ static BOOLEAN LocateNTDLLCalls()
 //  appear to actually be available on Win XP.
 //  
 //  Later note:  Also, on NTFS file system, MFT is not even defined!
+//  
+//  So, the upshot of all this, is that this function always returns 0,
+//  therefore the entire file is not needed...
 //--------------------------------------------------------------------
 ULONGLONG get_nt_free_space(char dltr)
 {

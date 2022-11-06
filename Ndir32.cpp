@@ -55,9 +55,6 @@ static void read_config_file(void);
 //*****************************************************************************
 // ULLONG_MAX = 18,446,744,073,709,551,615
 //*****************************************************************************
-//lint -esym(714, convert_to_commas)
-//lint -esym(759, convert_to_commas)
-//lint -esym(765, convert_to_commas)
 char *convert_to_commas(ULONGLONG uli, char *outstr)
 {  //lint !e1066
    int slen, inIdx, j ;
@@ -68,9 +65,9 @@ char *convert_to_commas(ULONGLONG uli, char *outstr)
        outstr = local_ull_str ;
    }
 
-   sprintf(temp_ull_str, "%"PRIu64"", uli);
+   // sprintf(temp_ull_str, "%"PRIu64"", uli);
    // sprintf(temp_ull_str, "%llu", uli);
-   // sprintf(temp_ull_str, "%I64u", uli);
+   sprintf(temp_ull_str, "%I64u", uli);
    // _ui64toa(uli, temp_ull_str, 10) ;
    slen = strlen(temp_ull_str) ;
    inIdx = --slen ;//  convert byte-count to string index 

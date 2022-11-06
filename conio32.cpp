@@ -110,7 +110,7 @@ void console_init(char *title)
    //  Unfortunately, this also fails on all Bash-window terminals
    bSuccess = GetConsoleScreenBufferInfo(hStdOut, &sinfo) ;
    // PERR(bSuccess, "GetConsoleScreenBufferInfo");
-   if (bSuccess == false) {
+   if (!bSuccess) {
       // printf("GetConsoleScreenBufferInfo: %s\n", get_system_message()) ;
       // exit(1) ;
       //  if we cannot get console info for StdOut, 
