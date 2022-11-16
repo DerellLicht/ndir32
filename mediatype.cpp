@@ -86,9 +86,11 @@ static int GetDeviceConfig(HANDLE hCD)
    ULONG  returned = 0,
           returnedLength ;
 
+   //**************************************************************************
    //  This first call with IOCTL_STORAGE_QUERY_PROPERTY
    //  will just tell us if this is a normal physical drive;
-   //  if not, this call will fail
+   //  if not, this call will fail, and the later call would also.
+   //**************************************************************************
    query.PropertyId = StorageAdapterProperty;
    query.QueryType = PropertyStandardQuery;
    status = DeviceIoControl(hDevice,                
@@ -121,11 +123,11 @@ static int GetDeviceConfig(HANDLE hCD)
    sptwb.Spt.DataTransferLength = 192;
    sptwb.Spt.TimeOutValue = 10;
    sptwb.Spt.DataBufferOffset = offsetof(SCSI_PASS_THROUGH_WITH_BUFFERS,DataBuf);
-   sptwb.Spt.SenseInfoOffset = offsetof(SCSI_PASS_THROUGH_WITH_BUFFERS,SenseBuf);
+   sptwb.Spt.SenseInfoOffset  = offsetof(SCSI_PASS_THROUGH_WITH_BUFFERS,SenseBuf);
    // sptwb.Spt.Cdb[0] = SCSIOP_INQUIRY;
    // sptwb.Spt.Cdb[4] = 192;
    length = offsetof(SCSI_PASS_THROUGH_WITH_BUFFERS,DataBuf) +
-      sptwb.Spt.DataTransferLength;
+            sptwb.Spt.DataTransferLength;
 
    // If device supports SCSI-3, then we can get the CD drive capabilities, i.e. ability to 
    // read/write to CD-ROM/R/RW or/and read/write to DVD-ROM/R/RW.  
