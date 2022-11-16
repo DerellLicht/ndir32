@@ -88,7 +88,8 @@ static int GetDeviceConfig(HANDLE hCD)
 
    //**************************************************************************
    //  This first call with IOCTL_STORAGE_QUERY_PROPERTY
-   //  will just tell us if this is a normal physical drive;
+   //  will just tell us if this is a normal physical drive
+   //  (i.e., is it a drive which supports the SCSI interface);
    //  if not, this call will fail, and the later call would also.
    //**************************************************************************
    query.PropertyId = StorageAdapterProperty;
