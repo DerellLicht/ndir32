@@ -73,6 +73,8 @@ static unsigned get_cd_cfg(BOOL Status, PSCSI_PASS_THROUGH_WITH_BUFFERS Psptwb )
 }
 
 //****************************************************************************
+//  Use SCSI command structure to read device-type code for optical drives
+//****************************************************************************
 static int GetDeviceConfig(HANDLE hCD)
 {
    STORAGE_PROPERTY_QUERY query;
@@ -84,25 +86,30 @@ static int GetDeviceConfig(HANDLE hCD)
    ULONG  returned = 0,
           returnedLength ;
 
+   //  This first call with IOCTL_STORAGE_QUERY_PROPERTY
+   //  will just tell us if this is a normal physical drive;
+   //  if not, this call will fail
    query.PropertyId = StorageAdapterProperty;
    query.QueryType = PropertyStandardQuery;
-   status = DeviceIoControl(
-                       hDevice,                
-                       IOCTL_STORAGE_QUERY_PROPERTY,
-                       &query,
-                       sizeof( STORAGE_PROPERTY_QUERY ),
-                       outBuf,                   
-                       512,                      
-                       &returnedLength,      
-                       NULL                    
-                       );
+   status = DeviceIoControl(hDevice,                
+                            IOCTL_STORAGE_QUERY_PROPERTY,
+                            &query,
+                            sizeof( STORAGE_PROPERTY_QUERY ),
+                            outBuf,                   
+                            512,                      
+                            &returnedLength,      
+                            NULL                    
+                            );
    if ( !status ) {
        // DebugPrint( 1, "IOCTL failed with error code%d.\n\n", GetLastError() );
        return -(int)GetLastError();
    }
 
+   //**************************************************************************
+   //  Now, prepare for the call to SCSI_GET_CONFIGURATION,
+   //  which will privide thedevice code that we want...
+   //**************************************************************************
    ZeroMemory(&sptwb,sizeof(SCSI_PASS_THROUGH_WITH_BUFFERS));
-
    sptwb.Spt.Length = sizeof(SCSI_PASS_THROUGH);
    sptwb.Spt.PathId = 0;
    sptwb.Spt.TargetId = 1;
@@ -120,23 +127,9 @@ static int GetDeviceConfig(HANDLE hCD)
    length = offsetof(SCSI_PASS_THROUGH_WITH_BUFFERS,DataBuf) +
       sptwb.Spt.DataTransferLength;
 
-   // status = DeviceIoControl(hDevice,
-   //                          IOCTL_SCSI_PASS_THROUGH,
-   //                          &sptwb,
-   //                          sizeof(SCSI_PASS_THROUGH),
-   //                          &sptwb,
-   //                          length,
-   //                          &returned,
-   //                          FALSE);
-   // 
-   // PrintStatusResults(status, returned, &sptwb);
-   
    // If device supports SCSI-3, then we can get the CD drive capabilities, i.e. ability to 
    // read/write to CD-ROM/R/RW or/and read/write to DVD-ROM/R/RW.  
    // Use the previous spti structure, only modify the command to "mode sense"
-//    .Cdb(0) = &H46   ' This is the GET CONFIGURATION command
-//    .Cdb(1) = &H2   ' A bit to say get 1 page of information
-//    .Cdb(8) = 192   ' buffer length 
    sptwb.Spt.Cdb[0] = 0x46;   // This is the GET CONFIGURATION command
    sptwb.Spt.Cdb[1] = 2;      // A bit to say get 1 page of information
    sptwb.Spt.Cdb[8] = 192;    //  buffer length
