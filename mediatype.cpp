@@ -66,10 +66,10 @@ static unsigned get_cd_cfg(BOOL Status, PSCSI_PASS_THROUGH_WITH_BUFFERS Psptwb )
      return 0 ;
 
    // printf("cfg buffer: 6=0x%02X, 7=0x%02X\n", Psptwb->DataBuf[6], Psptwb->DataBuf[7]) ;
+   // Dim currentProfile As Integer = ((scsiCommand.DataBuffer(6) << 4) Or scsiCommand.DataBuffer(7))
    // unsigned profile = (Psptwb->DataBuf[6] << 4) | Psptwb->DataBuf[7] ;
    unsigned profile = Psptwb->DataBuf[13] ;
    return profile;
-   // Dim currentProfile As Integer = ((scsiCommand.DataBuffer(6) << 4) Or scsiCommand.DataBuffer(7))
 }
 
 //****************************************************************************
