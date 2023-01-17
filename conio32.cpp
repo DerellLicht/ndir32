@@ -48,6 +48,14 @@ static bool redirected = false ;
 
 static WORD original_attribs = 3 ;
 
+//lint -esym(759,dclreos) -esym(765,dclreos) -esym(714,dclreos) 
+//lint -esym(759,dprints) -esym(765,dprints) -esym(714,dprints) 
+//lint -esym(765,dputsi) 
+//lint -esym(759,dprintc) -esym(765,dprintc) -esym(714,dprintc) 
+//lint -esym(759,set_text_attr)
+
+//lint -esym(759,control_handler) -esym(765, control_handler)
+
 //***************************************************************************
 //***************************************************************************
 //                GENERIC 32-BIT CONSOLE I/O FUNCTIONS
@@ -78,26 +86,6 @@ BOOL control_handler(DWORD dwCtrlType)
    //  display message and do other work
    return FALSE ;
    }   
-
-//***********************************************************
-//  This replaces the CXL function of the same name
-//***********************************************************
-void set_lines(int crt_lines)
-   {
-   // COORD dwSize = { 80, crt_lines } ;
-   // SetConsoleScreenBufferSize(hStdOut, dwSize) ;
-   
-   //  The preceding method changes the actual buffer size,
-   //  not the window size, which may not be what is wanted
-   //  under WinNT.  This method changes the actual window
-   //  size, but positions the new window at the *top* of
-   //  the screen buffer, which may give unexpected results
-   //  if used with "don't clear screen" in a large window.
-   //  Neither method is exactly correct in all cases,
-   //  but will probably suffice most times...
-   SMALL_RECT newwin = { 0, 0, 79, (SHORT) (crt_lines-1) } ;
-   SetConsoleWindowInfo(hStdOut, TRUE, &newwin) ;
-   }
 
 //***************************************************************************
 bool is_redirected(void)
@@ -197,18 +185,18 @@ void restore_console_attribs(void)
    SetConsoleTextAttribute(hStdOut, sinfo.wAttributes) ;
 }
 
-/*****************************************************************
-* FUNCTION: myGetchar(void)                                      *
-*                                                                *
-* PURPOSE: get a single character from the standard input handle *
-*                                                                *
-* INPUT: none                                                    *
-*                                                                *
-* RETURNS: the char received from the console                    *
-*****************************************************************/
-//  NOTE: this does *not* return special keys such as 
-//        function or keypad keys.
-//****************************************************************
+//*************************************************************************************
+// * PURPOSE: get a single character from the standard input handle 
+// *                                                                
+// * INPUT: none                                                    
+// *                                                                
+// * RETURNS: the char received from the console                    
+//*************************************************************************************
+//  This function differs from get_scode() in that it does not require conio.h.
+//  However, it does *not* return special keys such as function or keypad keys.
+//  It is *not* used in this application
+//*************************************************************************************
+//lint -esym(759,get_char) -esym(765,get_char) -esym(714,get_char) 
 CHAR get_char(void)
    {
    DWORD dwInputMode; /* to save the input mode */
@@ -257,6 +245,7 @@ WORD get_scode(void)
    }   
 
 //**********************************************************
+//lint -esym(759,hide_cursor) -esym(765,hide_cursor) -esym(714,hide_cursor) 
 void hide_cursor(void)
    {
    BOOL bSuccess;
@@ -421,6 +410,7 @@ void dprintc(unsigned row, unsigned col, unsigned attr, const char outchr)
 }   
 
 //**********************************************************
+//lint -esym(759,clear_visible_rows) -esym(765,clear_visible_rows) -esym(714,clear_visible_rows) 
 void clear_visible_rows(int u, int l)
 {
    COORD coord ;
@@ -521,7 +511,7 @@ void dclrscr(void)
    }   
 
 //**********************************************************
-int is_CRLF_present(const char *cstr)
+static int is_CRLF_present(const char *cstr)
 {
    while (*cstr != 0) {
       if (*cstr == 0x0D  ||  *cstr == 0x0A)

@@ -127,7 +127,7 @@ int main(int argc, char **argv)
    unsigned chlen ;
    char hdr[5] ;
    off_t idx = 0 ;
-   while (1) {
+   while (LOOP_FOREVER) {
       int rdbytes = read(hdl, bfr, sizeof(bfr)) ;
       if (rdbytes <= 0) 
          break;

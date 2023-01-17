@@ -165,7 +165,7 @@ static void lfn_get_columns(void)
 //*****************************************************************
 static void list_files_horizontally(void)
 {
-   int j = 0 ;
+   unsigned j = 0 ;
 
    ffdata *ftemp = ftop ;
 
@@ -177,7 +177,7 @@ static void list_files_horizontally(void)
       //  then list the files
       while (ftemp != NULL) {
          lfn_fprint[columns](ftemp) ;
-         if (++j == (int) disp_cols) {
+         if (++j == disp_cols) {
             ncrlf() ;
             j = 0 ;
          } else
@@ -473,23 +473,23 @@ static void fileend(void)
 //*****************************************************************
 static void list_files_vertically(void)
 {
-   int rows, partrows, j, k ;
+   unsigned rows, partrows, j, k ;
    //  these arrays must have enough entries for
    //  the maximum number of columns on the screen
-   int pcols[20] ;
+   unsigned pcols[20] ;
    ffdata *ftemps[20] ;
 
    //************************************************
    //  now, start displaying files
    //************************************************
-   int fcount = 0 ;
+   unsigned fcount = 0 ;
    if (lfn_supported) {
       lfn_get_columns() ;  //  set disp_cols, tempfmtstr
 
       rows = (unsigned) filecount / disp_cols ;
       partrows = (unsigned) filecount % disp_cols ;
 
-      for (j=0; j< (int) disp_cols ; j++)  pcols[j] = rows ;
+      for (j=0; j< disp_cols ; j++)  pcols[j] = rows ;
       for (j=0; j<partrows; j++)  pcols[j]++ ;  //lint !e771
 
       if (partrows > 0)
@@ -504,7 +504,7 @@ static void list_files_vertically(void)
       // ffdata *fprev ;
       ftemps[0] = ftop ;
       ftemps[1] = ftop ;
-      for (j=1; j< (int) disp_cols; j++) {
+      for (j=1; j< disp_cols; j++) {
          //  find end of current list
          for (k=0; k<pcols[j-1]; k++)  //lint !e771
             ftemps[j] = ftemps[j]->next ;
@@ -528,7 +528,7 @@ static void list_files_vertically(void)
 
          //  draw separator characters as required
          fcount++ ;
-         if (++j == (int) disp_cols) {
+         if (++j == disp_cols) {
             ncrlf() ;
             j = 0 ;
             if (--rows == 0)
@@ -570,7 +570,7 @@ static void list_files_vertically(void)
 
       filehead() ;   //  uses rows, columns
       j = 0 ;
-      while (1) {
+      while (LOOP_FOREVER) {
          if (fcount < filecount) {
             fprint[columns](ftemps[j]) ;
             ftemps[j] = ftemps[j]->next ;

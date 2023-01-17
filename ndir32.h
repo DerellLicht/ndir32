@@ -1,22 +1,11 @@
 //************************************************************
-//    NDATA.HPP - Header file for NDIR directory lister.      
+//    ndir32.h - Header file for NDIR directory lister.      
 //                                                            
 //    Written by:  Daniel D. Miller                           
 //                                                            
 //************************************************************
 
-// #include <windows.h>
-// #include <stdlib.h>  //  PATH_MAX
 #include <limits.h>
-
-// extern int stricmp(const char *string1, const char *string2);
-// extern int strnicmp(const char *string1, const char *string2, size_t count);
-// extern char *strupr(char *str);
-// extern int _tolower(int c);
-
-// #ifndef PATH_MAX
-// #define PATH_MAX  260
-// #endif
 
 typedef  unsigned long long   u64 ;
 typedef  unsigned char        uchar ;
@@ -25,7 +14,6 @@ typedef  unsigned int         uint ;
 typedef  unsigned char        u8  ;
 typedef  unsigned short       u16 ;
 typedef  unsigned int         u32 ;
-
 
 #define MAXLINE   260
 
@@ -107,7 +95,7 @@ struct ndir_data {
    uchar unused1 ;
    uchar color ;
    uchar showSHRfiles ;
-   uchar ega_keep ;
+   uchar ega_keep_unused ;     // deprecated on 01.17.23
    uchar drive_summary ;//  0 = no, 1 = show free space, 2 = show used space
    uchar fdate_option ; //  0 = LAST_MODIFY, 1 = FILE_CREATE (MSDOS 7.00+ only)
    uchar lfn_off ;      //  0 = force DOS 8.3 filenames (MSDOS 7.00+ only)
@@ -209,6 +197,9 @@ extern char volume_name[PATH_MAX] ;
 //*********************************************************
 //                NSORT.CPP
 //*********************************************************
+//lint -esym(769, sort_modes::SORT_EXT_REV , sort_modes::SORT_NAME_REV, sort_modes::SORT_SIZE_REV)
+//lint -esym(769, sort_modes::SORT_DATE_REV, sort_modes::SORT_INV_TYPE)
+
 enum sort_modes {
 SORT_EXT   = 0,
 SORT_NAME     ,
@@ -243,15 +234,14 @@ extern unsigned base_len ;  //  length of base_path
 // extern struct _find_t fblk;
 
 extern char tempstr[MAXLINE] ;
-extern int  filecount ;             //  number of files found
+extern unsigned filecount ;             //  number of files found
 // extern uchar findattr ;
 // extern int  exclcount ;             //  number of exclusion filespecs
 extern char leftstr[37], rightstr[37] ; //  used by batch mode
 extern unsigned tcount ;            //  number of target filespecs
 
 extern unsigned lines ;
-extern unsigned curlines ;          //  are both this AND (lines) required??
-extern int columns ;                //  number of display columns on screen
+extern unsigned columns ;           //  number of display columns on screen
 extern unsigned linecnt ;           //  non-color display line counter
 
 extern unsigned start, finish ;
@@ -293,7 +283,6 @@ void print2(ffdata *fptr);
 void print3(ffdata *fptr);
 void print4(ffdata *fptr);
 void print6(ffdata *fptr);
-void ngotoxy(int x, int y);
 void ncrlf(void);
 void nputc(uchar attr, const uchar outchr);
 void nputs(uchar attr, const char* outstr);

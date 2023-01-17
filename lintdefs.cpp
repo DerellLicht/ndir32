@@ -33,7 +33,7 @@
 //lint -elib(129)
 //lint -esym(1065, _iob)
 
-//  wierd new lint8 stuff
+//  wierd new lint9 stuff
 //lint -e801   Use of goto is deprecated
 //lint -e818   Pointer parameter could be declared as pointing to const
 //lint -e830   Location cited in prior message
@@ -61,25 +61,9 @@
 //lint -e732   Loss of sign (initialization) (size N to size K)
 //lint -e734   Loss of precision (assignment) (N bits to K bits)
 //lint -e737   Loss of sign in promotion from int to unsigned int
-//lint -e750   local macro not referenced
 //lint -e754   local structure member not referenced
-//lint -e755  global macro not referenced
+//lint -e755   global macro not referenced (reqd for scsi_defs.h)
 //lint -e768   global struct member not referenced
-//lint -e769   global enumeration constant not referenced
 //lint -e778   Constant expression evaluates to 0 in operation '*'
 
-//lint -esym(759,dclreos) -esym(765,dclreos) -esym(714,dclreos) 
-//lint -esym(759,ngotoxy) -esym(765,ngotoxy)
-//lint -esym(759,clear_visible_rows) -esym(765,clear_visible_rows) -esym(714,clear_visible_rows) 
-//lint -esym(759,control_handler) -esym(765, control_handler)
-//lint -esym(759,hide_cursor) -esym(765,hide_cursor) -esym(714,hide_cursor) 
-//lint -esym(759,dprints) -esym(765,dprints) -esym(714,dprints) 
-
-//lint -esym(765, dputsi) 
-//lint -esym(765, is_CRLF_present) 
-//lint -esym(759,dprintc) -esym(765,dprintc) -esym(714,dprintc) 
-//lint -esym(759,get_char) -esym(765,get_char) -esym(714,get_char) 
-//lint -esym(715,lfn_off) ;
-//lint -esym(759,set_text_attr) -esym(765,set_text_attr) -esym(714,set_text_attr)
-//lint -esym(759,get_system_message) -esym(765,get_system_message) -esym(714,get_system_message)
 

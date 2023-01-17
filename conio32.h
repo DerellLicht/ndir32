@@ -36,4 +36,3 @@ void dputnchar(CHAR chr, CHAR attr, int count);
 void dputs(const char *outstr);
 void dprints(unsigned row, unsigned col, const char* outstr);
 BOOL control_handler(DWORD dwCtrlType);
-void set_lines(int lines);

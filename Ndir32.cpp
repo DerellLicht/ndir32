@@ -19,6 +19,7 @@
 
 #include "ndir32.h"
 #include "conio32.h"
+#include "qualify.h"
 
 #define  VER_NUMBER "2.56"
 
@@ -37,17 +38,8 @@ int _CRT_glob = 0 ;
 //  cmd_line.cpp
 extern void parse_command_string(char *cmdstr) ;
 
-/***********************  qualify() constants  ************************/
-#define  QUAL_WILDCARDS    0x01
-#define  QUAL_NO_PATH      0x02
-#define  QUAL_IS_FILE      0x04
-#define  QUAL_INV_DRIVE    0x80
-
 //  from CMD_LINE.CPP
 extern void parse_command_args(int start, int argc, char** argv);
-
-//  from QUALIFY.CPP
-extern unsigned qualify(char *argptr, int lfn_off);
 
 //***************  function prototypes  ***************
 static void sort_target_paths(void);
@@ -231,7 +223,7 @@ static void process_filespecs(void)
 
          //  seek out all other filespecs with same path
          j++ ;
-         while (1) {
+         while (LOOP_FOREVER) {
             if (j >= tcount) {
                finish = j-1 ;
                break;
@@ -345,7 +337,7 @@ int strcmpiwc(const char *onestr, const char *twostr)
    char onechar, twochar ;
    int k = 0 ;
 
-   while (1) 
+   while (LOOP_FOREVER) 
       {
       onechar = *(onestr+k) ;
       twochar = *(twostr+k) ;
@@ -449,7 +441,7 @@ static int write_default_ini_file(char *ini_str)
    fprintf(ofile, "low_ascii=%u\n", n.low_ascii) ;
    fprintf(ofile, "color=%u\n", n.color) ;
    fprintf(ofile, "showSHRfiles=%u  ; use diff attrib for S/H/R files\n", n.showSHRfiles) ;
-   fprintf(ofile, "ega_keep=%u  ; switch to 50-line mode\n", n.ega_keep) ;
+   // fprintf(ofile, "ega_keep=%u  ; switch to 50-line mode\n", n.ega_keep) ;
    fprintf(ofile, "fdate_option=%u  ; 0=LastWriteTime (default), 1=LastAccessTime, 2=CreationTime\n", n.fdate_option) ;
 
    //  generate default colors
@@ -515,7 +507,7 @@ static ini_entry const ndir_ini[] = {
 { "low_ascii",    &n.low_ascii },
 { "color",        &n.color },
 { "showSHRfiles", &n.showSHRfiles },
-{ "ega_keep",     &n.ega_keep },
+// { "ega_keep",     &n.ega_keep },
 { "lfn_off",      &n.lfn_off },
 { "fdate_option", &n.fdate_option },
 { "long_attr",    &n.long_attr },

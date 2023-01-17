@@ -323,7 +323,7 @@ int get_wave_info(char *fname, char *mlstr)
    else {
       hd = (char *) &dbuffer[12] ;
       rbytes = 0 ;
-      while (1) {
+      while (LOOP_FOREVER) {
          if (strncmp(hd, "fmt ", 4) == 0) {
             hd += 4 ;
             break;
@@ -657,7 +657,7 @@ int get_png_info(char *fname, char *mlstr)
    } else {
       //  scan along for the IHDR string
       p = dbuffer ;
-      while (1) {
+      while (LOOP_FOREVER) {
          if (strncmp((char *) p, "IHDR", 4) == 0) {
             p += 4 ;
             break;
@@ -730,7 +730,7 @@ int get_avi_info(char *fname, char *mlstr)
    bcount = 0 ;
    rows = cols = 0 ;
    run_time = 0.0 ;
-   while (1) {
+   while (LOOP_FOREVER) {
       if (strncmp(hd, "hdrlavih", 8) == 0) {
          avih = (MainAVIHeader *) (hd+12) ;
          cols = avih->dwWidth ;

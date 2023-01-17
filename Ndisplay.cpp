@@ -69,8 +69,9 @@ static void testpause (void)
       nputs (n.colornhead, "Press any key to continue (or ESC to exit)");
       unsigned inkey = get_scode ();
       if (inkey == 27) {
-         if ((curlines != lines) && (!(n.ega_keep)))
-            set_lines (25);
+         // if ((curlines != lines) && (!(n.ega_keep))) {
+         //    set_lines (25);
+         // }
          error_exit (DATA_OKAY, NULL);
       }
 
@@ -86,7 +87,7 @@ static void testpause (void)
 }
 
 /*****************************************************************/
-void ngotoxy (int x, int y)
+static void ngotoxy (int x, int y)
 {
    if (n.color) {
       dgotoxy (x, y);
@@ -139,8 +140,6 @@ typedef struct mm_lookup_s {
    char  ext[MAX_EXT_SIZE] ;
    int (*func)(char *fname, char *mlstr) ;
 } mm_lookup_t ;
-
-#define  IDX_WAV  2
 
 static mm_lookup_t const mm_lookup[] = {
 { "jpg", get_jpeg_info },

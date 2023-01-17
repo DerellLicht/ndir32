@@ -100,8 +100,9 @@ Filelist.o: conio32.h ndir32.h
 Fileread.o: ndir32.h
 system.o: ndir32.h
 ndata.o: ndir32.h
-Ndir32.o: ndir32.h conio32.h
+Ndir32.o: ndir32.h conio32.h qualify.h
 Ndisplay.o: ndir32.h conio32.h file_fmts.h
+Qualify.o: qualify.h
 nsort.o: ndir32.h
 treelist.o: ndir32.h conio32.h
 mp3.parser.o: ndir32.h

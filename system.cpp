@@ -1,12 +1,18 @@
-//*****************************************************************
+//*********************************************************************************
 //  Copyright (c) 2023  Daniel D Miller
-//  system.cpp - generic-call functions
-//*****************************************************************
+//  system.cpp - general-purpose debug functions
+//  
+//  The syslog() function outputs to OutputDebugStringA();
+//  those messages can be monitored using the free DebugView utility,
+//  available from SysInternals (owned by Microsoft)
+//*********************************************************************************
 
 #include <windows.h>
 #include <stdio.h>
 
 #include "ndir32.h"
+
+//lint -esym(759,get_system_message) -esym(765,get_system_message) -esym(714,get_system_message)
 
 //*************************************************************
 //  each subsequent call to this function overwrites 

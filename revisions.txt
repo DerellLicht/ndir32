@@ -254,5 +254,5 @@ Version 2.53, 09/30/22
 Version 2.54, 09/30/22
   This is built with 64-bit compiler (ndir64.exe), to support symlink name resolution
     
-Version 2.55, 01/17/23
+Version 2.56, 01/17/23
   Fix bug in non-minimize display, with screen > 132 characters

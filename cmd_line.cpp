@@ -127,7 +127,7 @@ static int update_switches (char *argstr)
       case '4':  n.format = 2;  break;
       case '6':  n.format = 3;  break;
       case '3':  n.format = 5;  break;
-      case '5':  n.ega_keep ^= 1;  break;
+      // case '5':  n.ega_keep ^= 1;  break;
 
       case ',':  
          n.tree_short = 1;  
@@ -157,7 +157,7 @@ void parse_command_string (char *cmdstr)
       case '-':
       case '/':
          cmdstr++;              //  skip the switch char
-         while (1) {
+         while (LOOP_FOREVER) {
             if (*cmdstr == 13 || *cmdstr == 0)
                break;
 
@@ -203,7 +203,7 @@ void parse_command_args (int startIdx, int argc, char **argv)
    //  see if we have an environment variable to deal with
    if (startIdx == 0) {
       argvptr = argv[0];
-      while (1) {
+      while (LOOP_FOREVER) {
          spcptr = strchr (argvptr, ' ');
          if (spcptr == 0) {
             parse_command_string (argvptr);
@@ -241,9 +241,6 @@ void verify_flags (void)
 {
    // lines = (unsigned) (int) (sinfo.srWindow.Bottom - sinfo.srWindow.Top + 1) ;
    lines = get_window_rows ();
-
-   //  used on exit, to see if we should restore 25-line mode
-   curlines = lines;
 
    if (is_redirected ()) {
       //  This bypasses the html-redirection operation,
@@ -296,13 +293,14 @@ void verify_flags (void)
    }
 
    //*********************************************
-   // If -3 or -5 was used, set 43/50-line mode
+   //  If -3 or -5 was used, set 43/50-line mode
+   //  deprecated on 01.17.23
    //*********************************************
-   if (n.ega_keep) {
-      set_lines (50);
-      curlines = lines;
-      lines = 50;
-   }
+   // if (n.ega_keep) {
+   //    set_lines (50);
+   //    curlines = lines;
+   //    lines = 50;
+   // }
 
    /*  Set 'dir tree' conditions  */
    if (n.tree == 1 || n.tree == 4 || n.tree == 5 || n.drive_summary > DSUMMARY_NONE)

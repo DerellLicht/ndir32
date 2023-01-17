@@ -46,7 +46,7 @@ ndir_data n =
    0, //  unused1
    1, //  display files in color = true
    0, //  showSHRfiles
-   0, //  switch to EGA43/VGA50 line mode
+   0, //  switch to EGA43/VGA50 line mode (deprecated 01.17.23)
    0, //  display disk_drive summary
    0, //  file-date option (MSDOS 7.00+ only)
    0, //  1 = force old DOS 8.3 filenames in MSDOS 7.00+
@@ -92,9 +92,9 @@ unsigned start, finish ;
 char leftstr[37], rightstr[37] ; //  used by batch mode
 char tempstr[MAXLINE] ;
 uchar tline, bline, vline, xline, dline ;
-int  filecount = 0 ;
+unsigned filecount = 0 ;
 
-int  columns ;           //  number of display columns on screen
+unsigned columns ;           //  number of display columns on screen
 unsigned curlines, lines, linecnt ;
 
 double total_ptime = 0.0 ;
@@ -103,7 +103,7 @@ double total_ptime = 0.0 ;
 //*********************************************************
 char *idtxt[] = {
    " ",
-   "Copyright 1990, 1993-2006 by:",
+   "Copyright 1990, 1993-2023 by:",
    " ",
    "          Daniel D. Miller",
    "          4835 Coco Palm Drive",
@@ -115,14 +115,6 @@ char *idtxt[] = {
    "This program, NDIR.EXE, and its associated files, are hereby released as",
    "Freeware, though I retain the copyrights on them.  Please feel free to",
    "distribute copies to anyone who is (or might be) interested in them.",
-   " ",
-   "If you like this program, a letter, post card or Email telling me what you",
-   "do or don't like would be very welcome, and will help me decide what ",
-   "features to add in the future.  If your letter is accompanied by a small ",
-   "($10 or more) donation , I will send you the current version of the",
-   "program as well.  (Of course, if you just send an Email, I'll send it",
-   "to you for free!!)  If you DO contact me, PLEASE mention what version",
-   "you are using, so I'll know how far behind you are.",
    NULL } ;
 
 //*********************************************************
@@ -161,7 +153,6 @@ char *helptxt[] = {
 "   -l *     Toggle long-filename enable flag (NDIR16 and MSDOS 7.00+ only)",
 "   -k *     Toggle color mode.",
 "   -j *     Use standard ASCII (for redirection). (forces -k)",
-"   -5 *     Switch to EGA 43-line/VGA 50-line mode.",
 "   -u *     List filenames in UPPERCASE.",
 "   -oN      Date/Time display: 0=Last Write, 1=Last Access, 2=File Created",
 "   -x *     List executables only (.EXE,.COM,.BAT).",
