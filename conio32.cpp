@@ -36,9 +36,11 @@
 #include <stdio.h>
 #include <conio.h>   // _getch(), _kbhit()
 #include <stdlib.h>
-#include "conio32.hpp"
+#include "conio32.h"
+#include "ndir32.h"
 
-HANDLE hStdOut, hStdIn ;
+static HANDLE hStdOut ;
+static HANDLE hStdIn ;
 
 static CONSOLE_SCREEN_BUFFER_INFO sinfo ;
 
@@ -52,6 +54,14 @@ static WORD original_attribs = 3 ;
 //***************************************************************************
 //***************************************************************************
 
+// #define PERR(bSuccess, api) {if (!(bSuccess)) perr(__FILE__, __LINE__, api, GetLastError());}
+static void PERR(bool bSuccess, PCHAR szApiName)
+{
+   if (!bSuccess) {
+      syslog("[%u] %s\n", GetLastError(), szApiName);
+   }
+}
+
 //**********************************************************
 //lint -esym(715,dwCtrlType)
 BOOL control_handler(DWORD dwCtrlType)
@@ -62,13 +72,32 @@ BOOL control_handler(DWORD dwCtrlType)
    //  restore the screen mode
    bSuccess = GetConsoleMode(hStdOut, &dwMode);
    PERR(bSuccess, "GetConsoleMode");
-   bSuccess = SetConsoleMode(hStdOut, 
-      dwMode | ENABLE_PROCESSED_OUTPUT | ENABLE_WRAP_AT_EOL_OUTPUT ) ;
+   bSuccess = SetConsoleMode(hStdOut, dwMode | ENABLE_PROCESSED_OUTPUT | ENABLE_WRAP_AT_EOL_OUTPUT ) ;
    PERR(bSuccess, "SetConsoleMode");
 
    //  display message and do other work
    return FALSE ;
    }   
+
+//***********************************************************
+//  This replaces the CXL function of the same name
+//***********************************************************
+void set_lines(int crt_lines)
+   {
+   // COORD dwSize = { 80, crt_lines } ;
+   // SetConsoleScreenBufferSize(hStdOut, dwSize) ;
+   
+   //  The preceding method changes the actual buffer size,
+   //  not the window size, which may not be what is wanted
+   //  under WinNT.  This method changes the actual window
+   //  size, but positions the new window at the *top* of
+   //  the screen buffer, which may give unexpected results
+   //  if used with "don't clear screen" in a large window.
+   //  Neither method is exactly correct in all cases,
+   //  but will probably suffice most times...
+   SMALL_RECT newwin = { 0, 0, 79, (SHORT) (crt_lines-1) } ;
+   SetConsoleWindowInfo(hStdOut, TRUE, &newwin) ;
+   }
 
 //***************************************************************************
 bool is_redirected(void)
@@ -126,6 +155,14 @@ void console_init(char *title)
       redirected = true ;
       return ; 
    }
+   // [33240] dwSize: 200x2000, cursor: 0x0, max: 200x109, window: L0, T0, R199, B49
+   // syslog("dwSize: %ux%u, cursor: %ux%u, max: %ux%u, window: L%u, T%u, R%u, B%u\n",
+   //    sinfo.dwSize.X, sinfo.dwSize.Y,
+   //    sinfo.dwCursorPosition.X,
+   //    sinfo.dwCursorPosition.Y,
+   //    sinfo.dwMaximumWindowSize.X, sinfo.dwMaximumWindowSize.Y, 
+   //    sinfo.srWindow.Left, sinfo.srWindow.Top, sinfo.srWindow.Right, sinfo.srWindow.Bottom);
+   
    //  on systems without ANSI.SYS, this is apparently 0...
    original_attribs = sinfo.wAttributes ;
    if (original_attribs == 0) {
@@ -318,31 +355,48 @@ static void dscroll(WORD tBG)
 }
 
 //**********************************************************
+//  CR only, no LF
+//**********************************************************
 void dreturn(void)
    {
    sinfo.dwCursorPosition.X = 0 ;
    SetConsoleCursorPosition(hStdOut, sinfo.dwCursorPosition) ;
-
-   //  try to scroll the window
-   // dscroll(original_attribs) ;
    }   
+
+//**********************************************************
+//  debug function
+//**********************************************************
+//lint -esym(714, dshow_row_info)
+//lint -esym(759, dshow_row_info)
+//lint -esym(765, dshow_row_info)
+void dshow_row_info(char *msg)
+{
+   char* default_msg = "x"; //lint !e1778 assignment is not const
+   if (msg == NULL) {
+      msg = default_msg ;
+   }
+   syslog("%s: cursor: %ux%u, dwSize: %ux%u, where: %ux%u, win_cols: %u\n", msg,
+      sinfo.dwCursorPosition.X, 
+      sinfo.dwCursorPosition.Y, 
+      sinfo.dwSize.X, 
+      sinfo.dwSize.Y, 
+      _where_x(), _where_y(),
+      get_window_cols()
+      ) ;
+}
 
 //**********************************************************
 void dnewline(void)
 {
-   WORD x = 0 ;
-   WORD y = sinfo.dwCursorPosition.Y ;
-
+   //  move cursor to beginning of line
    sinfo.dwCursorPosition.X = 0 ;
    //  *this* probably shouldn't use dwSize.Y either...
-   if (sinfo.dwCursorPosition.Y >= (sinfo.dwSize.Y-1)) {
+   // if (sinfo.dwCursorPosition.Y >= (sinfo.dwSize.Y-1)) {
+   if (sinfo.dwCursorPosition.Y >= (sinfo.srWindow.Bottom-1)) {
       // dclreol() ;
-      // 
-      // //  move cursor to beginning of line
-      // sinfo.dwCursorPosition.X = 0 ;
       dscroll(original_attribs) ;
-      sinfo.dwCursorPosition.X = x ;
-      sinfo.dwCursorPosition.Y = y ;
+      // sinfo.dwCursorPosition.X = 0 ;
+      // sinfo.dwCursorPosition.Y = sinfo.dwCursorPosition.Y ;
    }
    else {
       sinfo.dwCursorPosition.Y++ ;
@@ -440,7 +494,11 @@ void dclreos(void)
 //**********************************************************
 void dputnchar(CHAR chr, CHAR attr, int count)
 {
-   static char ncbfr[133] ;
+   static char ncbfr[MAX_CHAR_COLS+1] ;
+   if (count > MAX_CHAR_COLS) {
+      syslog("dputnchar: count too large: %d\n", count);
+      count = MAX_CHAR_COLS ;
+   }
    set_text_attr(attr) ;
    memset(ncbfr, chr, count) ;
    ncbfr[count] = 0 ;   //  NULL-term the string
@@ -572,150 +630,3 @@ void dprints(unsigned row, unsigned col, const char* outstr)
    dgotoxy(col, row) ;
    dputs(outstr) ;
    }   
-
-//**********************************************************
-unsigned drandom(unsigned rmax)
-   {
-   double dbl = (double) rand() / (double) (RAND_MAX + 1) ;
-   unsigned rval = (unsigned) (rmax * dbl) ;
-   if (rval >= rmax)
-       rval = rmax - 1 ;
-   return rval ;
-   }   
-
-/*********************************************************************
-* FUNCTION: perr(PCHAR szFileName, int line, PCHAR szApiName,        *
-*                DWORD dwError)                                      *
-*                                                                    *
-* PURPOSE: report API errors. Allocate a new console buffer, display *
-*          error number and error text, restore previous console     *
-*          buffer                                                    *
-*                                                                    *
-* INPUT: current source file name, current line number, name of the  *
-*        API that failed, and the error number                       *
-*                                                                    *
-* RETURNS: none                                                      *
-*********************************************************************/
-
-/* maximum size of the buffer to be returned from FormatMessage */
-#define MAX_MSG_BUF_SIZE 512
-
-void perr(PCHAR szFileName, int line, PCHAR szApiName, DWORD dwError)
-   {
-   BOOL bSuccess;
-   DWORD dwMode;
-   static int pErrActive = 0 ;
-
-   static CHAR szTemp[1024];
-   DWORD cMsgLen;
-   CHAR *msgBuf; /* buffer for message text from system */
-   // int iButtonPressed; /* receives button pressed in the error box */
-
-   //  avoid recursion
-   if (pErrActive)
-      return ;
-   pErrActive = 1 ;
-
-   /* set up mouse and window input */
-   bSuccess = GetConsoleMode(hStdOut, &dwMode);
-   PERR(bSuccess, "GetConsoleMode");
-
-   /* when turning off ENABLE_LINE_INPUT, you MUST also turn off */
-   /* ENABLE_ECHO_INPUT. */
-   // bSuccess = SetConsoleMode(hStdIn, (dwMode & ~(ENABLE_LINE_INPUT |
-   //     ENABLE_ECHO_INPUT)) | ENABLE_WINDOW_INPUT | ENABLE_MOUSE_INPUT);
-   bSuccess = SetConsoleMode(hStdOut, 
-      dwMode | ENABLE_PROCESSED_OUTPUT | ENABLE_WRAP_AT_EOL_OUTPUT ) ;
-   PERR(bSuccess, "SetConsoleMode");
-
-   /* format our error message */
-   sprintf(szTemp, "\n%s: Error %u from %s on line %d:\n", szFileName,
-       (unsigned) dwError, szApiName, line);
-
-   /* get the text description for that error number from the system */
-   cMsgLen = FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM |
-       FORMAT_MESSAGE_ALLOCATE_BUFFER | 40, NULL, dwError,
-       MAKELANGID(0, SUBLANG_ENGLISH_US), (LPTSTR) &msgBuf, MAX_MSG_BUF_SIZE,
-       0);
-
-   if (!cMsgLen)
-     sprintf(szTemp + strlen(szTemp), "Unable to obtain error message text! \n"
-         "%s: Error %u from %s on line %d", __FILE__,
-         (unsigned) GetLastError(), "FormatMessage", __LINE__);
-   else
-     strcat(szTemp, msgBuf);
-
-   puts(szTemp) ;
-   pErrActive = 0 ;
-   exit(1);
-   }
-
-//*************************************************************
-//  each subsequent call to this function overwrites 
-//  the previous report.
-//*************************************************************
-char *get_system_message(void)
-{
-   static char msg[261] ;
-   int slen ;
-
-   LPVOID lpMsgBuf;
-   FormatMessage( 
-      FORMAT_MESSAGE_ALLOCATE_BUFFER | 
-      FORMAT_MESSAGE_FROM_SYSTEM | 
-      FORMAT_MESSAGE_IGNORE_INSERTS,
-      NULL,
-      GetLastError(),
-      MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
-      (LPTSTR) &lpMsgBuf,
-      0, 0);
-   // Process any inserts in lpMsgBuf.
-   // ...
-   // Display the string.
-   strncpy(msg, (char *) lpMsgBuf, 260) ;
-
-   // Free the buffer.
-   LocalFree( lpMsgBuf );
-
-   //  trim the newline off the message before copying it...
-   slen = strlen(msg) ;
-   if (msg[slen-1] == 10  ||  msg[slen-1] == 10) {
-      msg[slen-1] = 0 ;
-   }
-
-   return msg;
-}
-
-char *get_system_message(DWORD errcode)
-{
-   static char msg[261] ;
-   int slen ;
-
-   LPVOID lpMsgBuf;
-   FormatMessage( 
-      FORMAT_MESSAGE_ALLOCATE_BUFFER | 
-      FORMAT_MESSAGE_FROM_SYSTEM | 
-      FORMAT_MESSAGE_IGNORE_INSERTS,
-      NULL,
-      errcode,
-      MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
-      (LPTSTR) &lpMsgBuf,
-      0, 0);
-   // Process any inserts in lpMsgBuf.
-   // ...
-   // Display the string.
-   strncpy(msg, (char *) lpMsgBuf, 260) ;
-
-   // Free the buffer.
-   LocalFree( lpMsgBuf );
-
-   //  trim the newline off the message before copying it...
-   slen = strlen(msg) ;
-   if (msg[slen-1] == 10  ||  msg[slen-1] == 10) {
-      msg[slen-1] = 0 ;
-   }
-
-   return msg;
-}
-
-

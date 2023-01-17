@@ -47,38 +47,6 @@ static void getcolor (ffdata * fnew)
 }
 
 //*********************************************************
-//                 File-listing routine
-//*********************************************************
-void file_listing (void)
-{
-   unsigned i;
-   // merge_sort<struct ffdata> ms ;
-
-   //***********************************************
-   //  read all files matching one filespec
-   //***********************************************
-   for (i = start; i <= finish; i++)
-      read_long_files (i);
-
-   //***********************************************
-   process_exclusions ();
-
-   //***********************************************
-   //              Sort directory data
-   //***********************************************
-   if (filecount > 0) {
-      sort_filelist ();
-
-      // if (n.dir_first)
-      //    // sort_elements(sort_dir) ;
-      //    ftop = sort_elements(sort_dir, ftop) ;
-   }
-
-   //  now do the file-listing...
-   display_files ();
-}
-
-//*********************************************************
 //  This loops thru all files in one subdirectory,
 //  calling update_filelist() to add files to the
 //  global linked list.
@@ -315,3 +283,36 @@ static void process_exclusions (void)
       }
    }
 }
+
+//*********************************************************
+//                 File-listing routine
+//*********************************************************
+void file_listing (void)
+{
+   unsigned i;
+   // merge_sort<struct ffdata> ms ;
+
+   //***********************************************
+   //  read all files matching one filespec
+   //***********************************************
+   for (i = start; i <= finish; i++)
+      read_long_files (i);
+
+   //***********************************************
+   process_exclusions ();
+
+   //***********************************************
+   //              Sort directory data
+   //***********************************************
+   if (filecount > 0) {
+      sort_filelist ();
+
+      // if (n.dir_first)
+      //    // sort_elements(sort_dir) ;
+      //    ftop = sort_elements(sort_dir, ftop) ;
+   }
+
+   //  now do the file-listing...
+   display_files ();
+}
+

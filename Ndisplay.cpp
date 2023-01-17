@@ -17,7 +17,7 @@
 #endif
 
 #include "ndir32.h"
-#include "conio32.hpp"
+#include "conio32.h"
 #include "file_fmts.h"
 
 extern int get_mp3_info(char *fname, char *mlstr);
@@ -51,7 +51,7 @@ extern char *ShortVersion;
 // };
 static uchar attrclr;
 
-static char monthstr[12][4] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+static char const monthstr[12][4] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun",
    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
 };
 
@@ -88,8 +88,9 @@ static void testpause (void)
 /*****************************************************************/
 void ngotoxy (int x, int y)
 {
-   if (n.color)
+   if (n.color) {
       dgotoxy (x, y);
+   }
 }
 
 //**************************************************
@@ -108,12 +109,13 @@ void info (char *data[])
 //**************************************************
 void display_logo (void)
 {
-   if (n.batch)
+   if (n.batch) {
       return;
+   }
 
-   if (n.clear && !is_redirected ())
-   // if (n.clear)
+   if (n.clear && !is_redirected ()) {
       dclrscr ();
+   }
 
    linecnt = 0;
 
@@ -160,9 +162,11 @@ static mm_lookup_t const mm_lookup[] = {
 //************************************************************************
 //  found in kernel32.dll
 #ifdef USE_64BIT
+
+#define  MAX_FILE_LENGTH   1024
 char *GetLinkTarget(char const * const symlink_name) 
 {
-   static char final_file[1024] = "";
+   static char final_file[MAX_FILE_LENGTH+1] = "";
    // Define smart pointer type for automatic HANDLE cleanup.
    // typedef std::unique_ptr<std::remove_pointer<HANDLE>::type,
    //                         decltype( &::CloseHandle )> FileHandle;
@@ -186,7 +190,7 @@ char *GetLinkTarget(char const * const symlink_name)
       else {
       // std::vector<wchar_t> buffer( requiredSize );
       GetFinalPathNameByHandle( hdl, final_file,
-                                1024,
+                                MAX_FILE_LENGTH,
                                 FILE_NAME_NORMALIZED );
       }
 
@@ -258,8 +262,7 @@ void print1 (ffdata * fptr)
       nputs (attrclr, attr);
       if (lfn_supported) {
          //sprintf(tempstr, "%02d-%02d-%04lu ", month, day, year);
-         sprintf (tempstr, "%3s %02d, %04lu ", monthstr[month - 1], day,
-            year);
+         sprintf (tempstr, "%3s %02d, %04lu ", monthstr[month - 1], day, year);
          nputs (n.colordate, tempstr);
          sprintf (tempstr, "%02d:%02d:%02d ", hour, mins, secs);
          nputs (n.colortime, tempstr);
@@ -744,10 +747,12 @@ void lfn_print6 (ffdata * fptr)
 /******************************************************************/
 void ncrlf (void)
 {
-   if (n.color)
+   if (n.color) {
       dnewline ();
-   else
+   }
+   else {
       printf ("\n");
+   }
    testpause ();
 }
 

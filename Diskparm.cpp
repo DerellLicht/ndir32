@@ -13,7 +13,7 @@
 // #include <stdlib.h>             //  ultoa()
 #include <windows.h>
 #include "ndir32.h"
-#include "conio32.hpp"
+#include "conio32.h"
 
 char dpath[4] = "d:\\";
 

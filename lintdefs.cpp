@@ -68,13 +68,10 @@
 //lint -e769   global enumeration constant not referenced
 //lint -e778   Constant expression evaluates to 0 in operation '*'
 
-//lint -esym(759,hStdIn) -esym(765,hStdIn)
-//lint -esym(759,drandom) -esym(765,drandom) -esym(714,drandom) 
 //lint -esym(759,dclreos) -esym(765,dclreos) -esym(714,dclreos) 
 //lint -esym(759,ngotoxy) -esym(765,ngotoxy)
 //lint -esym(759,clear_visible_rows) -esym(765,clear_visible_rows) -esym(714,clear_visible_rows) 
 //lint -esym(759,control_handler) -esym(765, control_handler)
-//lint -esym(759, perr) -esym(765, perr) 
 //lint -esym(759,hide_cursor) -esym(765,hide_cursor) -esym(714,hide_cursor) 
 //lint -esym(759,dprints) -esym(765,dprints) -esym(714,dprints) 
 

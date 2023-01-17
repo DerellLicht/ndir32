@@ -8,6 +8,7 @@ ndir64.exe
 *.wav
 *.mp3
 *.hex
+*.bak
 MP3 Frame header.htm
 b17.parse.txt
 ba_exit.parse.txt

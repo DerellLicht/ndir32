@@ -3,19 +3,14 @@
 //                                                                           
 //  Written by:   Daniel D. Miller                                           
 //                                                                           
-//  Last Update:  02/05/03 08:09                                             
-//                                                                           
-//  compile with:    cl /c /W3 /O2 /G4 conio32.cpp                              
-//    NOTE: This program requires Microsoft Visual C++ 4.0 or greater.       
-//                                                                           
+//  Last Update:  01/17/23
 //***************************************************************************
 
-extern HANDLE hStdOut, hStdIn ;
+#define  MAX_CHAR_COLS     1024
 
 //**********************************************************
 void console_init(char *title);
 void hide_cursor(void);
-void perr(PCHAR szFileName, int line, PCHAR szApiName, DWORD dwError) ;
 
 void restore_console_attribs(void);
 bool is_redirected(void);
@@ -40,10 +35,5 @@ void dprintc(unsigned row, unsigned col, unsigned attr, const char outchr);
 void dputnchar(CHAR chr, CHAR attr, int count);
 void dputs(const char *outstr);
 void dprints(unsigned row, unsigned col, const char* outstr);
-unsigned drandom(unsigned rmax);
 BOOL control_handler(DWORD dwCtrlType);
-char *get_system_message(void);
-char *get_system_message(DWORD errcode);
-
-#define PERR(bSuccess, api) {if (!(bSuccess)) perr(__FILE__, __LINE__, api, GetLastError());}
-
+void set_lines(int lines);

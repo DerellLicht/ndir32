@@ -43,7 +43,7 @@ endif
 #***************************************************************
 
 CPPSRC=cmd_line.cpp conio32.cpp Diskparm.cpp err_exit.cpp Filelist.cpp Fileread.cpp \
-	ndata.cpp Ndir32.cpp Ndisplay.cpp Qualify.cpp \
+	system.cpp ndata.cpp Ndir32.cpp Ndisplay.cpp Qualify.cpp \
 	nsort.cpp treelist.cpp mp3.parser.cpp file_fmts.cpp mediatype.cpp
 
 OBJS = $(CSRC:.c=.o) $(CPPSRC:.cpp=.o)
@@ -92,17 +92,18 @@ endif
 
 # DO NOT DELETE
 
-cmd_line.o: ndir32.h conio32.hpp
-conio32.o: conio32.hpp
-Diskparm.o: ndir32.h conio32.hpp
-err_exit.o: ndir32.h conio32.hpp
-Filelist.o: conio32.hpp ndir32.h
+cmd_line.o: ndir32.h conio32.h
+conio32.o: conio32.h ndir32.h
+Diskparm.o: ndir32.h conio32.h
+err_exit.o: ndir32.h conio32.h
+Filelist.o: conio32.h ndir32.h
 Fileread.o: ndir32.h
+system.o: ndir32.h
 ndata.o: ndir32.h
-Ndir32.o: ndir32.h conio32.hpp
-Ndisplay.o: ndir32.h conio32.hpp file_fmts.h
+Ndir32.o: ndir32.h conio32.h
+Ndisplay.o: ndir32.h conio32.h file_fmts.h
 nsort.o: ndir32.h
-treelist.o: ndir32.h conio32.hpp
+treelist.o: ndir32.h conio32.h
 mp3.parser.o: ndir32.h
 file_fmts.o: ndir32.h file_fmts.h
 mediatype.o: scsi_defs.h

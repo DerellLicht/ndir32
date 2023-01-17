@@ -12,7 +12,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "ndir32.h"
-#include "conio32.hpp"
+#include "conio32.h"
 
 static char const * const error_text[4] = {
    "Type 'NDIR /?' for help", //  not actually used in this program

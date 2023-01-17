@@ -16,7 +16,7 @@
 #endif
 #include <ctype.h>
 #include "ndir32.h"
-#include "conio32.hpp"
+#include "conio32.h"
 
 //  from NDIR32.CPP 
 extern void insert_target_filespec (char *fstr);

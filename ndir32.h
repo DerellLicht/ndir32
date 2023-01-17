@@ -259,10 +259,14 @@ extern unsigned start, finish ;
 extern double total_ptime ;
 //*****************  function prototypes**********************
 
+//  system.cpp
+int syslog(const char *fmt, ...);
+char *get_system_message(void);
+char *get_system_message(DWORD errcode);
+void dshow_row_info(char *msg);
+
 //  ndir.cpp
 int  strcmpiwc(const char *onestr, const char *twostr);
-void set_lines(int lines);
-int syslog(const char *fmt, ...);
 
 // ULLONG_MAX = 18,446,744,073,709,551,615
 #define  MAX_ULL_COMMA_LEN  26

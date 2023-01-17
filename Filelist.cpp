@@ -10,7 +10,7 @@
 #include <stdlib.h>
 #endif
 
-#include "conio32.hpp"  //  _where_x() 
+#include "conio32.h"  //  _where_x() 
 #include "ndir32.h"
 
 //*****************************************************************
@@ -286,162 +286,6 @@ static void list_files_qwise(void)
    fileend() ;
 }
 
-//*****************************************************************
-static void list_files_vertically(void)
-{
-   int rows, partrows, j, k ;
-   //  these arrays must have enough entries for
-   //  the maximum number of columns on the screen
-   int pcols[20] ;
-   ffdata *ftemps[20] ;
-
-   //************************************************
-   //  now, start displaying files
-   //************************************************
-   int fcount = 0 ;
-   if (lfn_supported) {
-      lfn_get_columns() ;  //  set disp_cols, tempfmtstr
-
-      rows = (unsigned) filecount / disp_cols ;
-      partrows = (unsigned) filecount % disp_cols ;
-
-      for (j=0; j< (int) disp_cols ; j++)  pcols[j] = rows ;
-      for (j=0; j<partrows; j++)  pcols[j]++ ;  //lint !e771
-
-      if (partrows > 0)
-         rows++ ;
-
-      //************************************************
-      //  split the  file list into (columns) lists.
-      //  However, remember to re-combine the lists
-      //  before ftemps[] goes out of scope, or
-      //  we won't be able to free them later!!
-      //************************************************
-      // ffdata *fprev ;
-      ftemps[0] = ftop ;
-      ftemps[1] = ftop ;
-      for (j=1; j< (int) disp_cols; j++) {
-         //  find end of current list
-         for (k=0; k<pcols[j-1]; k++)  //lint !e771
-            ftemps[j] = ftemps[j]->next ;
-
-         //  now, break the list
-         ftemps[j+1] = ftemps[j] ;
-      }
-
-      filehead() ;   //  uses rows, columns
-      j = 0 ;
-      while (1) {
-         if (fcount < filecount) {
-            lfn_fprint[columns](ftemps[j]) ;
-            ftemps[j] = ftemps[j]->next ;
-         }
-         //  if no files left to display, fill in row with spaces
-         else {
-            // nput_char(n.colorframe, ' ', col_width[disp_cols]) ;
-            nput_char(n.colorframe, ' ', line_len) ;
-         }   
-
-         //  draw separator characters as required
-         fcount++ ;
-         if (++j == (int) disp_cols) {
-            ncrlf() ;
-            j = 0 ;
-            if (--rows == 0)
-               break;
-         } else {
-            nputc(n.colorframe, vline) ;
-         }
-      }  //  loop forever
-   } else {
-      disp_cols = (unsigned) columns ;
-      rows = filecount / columns ;
-      partrows = filecount % columns ;
-
-      for (j=0; j<columns ; j++)  pcols[j] = rows ;
-      for (j=0; j<partrows; j++)  pcols[j]++ ;  //lint !e771
-
-      if (partrows > 0)
-         rows++ ;
-
-      //************************************************
-      //  split the  file list into (columns) lists.
-      //  However, remember to re-combine the lists
-      //  before ftemps[] goes out of scope, or
-      //  we won't be able to free them later!!
-      //************************************************
-      // ffdata *fprev ;
-      ftemps[0] = ftop ;
-      ftemps[1] = ftop ;
-      for (j=1; j<columns; j++) {
-         //  find end of current list
-         for (k=0; k<pcols[j-1]; k++)  //lint !e771
-            ftemps[j] = ftemps[j]->next ;
-
-         //  now, break the list
-         ftemps[j+1] = ftemps[j] ;
-      }
-
-      filehead() ;   //  uses rows, columns
-      j = 0 ;
-      while (1) {
-         if (fcount < filecount) {
-            fprint[columns](ftemps[j]) ;
-            ftemps[j] = ftemps[j]->next ;
-         } else {
-            // nput_char(n.colorframe, ' ', col_width[columns]) ;
-            // nput_char(n.colorframe, ' ', col_width[disp_cols]) ;
-            nput_char(n.colorframe, ' ', line_len) ;
-            // ngotoxy(sinfo.dwCursorPosition.X+col_width[disp_cols],
-            //         sinfo.dwCursorPosition.Y) ;
-         }   
-
-         fcount++ ;
-         if (++j == columns) {
-            ncrlf() ;
-            j = 0 ;
-            if (--rows == 0)
-               break;
-         } else {
-            nputc(n.colorframe, vline) ;
-         }
-      }
-   }
-   fileend() ;
-}
-
-/****************************************************************/
-/*  Display directory data in "files" mode.                     */
-/****************************************************************/
-void display_files(void)
-{
-   if (n.batch) {       /*  batch mode  */
-      display_batch_mode() ;
-      return ;
-   }
-
-   //****************************************************
-   //  normal display mode
-   //****************************************************
-   if (ftop == NULL) {
-      filehead() ;
-      nputs(n.colordefalt, "No matching files found.\n\r") ;
-      fileend() ;
-      return ;
-   }
-
-   //************************************************
-   //  present normal file listings
-   //************************************************
-   if (n.horz & 2)
-      list_files_qwise() ;
-   else if (n.horz & 1)
-      list_files_horizontally() ;
-   else {
-      list_files_vertically() ;
-   }
-}
-
 /*****************************************************************/
 static void filehead(void)
 {
@@ -626,3 +470,158 @@ static void fileend(void)
    }
 }
 
+//*****************************************************************
+static void list_files_vertically(void)
+{
+   int rows, partrows, j, k ;
+   //  these arrays must have enough entries for
+   //  the maximum number of columns on the screen
+   int pcols[20] ;
+   ffdata *ftemps[20] ;
+
+   //************************************************
+   //  now, start displaying files
+   //************************************************
+   int fcount = 0 ;
+   if (lfn_supported) {
+      lfn_get_columns() ;  //  set disp_cols, tempfmtstr
+
+      rows = (unsigned) filecount / disp_cols ;
+      partrows = (unsigned) filecount % disp_cols ;
+
+      for (j=0; j< (int) disp_cols ; j++)  pcols[j] = rows ;
+      for (j=0; j<partrows; j++)  pcols[j]++ ;  //lint !e771
+
+      if (partrows > 0)
+         rows++ ;
+
+      //************************************************
+      //  split the  file list into (columns) lists.
+      //  However, remember to re-combine the lists
+      //  before ftemps[] goes out of scope, or
+      //  we won't be able to free them later!!
+      //************************************************
+      // ffdata *fprev ;
+      ftemps[0] = ftop ;
+      ftemps[1] = ftop ;
+      for (j=1; j< (int) disp_cols; j++) {
+         //  find end of current list
+         for (k=0; k<pcols[j-1]; k++)  //lint !e771
+            ftemps[j] = ftemps[j]->next ;
+
+         //  now, break the list
+         ftemps[j+1] = ftemps[j] ;
+      }
+
+      filehead() ;   //  uses rows, columns
+      j = 0 ;
+      while (LOOP_FOREVER) {
+         if (fcount < filecount) {
+            lfn_fprint[columns](ftemps[j]) ;
+            ftemps[j] = ftemps[j]->next ;
+         }
+         //  if no files left to display, fill in row with spaces
+         else {
+            // nput_char(n.colorframe, ' ', col_width[disp_cols]) ;
+            nput_char(n.colorframe, ' ', line_len) ;
+         }   
+
+         //  draw separator characters as required
+         fcount++ ;
+         if (++j == (int) disp_cols) {
+            ncrlf() ;
+            j = 0 ;
+            if (--rows == 0)
+               break;
+         } else {
+            nputc(n.colorframe, vline) ;
+         }
+      }  //  loop forever
+   } 
+   //  if LFN *not* supported (use 8.3 format)
+   else {
+      disp_cols = (unsigned) columns ;
+      rows = filecount / columns ;
+      partrows = filecount % columns ;
+
+      for (j=0; j<columns ; j++)  pcols[j] = rows ;
+      for (j=0; j<partrows; j++)  pcols[j]++ ;  //lint !e771
+
+      if (partrows > 0)
+         rows++ ;
+
+      //************************************************
+      //  split the  file list into (columns) lists.
+      //  However, remember to re-combine the lists
+      //  before ftemps[] goes out of scope, or
+      //  we won't be able to free them later!!
+      //************************************************
+      // ffdata *fprev ;
+      ftemps[0] = ftop ;
+      ftemps[1] = ftop ;
+      for (j=1; j<columns; j++) {
+         //  find end of current list
+         for (k=0; k<pcols[j-1]; k++)  //lint !e771
+            ftemps[j] = ftemps[j]->next ;
+
+         //  now, break the list
+         ftemps[j+1] = ftemps[j] ;
+      }
+
+      filehead() ;   //  uses rows, columns
+      j = 0 ;
+      while (1) {
+         if (fcount < filecount) {
+            fprint[columns](ftemps[j]) ;
+            ftemps[j] = ftemps[j]->next ;
+         } else {
+            // nput_char(n.colorframe, ' ', col_width[columns]) ;
+            // nput_char(n.colorframe, ' ', col_width[disp_cols]) ;
+            nput_char(n.colorframe, ' ', line_len) ;
+         }   
+
+         fcount++ ;
+         if (++j == columns) {
+            ncrlf() ;
+            j = 0 ;
+            if (--rows == 0)
+               break;
+         } else {
+            nputc(n.colorframe, vline) ;
+         }
+      }
+   }
+   fileend() ;
+}
+
+/****************************************************************/
+/*  Display directory data in "files" mode.                     */
+/****************************************************************/
+void display_files(void)
+{
+   if (n.batch) {       /*  batch mode  */
+      display_batch_mode() ;
+      return ;
+   }
+
+   //****************************************************
+   //  normal display mode
+   //****************************************************
+   if (ftop == NULL) {
+      filehead() ;
+      nputs(n.colordefalt, "No matching files found.\n\r") ;
+      fileend() ;
+      return ;
+   }
+
+   //************************************************
+   //  present normal file listings
+   //************************************************
+   if (n.horz & 2)
+      list_files_qwise() ;
+   else if (n.horz & 1)
+      list_files_horizontally() ;
+   else {
+      list_files_vertically() ;
+   }
+}

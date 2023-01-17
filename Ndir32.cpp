@@ -18,13 +18,15 @@
 #include <ctype.h>
 
 #include "ndir32.h"
-#include "conio32.hpp"
+#include "conio32.h"
 
-#define  VER_NUMBER "2.55"
+#define  VER_NUMBER "2.56"
 
 //lint -esym(843, Version, ShortVersion) could be declared as const
 char *Version = " NDIR.EXE, Version " VER_NUMBER " " ;
 char *ShortVersion = " NDIR " VER_NUMBER " " ;
+
+static char ininame[PATH_MAX] ;
 
 //  per Jason Hood, this turns off MinGW's command-line expansion, 
 //  so we can handle wildcards like we want to.                    
@@ -48,7 +50,6 @@ extern void parse_command_args(int start, int argc, char** argv);
 extern unsigned qualify(char *argptr, int lfn_off);
 
 //***************  function prototypes  ***************
-static void process_filespecs(void);
 static void sort_target_paths(void);
 static void read_config_file(void);
 
@@ -106,111 +107,6 @@ void insert_target_filespec(char *fstr)
    }
 
    tcount++ ;
-}
-
-//*****************************************************************
-static char ininame[PATH_MAX] ;
-
-int main(int argc, char **argv)
-{
-   console_init(Version) ;
-
-   //***********************************************************
-   //  Check for NDIR environment variable
-   //***********************************************************
-
-   //  get program filename
-   int startIdx = 1 ;
-   char exename[PATH_MAX] ;
-
-   // for (int j = 1; j < argc; j++) {
-   //    printf("0: %s\n", argv[j]) ;
-   // }
-
-   //  interesting lessons from WinNT 4.0:
-   //  If the OS is WinNT 4.0, and;
-   //  If the executable file is located in the current directory,
-   //  THEN:
-   //    argv[0] does NOT contain the fully-qualified
-   //    path of the EXE, it *only* contains the EXE name.
-   //    In all other situations, argv[0] is fully qualified!!
-   //  
-   //  P.S.  While we're here, derive default INI filename also
-   // printf("argv0=%s\n", argv[0]) ;
-   char* strptr = strrchr(argv[0], '\\') ;
-   //  no path present
-   if (strptr == 0) {
-      SearchPath(NULL, argv[0], ".exe", PATH_MAX, ininame, NULL) ;
-      strptr = strrchr(ininame, '\\') ;
-      if (strptr != 0) 
-         strcpy(strptr, "\\ndir.ini") ;
-
-      strcpy(exename, argv[0]) ;
-      // ininame[0] = 0 ;  //  ONLY support current location
-   }
-   else {
-      //  pick up INI filename
-      strcpy(ininame, argv[0]) ;
-      strptr = strrchr(ininame, '\\') ;
-      if (strptr == 0)
-         return 1;
-      strcpy(strptr, "\\ndir.ini") ;
-      
-      //  now process exe name for getenv()
-      strptr++ ;  //lint !e613:  skip backslash
-      strcpy(exename, strptr) ;  //lint !e613
-      strptr = strchr(exename, '.') ;
-      if (strptr != 0) {
-         *strptr = 0 ;  //  strip the extension
-      }
-   }
-
-   char* options = getenv(exename) ; 
-   if (options != 0) {
-      argv[0] = options ;
-      startIdx = 0 ;
-   }
-// printf("ininame=%s\n", ininame) ;
-// getchar() ;
-
-   // for (int j = startIdx; j < argc; j++) {
-   //    printf("1: %s\n", argv[j]) ;
-   // }
-   //***********************************************************
-   //  first read default settings
-   //***********************************************************
-   read_config_file() ;
-
-   //***********************************************************
-   //  override defaults with command line and environment vars
-   //***********************************************************
-   parse_command_args(startIdx, argc, argv) ;
-   verify_flags() ;  //  this may add extensions if -x is given
-
-   //***********************************************************
-   //  Execute the requested command
-   //***********************************************************
-   // output_html_header("ndir32");
-   display_logo() ;
-
-   if (n.help)
-      info(helptxt) ;
-   else if (n.info)
-      info(idtxt) ;
-   else if (n.drive_summary > DSUMMARY_NONE)
-      display_drive_summary() ;
-   else {
-      //  If no filespec was given, insert current path with *.*
-      if (tcount==0)
-         insert_target_filespec(".") ;
-
-      sort_target_paths() ;      //  LFN: okay
-      process_filespecs() ;
-   }
-
-   // output_html_footer();
-   error_exit(DATA_OKAY, NULL) ;
-   return 0 ;
 }
 
 /**********************************************************************/
@@ -497,26 +393,6 @@ static void sort_target_paths(void)
       target[i] = target[j] ;
       target[j] = strptr ;
       }
-   }
-
-//***********************************************************
-//  This replaces the CXL function of the same name
-//***********************************************************
-void set_lines(int crt_lines)
-   {
-   // COORD dwSize = { 80, crt_lines } ;
-   // SetConsoleScreenBufferSize(hStdOut, dwSize) ;
-   
-   //  The preceding method changes the actual buffer size,
-   //  not the window size, which may not be what is wanted
-   //  under WinNT.  This method changes the actual window
-   //  size, but positions the new window at the *top* of
-   //  the screen buffer, which may give unexpected results
-   //  if used with "don't clear screen" in a large window.
-   //  Neither method is exactly correct in all cases,
-   //  but will probably suffice most times...
-   SMALL_RECT newwin = { 0, 0, 79, (SHORT) (crt_lines-1) } ;
-   SetConsoleWindowInfo(hStdOut, TRUE, &newwin) ;
    }
 
 //#########################################################################
@@ -874,30 +750,106 @@ static void read_config_file(void)
    read_ini_file(ini_path) ;
 }
 
-//********************************************************************
-//  On Windows platform, try to redefine printf/fprintf
-//  so we can output code to a debug window.
-//  Also, shadow syslog() within OutputDebugStringA()
-//  Note: printf() remapping was unreliable,
-//  but syslog worked great.
-//********************************************************************
-//lint -esym(714, syslog)
-//lint -esym(759, syslog)
-//lint -esym(765, syslog)
-int syslog(const char *fmt, ...)
+//*****************************************************************
+int main(int argc, char **argv)
 {
-   char consoleBuffer[3000] ;
-   va_list al; //lint !e522
+   console_init(Version) ;
 
-//lint -esym(526, __builtin_va_start)
-//lint -esym(628, __builtin_va_start)
-   va_start(al, fmt);   //lint !e1055 !e530
-   vsprintf(consoleBuffer, fmt, al);   //lint !e64
-   // if (common_logging_enabled)
-   //    fprintf(cmlogfd, "%s", consoleBuffer) ;
-   OutputDebugStringA(consoleBuffer) ;
-   va_end(al);
-   return 1;
+   //***********************************************************
+   //  Check for NDIR environment variable
+   //***********************************************************
+
+   //  get program filename
+   int startIdx = 1 ;
+   char exename[PATH_MAX] ;
+
+   // for (int j = 1; j < argc; j++) {
+   //    printf("0: %s\n", argv[j]) ;
+   // }
+
+   //  interesting lessons from WinNT 4.0:
+   //  If the OS is WinNT 4.0, and;
+   //  If the executable file is located in the current directory,
+   //  THEN:
+   //    argv[0] does NOT contain the fully-qualified
+   //    path of the EXE, it *only* contains the EXE name.
+   //    In all other situations, argv[0] is fully qualified!!
+   //  
+   //  P.S.  While we're here, derive default INI filename also
+   // printf("argv0=%s\n", argv[0]) ;
+   char* strptr = strrchr(argv[0], '\\') ;
+   //  no path present
+   if (strptr == 0) {
+      SearchPath(NULL, argv[0], ".exe", PATH_MAX, ininame, NULL) ;
+      strptr = strrchr(ininame, '\\') ;
+      if (strptr != 0) 
+         strcpy(strptr, "\\ndir.ini") ;
+
+      strcpy(exename, argv[0]) ;
+      // ininame[0] = 0 ;  //  ONLY support current location
+   }
+   else {
+      //  pick up INI filename
+      strcpy(ininame, argv[0]) ;
+      strptr = strrchr(ininame, '\\') ;
+      if (strptr == 0)
+         return 1;
+      strcpy(strptr, "\\ndir.ini") ;
+      
+      //  now process exe name for getenv()
+      strptr++ ;  //lint !e613:  skip backslash
+      strcpy(exename, strptr) ;  //lint !e613
+      strptr = strchr(exename, '.') ;
+      if (strptr != 0) {
+         *strptr = 0 ;  //  strip the extension
+      }
+   }
+
+   char* options = getenv(exename) ; 
+   if (options != 0) {
+      argv[0] = options ;
+      startIdx = 0 ;
+   }
+// printf("ininame=%s\n", ininame) ;
+// getchar() ;
+
+   // for (int j = startIdx; j < argc; j++) {
+   //    printf("1: %s\n", argv[j]) ;
+   // }
+   //***********************************************************
+   //  first read default settings
+   //***********************************************************
+   read_config_file() ;
+
+   //***********************************************************
+   //  override defaults with command line and environment vars
+   //***********************************************************
+   parse_command_args(startIdx, argc, argv) ;
+   verify_flags() ;  //  this may add extensions if -x is given
+
+   //***********************************************************
+   //  Execute the requested command
+   //***********************************************************
+   // output_html_header("ndir32");
+   display_logo() ;
+
+   if (n.help)
+      info(helptxt) ;
+   else if (n.info)
+      info(idtxt) ;
+   else if (n.drive_summary > DSUMMARY_NONE)
+      display_drive_summary() ;
+   else {
+      //  If no filespec was given, insert current path with *.*
+      if (tcount==0)
+         insert_target_filespec(".") ;
+
+      sort_target_paths() ;      //  LFN: okay
+      process_filespecs() ;
+   }
+
+   // output_html_footer();
+   error_exit(DATA_OKAY, NULL) ;
+   return 0 ;
 }
-
 
