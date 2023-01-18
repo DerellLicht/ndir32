@@ -1,4 +1,5 @@
 //***************************************************************************
+//  Copyright (c) 1995-2023  Daniel D Miller
 //  CONIO32.HPP: Template for 32-bit console programs                        
 //                                                                           
 //  Written by:   Daniel D. Miller                                           
@@ -8,6 +9,8 @@
 
 #define  MAX_CHAR_COLS     1024
 
+extern unsigned lines ;
+
 //**********************************************************
 void console_init(char *title);
 void hide_cursor(void);
@@ -16,7 +19,6 @@ void restore_console_attribs(void);
 bool is_redirected(void);
 CHAR get_char(void);
 WORD get_scode(void);
-unsigned get_window_rows(void);
 unsigned get_window_cols(void);
 int _where_x(void);
 int _where_y(void);

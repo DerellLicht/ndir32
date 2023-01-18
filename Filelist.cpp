@@ -69,7 +69,7 @@ static void display_batch_mode(void)
 //*****************************************************************
 static unsigned disp_cols ;    //  calculated screen columns for listings
 static unsigned line_len ; //  width of column
-char tempfmtstr[6] ; //  for forming strings of the form %nnld
+char tempfmtstr[10] ; //  for forming strings of the form %-nns
 
 static const int FILE_SIZE_LEN =  6 ;
 static const int DATE_TIME_LEN = 14 ;
@@ -159,7 +159,7 @@ static void lfn_get_columns(void)
       name_width = line_len ;
       break ;
    }
-   sprintf(tempfmtstr, "%c-%ds", '%', name_width) ;
+   sprintf(tempfmtstr, "%c-%us", '%', name_width) ;
 }
 
 //*****************************************************************

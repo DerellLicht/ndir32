@@ -1,5 +1,5 @@
 //*****************************************************************
-//  Copyright (c) 1998-2022 Daniel D. Miller                       
+//  Copyright (c) 1998-2023 Daniel D. Miller                       
 //  NDISPLAY.CPP - NDIR display handlers                           
 //*****************************************************************
 
@@ -27,6 +27,8 @@ extern int get_mp3_info(char *fname, char *mlstr);
 //  from NDIR.CPP
 extern char *Version ;
 extern char *ShortVersion;
+
+static unsigned linecnt = 0 ;           //  non-color display line counter
 
 //  this array is 64 elements, not 32 (== 2^5) because 
 //  the volume_label bit (0x80) is not displayed.  
@@ -610,7 +612,7 @@ void print6 (ffdata * fptr)
 //  from FILELIST.CPP
 //  global vars for file size calculations
 //*********************************************************
-extern char tempfmtstr[6];      //  for forming strings of the form %nnld
+extern char tempfmtstr[10] ; //  for forming strings of the form %-nns
 
 //*********************************************************
 void lfn_print2 (ffdata * fptr)

@@ -239,9 +239,6 @@ void parse_command_args (int startIdx, int argc, char **argv)
 //************************************************************
 void verify_flags (void)
 {
-   // lines = (unsigned) (int) (sinfo.srWindow.Bottom - sinfo.srWindow.Top + 1) ;
-   lines = get_window_rows ();
-
    if (is_redirected ()) {
       //  This bypasses the html-redirection operation,
       //  which doesn't work with Cygwin/Bash shells

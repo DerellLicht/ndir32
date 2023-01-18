@@ -1,7 +1,8 @@
 //************************************************************
-//    ndir32.h - Header file for NDIR directory lister.      
+//  Copyright (c) 1998-2023 Daniel D. Miller                  
+//  ndir32.h - Header file for NDIR directory lister.         
 //                                                            
-//    Written by:  Daniel D. Miller                           
+//  Written by:  Daniel D. Miller                             
 //                                                            
 //************************************************************
 
@@ -20,15 +21,8 @@ typedef  unsigned int         u32 ;
 #define  LOOP_FOREVER   true
 
 //*********************************************************
-#define  MAX_EXT        200
-#define  MAX_EXT_SIZE   8
-struct attrib_list {
-   uchar  attr ;
-   char  ext[MAX_EXT_SIZE+1] ;
-} ;
-extern attrib_list attr_table[MAX_EXT] ;
 
-extern unsigned attrib_count ;
+#define  MAX_EXT_SIZE   8
 
 #define  MAX_DIR_ENTRY     20
 extern uchar dtree_colors[MAX_DIR_ENTRY] ;
@@ -191,7 +185,6 @@ extern ffdata *ftail ;
 
 //**********************************************************
 extern char* target[20] ;
-// extern char excl[20][PATH_MAX] ;         //  20 * 260
 extern char volume_name[PATH_MAX] ;
 
 //*********************************************************
@@ -235,14 +228,9 @@ extern unsigned base_len ;  //  length of base_path
 
 extern char tempstr[MAXLINE] ;
 extern unsigned filecount ;             //  number of files found
-// extern uchar findattr ;
-// extern int  exclcount ;             //  number of exclusion filespecs
 extern char leftstr[37], rightstr[37] ; //  used by batch mode
-extern unsigned tcount ;            //  number of target filespecs
 
-extern unsigned lines ;
 extern unsigned columns ;           //  number of display columns on screen
-extern unsigned linecnt ;           //  non-color display line counter
 
 extern unsigned start, finish ;
 
@@ -257,6 +245,7 @@ void dshow_row_info(char *msg);
 
 //  ndir.cpp
 int  strcmpiwc(const char *onestr, const char *twostr);
+void getcolor (ffdata * fnew);
 
 // ULLONG_MAX = 18,446,744,073,709,551,615
 #define  MAX_ULL_COMMA_LEN  26
@@ -273,7 +262,7 @@ bool get_disk_info(char *dstr);
 void file_listing(void);
 
 //  treelist.cpp
-void tree_listing(void);
+void tree_listing (unsigned total_filespec_count);
 
 //  ndisplay.cpp
 void info(char *data[]);

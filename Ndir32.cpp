@@ -1,5 +1,5 @@
 //*************************************************************************
-//                                                                 
+//  Copyright (c) 1998-2023 Daniel D. Miller                       
 //  NDIR32.CPP - The Ultimate directory program (32-bit).          
 //                                                                 
 //  Written by:   Daniel D. Miller  (the derelict)                 
@@ -29,16 +29,24 @@ char *ShortVersion = " NDIR " VER_NUMBER " " ;
 
 static char ininame[PATH_MAX] ;
 
+#define  MAX_EXT        200
+struct attrib_list {
+   uchar  attr ;
+   char  ext[MAX_EXT_SIZE+1] ;
+} ;
+static attrib_list attr_table[MAX_EXT] ;
+static unsigned attrib_count = 0 ;
+
 //  per Jason Hood, this turns off MinGW's command-line expansion, 
 //  so we can handle wildcards like we want to.                    
 //lint -e765  external '_CRT_glob' (line 134, file Ndir32.cpp) could be made static
 //lint -e714  Symbol '_CRT_glob' (line 134, file Ndir32.cpp) not referenced
 int _CRT_glob = 0 ;
 
+static unsigned tcount = 0 ;   //  number of target filespecs
+
 //  cmd_line.cpp
 extern void parse_command_string(char *cmdstr) ;
-
-//  from CMD_LINE.CPP
 extern void parse_command_args(int start, int argc, char** argv);
 
 //***************  function prototypes  ***************
@@ -123,7 +131,7 @@ static void process_filespecs(void)
    //  If such anomalies are presented, unpredictable results will occur.
    //***********************************************************************
    if (n.tree == 1  ||  n.tree == 4  ||  n.tree == 5) {
-      tree_listing() ;
+      tree_listing(tcount) ;
    }
    else if (tcount == 1  &&  !n.exec_only) {
       start = finish = 0 ;
@@ -313,7 +321,7 @@ static void process_filespecs(void)
          //  as specified by flags.
          //**************************************************
          if (n.tree == 1)
-            tree_listing() ;
+            tree_listing(tcount) ;
          else
             file_listing() ;
 
@@ -614,6 +622,22 @@ static void parse_color_entry(char *iniptr)
       aptr->attr = (uchar) strtoul(eqptr, 0, 0) ;
    }
 }
+
+//***************************************************************
+void getcolor(ffdata *fnew)
+{
+   unsigned j;
+   attrib_list *aptr;
+
+   for (j = 0; j < attrib_count; j++) {
+      aptr = &attr_table[j];
+      if (strcmpiwc (fnew->ext, aptr->ext) != 0) {
+         fnew->color = aptr->attr;
+         return;
+      }
+   }
+   fnew->color = n.colordefalt; //  if not found, assign default color
+}  //lint !e429  Custodial pointer 'fnew' has not been freed or returned
 
 //*********************************************************************
 static void parse_dir_color_entry(char *iniptr)

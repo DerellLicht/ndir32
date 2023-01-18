@@ -1,13 +1,10 @@
 //***************************************************************************
+//  Copyright (c) 1995-2023  Daniel D Miller
 //  CONIO32.CPP: Template for 32-bit console programs                        
 //                                                                           
 //  Written by:   Daniel D. Miller                                           
 //                                                                           
 //  Last Update:  11/07/01 14:44                                             
-//                                                                           
-//  compile with:    cl /W3 /O2 /G4 conio32.cpp                              
-//    NOTE: This program requires Microsoft Visual C++ 4.0 or greater.       
-//                                                                           
 //***************************************************************************
 //  Windows console data structures
 //  
@@ -48,6 +45,8 @@ static bool redirected = false ;
 
 static WORD original_attribs = 3 ;
 
+unsigned lines = 0 ;
+
 //lint -esym(759,dclreos) -esym(765,dclreos) -esym(714,dclreos) 
 //lint -esym(759,dprints) -esym(765,dprints) -esym(714,dprints) 
 //lint -esym(765,dputsi) 
@@ -87,6 +86,29 @@ BOOL control_handler(DWORD dwCtrlType)
    return FALSE ;
    }   
 
+//**********************************************************
+unsigned get_window_cols(void)
+{
+   return (unsigned) (int) (sinfo.srWindow.Right - sinfo.srWindow.Left + 1) ;
+}
+
+//**********************************************************
+static unsigned get_window_rows(void)
+{
+   return (unsigned) (int) (sinfo.srWindow.Bottom - sinfo.srWindow.Top + 1) ;
+}
+
+//**********************************************************
+int _where_x(void)
+   {
+   return sinfo.dwCursorPosition.X ;
+   }   
+
+int _where_y(void)
+   {
+   return sinfo.dwCursorPosition.Y ;
+   }   
+
 //***************************************************************************
 bool is_redirected(void)
 {
@@ -97,7 +119,7 @@ bool is_redirected(void)
 //  This stores CONSOLE_SCREEN_BUFFER_INFO in global var sinfo
 //***************************************************************************
 void console_init(char *title)
-   {
+{
    BOOL bSuccess;
    DWORD dwMode;
 
@@ -176,7 +198,10 @@ void console_init(char *title)
 
    //  set up Ctrl-Break handler
    SetConsoleCtrlHandler((PHANDLER_ROUTINE) control_handler, TRUE) ;
-   }   
+   
+   // lines = (unsigned) (int) (sinfo.srWindow.Bottom - sinfo.srWindow.Top + 1) ;
+   lines = get_window_rows ();
+}   
 
 //**********************************************************
 void restore_console_attribs(void)
@@ -256,29 +281,6 @@ void hide_cursor(void)
    cci.bVisible = FALSE;
    bSuccess = SetConsoleCursorInfo(hStdOut, &cci);
    PERR(bSuccess, "SetConsoleCursorInfo");
-   }   
-
-//**********************************************************
-unsigned get_window_cols(void)
-{
-   return (unsigned) (int) (sinfo.srWindow.Right - sinfo.srWindow.Left + 1) ;
-}
-
-//**********************************************************
-unsigned get_window_rows(void)
-{
-   return (unsigned) (int) (sinfo.srWindow.Bottom - sinfo.srWindow.Top + 1) ;
-}
-
-//**********************************************************
-int _where_x(void)
-   {
-   return sinfo.dwCursorPosition.X ;
-   }   
-
-int _where_y(void)
-   {
-   return sinfo.dwCursorPosition.Y ;
    }   
 
 //**********************************************************

@@ -1,13 +1,8 @@
 //*****************************************************************
-//                                                                 
+//  Copyright (c) 1998-2023 Daniel D. Miller                       
 //  NDATA.CPP - NDIR global data declarations                      
 //                                                                 
 //  Written by:  Daniel D. Miller  (the Derelict)                  
-//                                                                 
-//  Last update:  01/15/01 20:25                                   
-//                                                                 
-//  compile with makefile                                          
-//                                                                 
 //*****************************************************************
 
 #include <windows.h>
@@ -55,8 +50,6 @@ ndir_data n =
    0  //  0=bytes/normal, 1=KB, 2=MB
 };
 
-attrib_list attr_table[MAX_EXT] ;
-unsigned attrib_count = 0 ;
 uchar dtree_colors[MAX_DIR_ENTRY] ;
 
 unsigned tree_level_limit = 0 ;
@@ -87,7 +80,6 @@ unsigned base_len ;  //  length of base_path
 
 // struct _find_t fblk;
 
-unsigned tcount = 0 ;   //  number of target filespecs
 unsigned start, finish ;
 char leftstr[37], rightstr[37] ; //  used by batch mode
 char tempstr[MAXLINE] ;
@@ -95,7 +87,7 @@ uchar tline, bline, vline, xline, dline ;
 unsigned filecount = 0 ;
 
 unsigned columns ;           //  number of display columns on screen
-unsigned curlines, lines, linecnt ;
+// unsigned curlines ;  //  originally used in 43/40-line console restoration
 
 double total_ptime = 0.0 ;
 //*********************************************************

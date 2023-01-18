@@ -1,19 +1,13 @@
 //*****************************************************************
+//  Copyright (c) 1998-2023 Daniel D. Miller                       
+//  FILEREAD.CPP - NDIR file-reading routines
 //                                                                 
-//  FILEREAD.CPP - NDIR file-reading routines                      
-//                                                                 
-//  Written by:  Daniel D. Miller  (the Derelict)                  
-//                                                                 
-//  Last update:  01/15/01 21:20PM                                 
-//                                                                 
-//  compile with makefile                                          
-//                                                                 
+//  Written by:  Daniel D. Miller
 //*****************************************************************
 
 // #define  _WIN32_WINNT   0x0400
 #include <windows.h>
 #include <stdio.h>
-// #include <string.h>
 #include <malloc.h>
 #include "ndir32.h"
 
@@ -24,28 +18,6 @@ extern void sort_filelist (void);
 static void process_exclusions (void);
 static void read_long_files (int i);
 
-//***************************************************************
-//  this search routine abandons the binary-search method        
-//  used by the old procedure (commented out after this one),    
-//  because my match_extension routine does not provide a        
-//  greater_than/less_than result.  However, it recognizes       
-//  wildcards, which is more important right now.                
-//***************************************************************
-static void getcolor (ffdata * fnew)
-{
-   unsigned j;
-   attrib_list *aptr;
-
-   for (j = 0; j < attrib_count; j++) {
-      aptr = &attr_table[j];
-      if (strcmpiwc (fnew->ext, aptr->ext) != 0) {
-         fnew->color = aptr->attr;
-         return;
-      }
-   }
-   fnew->color = n.colordefalt; //  if not found, assign default color
-}
-
 //*********************************************************
 //  This loops thru all files in one subdirectory,
 //  calling update_filelist() to add files to the
@@ -53,12 +25,6 @@ static void getcolor (ffdata * fnew)
 //  This differs from read_files() in that it uses
 //  the MSDOS 7.00 long-filename functions
 //*********************************************************
-// union l2u 
-//    {
-//    long  l ;
-//    unsigned u[2] ;   //  0=low word, 1=high word
-//    };
-// static l2u luconv ;
 char lfn_src[PATH_MAX + 1];
 char lfn_dest[PATH_MAX + 1];
 
