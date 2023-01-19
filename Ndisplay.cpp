@@ -28,11 +28,15 @@ extern int get_mp3_info(char *fname, char *mlstr);
 extern char *Version ;
 extern char *ShortVersion;
 
+extern char tempfmtstr[10] ; //  for forming strings of the form %-nns
+
 static unsigned linecnt = 0 ;           //  non-color display line counter
 
 //  this array is 64 elements, not 32 (== 2^5) because 
 //  the volume_label bit (0x80) is not displayed.  
 //  There are actually six bits in the field.
+//  NOTE: This struct is not used any more, as we now support file attributes
+//        which are not part of the conventional DOS set.
 // static char attrstr[64][6] = {
 //   "_____", "____r", "___h_", "___hr", /*  00,01,02,03  */
 //   "__s__", "__s_r", "__sh_", "__shr", /*  04,05,06,07  */
@@ -612,7 +616,6 @@ void print6 (ffdata * fptr)
 //  from FILELIST.CPP
 //  global vars for file size calculations
 //*********************************************************
-extern char tempfmtstr[10] ; //  for forming strings of the form %-nns
 
 //*********************************************************
 void lfn_print2 (ffdata * fptr)
