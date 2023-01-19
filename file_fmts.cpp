@@ -440,7 +440,7 @@ int get_webp_info(char *fname, char *mlstr)
          uconv.uc[0] = *hd++ ;
          uconv.uc[1] = *hd++ ;
          height = uconv.ul + 1;
-         sprintf(mlstr, "%4u x %4u   VP8X format   ", width, height) ;
+         sprintf(mlstr, "%4u x %4u  VP8X format    ", width, height) ;
          break ;
          
       case ' ':
@@ -456,7 +456,7 @@ int get_webp_info(char *fname, char *mlstr)
             uconv.uc[0] = *hd++ ;
             uconv.uc[1] = *hd++ ;
             height = uconv.ul ;
-            sprintf(mlstr, "%4u x %4u   VP8 format    ", width, height) ;
+            sprintf(mlstr, "%4u x %4u  VP8 format     ", width, height) ;
          } else {
             sprintf(mlstr, "VP8X bad sync code    ") ;
          }
