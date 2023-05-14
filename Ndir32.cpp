@@ -45,13 +45,10 @@ int _CRT_glob = 0 ;
 
 static unsigned tcount = 0 ;   //  number of target filespecs
 
+//***************  function prototypes  ***************
 //  cmd_line.cpp
 extern void parse_command_string(char *cmdstr) ;
 extern void parse_command_args(int start, int argc, char** argv);
-
-//***************  function prototypes  ***************
-static void sort_target_paths(void);
-static void read_config_file(void);
 
 //*****************************************************************************
 // ULLONG_MAX = 18,446,744,073,709,551,615

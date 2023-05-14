@@ -18,9 +18,7 @@
 
 #include "ndir32.h"
 #include "conio32.h"
-#include "file_fmts.h"
 
-extern int get_mp3_info(char *fname, char *mlstr);
 //lint -e626   argument inconsistent with format
 //lint -e559   Size of argument no. 3 inconsistent with format
 
@@ -111,25 +109,25 @@ void display_logo (void)
 //************************************************************************
 //  lookup tables for special-extension display functions
 //************************************************************************
-typedef struct mm_lookup_s {
-   char  ext[MAX_EXT_SIZE] ;
-   int (*func)(char *fname, char *mlstr) ;
-} mm_lookup_t ;
-
-static mm_lookup_t const mm_lookup[] = {
-{ "jpg", get_jpeg_info },
-{ "gif", get_gif_info },
-{ "wav", get_wave_info },
-{ "mp3", get_mp3_info },
-{ "bmp", get_bmp_info },
-{ "avi", get_avi_info },
-{ "png", get_png_info },
-{ "ico", get_ico_info },
-{ "cur", get_cur_info },
-{ "sid", get_sid_info },
-{ "webp", get_webp_info },
-{ "", 0 }} ;
-
+// typedef struct mm_lookup_s {
+//    char  ext[MAX_EXT_SIZE] ;
+//    int (*func)(char *fname, char *mlstr) ;
+// } mm_lookup_t ;
+// 
+// static mm_lookup_t const mm_lookup[] = {
+// { "jpg", get_jpeg_info },
+// { "gif", get_gif_info },
+// { "wav", get_wave_info },
+// { "mp3", get_mp3_info },
+// { "bmp", get_bmp_info },
+// { "avi", get_avi_info },
+// { "png", get_png_info },
+// { "ico", get_ico_info },
+// { "cur", get_cur_info },
+// { "sid", get_sid_info },
+// { "webp", get_webp_info },
+// { "", 0 }} ;
+ 
 //************************************************************************
 //  return final filename from symlink
 //  sadly, this will only work with a 64-bit build
@@ -178,8 +176,8 @@ char *GetLinkTarget(char const * const symlink_name)
 
 void print1 (ffdata * fptr)
 {
-   char mlstr[30] ;
-   int show_normal_info ;
+   // char mlstr[30] ;
+   // int show_normal_info ;
    uchar SHRattr = fptr->attrib & 7;
    FILETIME lft;
    FileTimeToLocalFileTime (&(fptr->ft), &lft);
@@ -227,8 +225,8 @@ void print1 (ffdata * fptr)
    }
    attrclr = n.colorattr;
 
-   mlstr[0] = 0 ;
-   show_normal_info = 1 ;
+   // mlstr[0] = 0 ;
+   // show_normal_info = 1 ;
    //  display directory entry
    if (fptr->dirflag) {
       sprintf (tempstr, "%14s ", "");
@@ -303,17 +301,17 @@ void print1 (ffdata * fptr)
       }
 
       //  process multimedia display
-      if (!show_normal_info) {
-         nputs (n.colorattr, mlstr);
-      } 
+      // if (!show_normal_info) {
+      //    nputs (n.colorattr, mlstr);
+      // } 
       //  display normal file listing
-      else {
+      // else {
          nputs (attrclr, attr);
          sprintf (tempstr, "%3s %02d, %04lu ", monthstr[month - 1], day, year);
          nputs (n.colordate, tempstr);
          sprintf (tempstr, "%02d:%02d:%02d ", hour, mins, secs);
          nputs (n.colortime, tempstr);
-      }
+      // }
 
       //  format filename as required
       if (lfn_supported)
