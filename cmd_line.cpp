@@ -24,7 +24,7 @@ extern void insert_target_filespec (char *fstr);
 //  fileread.cpp
 void update_exclusion_list(char *extptr);
 
-unsigned multimedia_listing = 0;
+// unsigned multimedia_listing = 0;
 
 //*************************************************************
 //  Convert command-line switches into flags
@@ -78,13 +78,13 @@ static int update_switches (char *argstr)
       case 'l':  n.lfn_off ^= 1;  break;   //  toggle long_filename flag
       case 'm':
          //  look for 'mm' switch
-         if (*argstr == 'm') {
-            multimedia_listing ^= 1;
-            slen++ ;
-         }
-         else {
+         // if (*argstr == 'm') {
+         //    multimedia_listing ^= 1;
+         //    slen++ ;
+         // }
+         // else {
             n.minimize ^= 1;
-         }
+         // }
          break;
       case 'n':
          n.sort = 1;
@@ -250,9 +250,9 @@ void verify_flags (void)
    }
 
    //  
-   if (multimedia_listing) {
-      n.format = 0 ;
-   }
+   // if (multimedia_listing) {
+   //    n.format = 0 ;
+   // }
 
    //****************************************************
    //  For batch mode, standard ASCII, or help/identify

@@ -61,37 +61,6 @@ static char const monthstr[12][4] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun",
    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
 };
 
-//*********************************************************
-//  this handles full-screen in NON-COLOR mode.
-//*********************************************************
-static void testpause (void)
-{
-   if (!n.pause)
-      return;
-   if (is_redirected ())
-     return;
-
-   if (++linecnt >= lines - 1) {
-      nputs (n.colornhead, "Press any key to continue (or ESC to exit)");
-      unsigned inkey = get_scode ();
-      if (inkey == 27) {
-         // if ((curlines != lines) && (!(n.ega_keep))) {
-         //    set_lines (25);
-         // }
-         error_exit (DATA_OKAY, NULL);
-      }
-
-      if (n.color) {
-         dreturn ();            // CR only!! 
-         dclreol ();
-      }
-      else {
-         printf ("\n");
-      }
-      linecnt = 1;
-   }
-}
-
 /*****************************************************************/
 static void ngotoxy (int x, int y)
 {
@@ -205,7 +174,7 @@ char *GetLinkTarget(char const * const symlink_name)
 #endif
 
 //************************************************************************
-extern unsigned multimedia_listing ;
+// extern unsigned multimedia_listing ;
 
 void print1 (ffdata * fptr)
 {
@@ -293,24 +262,24 @@ void print1 (ffdata * fptr)
 
    //  display file entry
    else {
-      char *p ;
-      unsigned idx ;
-
-      if (multimedia_listing) {
-         p = strrchr(fptr->filename, '.') ;
-         if (p != 0  &&  strlen(p) <= MAX_EXT_SIZE) {
-            p++ ; //  skip past the period
-
-            for (idx=0; mm_lookup[idx].ext[0] != 0; idx++) {
-               if (strnicmp(p, mm_lookup[idx].ext, sizeof(mm_lookup[idx].ext)) == 0) {
-                  //  call the special string generator function
-                  (*mm_lookup[idx].func)(fptr->filename, mlstr) ; //lint !e522
-                  show_normal_info = 0 ;
-                  break;
-               }
-            }
-         }
-      }
+      // char *p ;
+      // unsigned idx ;
+      //
+      // if (multimedia_listing) {
+      //    p = strrchr(fptr->filename, '.') ;
+      //    if (p != 0  &&  strlen(p) <= MAX_EXT_SIZE) {
+      //       p++ ; //  skip past the period
+      // 
+      //        for (idx=0; mm_lookup[idx].ext[0] != 0; idx++) {
+      //           if (strnicmp(p, mm_lookup[idx].ext, sizeof(mm_lookup[idx].ext)) == 0) {
+      //              //  call the special string generator function
+      //              (*mm_lookup[idx].func)(fptr->filename, mlstr) ; //lint !e522
+      //              show_normal_info = 0 ;
+      //              break;
+      //           }
+      //        }
+      //     }
+      //  }
 
       //  show file size
       switch (n.size_display) {
@@ -748,6 +717,49 @@ void lfn_print6 (ffdata * fptr)
    }
 }
 
+//*********************************************************
+//  this handles full-screen in NON-COLOR mode.
+//*********************************************************
+static void testpause (void)
+{
+   if (!n.pause)
+      return;
+   if (is_redirected ())
+     return;
+
+   if (++linecnt >= lines - 1) {
+      nputs (n.colornhead, "Press any key to continue (or ESC to exit)");
+      unsigned inkey = get_scode ();
+      if (inkey == ESC) {
+         // if ((curlines != lines) && (!(n.ega_keep))) {
+         //    set_lines (25);
+         // }
+         error_exit (DATA_OKAY, NULL);
+      }
+
+      if (n.color) {
+         dreturn ();            // CR only!! 
+         dclreol ();
+      }
+      else {
+         printf ("\n");
+      }
+      linecnt = 1;
+   }
+}
+
+/******************************************************************/
+void ncrlf_raw(void)
+{
+   if (n.color) {
+      dnewline ();
+   }
+   else {
+      printf ("\n");
+   }
+   testpause ();
+}
+
 /******************************************************************/
 void ncrlf (void)
 {
@@ -757,7 +769,32 @@ void ncrlf (void)
    else {
       printf ("\n");
    }
-   testpause ();
+   
+   // testpause ();
+   if (!n.pause)
+      return;
+   if (is_redirected ())
+     return;
+
+   if (++linecnt >= lines - 1) {
+      nputs (n.colornhead, "Press any key to continue (or ESC to exit)");
+      unsigned inkey = get_scode ();
+      if (inkey == ESC) {
+         // if ((curlines != lines) && (!(n.ega_keep))) {
+         //    set_lines (25);
+         // }
+         error_exit (DATA_OKAY, NULL);
+      }
+
+      if (n.color) {
+         dreturn ();            // CR only!! 
+         dclreol ();
+      }
+      else {
+         printf ("\n");
+      }
+      linecnt = 1;
+   }
 }
 
 /******************************************************************/

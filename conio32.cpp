@@ -166,12 +166,12 @@ void console_init(char *title)
       return ; 
    }
    // [33240] dwSize: 200x2000, cursor: 0x0, max: 200x109, window: L0, T0, R199, B49
-   // syslog("dwSize: %ux%u, cursor: %ux%u, max: %ux%u, window: L%u, T%u, R%u, B%u\n",
-   //    sinfo.dwSize.X, sinfo.dwSize.Y,
-   //    sinfo.dwCursorPosition.X,
-   //    sinfo.dwCursorPosition.Y,
-   //    sinfo.dwMaximumWindowSize.X, sinfo.dwMaximumWindowSize.Y, 
-   //    sinfo.srWindow.Left, sinfo.srWindow.Top, sinfo.srWindow.Right, sinfo.srWindow.Bottom);
+   syslog("dwSize: %ux%u, cursor: %u,%u, max: %ux%u, window: L%u, T%u, R%u, B%u\n",
+      sinfo.dwSize.X, sinfo.dwSize.Y,
+      sinfo.dwCursorPosition.X,
+      sinfo.dwCursorPosition.Y,
+      sinfo.dwMaximumWindowSize.X, sinfo.dwMaximumWindowSize.Y, 
+      sinfo.srWindow.Left, sinfo.srWindow.Top, sinfo.srWindow.Right, sinfo.srWindow.Bottom);
    
    //  on systems without ANSI.SYS, this is apparently 0...
    original_attribs = sinfo.wAttributes ;
@@ -251,6 +251,8 @@ CHAR get_char(void)
    }
 
 //**********************************************************
+//  this is used only by testpause(), to wait on full screen
+//**********************************************************
 WORD get_scode(void)
    {
    WORD inchr ;
@@ -306,13 +308,11 @@ void set_text_attr(WORD tFGBG)
 
 //**********************************************************
 // BOOL ScrollConsoleScreenBuffer(
-//   HANDLE hConsoleOutput,  // handle to a console screen buffer
-//   CONST SMALL_RECT *lpScrollRectangle,
-//                           // address of screen buffer rect. to move
-//   CONST SMALL_RECT *lpClipRectangle,
-//                           // address of affected screen buffer rect.
-//   COORD dwDestinationOrigin,  // new location of screen buffer rect.
-//   CONST CHAR_INFO *lpFill   // address of fill character and color
+//   HANDLE hConsoleOutput,               // handle to a console screen buffer
+//   CONST SMALL_RECT *lpScrollRectangle, // address of screen buffer rect. to move
+//   CONST SMALL_RECT *lpClipRectangle,   // address of affected screen buffer rect.
+//   COORD dwDestinationOrigin,           // new location of screen buffer rect.
+//   CONST CHAR_INFO *lpFill              // address of fill character and color
 // );
 //**********************************************************
 static void dscroll(WORD tBG)
@@ -346,6 +346,26 @@ static void dscroll(WORD tBG)
 }
 
 //**********************************************************
+void dnewline(void)
+{
+   //  move cursor to beginning of line
+   sinfo.dwCursorPosition.X = 0 ;
+   //  *this* probably shouldn't use dwSize.Y either...
+   // if (sinfo.dwCursorPosition.Y >= (sinfo.dwSize.Y-1)) {
+   if (sinfo.dwCursorPosition.Y >= (sinfo.srWindow.Bottom-1)) {
+      // dclreol() ;
+      dscroll(original_attribs) ;
+      // sinfo.dwCursorPosition.X = 0 ;
+      // sinfo.dwCursorPosition.Y = sinfo.dwCursorPosition.Y ;
+   }
+   else {
+      sinfo.dwCursorPosition.Y++ ;
+   }
+
+   SetConsoleCursorPosition(hStdOut, sinfo.dwCursorPosition) ;
+}   
+
+//**********************************************************
 //  CR only, no LF
 //**********************************************************
 void dreturn(void)
@@ -375,26 +395,6 @@ void dshow_row_info(char *msg)
       get_window_cols()
       ) ;
 }
-
-//**********************************************************
-void dnewline(void)
-{
-   //  move cursor to beginning of line
-   sinfo.dwCursorPosition.X = 0 ;
-   //  *this* probably shouldn't use dwSize.Y either...
-   // if (sinfo.dwCursorPosition.Y >= (sinfo.dwSize.Y-1)) {
-   if (sinfo.dwCursorPosition.Y >= (sinfo.srWindow.Bottom-1)) {
-      // dclreol() ;
-      dscroll(original_attribs) ;
-      // sinfo.dwCursorPosition.X = 0 ;
-      // sinfo.dwCursorPosition.Y = sinfo.dwCursorPosition.Y ;
-   }
-   else {
-      sinfo.dwCursorPosition.Y++ ;
-   }
-
-   SetConsoleCursorPosition(hStdOut, sinfo.dwCursorPosition) ;
-}   
 
 //**********************************************************
 void dprintc(unsigned row, unsigned col, const char outchr)

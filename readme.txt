@@ -15,8 +15,13 @@ The source code is released as unrestricted freeware, for use in any
 project, personal or commercial. 
 
 ****************************************************************************************
-NOTE: As of version 2.54 (Sep 2022), NDIR is now a 64-bit program.
-This was necessary in order to support resolving target filename from symlinks
+NOTES: 
+
+> As of version 2.54 (Sep 2022), NDIR is now a 64-bit program.
+  This was necessary in order to support resolving target filename from symlinks
+  
+> In V2.58 (May 2023), removed /mm (list multimedia info) option, moved to media_list utility  
+
 ****************************************************************************************
 
 NDIR - The directory lister.

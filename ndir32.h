@@ -16,7 +16,9 @@ typedef  unsigned char        u8  ;
 typedef  unsigned short       u16 ;
 typedef  unsigned int         u32 ;
 
-#define MAXLINE   260
+#define MAXLINE   1024
+
+#define  ESC      27
 
 #define  LOOP_FOREVER   true
 
