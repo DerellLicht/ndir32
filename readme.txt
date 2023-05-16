@@ -9,8 +9,6 @@ Web:   derelllicht.com
 
 The NDIR utility is released as Freeware. 
 Please feel free to distribute it anywhere that you wish!!  
-This package may be included freely in CDROM and online
-archives, as long as all included files are retained in the package.
 The source code is released as unrestricted freeware, for use in any
 project, personal or commercial. 
 
