@@ -107,28 +107,6 @@ void display_logo (void)
 }
 
 //************************************************************************
-//  lookup tables for special-extension display functions
-//************************************************************************
-// typedef struct mm_lookup_s {
-//    char  ext[MAX_EXT_SIZE] ;
-//    int (*func)(char *fname, char *mlstr) ;
-// } mm_lookup_t ;
-// 
-// static mm_lookup_t const mm_lookup[] = {
-// { "jpg", get_jpeg_info },
-// { "gif", get_gif_info },
-// { "wav", get_wave_info },
-// { "mp3", get_mp3_info },
-// { "bmp", get_bmp_info },
-// { "avi", get_avi_info },
-// { "png", get_png_info },
-// { "ico", get_ico_info },
-// { "cur", get_cur_info },
-// { "sid", get_sid_info },
-// { "webp", get_webp_info },
-// { "", 0 }} ;
- 
-//************************************************************************
 //  return final filename from symlink
 //  sadly, this will only work with a 64-bit build
 //************************************************************************
@@ -172,8 +150,6 @@ char *GetLinkTarget(char const * const symlink_name)
 #endif
 
 //************************************************************************
-// extern unsigned multimedia_listing ;
-
 void print1 (ffdata * fptr)
 {
    // char mlstr[30] ;
@@ -225,8 +201,6 @@ void print1 (ffdata * fptr)
    }
    attrclr = n.colorattr;
 
-   // mlstr[0] = 0 ;
-   // show_normal_info = 1 ;
    //  display directory entry
    if (fptr->dirflag) {
       sprintf (tempstr, "%14s ", "");
@@ -260,25 +234,6 @@ void print1 (ffdata * fptr)
 
    //  display file entry
    else {
-      // char *p ;
-      // unsigned idx ;
-      //
-      // if (multimedia_listing) {
-      //    p = strrchr(fptr->filename, '.') ;
-      //    if (p != 0  &&  strlen(p) <= MAX_EXT_SIZE) {
-      //       p++ ; //  skip past the period
-      // 
-      //        for (idx=0; mm_lookup[idx].ext[0] != 0; idx++) {
-      //           if (strnicmp(p, mm_lookup[idx].ext, sizeof(mm_lookup[idx].ext)) == 0) {
-      //              //  call the special string generator function
-      //              (*mm_lookup[idx].func)(fptr->filename, mlstr) ; //lint !e522
-      //              show_normal_info = 0 ;
-      //              break;
-      //           }
-      //        }
-      //     }
-      //  }
-
       //  show file size
       switch (n.size_display) {
       case 2:
@@ -778,9 +733,6 @@ void ncrlf (void)
       nputs (n.colornhead, "Press any key to continue (or ESC to exit)");
       unsigned inkey = get_scode ();
       if (inkey == ESC) {
-         // if ((curlines != lines) && (!(n.ega_keep))) {
-         //    set_lines (25);
-         // }
          error_exit (DATA_OKAY, NULL);
       }
 

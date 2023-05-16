@@ -166,12 +166,12 @@ void console_init(char *title)
       return ; 
    }
    // [33240] dwSize: 200x2000, cursor: 0x0, max: 200x109, window: L0, T0, R199, B49
-   syslog("dwSize: %ux%u, cursor: %u,%u, max: %ux%u, window: L%u, T%u, R%u, B%u\n",
-      sinfo.dwSize.X, sinfo.dwSize.Y,
-      sinfo.dwCursorPosition.X,
-      sinfo.dwCursorPosition.Y,
-      sinfo.dwMaximumWindowSize.X, sinfo.dwMaximumWindowSize.Y, 
-      sinfo.srWindow.Left, sinfo.srWindow.Top, sinfo.srWindow.Right, sinfo.srWindow.Bottom);
+   // syslog("dwSize: %ux%u, cursor: %u,%u, max: %ux%u, window: L%u, T%u, R%u, B%u\n",
+   //    sinfo.dwSize.X, sinfo.dwSize.Y,
+   //    sinfo.dwCursorPosition.X,
+   //    sinfo.dwCursorPosition.Y,
+   //    sinfo.dwMaximumWindowSize.X, sinfo.dwMaximumWindowSize.Y, 
+   //    sinfo.srWindow.Left, sinfo.srWindow.Top, sinfo.srWindow.Right, sinfo.srWindow.Bottom);
    
    //  on systems without ANSI.SYS, this is apparently 0...
    original_attribs = sinfo.wAttributes ;
@@ -386,14 +386,14 @@ void dshow_row_info(char *msg)
    if (msg == NULL) {
       msg = default_msg ;
    }
-   syslog("%s: cursor: %ux%u, dwSize: %ux%u, where: %ux%u, win_cols: %u\n", msg,
-      sinfo.dwCursorPosition.X, 
-      sinfo.dwCursorPosition.Y, 
-      sinfo.dwSize.X, 
-      sinfo.dwSize.Y, 
-      _where_x(), _where_y(),
-      get_window_cols()
-      ) ;
+   // syslog("%s: cursor: %ux%u, dwSize: %ux%u, where: %ux%u, win_cols: %u\n", msg,
+   //    sinfo.dwCursorPosition.X, 
+   //    sinfo.dwCursorPosition.Y, 
+   //    sinfo.dwSize.X, 
+   //    sinfo.dwSize.Y, 
+   //    _where_x(), _where_y(),
+   //    get_window_cols()
+   //    ) ;
 }
 
 //**********************************************************

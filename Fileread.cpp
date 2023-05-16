@@ -44,6 +44,7 @@ static void read_long_files (int i)
          *(++p) = 0;
    }
 
+   syslog("%s\n", target[i]);
    handle = FindFirstFile (target[i], &fdata);
    //  according to MSDN, Jan 1999, the following is equivalent
    //  to the preceding... unfortunately, under Win98SE, it's not...
@@ -261,8 +262,9 @@ void file_listing (void)
    //***********************************************
    //  read all files matching one filespec
    //***********************************************
-   for (i = start; i <= finish; i++)
+   for (i = start; i <= finish; i++) {
       read_long_files (i);
+   }
 
    //***********************************************
    process_exclusions ();
