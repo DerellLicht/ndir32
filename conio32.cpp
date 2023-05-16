@@ -346,42 +346,15 @@ static void dscroll(WORD tBG)
 }
 
 //**********************************************************
-void dnewline_mod(void)
-{
-   //  move cursor to beginning of line
-   sinfo.dwCursorPosition.X = 0 ;
-   //  *this* probably shouldn't use dwSize.Y either...
-   // if (sinfo.dwCursorPosition.Y >= (sinfo.dwSize.Y-1)) {
-   if (sinfo.dwCursorPosition.Y >= (sinfo.srWindow.Bottom-1)) {
-      // dclreol() ;
-      dscroll(original_attribs) ;
-      // sinfo.dwCursorPosition.X = 0 ;
-      // sinfo.dwCursorPosition.Y = sinfo.dwCursorPosition.Y ;
-   }
-   else {
-      sinfo.dwCursorPosition.Y++ ;
-   }
-
-   SetConsoleCursorPosition(hStdOut, sinfo.dwCursorPosition) ;
-}   
-
-//**********************************************************
 void dnewline(void)
 {
-   // WORD x = 0 ;
-   // WORD y = sinfo.dwCursorPosition.Y ;
-
    sinfo.dwCursorPosition.X = 0 ;
    //  *this* probably shouldn't use dwSize.Y either...
    if (sinfo.dwCursorPosition.Y >= (sinfo.dwSize.Y-1)) {
       // dclreol() ;
       // 
       // //  move cursor to beginning of line
-      // sinfo.dwCursorPosition.X = 0 ;
       dscroll(original_attribs) ;
-      // sinfo.dwCursorPosition.X = 0 ;
-      // sinfo.dwCursorPosition.X = x ;
-      // sinfo.dwCursorPosition.Y = y ;
       sinfo.dwCursorPosition.Y = sinfo.dwCursorPosition.Y ;
    }
    else {
