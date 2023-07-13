@@ -70,7 +70,7 @@ source src:
    
 dist:
 	rm -f ndir.zip
-	zip ndir.zip ndir*.exe readme.txt revisions.txt   
+	zip ndir.zip $(BIN) readme.txt revisions.txt   
 
 wc:
 	wc -l *.cpp
