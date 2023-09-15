@@ -44,7 +44,7 @@ endif
 
 CPPSRC=cmd_line.cpp conio32.cpp Diskparm.cpp err_exit.cpp Filelist.cpp Fileread.cpp \
 	system.cpp ndata.cpp Ndir32.cpp Ndisplay.cpp Qualify.cpp \
-	nsort.cpp treelist.cpp mediatype.cpp
+	nsort.cpp treelist.cpp tdisplay.cpp mediatype.cpp
 #    mp3.parser.cpp file_fmts.cpp 
 
 OBJS = $(CSRC:.c=.o) $(CPPSRC:.cpp=.o)
@@ -105,5 +105,6 @@ Ndir32.o: ndir32.h conio32.h qualify.h
 Ndisplay.o: ndir32.h conio32.h
 Qualify.o: qualify.h
 nsort.o: ndir32.h
-treelist.o: ndir32.h conio32.h
+treelist.o: ndir32.h conio32.h treelist.h
+tdisplay.o: ndir32.h conio32.h treelist.h
 mediatype.o: scsi_defs.h
