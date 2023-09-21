@@ -8,7 +8,7 @@ Email: derelict@comcast.net
 Web:   derelllicht.com
 
 ****************************************************************************************
-This project is licenced under Creative Commons CC0 1.0 Universal;  
+This project is licensed under Creative Commons CC0 1.0 Universal;  
 https://creativecommons.org/publicdomain/zero/1.0/
 
 The person who associated a work with this deed has dedicated the work to the
