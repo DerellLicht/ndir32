@@ -43,13 +43,13 @@ options to:
    ->  Batch mode: enables user to create batch files from lists
        of filenames in a directory.
 
-The NDIR software package contains the 32-bit version of NDIR.  
+The NDIR software package contains the 64-bit version of NDIR.  
 It properly handles long filenames under WinNT.
 
-Effective with release of version 2.44, in Nov 2016, I am no longer distributing
-the 16-bit version of NDIR.  Nothing has changed with that version since 2003,
+Although I still distribute the 16-bit version of NDIR on my web site,
+nothing has changed with that version since 2003,
 and I no longer have the ability to either build or run that version.
-I also am abandoning the ndirh utility, which was never particularly impressive.    
+So I will be unable to process any requests for changes to that utility.
 
 ***************************************************************************
 
