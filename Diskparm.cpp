@@ -190,7 +190,10 @@ static char *get_drive_type_string(UINT gdt, char dchar)
    // int cd_type ;
    switch (gdt) {
    case DRIVE_NO_ROOT_DIR: return "NoRootDir" ;
-   case DRIVE_REMOVABLE  : return "removable" ;
+   //  is there any chance of getting info on this drive type??
+   //  These are typically USB hubs...
+   case DRIVE_REMOVABLE  : 
+      return "removable" ;
    case DRIVE_FIXED      : return "fixed" ;
    case DRIVE_REMOTE     : return "remote" ;
    case DRIVE_CDROM      : 
