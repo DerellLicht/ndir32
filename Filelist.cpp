@@ -352,7 +352,7 @@ static void filehead(void)
 }
 
 /*****************************************************************/
-void put_disk_summary(void)
+static void put_disk_summary(void)
 {
    nputs(n.colornhead, "Total disk space = ") ;
    // itemp64.convert(diskbytes) ;
@@ -367,7 +367,6 @@ void put_disk_summary(void)
 /*****************************************************************/
 static void fileend(void)
 {
-   // unsigned j, k, FAT32_present ;
    unsigned j, k ;
    ULONGLONG dirsecbytes, clusters ;
    ULONGLONG dbytes, dsbytes ;

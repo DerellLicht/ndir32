@@ -18,8 +18,6 @@
 #include "treelist.h"
 
 //************************************************************
-bool FAT32_present = false;   //  no longer used
-
 static char dirpath[PATH_MAX];
 unsigned level;
 
@@ -527,7 +525,7 @@ static int build_dir_tree (char *tpath)
    if (strptr != 0)
       *(++strptr) = 0;          //  strip off filename
 
-   FAT32_present = get_disk_info (base_path);
+   get_disk_info (base_path);
 
    //  allocate struct for dir listing
    top = new_dir_node ();

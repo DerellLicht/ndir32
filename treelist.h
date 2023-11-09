@@ -22,6 +22,4 @@ extern dirs *top ;
 
 extern unsigned level;
 
-extern bool FAT32_present;   //  no longer used
-
 

@@ -102,7 +102,7 @@ static unsigned get_cluster_size(char dltr)
 //  NOTE: This function originally returned a boolean value which was
 //        defined as: is_FAT32_present
 //        I no longer recall what the purpose of this information was,
-//        but it is no longer generated now.
+//        but it is no longer referenced now.
 //**************************************************************************
 bool get_disk_info(char *dstr)
 {

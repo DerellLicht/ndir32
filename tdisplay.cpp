@@ -28,10 +28,6 @@ static uint center_col   = 37 ;
 static uint left_div     = 49 ;
 static uint right_div    = 64 ;
 
-//*****************************************************************
-//  from FILELIST.CPP
-extern void put_disk_summary (void);
-
 //**********************************************************
 static void display_tree_filename (char *lstr, char *frmstr)
 {
@@ -451,22 +447,12 @@ static void print_dir_end (void)
    ncrlf ();
 
    //  now show disk totals
-   //  NOTE: FAT32_present is *always* false now,
-   //  so the resulting function will never be called
-   if (FAT32_present) {
-      put_disk_summary ();
-   }
-   else {
-      // i64tostr dtbytes (diskbytes);
-      // i64tostr dfbytes (diskfree);
-
-      nputs (n.colornhead, "Disk capacity: ");
-      nputs (n.colorxhead, convert_to_commas(diskbytes, NULL));
-      nputs (n.colornhead, " bytes, Free disk space: ");
-      nputs (n.colorxhead, convert_to_commas(diskfree, NULL));
-      nputs (n.colornhead, " bytes");
-      ncrlf ();
-   }
+   nputs (n.colornhead, "Disk capacity: ");
+   nputs (n.colorxhead, convert_to_commas(diskbytes, NULL));
+   nputs (n.colornhead, " bytes, Free disk space: ");
+   nputs (n.colorxhead, convert_to_commas(diskfree, NULL));
+   nputs (n.colornhead, " bytes");
+   ncrlf ();
 }
 
 //*********************************************************
