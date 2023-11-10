@@ -263,4 +263,7 @@ Version 2.58, 05/13/23
 Version 2.59, 05/16/23
   Reverted change in V2.56, which broke scrolling
     
+Version 2.60, 11/10/23
+  Code cleanup in diskparm.cpp - optimizing, remove unused code
+    
     

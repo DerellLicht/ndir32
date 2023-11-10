@@ -1,5 +1,5 @@
 //*****************************************************************************
-//  Copyright (c) 1995-2022  Daniel D Miller
+//  Copyright (c) 1995-2023  Daniel D Miller
 //  DISKPARM.CPP - Display partition information about disk drive.     
 //                                                                     
 //  Written by:   Daniel D. Miller                                     
@@ -17,13 +17,7 @@
 
 char dpath[4] = "d:\\";
 
-static char vnbfr[PATH_MAX];
 static char fsnbfr[PATH_MAX];
-
-//  from mft_list.cpp
-// extern "C" unsigned get_nt_cluster_size(char dltr);
-//  NOTE: this function always returns 0
-// extern ULONGLONG get_nt_free_space(char dltr);
 
 //  mediatype.cpp
 extern char *get_cd_device_desc(char drv);
@@ -39,18 +33,6 @@ static char fsn_bfr[32] ;      //  buffer for name of lfn file system
 
 static char diskavail[MAX_ULL_COMMA_LEN+1]; 
 static char disktotal[MAX_ULL_COMMA_LEN+1]; 
-
-//*************************************************************************
-//  This function was previously defined in mft_list.cpp, 
-//  but it required Admin rights to execute, so is no longer used.
-//  also, size of MFT is typically around 1GB on modern large drives,
-//  so is inconsequential in overall size results.
-//*************************************************************************
-//lint -esym(715, dltr)    // Symbol not referenced
-// static ULONGLONG get_nt_free_space(char dltr)
-// {
-//    return 0 ;
-// }
 
 //*****************************************************************
 const unsigned int DEFAULT_CLUSTER_SIZE = 4096 ;
@@ -106,11 +88,13 @@ static unsigned get_cluster_size(char dltr)
 //        I no longer recall what the purpose of this information was,
 //        but it is no longer referenced now.
 //**************************************************************************
+static u64 freec1 = 0, frees1 = 0, totals1 = 0 ;
 bool get_disk_info(char *dstr)
 {
    DWORD vsernbr, mclen, fsflags ;
    // UINT dtype ;
    char *dirptr ;
+   bool gvi_valid = true ;
 
    dpath[0] = *dstr ;
    if (*(dstr+1) == ':')
@@ -134,6 +118,7 @@ bool get_disk_info(char *dstr)
                             )) {
       // syslog("cannot read volume info from %s:\n", dirptr) ;
       volume_name[0] = 0 ; //  try to keep going...
+      gvi_valid = false ;
    }
 
    if (strlen(volume_name) == 0) {
@@ -145,7 +130,6 @@ bool get_disk_info(char *dstr)
    clbytes = get_cluster_size(dpath[0]) ;   //  assume dpath[] is valid
    //  that worked okay... now, get the disk summary
    // unsigned __int64 freec1, frees1, totals1 ;
-   u64 freec1, frees1, totals1 ;
    // LPCSTR dptr = dirptr ;
    if (!GetDiskFreeSpaceEx(dstr, 
       (ULARGE_INTEGER *) &freec1, 
@@ -179,7 +163,7 @@ bool get_disk_info(char *dstr)
          diskfree = frees1 ;
       // }
    }
-   return false;
+   return gvi_valid;
 }
 
 //**********************************************************
@@ -194,8 +178,7 @@ static char *get_drive_type_string(UINT gdt, char dchar)
    case DRIVE_NO_ROOT_DIR: return "NoRootDir" ;
    //  is there any chance of getting info on this drive type??
    //  These are typically USB hubs...
-   case DRIVE_REMOVABLE  : 
-      return "removable" ;
+   case DRIVE_REMOVABLE  : return "removable" ;
    case DRIVE_FIXED      : return "fixed" ;
    case DRIVE_REMOTE     : return "remote" ;
    case DRIVE_CDROM      : 
@@ -211,7 +194,6 @@ static char *get_drive_type_string(UINT gdt, char dchar)
 //**********************************************************
 void display_drive_summary (void)
 {
-   DWORD vsernbr, mclen, fsflags ;
    unsigned dtype;
    unsigned long bufsize;
 
@@ -231,7 +213,6 @@ void display_drive_summary (void)
    ULONGLONG lfree = 0;
    ULONGLONG ltotal = 0;
 
-   // puts("trying GetLogicalDrives:") ;
    DWORD gld_return = GetLogicalDrives() ;
    DWORD mask ;
    char dchar = 'a' ;
@@ -242,62 +223,14 @@ void display_drive_summary (void)
       // dpath[0] = (char) dltr + 'a';
       dpath[0] = dchar ;
       dtype = GetDriveType (dpath);
-
-      if (!GetVolumeInformation (
-           dpath,             //     LPCSTR lpRootPathName,
-           (LPSTR) vnbfr,     //     LPSTR lpVolumeNameBuffer,            //  I use this
-           PATH_MAX,          //     DWORD nVolumeNameSize,
-           &vsernbr,          //     LPDWORD lpVolumeSerialNumber,
-           &mclen,            //     LPDWORD lpMaximumComponentLength,
-           &fsflags,          //     LPDWORD lpFileSystemFlags,
-           (LPSTR) fsnbfr,    //     LPSTR lpFileSystemNameBuffer,        //  I use this
-           PATH_MAX           //     DWORD nFileSystemNameSize
-         )) {                 //     );
-         
+      if (!get_disk_info(dpath)) {
          wsprintf (tempstr, "%c: %-9s %18s  %18s           no media present\n", 
             dchar, get_drive_type_string(dtype, dchar), " ", " ") ;
          nputs (n.colordefalt, tempstr);
          continue;
       }
 
-      clbytes = get_cluster_size(dchar) ;
-      //  that worked okay... now, get the disk summary
-      // unsigned __int64 freec1, frees1, totals1 ;
-      u64 freec1, frees1, totals1 ;
-      // LPCSTR dptr = dirptr ;
-      // if (!GetDiskFreeSpaceEx(dptr, 
-      if (!GetDiskFreeSpaceEx(dpath, 
-         (ULARGE_INTEGER *) &freec1, 
-         (ULARGE_INTEGER *) &totals1, 
-         (ULARGE_INTEGER *) &frees1)) {
-         //  emergency handling when this function fails
-         freec1 = 0 ;
-         totals1 = 0 ;
-         frees1 = 0 ;
-         diskbytes = 0 ;
-         diskfree = 0 ;
-      } 
-      //  if GetDiskFreeSpaceEx succeeds, proceed normally 
-      else {
-         diskbytes = totals1 ;
-         //  first try to get free disk space from NT info,
-         //  otherwise use the data from GetDiskFreeSpaceEx().
-         //  On WinNT systems, however, the latter will include
-         //  so-called "free space" in the MFT (Master File Table),
-         //  which is *never* available for normal use.
-         //  
-         //  Later note: however, accessing the MFT space via the ntfsinfo technique,
-         //  originally presented in source code by sysinternals.com,
-         //  requires Admin authorization to access.
-         //  Since MFT space is inconsequential (about 1GB) on modern drives,
-         //  it isn't worth requiring Admin clearance.
-         // diskfree = get_nt_free_space(dchar) ;
-         // if (diskfree == 0) {
-            diskfree = frees1 ;
-         // }
-      }
-
-      //  convert free space to used space
+      //  convert free space to used space 
       if (n.drive_summary == DSUMMARY_USED) {
          frees1 = totals1 - frees1 ;
       }
@@ -326,7 +259,7 @@ void display_drive_summary (void)
       }
       else {
       // else if (dtype == DRIVE_FIXED) {
-         wsprintf (tempstr, "%c: %-9s %18s  %18s  ", dchar, fsnbfr, disktotal, diskavail);
+         wsprintf (tempstr, "%c: %-9s %18s  %18s  ", dchar, fsn_bfr, disktotal, diskavail);
          nputs (n.colordefalt, tempstr);
 
          // unsigned cluster_size = get_cluster_size(dpath[0]);
@@ -335,22 +268,12 @@ void display_drive_summary (void)
          // ltotal += totals1.QuadPart;
          lfree  += frees1 ;
          ltotal += totals1 ;
-         wsprintf (tempstr, "[%6u] %s\n", (unsigned) clbytes, vnbfr);
+         wsprintf (tempstr, "[%6u] %s\n", (unsigned) clbytes, volume_name);
          nputs (n.colordefalt, tempstr);
       }
-      // else {
-      //   sprintf (tempstr, "%c: %-8s  %18s  %18s  ", dpath[0], fsnbfr,
-      //      disktotal.putstr (), diskavail.putstr ());
-      //   nputs (n.colorsize, tempstr);
-      // 
-      //   sprintf (tempstr, "%s\n", drive_types[dtype]);
-      //   nputs (n.colorsize, tempstr);
-      // }
    }
 
    //  display drive summary
-   // disktotal.convert (ltotal);
-   // diskavail.convert (lfree);
    convert_to_commas(ltotal, disktotal);
    convert_to_commas(lfree, diskavail);
 
