@@ -41,14 +41,16 @@ static char diskavail[MAX_ULL_COMMA_LEN+1];
 static char disktotal[MAX_ULL_COMMA_LEN+1]; 
 
 //*************************************************************************
-//  This function was previously defined in mft_list.cpp, but is not
-//  relevant at all in NTFS systems, so is simply obsolete now.
+//  This function was previously defined in mft_list.cpp, 
+//  but it required Admin rights to execute, so is no longer used.
+//  also, size of MFT is typically around 1GB on modern large drives,
+//  so is inconsequential in overall size results.
 //*************************************************************************
 //lint -esym(715, dltr)    // Symbol not referenced
-static ULONGLONG get_nt_free_space(char dltr)
-{
-   return 0 ;
-}
+// static ULONGLONG get_nt_free_space(char dltr)
+// {
+//    return 0 ;
+// }
 
 //*****************************************************************
 const unsigned int DEFAULT_CLUSTER_SIZE = 4096 ;
@@ -121,19 +123,16 @@ bool get_disk_info(char *dstr)
    // getchar() ;
    //  NOTE:  GetVolumeInformation() requires a filename ending
    //    with a backslash.  No wildcards are supported.
-   if (!GetVolumeInformation( dirptr,                 //     LPCSTR lpRootPathName,
-                              (LPSTR) volume_name,    //     LPSTR lpVolumeNameBuffer,
-                              PATH_MAX,               //     DWORD nVolumeNameSize,
-                              &vsernbr,               //     LPDWORD lpVolumeSerialNumber,
-                              &mclen,                 //     LPDWORD lpMaximumComponentLength,
-                              &fsflags,               //     LPDWORD lpFileSystemFlags,
-                              (LPSTR) fsn_bfr,        //     LPSTR lpFileSystemNameBuffer,
-                              PATH_MAX                //     DWORD nFileSystemNameSize
-                            )) {                      //     );
-      // printf("cannot read volume information from %c:\n", dpath[0]) ;
-      // sprintf(tempstr, "cannot read volume info from %s:\n", dirptr) ;
-      // nputs(n.colordefalt, tempstr) ;
-      // error_exit(DATA_OKAY, 0) ;
+   if (!GetVolumeInformation( dirptr,                 // LPCSTR lpRootPathName,
+                              (LPSTR) volume_name,    // LPSTR lpVolumeNameBuffer,
+                              PATH_MAX,               // DWORD nVolumeNameSize,
+                              &vsernbr,               // LPDWORD lpVolumeSerialNumber,
+                              &mclen,                 // LPDWORD lpMaximumComponentLength,
+                              &fsflags,               // LPDWORD lpFileSystemFlags,
+                              (LPSTR) fsn_bfr,        // LPSTR lpFileSystemNameBuffer,
+                              PATH_MAX                // DWORD nFileSystemNameSize
+                            )) {
+      // syslog("cannot read volume info from %s:\n", dirptr) ;
       volume_name[0] = 0 ; //  try to keep going...
    }
 
@@ -152,9 +151,7 @@ bool get_disk_info(char *dstr)
       (ULARGE_INTEGER *) &freec1, 
       (ULARGE_INTEGER *) &totals1, 
       (ULARGE_INTEGER *) &frees1)) {
-      // sprintf(tempstr, "can't get free disk space [%s]\n", dstr) ;
-      // nputs(n.colordefalt, tempstr) ;
-      // error_exit(DATA_OKAY, 0) ;
+      // syslog("can't get free disk space [%s]\n", dstr) ;
       
       //  emergency handling when this function fails
       freec1 = 0 ;
@@ -171,11 +168,16 @@ bool get_disk_info(char *dstr)
       //  On WinNT systems, however, the latter will include
       //  so-called "free space" in the MFT (Master File Table),
       //  which is *never* available for normal use.
-      //  Later note:  Also, on NTFS file system, MFT is not even defined!
-      diskfree = get_nt_free_space(dpath[0]) ;
-      if (diskfree == 0) {
+      //  
+      //  Later note: however, accessing the MFT space via the ntfsinfo technique,
+      //  originally presented in source code by sysinternals.com,
+      //  requires Admin authorization to access.
+      //  Since MFT space is inconsequential (about 1GB) on modern drives,
+      //  it isn't worth requiring Admin clearance.
+      // diskfree = get_nt_free_space(dpath[0]) ;
+      // if (diskfree == 0) {
          diskfree = frees1 ;
-      }
+      // }
    }
    return false;
 }
@@ -283,10 +285,16 @@ void display_drive_summary (void)
          //  On WinNT systems, however, the latter will include
          //  so-called "free space" in the MFT (Master File Table),
          //  which is *never* available for normal use.
-         diskfree = get_nt_free_space(dchar) ;
-         if (diskfree == 0) {
+         //  
+         //  Later note: however, accessing the MFT space via the ntfsinfo technique,
+         //  originally presented in source code by sysinternals.com,
+         //  requires Admin authorization to access.
+         //  Since MFT space is inconsequential (about 1GB) on modern drives,
+         //  it isn't worth requiring Admin clearance.
+         // diskfree = get_nt_free_space(dchar) ;
+         // if (diskfree == 0) {
             diskfree = frees1 ;
-         }
+         // }
       }
 
       //  convert free space to used space
