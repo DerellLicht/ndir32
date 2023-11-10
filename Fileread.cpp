@@ -9,6 +9,8 @@
 #include <windows.h>
 #include <stdio.h>
 #include <malloc.h>
+
+#include "common.h"
 #include "ndir32.h"
 
 //  from nsort.cpp

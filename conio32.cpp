@@ -33,8 +33,10 @@
 #include <stdio.h>
 #include <conio.h>   // _getch(), _kbhit()
 #include <stdlib.h>
-#include "conio32.h"
+
+#include "common.h"
 #include "ndir32.h"
+#include "conio32.h"
 
 static HANDLE hStdOut ;
 static HANDLE hStdIn ;

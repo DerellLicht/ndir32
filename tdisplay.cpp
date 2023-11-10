@@ -4,8 +4,8 @@
 //*****************************************************************
 #include <windows.h>
 #include <stdio.h>
-// #include <conio.h>
 
+#include "common.h"
 #include "ndir32.h"
 #include "conio32.h"
 #include "treelist.h"

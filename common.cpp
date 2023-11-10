@@ -9,7 +9,9 @@
 
 #include <windows.h>
 #include <stdio.h>
+#include <ctype.h>              //  tolower()
 
+#include "common.h"
 #include "ndir32.h"
 
 //lint -esym(759,get_system_message) -esym(765,get_system_message) -esym(714,get_system_message)
@@ -106,6 +108,81 @@ int syslog(const char *fmt, ...)
    OutputDebugStringA(consoleBuffer) ;
    va_end(al);
    return 1;
+}
+
+//*****************************************************************************
+// ULLONG_MAX = 18,446,744,073,709,551,615
+//*****************************************************************************
+char *convert_to_commas(ULONGLONG uli, char *outstr)
+{  //lint !e1066
+   int slen, inIdx, j ;
+   char *strptr ;
+   char temp_ull_str[MAX_ULL_COMMA_LEN+1] ;
+   static char local_ull_str[MAX_ULL_COMMA_LEN+1] ;
+   if (outstr == NULL) {
+       outstr = local_ull_str ;
+   }
+
+   // sprintf(temp_ull_str, "%"PRIu64"", uli);
+   // sprintf(temp_ull_str, "%llu", uli);
+   sprintf(temp_ull_str, "%I64u", uli);
+   // _ui64toa(uli, temp_ull_str, 10) ;
+   slen = strlen(temp_ull_str) ;
+   inIdx = --slen ;//  convert byte-count to string index 
+
+   //  put NULL at end of output string
+   strptr = outstr + MAX_ULL_COMMA_LEN ;
+   *strptr-- = 0 ;   //  make sure there's a NULL-terminator
+
+   for (j=0; j<slen; j++) {
+      *strptr-- = temp_ull_str[inIdx--] ;
+      if ((j+1) % 3 == 0)
+         *strptr-- = ',' ;
+   }
+   *strptr = temp_ull_str[inIdx] ;
+
+   //  copy string from tail-aligned to head-aligned
+   strcpy(outstr, strptr) ;
+   return outstr ;
+}
+
+//**************************************************************
+//  string compare routine, case-insensitive, 
+//  wildcards are handled in the DOS fashion.
+//**************************************************************
+int strcmpiwc(const char *onestr, const char *twostr)
+{
+   char onechar, twochar ;
+   int k = 0 ;
+
+   while (LOOP_FOREVER) {
+      onechar = *(onestr+k) ;
+      twochar = *(twostr+k) ;
+
+      //  if both are at end of string and no differences
+      //  have been found, the strings are equal.
+      if (onechar == 0  &&  twochar == 0) 
+         return 1;
+
+      //  if one string is at end and the other is not,
+      //  there is NOT a match.
+      if (onechar == 0  ||  twochar == 0)
+         return 0;
+
+      //  at this point, neither char is NULL
+
+      //  if either char is a 'match all' wildcard, the strings are equal
+      if (onechar == '*'  ||  twochar == '*') 
+         return 1 ;
+
+      if (onechar == '?'  ||  twochar == '?') ; //  match continues
+
+
+      else if (tolower(onechar) != tolower(twochar)) 
+         return 0;
+
+      k++ ;
+   }
 }
 
 

@@ -16,6 +16,7 @@
 #include <fileapi.h>
 #endif
 
+#include "common.h"
 #include "ndir32.h"
 #include "conio32.h"
 

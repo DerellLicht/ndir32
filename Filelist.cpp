@@ -10,8 +10,9 @@
 #include <stdlib.h>
 #endif
 
-#include "conio32.h"  //  _where_x() 
+#include "common.h"
 #include "ndir32.h"
+#include "conio32.h"  //  _where_x()
 
 //*****************************************************************
 static unsigned list_count = 0 ;

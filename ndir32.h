@@ -3,7 +3,6 @@
 //  ndir32.h - Header file for NDIR directory lister.         
 //                                                            
 //  Written by:  Daniel D. Miller                             
-//                                                            
 //************************************************************
 
 #include <limits.h>
@@ -241,19 +240,11 @@ extern unsigned start, finish ;
 extern double total_ptime ;
 //*****************  function prototypes**********************
 
-//  system.cpp
-int syslog(const char *fmt, ...);
-char *get_system_message(void);
-char *get_system_message(DWORD errcode);
+//  common.cpp
 void dshow_row_info(char *msg);
 
 //  ndir.cpp
-int  strcmpiwc(const char *onestr, const char *twostr);
 void getcolor (ffdata * fnew);
-
-// ULLONG_MAX = 18,446,744,073,709,551,615
-#define  MAX_ULL_COMMA_LEN  26
-char *convert_to_commas(ULONGLONG uli, char *outstr);
 
 //  cmd_line.cpp
 void verify_flags(void);

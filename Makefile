@@ -43,7 +43,7 @@ endif
 #***************************************************************
 
 CPPSRC=cmd_line.cpp conio32.cpp Diskparm.cpp err_exit.cpp Filelist.cpp Fileread.cpp \
-	system.cpp ndata.cpp Ndir32.cpp Ndisplay.cpp Qualify.cpp \
+	common.cpp ndata.cpp Ndir32.cpp Ndisplay.cpp Qualify.cpp \
 	nsort.cpp treelist.cpp tdisplay.cpp mediatype.cpp
 #    mp3.parser.cpp file_fmts.cpp 
 
@@ -94,17 +94,17 @@ endif
 # DO NOT DELETE
 
 cmd_line.o: ndir32.h conio32.h
-conio32.o: conio32.h ndir32.h
-Diskparm.o: ndir32.h conio32.h
+conio32.o: common.h ndir32.h conio32.h
+Diskparm.o: common.h ndir32.h conio32.h
 err_exit.o: ndir32.h conio32.h
-Filelist.o: conio32.h ndir32.h
-Fileread.o: ndir32.h
-system.o: ndir32.h
+Filelist.o: common.h ndir32.h conio32.h
+Fileread.o: common.h ndir32.h
+common.o: common.h ndir32.h
 ndata.o: ndir32.h
-Ndir32.o: ndir32.h conio32.h qualify.h
-Ndisplay.o: ndir32.h conio32.h
+Ndir32.o: common.h ndir32.h conio32.h qualify.h
+Ndisplay.o: common.h ndir32.h conio32.h
 Qualify.o: qualify.h
 nsort.o: ndir32.h
-treelist.o: ndir32.h conio32.h treelist.h
-tdisplay.o: ndir32.h conio32.h treelist.h
+treelist.o: common.h ndir32.h conio32.h treelist.h
+tdisplay.o: common.h ndir32.h conio32.h treelist.h
 mediatype.o: scsi_defs.h

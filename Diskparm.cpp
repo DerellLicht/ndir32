@@ -12,6 +12,8 @@
 
 // #include <stdlib.h>             //  ultoa()
 #include <windows.h>
+
+#include "common.h"
 #include "ndir32.h"
 #include "conio32.h"
 
