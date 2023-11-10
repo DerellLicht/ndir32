@@ -121,11 +121,7 @@ extern ULONGLONG diskbytes, diskfree, clbytes ;
 //***************************************************************
 extern WIN32_FIND_DATA fdata ;
 
-// extern char fsn_bfr[32] ;  //  buffer for name of lfn file system
-extern char * const dname ;       //  used by is_lfn_supported() call
-
 extern int lfn_supported ; //  always true for 32-bit version
-
 
 //************************************************************
 #define topchar       0xD1   /*  Ñ  */
@@ -139,41 +135,14 @@ extern int lfn_supported ; //  always true for 32-bit version
 
 extern uchar tline, bline, vline, xline, dline ;
 
-//************************************************************
-//  this struct is declared by Borland in IO.H, but is
-//  not declared by MSC at all.
-//  It is used to extract useful info from DOS file time/date
-//************************************************************
-
-struct  ftime   {
-    unsigned    ft_tsec  : 5;   /* Two second interval */
-    unsigned    ft_min   : 6;   /* Minutes */
-    unsigned    ft_hour  : 5;   /* Hours */
-    unsigned    ft_day   : 5;   /* Days */
-    unsigned    ft_month : 4;   /* Months */
-    unsigned    ft_year  : 7;   /* Year */
-};
-
-//*********************************************************
-//  Convert date and time fields from file struct
-//  into separate date and time elements.
-//  This union requires io.h for struct ftime.
-//*********************************************************
-union parse_time {
-   unsigned short dtime[2] ;
-   ftime outdata ;
-   } ;
-
 /************************************************************/
 struct ffdata {
-   //  uchar          attrib ;
    u16            attrib ; //  expand this to allow for extended file attributes
    // unsigned       ftime ;
    // unsigned       fdate ;
    FILETIME       ft ;
    ULONGLONG      fsize ;
    char           *filename ;
-   // char           name[13] ;
    char           *name ;
    char           ext[MAX_EXT_SIZE+1] ;
    uchar          color ;
@@ -236,12 +205,7 @@ extern char leftstr[37], rightstr[37] ; //  used by batch mode
 extern unsigned columns ;           //  number of display columns on screen
 
 extern unsigned start, finish ;
-
-extern double total_ptime ;
 //*****************  function prototypes**********************
-
-//  common.cpp
-void dshow_row_info(char *msg);
 
 //  ndir.cpp
 void getcolor (ffdata * fnew);
@@ -251,7 +215,6 @@ void verify_flags(void);
 
 //  filelist.cpp
 void display_files(void);
-bool get_disk_info(char *dstr);
 
 //  fileread.cpp
 void file_listing(void);
@@ -264,7 +227,6 @@ void info(char *data[]);
 void display_logo(void);
 void print1(ffdata *fptr);
 void print2(ffdata *fptr);
-void print3(ffdata *fptr);
 void print4(ffdata *fptr);
 void print6(ffdata *fptr);
 void ncrlf(void);
@@ -274,4 +236,5 @@ void nput_char(uchar attr, char chr, int count);
 void nput_line(uchar attr, char chr);
 
 //  diskparm.cpp
+bool get_disk_info(char *dstr);
 void display_drive_summary(void);

@@ -98,16 +98,6 @@ static void process_filespecs(void)
    else if (tcount == 1  &&  !n.exec_only) {
       start = finish = 0 ;
 
-      //  check for validity of long_filename functions
-      dname[0] = (char) *target[start] ;
-
-      // if (n.lfn_off == 1) 
-      //    lfn_supported = 0 ;
-      // else 
-      //    IFF (is_lfn_available(dname, (char far *) fsn_bfr) != 0) 
-      //    THENN 0  
-      //    ELSSE 1 ;
-      // lfn_supported = 1 ;
       lfn_supported = 1 - n.lfn_off ;
 
       //  in lfn format, convert /3 to /4
@@ -162,15 +152,6 @@ static void process_filespecs(void)
          //  and strip off filename
          j = start ;
 
-         //  check for validity of long_filename functions
-         dname[0] = *target[start] ;
-         // if (n.lfn_off == 1) 
-         //    lfn_supported = 0 ;
-         // else 
-         //    lfn_supported =  
-         //       IFF (is_lfn_available(dname, (char far *) fsn_bfr) != 0) 
-         //       THENN 0  
-         //       ELSSE 1 ;
          lfn_supported = 1 ;
 
          //  in lfn format, convert /3 to /4

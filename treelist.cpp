@@ -583,9 +583,6 @@ void tree_listing (unsigned total_filespec_count)
       tree_init_sort ();
 
    for (unsigned l = 0; l < total_filespec_count; l++) {
-      //  check for validity of long_filename functions
-      dname[0] = *target[l];
-
       lfn_supported = 1 - n.lfn_off;
 
       //  read and build the dir tree

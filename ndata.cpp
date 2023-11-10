@@ -60,9 +60,6 @@ unsigned tree_level_limit = 0 ;
 
 WIN32_FIND_DATA fdata ; //  long-filename file struct
 
-static char dnamestr[4] = "c:\\" ;
-char * const dname = &dnamestr[0] ;  //  used by is_lfn_supported() call
-
 int lfn_supported = 1 ; //  always true for 32-bit version
 
 // ulong diskbytes, diskfree ;
@@ -85,11 +82,8 @@ char leftstr[37], rightstr[37] ; //  used by batch mode
 char tempstr[MAXLINE] ;
 uchar tline, bline, vline, xline, dline ;
 unsigned filecount = 0 ;
-
 unsigned columns ;           //  number of display columns on screen
-// unsigned curlines ;  //  originally used in 43/40-line console restoration
 
-double total_ptime = 0.0 ;
 //*********************************************************
 //  NDIR information screen
 //*********************************************************

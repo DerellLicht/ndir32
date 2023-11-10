@@ -31,7 +31,7 @@ static void (*fprint[7])(ffdata *fptr) =
    print_null,
    print1,
    print2,
-   print3,
+   print_null,
    print4,
    print_null,
    print6,
@@ -49,9 +49,6 @@ static void (*lfn_fprint[7])(ffdata *fptr) =
    print_null,
    lfn_print6,
 } ;
-
-//*********************************************************
-// static unsigned col_width[] = { 0, 0, 39, 25, 19, 15, 12, 11} ;
 
 //***************  function prototypes  ***************
 static void filehead(void);
@@ -297,7 +294,6 @@ static void filehead(void)
       wincols = 80 ;
    }
 
-   total_ptime = 0.0 ;
    //****************************************************
    //  If minimize is selected, display short header/footer
    //****************************************************
@@ -453,20 +449,6 @@ static void fileend(void)
       ncrlf() ;
 
       put_disk_summary() ;
-   }
-
-   //  see if there is any special results to display
-   char mlstr[80] ;
-   if (total_ptime > 0x01) {
-      if (total_ptime < 60.0) {
-         sprintf(mlstr, "%.2f seconds     ", total_ptime) ;
-      } else {
-         total_ptime /= 60.0 ;
-         sprintf(mlstr, "%.2f minutes     ", total_ptime) ;
-      }
-      nputs(n.colornhead, "total playing time: ") ;
-      nputs(n.colorxhead, mlstr) ;
-      ncrlf() ;
    }
 }
 

@@ -20,9 +20,6 @@
 #include "ndir32.h"
 #include "conio32.h"
 
-//lint -e626   argument inconsistent with format
-//lint -e559   Size of argument no. 3 inconsistent with format
-
 //  from NDIR.CPP
 extern char *Version ;
 extern char *ShortVersion;
@@ -31,8 +28,8 @@ extern char tempfmtstr[10] ; //  for forming strings of the form %-nns
 
 static unsigned linecnt = 0 ;           //  non-color display line counter
 
-//  this array is 64 elements, not 32 (== 2^5) because 
-//  the volume_label bit (0x80) is not displayed.  
+//  this array is 64 elements, not 32 (== 2^5) 
+//  because the volume_label bit (0x80) is not displayed.  
 //  There are actually six bits in the field.
 //  NOTE: This struct is not used any more, as we now support file attributes
 //        which are not part of the conventional DOS set.
@@ -109,13 +106,13 @@ void display_logo (void)
 
 //************************************************************************
 //  return final filename from symlink
-//  sadly, this will only work with a 64-bit build
+//  this will only work with a 64-bit build
 //************************************************************************
 //  found in kernel32.dll
 #ifdef USE_64BIT
 
 #define  MAX_FILE_LENGTH   1024
-char *GetLinkTarget(char const * const symlink_name) 
+static char *GetLinkTarget(char const * const symlink_name) 
 {
    static char final_file[MAX_FILE_LENGTH+1] = "";
    // Define smart pointer type for automatic HANDLE cleanup.
@@ -158,16 +155,6 @@ void print1 (ffdata * fptr)
    uchar SHRattr = fptr->attrib & 7;
    FILETIME lft;
    FileTimeToLocalFileTime (&(fptr->ft), &lft);
-   // parse_time outdt;
-   // // outdt.dtime[0] = fptr->ftime ;
-   // // outdt.dtime[1] = fptr->fdate ;
-   // FileTimeToDosDateTime (&lft, &(outdt.dtime[1]), &(outdt.dtime[0]));
-   // int secs  = outdt.outdata.ft_tsec * 2;
-   // int mins  = outdt.outdata.ft_min;
-   // int hour  = outdt.outdata.ft_hour;
-   // int day   = outdt.outdata.ft_day;
-   // int month = outdt.outdata.ft_month;
-   // long year = 1980L + (long) outdt.outdata.ft_year;
    SYSTEMTIME sdt ;
    FileTimeToSystemTime(&lft, &sdt) ;
    int secs  = sdt.wSecond ;
@@ -256,18 +243,11 @@ void print1 (ffdata * fptr)
          break;
       }
 
-      //  process multimedia display
-      // if (!show_normal_info) {
-      //    nputs (n.colorattr, mlstr);
-      // } 
-      //  display normal file listing
-      // else {
-         nputs (attrclr, attr);
-         sprintf (tempstr, "%3s %02d, %04lu ", monthstr[month - 1], day, year);
-         nputs (n.colordate, tempstr);
-         sprintf (tempstr, "%02d:%02d:%02d ", hour, mins, secs);
-         nputs (n.colortime, tempstr);
-      // }
+      nputs (attrclr, attr);
+      sprintf (tempstr, "%3s %02d, %04lu ", monthstr[month - 1], day, year);
+      nputs (n.colordate, tempstr);
+      sprintf (tempstr, "%02d:%02d:%02d ", hour, mins, secs);
+      nputs (n.colortime, tempstr);
 
       //  format filename as required
       if (lfn_supported)
@@ -305,15 +285,6 @@ void print2 (ffdata * fptr)
    uchar SHRattr = fptr->attrib & 7;
    FILETIME lft;
    FileTimeToLocalFileTime (&(fptr->ft), &lft);
-   // parse_time outdt;
-   // // outdt.dtime[0] = fptr->ftime ;
-   // // outdt.dtime[1] = fptr->fdate ;
-   // FileTimeToDosDateTime (&lft, &(outdt.dtime[1]), &(outdt.dtime[0]));
-   // int mins = outdt.outdata.ft_min;
-   // int hour = outdt.outdata.ft_hour;
-   // int day = outdt.outdata.ft_day;
-   // int month = outdt.outdata.ft_month;
-   // long year = 1980L + (long) outdt.outdata.ft_year;
    SYSTEMTIME sdt ;
    FileTimeToSystemTime(&lft, &sdt) ;
    // int secs  = sdt.wSecond ;
@@ -364,102 +335,6 @@ void print2 (ffdata * fptr)
    nputs(n.colordate, tempstr) ;
    sprintf(tempstr, "%02d:%02d", hour, mins);
    nputs(n.colortime, tempstr) ;
-}
-
-//*********************************************************
-void print3 (ffdata * fptr)
-{
-   parse_time outdt;
-   uchar SHRattr = fptr->attrib & 7;
-   // outdt.dtime[0] = fptr->ftime ;
-   // outdt.dtime[1] = fptr->fdate ;
-   //  how to convert FILETIME to my format??
-   outdt.dtime[0] = '?';
-   outdt.dtime[1] = '?';
-   int month = outdt.outdata.ft_month;
-   long year = 1980L + (long) outdt.outdata.ft_year;
-   ULONGLONG fsize = fptr->fsize;
-
-   if (fptr->dirflag) {
-      sprintf (tempstr, "%-8s%-4s  [DIR] ", fptr->name, fptr->ext);
-      if (strlen (fptr->name) == 0) {
-         sprintf (tempstr, "NoShortName   [DIR] ");
-      }
-      //  display filename in appropriate color...
-      if (SHRattr != 0 && n.showSHRfiles)
-         nputs (n.colorSHR | SHRattr, tempstr);
-      else
-         nputs (n.colordir, tempstr);
-   }
-   else {
-      sprintf (tempstr, "%-8s%-4s ", fptr->name, fptr->ext);
-      if (strlen (fptr->name) == 0) {
-         sprintf (tempstr, "NoShortName  ");
-      }
-      //  display filename in appropriate color...
-      if (SHRattr != 0 && n.showSHRfiles)
-         nputs (n.colorSHR | SHRattr, tempstr);
-      else
-         nputs (fptr->color, tempstr);
-
-      if (fsize > 99999999L) {
-         sprintf (tempstr, "%5u", (uint) (fsize / 1000000L));
-         nputs (n.colorsize, tempstr);
-         nputs (n.colorsize ^ 0x08, "M ");
-      }
-      else if (fsize > 999999L) {
-         sprintf (tempstr, "%5u", (uint) (fsize / 1000L));
-         nputs (n.colorsize, tempstr);
-         nputs (n.colorsize ^ 0x08, "K ");
-      }
-      else {
-         sprintf (tempstr, "%6u ", (uint) (fsize));
-         nputs (n.colorsize, tempstr);
-      }
-   }
-
-   sprintf (tempstr, "%02d-%02d", month, (int) (year % 100));
-   nputs (n.colordate, tempstr);
-
-   //  put the name last
-   if (fptr->dirflag) {
-      sprintf (tempstr, "%-8s%-4s  [DIR] ", fptr->name, fptr->ext);
-      if (strlen (fptr->name) == 0) {
-         sprintf (tempstr, "NoShortName   [DIR] ");
-      }
-      //  display filename in appropriate color...
-      if (SHRattr != 0 && n.showSHRfiles)
-         nputs (n.colorSHR | SHRattr, tempstr);
-      else
-         nputs (n.colordir, tempstr);
-   }
-   else {
-      sprintf (tempstr, "%-8s%-4s ", fptr->name, fptr->ext);
-      if (strlen (fptr->name) == 0) {
-         sprintf (tempstr, "NoShortName  ");
-      }
-      //  display filename in appropriate color...
-      if (SHRattr != 0 && n.showSHRfiles)
-         nputs (n.colorSHR | SHRattr, tempstr);
-      else
-         nputs (fptr->color, tempstr);
-
-      if (fsize > 99999999L) {
-         sprintf (tempstr, "%5u", (uint) (fsize / 1000000L));
-         nputs (n.colorsize, tempstr);
-         nputs (n.colorsize ^ 0x08, "M ");
-      }
-      else if (fsize > 999999L) {
-         sprintf (tempstr, "%5u", (uint) (fsize / 1000L));
-         nputs (n.colorsize, tempstr);
-         nputs (n.colorsize ^ 0x08, "K ");
-      }
-      else {
-         sprintf (tempstr, "%6u ", (uint) (fsize));
-         nputs (n.colorsize, tempstr);
-      }
-   }
-
 }
 
 /*****************************************************************/
@@ -547,13 +422,6 @@ void lfn_print2 (ffdata * fptr)
 
    FILETIME lft;
    FileTimeToLocalFileTime (&(fptr->ft), &lft);
-   // parse_time outdt;
-   // FileTimeToDosDateTime (&lft, &(outdt.dtime[1]), &(outdt.dtime[0]));
-   // int mins = outdt.outdata.ft_min;
-   // int hour = outdt.outdata.ft_hour;
-   // int day = outdt.outdata.ft_day;
-   // int month = outdt.outdata.ft_month;
-   // long year = 1980L + (long) outdt.outdata.ft_year;
    SYSTEMTIME sdt ;
    FileTimeToSystemTime(&lft, &sdt) ;
    // int secs  = sdt.wSecond ;
@@ -797,5 +665,3 @@ void nput_line (uchar attr, char chr)
    ncrlf ();
 }
 
-//lint +e559   Size of argument no. 3 inconsistent with format
-//lint +e626   argument inconsistent with format
