@@ -38,6 +38,8 @@ struct attrib_list {
 static attrib_list attr_table[MAX_EXT] ;
 static unsigned attrib_count = 0 ;
 
+int lfn_supported = 1 ; //  always true for 32-bit version
+
 //  per Jason Hood, this turns off MinGW's command-line expansion, 
 //  so we can handle wildcards like we want to.                    
 //lint -e765  external '_CRT_glob' (line 134, file Ndir32.cpp) could be made static
@@ -50,6 +52,80 @@ static unsigned tcount = 0 ;   //  number of target filespecs
 //  cmd_line.cpp
 extern void parse_command_string(char *cmdstr) ;
 extern void parse_command_args(int start, int argc, char** argv);
+
+//*********************************************************
+//  NDIR information screen
+//*********************************************************
+static char *idtxt[] = {
+   " ",
+   "Copyright 1990, 1993-2023 by:",
+   " ",
+   "          Daniel D. Miller",
+   "          4835 Coco Palm Drive",
+   "          Fremont, CA  94538",
+   " ",
+   "          Email:    derelict@comcast.net",
+   "          Website:  home.comcast.net/~derelict",
+   " ",
+   "This program, NDIR.EXE, and its associated files, are hereby released as",
+   "Freeware, though I retain the copyrights on them.  Please feel free to",
+   "distribute copies to anyone who is (or might be) interested in them.",
+   NULL } ;
+
+//*********************************************************
+//  NDIR help screen
+//*********************************************************
+static char *helptxt[] = {
+" ",
+"USAGE:  NDIR <filespecs> -options or /options !<exclusions>",
+" ",
+" OPTIONS                      FUNCTIONS",
+"   -a *     List ALL files (hidden, system, read-only, etc.).",
+"   -a1      List attributes in HEX format.",
+"   -c *     Clear screen before listing.",
+"   -p *     Pause on full screen.",
+"   -m *     Minimize size of header and footer.",
+"   -w *     Use special colors for system/hidden/readonly files.",
+"   -d       dir TREE: normal size display (work with -s, -n (default), -r).",
+"   -d2      dir TREE: file/directory counts",
+"   -d3      dir TREE: mixed size and file/directory counts",
+"   -e       Sort by extension.",
+"   -n        \"   by name.",
+"   -s        \"   by file size, smallest first.",
+"   -t        \"   by Date, oldest first.",
+"   -z        \"   by DOS order (no sort).",
+"   -S0      Show sizes in mixed bytes/KB",
+"   -S1      Show sizes in Kilobytes",
+"   -S2      Show sizes in Megabytes",
+"   -r *     Reverse normal sort order.",
+"   -1       Display one column,   with name/size/date/attr.",
+"   -2          \"    two   \"   ,   with name/size/date.",
+"   -4          \"    four  \"   ,   with name/size.",
+"   -6          \"    six   \"   ,   with name only.",
+"   -i       Display drive summary for all drives in system.",
+"   -ii      Display drive summary for all drives in system, with used vs free space.",
+"   -l *     Toggle long-filename enable flag (NDIR16 and MSDOS 7.00+ only)",
+"   -k *     Toggle color mode.",
+"   -j *     Use standard ASCII (for redirection). (forces -k)",
+"   -u *     List filenames in UPPERCASE.",
+"   -oN      Date/Time display: 0=Last Write, 1=Last Access, 2=File Created",
+"   -x *     List executables only (.EXE,.COM,.BAT).",
+"   -v       Display registration/update information.",
+"   -?       Display HELP screen.",
+"   -g *     List directories FIRST.",
+"   -h *     List files horizontally.",
+"   -f *     List files only (No directories).",
+"   -, *     Dir Tree: show only L level of subdirectories.",
+"               L is incremented for each additional comma",
+" ",
+"   -b       Batch mode;  files listed in one column.",
+"            (This format can be redirected to a batch file)",
+"   [\"string\"  specifies a string BEFORE each filename (Batch mode)",
+"   ]\"string\"  specifies a string AFTER  each filename (Batch mode)",
+" ",
+"NOTE: items with a * after the flag are TOGGLES",
+" ",
+NULL } ;
 
 //***********************************************************
 //  DEBUG function: insert filespecs in display list
@@ -78,7 +154,7 @@ static char fi_name[PATH_MAX], fi_ext[PATH_MAX] ;
 static char fj_name[PATH_MAX], fj_ext[PATH_MAX] ;
 
 static void process_filespecs(void)
-   {
+{
    char* strptr ;
    unsigned i, j, k ;
 
@@ -141,13 +217,11 @@ static void process_filespecs(void)
       //**************************************************
       file_listing() ;
       }
-   else 
-      {
+   else {
       int temp_columns = columns ;
 
       start = 0 ;
-      while (LOOP_FOREVER)
-         {
+      while (LOOP_FOREVER) {
          //  Extract base path from first filespec,
          //  and strip off filename
          j = start ;
@@ -203,50 +277,47 @@ static void process_filespecs(void)
          //  This routine uses selection sort, because the list
          //  usually only has a couple of items in it.
          //********************************************************
-         for (i=start ; i< finish ; i++)
-         for (j=i+1   ; j<=finish ; j++) {
-            //  extract filename and extension file target string
-            //  to compare for duplicate filespecs.
-            strcpy(fi_name, &target[i][base_len]) ;
-            strptr = strrchr(fi_name, '.') ; //lint !e613
-            if (strptr != 0) {
-               *strptr++ = 0 ;   //lint !e613
-               strcpy(fi_ext, strptr) ;
-            } else {
-               fi_ext[0] = 0 ;
-            }
+         for (i=start ; i< finish ; i++) {
+            for (j=i+1   ; j<=finish ; j++) {
+               //  extract filename and extension file target string
+               //  to compare for duplicate filespecs.
+               strcpy(fi_name, &target[i][base_len]) ;
+               strptr = strrchr(fi_name, '.') ; //lint !e613
+               if (strptr != 0) {
+                  *strptr++ = 0 ;   //lint !e613
+                  strcpy(fi_ext, strptr) ;
+               } else {
+                  fi_ext[0] = 0 ;
+               }
 
-            strcpy(fj_name, &target[j][base_len]) ;
-            strptr = strrchr(fj_name, '.') ; //lint !e613
-            if (strptr != 0) {
-               *strptr++ = 0 ;   //lint !e613
-               strcpy(fj_ext, strptr) ;
-            } else {
-               fj_ext[0] = 0 ;
-            }
+               strcpy(fj_name, &target[j][base_len]) ;
+               strptr = strrchr(fj_name, '.') ; //lint !e613
+               if (strptr != 0) {
+                  *strptr++ = 0 ;   //lint !e613
+                  strcpy(fj_ext, strptr) ;
+               } else {
+                  fj_ext[0] = 0 ;
+               }
 
-            //  Scan file name and extension for equality.
-            //  If both filename and extension are equal, delete one.
-            if (strcmpiwc(fi_name, fj_name)  &&  strcmpiwc(fi_ext, fj_ext)) {
-               strptr = target[j] ;
-               for (k=j+1; k<tcount; k++)
-                   target[k] = target[k+1] ;
-               tcount-- ;
-               finish-- ;
-               j-- ;
-               free(strptr) ; // release allocated struct.
+               //  Scan file name and extension for equality.
+               //  If both filename and extension are equal, delete one.
+               if (strcmpiwc(fi_name, fj_name)  &&  strcmpiwc(fi_ext, fj_ext)) {
+                  strptr = target[j] ;
+                  for (k=j+1; k<tcount; k++)
+                      target[k] = target[k+1] ;
+                  tcount-- ;
+                  finish-- ;
+                  j-- ;
+                  free(strptr) ; // release allocated struct.
+               }
             }
-         }
-         // Ndir32.cpp  414  Info 850: for loop index variable 'j' 
-         // whose type category is 'integral' 
-         // is modified in body of the for loop that began at 'line 375'
+         }  //lint !e850 for loop index variable 'j' whose type category is 'integral' is modified in body of the for loop that began at 'line 206'
 
          //**************************************************
          //  initialize file pointer and filecount,
          //  in case of multiple filespecs.
          //**************************************************
-         if (ftop != NULL) //lint !e850
-            {
+         if (ftop != NULL) {
             ffdata *ftemp = ftop ;
             ffdata *fkill ;
             while (ftemp != NULL)
@@ -256,7 +327,7 @@ static void process_filespecs(void)
                free(fkill) ;
                }
             ftop = NULL ;
-            }
+         }
          filecount = 0 ;
 
          //**************************************************
@@ -274,10 +345,9 @@ static void process_filespecs(void)
          ncrlf() ;
 
          columns = temp_columns ;
-         }  //  while not done
-
-      }  //  if multiple filespecs are present
-   } /*  end  process_filespecs() */
+      }  //  while not done
+   }  //  if multiple filespecs are present
+}
 
 //**************************************************
 //  Sort filespecs alphabetically,
@@ -304,7 +374,7 @@ static void sort_target_paths(void)
 
 //*********************************************************************
 //  default file colors
-static attrib_list attr_default_list[] = {
+static attrib_list const attr_default_list[] = {
 { 0x02, ".1ST" }, { 0x0E, ".ARC" }, { 0x03, ".ASM" }, { 0x03, ".BAS" }, 
 { 0x04, ".BAT" }, { 0x03, ".C"   }, { 0x0C, ".COM" }, { 0x03, ".CPP" },
 { 0x02, ".DOC" }, { 0x0C, ".EXE" }, { 0x0D, ".H"   }, { 0x0D, ".HEX" }, 

@@ -184,11 +184,8 @@ enum error_values { DATA_OKAY = 0, OUT_OF_MEMORY, INV_DRIVE } ;
 void error_exit(int index, char* outstr);
 
 //************************************************************
-//  ntypes.cpp
+//  ndata.cpp
 //************************************************************
-extern char *idtxt[] ;
-extern char *helptxt[] ;
-
 //  name of drive+path without filenames
 extern char base_path[PATH_MAX] ;
 extern unsigned base_len ;  //  length of base_path
@@ -196,7 +193,6 @@ extern unsigned base_len ;  //  length of base_path
 //************************************************************
 //  ndata.cpp
 //************************************************************
-// extern struct _find_t fblk;
 
 extern char tempstr[MAXLINE] ;
 extern unsigned filecount ;             //  number of files found

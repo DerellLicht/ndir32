@@ -60,8 +60,6 @@ unsigned tree_level_limit = 0 ;
 
 WIN32_FIND_DATA fdata ; //  long-filename file struct
 
-int lfn_supported = 1 ; //  always true for 32-bit version
-
 // ulong diskbytes, diskfree ;
 ULONGLONG diskbytes, diskfree, clbytes ;
 
@@ -83,79 +81,4 @@ char tempstr[MAXLINE] ;
 uchar tline, bline, vline, xline, dline ;
 unsigned filecount = 0 ;
 unsigned columns ;           //  number of display columns on screen
-
-//*********************************************************
-//  NDIR information screen
-//*********************************************************
-char *idtxt[] = {
-   " ",
-   "Copyright 1990, 1993-2023 by:",
-   " ",
-   "          Daniel D. Miller",
-   "          4835 Coco Palm Drive",
-   "          Fremont, CA  94538",
-   " ",
-   "          Email:    derelict@comcast.net",
-   "          Website:  home.comcast.net/~derelict",
-   " ",
-   "This program, NDIR.EXE, and its associated files, are hereby released as",
-   "Freeware, though I retain the copyrights on them.  Please feel free to",
-   "distribute copies to anyone who is (or might be) interested in them.",
-   NULL } ;
-
-//*********************************************************
-//  NDIR help screen
-//*********************************************************
-char *helptxt[] = {
-" ",
-"USAGE:  NDIR <filespecs> -options or /options !<exclusions>",
-" ",
-" OPTIONS                      FUNCTIONS",
-"   -a *     List ALL files (hidden, system, read-only, etc.).",
-"   -a1      List attributes in HEX format.",
-"   -c *     Clear screen before listing.",
-"   -p *     Pause on full screen.",
-"   -m *     Minimize size of header and footer.",
-"   -w *     Use special colors for system/hidden/readonly files.",
-"   -d       dir TREE: normal size display (work with -s, -n (default), -r).",
-"   -d2      dir TREE: file/directory counts",
-"   -d3      dir TREE: mixed size and file/directory counts",
-"   -e       Sort by extension.",
-"   -n        \"   by name.",
-"   -s        \"   by file size, smallest first.",
-"   -t        \"   by Date, oldest first.",
-"   -z        \"   by DOS order (no sort).",
-"   -S0      Show sizes in mixed bytes/KB",
-"   -S1      Show sizes in Kilobytes",
-"   -S2      Show sizes in Megabytes",
-"   -r *     Reverse normal sort order.",
-"   -1       Display one column,   with name/size/date/attr.",
-"   -2          \"    two   \"   ,   with name/size/date.",
-"   -3          \"    three \"   ,   with name/size/mmYY. (short fn only)",
-"   -4          \"    four  \"   ,   with name/size.",
-"   -6          \"    six   \"   ,   with name only.",
-"   -i       Display drive summary for all drives in system.",
-"   -ii      Display drive summary for all drives in system, with used vs free space.",
-"   -l *     Toggle long-filename enable flag (NDIR16 and MSDOS 7.00+ only)",
-"   -k *     Toggle color mode.",
-"   -j *     Use standard ASCII (for redirection). (forces -k)",
-"   -u *     List filenames in UPPERCASE.",
-"   -oN      Date/Time display: 0=Last Write, 1=Last Access, 2=File Created",
-"   -x *     List executables only (.EXE,.COM,.BAT).",
-"   -v       Display registration/update information.",
-"   -?       Display HELP screen.",
-"   -g *     List directories FIRST.",
-"   -h *     List files horizontally.",
-"   -f *     List files only (No directories).",
-"   -, *     Dir Tree: show only L level of subdirectories.",
-"               L is incremented for each additional comma",
-" ",
-"   -b       Batch mode;  files listed in one column.",
-"            (This format can be redirected to a batch file)",
-"   [\"string\"  specifies a string BEFORE each filename (Batch mode)",
-"   ]\"string\"  specifies a string AFTER  each filename (Batch mode)",
-" ",
-"NOTE: items with a * after the flag are TOGGLES",
-" ",
-NULL } ;
 

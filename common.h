@@ -1,6 +1,6 @@
 //************************************************************
 //  Copyright (c) 1998-2023 Daniel D. Miller                  
-//  ndir32.h - Header file for NDIR directory lister.         
+//  common.h - common functions, used in various applications
 //                                                            
 //  Written by:  Daniel D. Miller                             
 //************************************************************
