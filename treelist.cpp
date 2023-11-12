@@ -96,8 +96,6 @@ static void pattern_update(void)
 //  recursive routine to read directory tree
 //**********************************************************
 //  from fileread.cpp
-extern char lfn_src[PATH_MAX + 1];
-extern char lfn_dest[PATH_MAX + 1];
 static int early_abort = 0 ;
 
 static int read_dir_tree (dirs * cur_node)
@@ -141,13 +139,8 @@ static int read_dir_tree (dirs * cur_node)
    //  first, build tree list for current level
    level++;
 
-   char *p = 0;
    if (n.lfn_off) {
-      //  we need the whole path before we can get short filename
-      strcpy (lfn_src, dirpath);
-      p = strrchr (lfn_src, '\\');  //  strip off wildcards or target name
-      if (p != 0)
-         *(++p) = 0;
+      save_sfn_base_path(dirpath);
    }
 
 #ifdef  DESPERATE
@@ -182,20 +175,20 @@ debug_dump(dirpath, tempstr) ;
       if (!err) {
          //  we found a directory
          if (fdata.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-            unsigned cut_dot_dirs;
+            bool cut_dot_dirs;
 
             // printf("DIRECTORY %04X %s\n", fdata.attrib, fdata.fname) ;
             //  skip '.' and '..', but NOT .ncftp (for example)
             if (fdata.cFileName[0] != '.')
-               cut_dot_dirs = 0;
+               cut_dot_dirs = false;
             else if (fdata.cFileName[1] == 0)
-               cut_dot_dirs = 1;
+               cut_dot_dirs = true;
             else if (fdata.cFileName[1] == '.' && fdata.cFileName[2] == 0)
-               cut_dot_dirs = 1;
+               cut_dot_dirs = true;
             else
-               cut_dot_dirs = 0;
+               cut_dot_dirs = false;
 
-            if (cut_dot_dirs == 0) {
+            if (!cut_dot_dirs) {
                cur_node->directs++;
                cur_node->subdirects++;
 
@@ -211,29 +204,9 @@ debug_dump(dirpath, tempstr) ;
                   dtail->name = (char *) malloc(14) ;
                   if (dtail->name == 0)
                      error_exit (OUT_OF_MEMORY, NULL);
-                  // GetShortPathName((char *) fdata.cFileName, dtail->name, 14) ;
 
-                  if (p == 0) {
-                     strcpy (dtail->name, "No_path");
-                  }
-                  else {
-                     strcpy (p, (char *) fdata.cFileName);
-                     result = GetShortPathName (lfn_src, lfn_dest, PATH_MAX);
-                     if (result == 0) {
-                        sprintf (dtail->name, "error=%u",
-                           (unsigned) GetLastError ());
-                     }
-                     else {
-                        strptr = strrchr (lfn_dest, '\\');
-                        if (strptr == 0) {
-                           strcpy (dtail->name, "No_strrchr");
-                        }
-                        else {
-                           strptr++;
-                           strcpy (dtail->name, strptr);
-                        }
-                     }
-                  }
+                  strptr = sfn_convert_filename((char *) fdata.cFileName);
+                  strcpy (dtail->name, strptr);
                }
                else {
                   dtail->name = (char *) malloc(strlen ((char *) fdata.cFileName) + 1);

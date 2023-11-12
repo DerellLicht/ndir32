@@ -17,6 +17,46 @@
 //lint -esym(759,get_system_message) -esym(765,get_system_message) -esym(714,get_system_message)
 
 //*************************************************************
+//  handlers for short-filename conversion
+//*************************************************************
+static char *tail_ptr = 0;
+static char lfn_src[PATH_MAX + 1];
+static char lfn_dest[PATH_MAX + 1];
+
+void save_sfn_base_path(char *sfn_base_path)
+{
+   //  we need the whole path before we can get short filename
+   // syslog("[%s]\n", sfn_base_path);
+   strcpy (lfn_src, sfn_base_path);
+   tail_ptr = strrchr (lfn_src, '\\');  //  strip off wildcards or target name
+   if (tail_ptr != 0) {
+      *(++tail_ptr) = 0;
+   }
+   else {
+      syslog("no backslash found\n");
+   }
+}
+
+char *sfn_convert_filename(char *lfn_filename)
+{
+   // syslog("<%s>\n", lfn_filename);
+   strcpy (tail_ptr, (char *) lfn_filename); //  append filename to lfn path
+   // strcpy(ftemp->filename, (char *) fdata.cAlternateFileName) ;
+   // syslog("{%s}\n", lfn_src);
+   int result = GetShortPathName (lfn_src, lfn_dest, sizeof(lfn_dest));
+   if (result == 0) {
+      return (char *) "no_path" ;   //lint !e1773
+   }
+   char *strptr = strrchr (lfn_dest, '\\');
+   if (strptr == 0) {
+      return (char *) "No_strrchr" ;   //lint !e1773
+   }
+   strptr++;
+   *tail_ptr = 0 ;   //  restore base length
+   return strptr ;
+}
+
+//*************************************************************
 //  each subsequent call to this function overwrites 
 //  the previous report.
 //*************************************************************

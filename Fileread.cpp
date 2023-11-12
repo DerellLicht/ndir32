@@ -20,6 +20,21 @@ extern void sort_filelist (void);
 static void process_exclusions (void);
 static void read_long_files (int i);
 
+//*************************************************************
+#define  MAX_EXCL_COUNT    20
+static char excl[MAX_EXCL_COUNT][MAX_EXT_SIZE+1] ; //  allocate dynamically??
+static int  exclcount = 0 ;     //  number of exclusion filespecs
+
+//*************************************************************
+void update_exclusion_list(char *extptr)
+{
+   if (exclcount < MAX_EXCL_COUNT) {
+      strncpy (excl[exclcount], extptr, MAX_EXT_SIZE);
+      excl[exclcount][MAX_EXT_SIZE] = 0 ;
+      exclcount++;
+   }
+}
+
 //*********************************************************
 //  This loops thru all files in one subdirectory,
 //  calling update_filelist() to add files to the
@@ -27,37 +42,25 @@ static void read_long_files (int i);
 //  This differs from read_files() in that it uses
 //  the MSDOS 7.00 long-filename functions
 //*********************************************************
-char lfn_src[PATH_MAX + 1];
-char lfn_dest[PATH_MAX + 1];
-
 static void read_long_files (int i)
 {
-   int done, fn_okay, result;
+   int done, fn_okay ;  //, result;
    HANDLE handle;
    char *strptr;
    ffdata *ftemp;
-   char *p = 0;
 
    if (n.lfn_off) {
-      //  we need the whole path before we can get short filename
-      strcpy (lfn_src, target[i]);
-      p = strrchr (lfn_src, '\\');  //  strip off wildcards or target name
-      if (p != 0)
-         *(++p) = 0;
+      save_sfn_base_path(target[i]);
    }
 
-   syslog("%s\n", target[i]);
+   // syslog("%s\n", target[i]);
    handle = FindFirstFile (target[i], &fdata);
-   //  according to MSDN, Jan 1999, the following is equivalent
-   //  to the preceding... unfortunately, under Win98SE, it's not...
+   //  according to MSDN, Jan 1999, the following is equivalent to the preceding... 
+   //  unfortunately, under Win98SE, it's not...
    // handle = FindFirstFileEx(target[i], FindExInfoStandard, &fdata, 
    //                      FindExSearchNameMatch, NULL, 0) ;
    if (handle == INVALID_HANDLE_VALUE)
       return;
-
-// FILE *dbg ;
-// dbg = fopen("\\debug", "wt") ;
-// fprintf(dbg, "lfn_off=%d\n", n.lfn_off) ;
 
    //  loop on find_next
    done = 0;
@@ -135,28 +138,8 @@ static void read_long_files (int i)
          if (n.lfn_off) {
             ftemp->filename = (char *) malloc(15) ;
 
-            if (p == 0) {
-               strcpy (ftemp->filename, "No_path");
-            }
-            else {
-               strcpy (p, (char *) fdata.cFileName);
-               // strcpy(ftemp->filename, (char *) fdata.cAlternateFileName) ;
-               result = GetShortPathName (lfn_src, lfn_dest, PATH_MAX);
-               if (result == 0) {
-                  sprintf (ftemp->filename, "error=%u",
-                     (unsigned) GetLastError ());
-               }
-               else {
-                  strptr = strrchr (lfn_dest, '\\');
-                  if (strptr == 0) {
-                     strcpy (ftemp->filename, "No_strrchr");
-                  }
-                  else {
-                     strptr++;
-                     strcpy (ftemp->filename, strptr);
-                  }
-               }
-            }
+            strptr = sfn_convert_filename((char *) fdata.cFileName);
+            strcpy (ftemp->filename, strptr);
          }
          else {
             ftemp->filename = (char *) malloc(strlen ((char *) fdata.cFileName) + 1);
@@ -201,21 +184,6 @@ search_next_file:
    }
 
    FindClose (handle);
-}
-
-//*************************************************************
-#define  MAX_EXCL_COUNT    20
-static char excl[MAX_EXCL_COUNT][MAX_EXT_SIZE+1] ; //  allocate dynamically??
-static int  exclcount = 0 ;     //  number of exclusion filespecs
-
-//*************************************************************
-void update_exclusion_list(char *extptr)
-{
-   if (exclcount < MAX_EXCL_COUNT) {
-      strncpy (excl[exclcount], extptr, MAX_EXT_SIZE);
-      excl[exclcount][MAX_EXT_SIZE] = 0 ;
-      exclcount++;
-   }
 }
 
 //*************************************************************

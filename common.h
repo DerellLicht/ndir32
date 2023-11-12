@@ -13,3 +13,7 @@ int  strcmpiwc(const char *onestr, const char *twostr);
 // ULLONG_MAX = 18,446,744,073,709,551,615
 #define  MAX_ULL_COMMA_LEN  26
 char *convert_to_commas(ULONGLONG uli, char *outstr);
+
+void save_sfn_base_path(char *sfn_base_path);
+char *sfn_convert_filename(char *lfn_filename);
+

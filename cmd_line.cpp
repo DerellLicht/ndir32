@@ -22,9 +22,7 @@
 extern void insert_target_filespec (char *fstr);
 
 //  fileread.cpp
-void update_exclusion_list(char *extptr);
-
-// unsigned multimedia_listing = 0;
+extern void update_exclusion_list(char *extptr);
 
 //*************************************************************
 //  Convert command-line switches into flags
@@ -77,14 +75,7 @@ static int update_switches (char *argstr)
       case 'k':  n.color ^= 1;  break;     //  redirection flag
       case 'l':  n.lfn_off ^= 1;  break;   //  toggle long_filename flag
       case 'm':
-         //  look for 'mm' switch
-         // if (*argstr == 'm') {
-         //    multimedia_listing ^= 1;
-         //    slen++ ;
-         // }
-         // else {
-            n.minimize ^= 1;
-         // }
+         n.minimize ^= 1;
          break;
       case 'n':
          n.sort = 1;
@@ -135,9 +126,6 @@ static int update_switches (char *argstr)
          break;
 
       case '?':
-// nputs(0x13, "I see question mark") ;
-// ncrlf() ;
-// _getch() ;         
          n.help = 1;
          break;
 
@@ -226,11 +214,8 @@ void parse_command_args (int startIdx, int argc, char **argv)
       if (strcmp(argvptr, "/~") == 0) {
          *(argvptr+1) = '/' ;
       }
-// nputs(0x13, argvptr) ;
-// ncrlf() ;
       parse_command_string (argvptr);
    }
-// _getch() ;         
 }
 
 /**********************************************************************/
@@ -248,11 +233,6 @@ void verify_flags (void)
       // n.pause = 0;
       // n.low_ascii = 1;
    }
-
-   //  
-   // if (multimedia_listing) {
-   //    n.format = 0 ;
-   // }
 
    //****************************************************
    //  For batch mode, standard ASCII, or help/identify
