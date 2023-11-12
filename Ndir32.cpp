@@ -822,10 +822,6 @@ int main(int argc, char **argv)
    int startIdx = 1 ;
    char exename[PATH_MAX] ;
 
-   // for (int j = 1; j < argc; j++) {
-   //    printf("0: %s\n", argv[j]) ;
-   // }
-
    //  interesting lessons from WinNT 4.0:
    //  If the OS is WinNT 4.0, and;
    //  If the executable file is located in the current directory,
@@ -889,7 +885,6 @@ int main(int argc, char **argv)
    //***********************************************************
    //  Execute the requested command
    //***********************************************************
-   // output_html_header("ndir32");
    display_logo() ;
 
    if (n.help)
@@ -907,7 +902,6 @@ int main(int argc, char **argv)
       process_filespecs() ;
    }
 
-   // output_html_footer();
    error_exit(DATA_OKAY, NULL) ;
    return 0 ;
 }
