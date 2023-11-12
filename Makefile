@@ -43,7 +43,7 @@ endif
 #***************************************************************
 
 CPPSRC=cmd_line.cpp conio32.cpp Diskparm.cpp err_exit.cpp Filelist.cpp Fileread.cpp \
-	common.cpp ndata.cpp Ndir32.cpp Ndisplay.cpp Qualify.cpp \
+	common.cpp Ndir32.cpp Ndisplay.cpp Qualify.cpp \
 	nsort.cpp treelist.cpp tdisplay.cpp mediatype.cpp
 #    mp3.parser.cpp file_fmts.cpp 
 
@@ -100,7 +100,6 @@ err_exit.o: ndir32.h conio32.h
 Filelist.o: common.h ndir32.h conio32.h
 Fileread.o: common.h ndir32.h
 common.o: common.h ndir32.h
-ndata.o: ndir32.h
 Ndir32.o: common.h ndir32.h conio32.h qualify.h
 Ndisplay.o: common.h ndir32.h conio32.h
 Qualify.o: qualify.h
