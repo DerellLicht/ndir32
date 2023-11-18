@@ -865,12 +865,7 @@ int main(int argc, char **argv)
       argv[0] = options ;
       startIdx = 0 ;
    }
-// printf("ininame=%s\n", ininame) ;
-// getchar() ;
-
-   // for (int j = startIdx; j < argc; j++) {
-   //    printf("1: %s\n", argv[j]) ;
-   // }
+   
    //***********************************************************
    //  first read default settings
    //***********************************************************
