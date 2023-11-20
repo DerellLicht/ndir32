@@ -349,13 +349,11 @@ static void filehead(void)
 }
 
 /*****************************************************************/
-static void put_disk_summary(void)
+void put_disk_summary(void)
 {
-   nputs(n.colornhead, "Total disk space = ") ;
-   // itemp64.convert(diskbytes) ;
+   nputs(n.colornhead, "Disk capacity = ") ;
    nputs(n.colorxhead, convert_to_commas(diskbytes, NULL)) ;
    nputs(n.colornhead, " bytes; Free disk space = ") ;
-   // itemp64.convert(diskfree) ;
    nputs(n.colorxhead, convert_to_commas(diskfree, NULL)) ;
    nputs(n.colornhead, " bytes") ;
    ncrlf() ;

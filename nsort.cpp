@@ -4,10 +4,6 @@
 //                                                                 
 //  Written by:   Daniel D. Miller  (the Derelict)                 
 //                                                                 
-//  Last update:  01/15/01 21:20pm                                 
-//                                                                 
-//  compile with makefile                                          
-//                                                                 
 //*****************************************************************
 
 // #undef __STRICT_ANSI__
@@ -17,6 +13,7 @@
 #include <malloc.h>
 #endif
 
+#include "common.h"
 #include "ndir32.h"
 
 //lint -e1013  Symbol 'LowPart' not a member of class '_LARGE_INTEGER'

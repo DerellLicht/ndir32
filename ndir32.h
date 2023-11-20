@@ -7,46 +7,12 @@
 
 #include <limits.h>
 
-//lint -esym(756, ul2uc_t, u32, u8)
-
-typedef  unsigned long long   u64 ;
-typedef  unsigned char        uchar ;
-typedef  unsigned long        ulong ;
-typedef  unsigned int         uint ;
-typedef  unsigned char        u8  ;
-typedef  unsigned short       u16 ;
-typedef  unsigned int         u32 ;
-
-#define MAXLINE   1024
-
-#define  ESC      27
-
-#define  LOOP_FOREVER   true
-
 //*********************************************************
 
 #define  MAX_EXT_SIZE   8
 
 #define  MAX_DIR_ENTRY     20
 extern uchar dtree_colors[MAX_DIR_ENTRY] ;
-
-//*********************************************************
-// union i64tol {
-//    __int64 i ;
-//    ulong u[2] ;
-// };
-
-union u64toul {
-   ULONGLONG i ;
-   ulong u[2] ;
-};
-
-//*********************************************************************
-typedef union ul2uc_u {
-   unsigned       ul ;
-   unsigned short us[2] ;
-   unsigned char  uc[4] ;
-} ul2uc_t;
 
 //  n.drive_summary constants
 #define DSUMMARY_NONE   0
@@ -114,7 +80,7 @@ extern unsigned tree_level_limit ;
 //*****************************************************************
 
 //***************************************************************
-//  display strings for FAT32 disk totals
+//  display strings for disk-size totals
 //***************************************************************
 extern ULONGLONG diskbytes, diskfree, clbytes ;
 
@@ -211,6 +177,7 @@ void verify_flags(void);
 
 //  filelist.cpp
 void display_files(void);
+void put_disk_summary(void);
 
 //  fileread.cpp
 void file_listing(void);

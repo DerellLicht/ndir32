@@ -529,7 +529,7 @@ static int write_default_ini_file(char *ini_str)
    //  generate directory-tree colors
    fprintf(ofile, "\n") ;
    fprintf(ofile, "; assigned colors for levels in directory tree.\n") ;
-   fprintf(ofile, "; Each line defines an additional level, limit=20\n") ;
+   fprintf(ofile, "; Each line defines an additional level, limit=20 colors\n") ;
    for (j=0; j<MAX_DIR_ENTRY; j++) {
       fprintf(ofile, ":%u\n", dir_default_list[j] ) ;
    }

@@ -308,20 +308,17 @@ else
 //**********************************************************
 static dirs *new_dir_node (void)
 {
-   //lint -esym(613,dtemp) 
+   //  switching this statement from malloc() to new()
+   //  changes total exe size from 70,144 to 179,200 !!!
+   //   70144 ->     32256   45.99%    win64/pe     ndir64.exe
    dirs *dtemp = (dirs *) malloc(sizeof(dirs)) ;
    if (dtemp == NULL)
       error_exit (OUT_OF_MEMORY, NULL);
+   //     179200 ->     72704   40.57%    win64/pe     ndir64.exe
+   // dirs *dtemp = new dirs ;
    memset ((char *) dtemp, 0, sizeof (struct dirs));  //lint !e668
-   // if (n.tree == 1) {
    dtemp->dirsecsize = clbytes;
    dtemp->subdirsecsize = clbytes;
-   // dtemp->directs = 1 ;
-   // }
-   // else {
-   //   dtemp->dirsecsize = 1;
-   //   dtemp->subdirsecsize = 1;
-   // }
    return dtemp;
 }
 
@@ -330,10 +327,14 @@ static dirs *new_dir_node (void)
 //****************************************************
 static int tree_init_sort (void)
 {
-   // z = new dirs;
+   //  switching this statement from malloc() to new()
+   //  changes total exe size from 70,144 to 179,200 !!!
+   //   70144 ->     32256   45.99%    win64/pe     ndir64.exe
    z = (dirs *) malloc(sizeof(dirs)) ;
    if (z == NULL)
       error_exit (OUT_OF_MEMORY, NULL);
+   //     179200 ->     72704   40.57%    win64/pe     ndir64.exe
+   // z = (dirs *) new dirs ;
    z->sons = NULL;
    z->brothers = NULL;
    return DATA_OKAY;

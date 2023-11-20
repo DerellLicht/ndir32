@@ -447,12 +447,7 @@ static void print_dir_end (void)
    ncrlf ();
 
    //  now show disk totals
-   nputs (n.colornhead, "Disk capacity: ");
-   nputs (n.colorxhead, convert_to_commas(diskbytes, NULL));
-   nputs (n.colornhead, " bytes, Free disk space: ");
-   nputs (n.colorxhead, convert_to_commas(diskfree, NULL));
-   nputs (n.colornhead, " bytes");
-   ncrlf ();
+   put_disk_summary();
 }
 
 //*********************************************************

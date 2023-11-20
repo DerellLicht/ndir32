@@ -93,17 +93,17 @@ endif
 
 # DO NOT DELETE
 
-cmd_line.o: ndir32.h conio32.h
+cmd_line.o: common.h ndir32.h conio32.h
 conio32.o: common.h ndir32.h conio32.h
 Diskparm.o: common.h ndir32.h conio32.h
-err_exit.o: ndir32.h conio32.h
+err_exit.o: common.h ndir32.h conio32.h
 Filelist.o: common.h ndir32.h conio32.h
 Fileread.o: common.h ndir32.h
 common.o: common.h ndir32.h
 Ndir32.o: common.h ndir32.h conio32.h qualify.h
 Ndisplay.o: common.h ndir32.h conio32.h
 Qualify.o: qualify.h
-nsort.o: ndir32.h
+nsort.o: common.h ndir32.h
 treelist.o: common.h ndir32.h conio32.h treelist.h
 tdisplay.o: common.h ndir32.h conio32.h treelist.h
 mediatype.o: scsi_defs.h

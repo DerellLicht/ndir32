@@ -3,14 +3,12 @@
 //                                                         
 //  Written By:   Daniel D. Miller                         
 //                                                         
-//  Last Update:  01/21/03 09:33                           
-//                                                         
-//  compile with makefile                                  
-//                                                         
 //*********************************************************
 #include <windows.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+#include "common.h"
 #include "ndir32.h"
 #include "conio32.h"
 

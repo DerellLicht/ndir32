@@ -1,12 +1,7 @@
 //*****************************************************************
-//                                                                 
 //  CMD_LINE.CPP - NDIR command_line parsing                       
 //                                                                 
 //  Written by:   Daniel D. Miller  (the Derelict)                 
-//                                                                 
-//  Last update:  01/16/02 16:18                                   
-//                                                                 
-//  compile with makefile                                          
 //                                                                 
 //*****************************************************************
 
@@ -15,8 +10,10 @@
 #include <stdlib.h>
 #endif
 #include <ctype.h>
+
+#include "common.h"
 #include "ndir32.h"
-#include "conio32.h"
+#include "conio32.h" //  is_redirected()
 
 //  from NDIR32.CPP 
 extern void insert_target_filespec (char *fstr);
