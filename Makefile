@@ -8,8 +8,6 @@ else
 TOOLS=c:\mingw\bin
 endif
 
-LIBS=-lmpr -lshlwapi
-
 ifeq ($(USE_DEBUG),YES)
 CFLAGS = -Wall -g -c
 LFLAGS = -g
@@ -22,6 +20,9 @@ CFLAGS += -Wno-write-strings
 ifeq ($(USE_64BIT),YES)
 CFLAGS += -DUSE_64BIT
 endif
+
+LIBS=-lmpr -lshlwapi -lole32 -luuid
+
 #***************************************************************
 #  After upgrading from g++ 4.3.3 to g++ 4.4.1,
 #  I can now get longlong to printf correctly.
@@ -44,7 +45,7 @@ endif
 
 CPPSRC=cmd_line.cpp conio32.cpp Diskparm.cpp err_exit.cpp Filelist.cpp Fileread.cpp \
 	common.cpp Ndir32.cpp Ndisplay.cpp Qualify.cpp \
-	nsort.cpp treelist.cpp tdisplay.cpp mediatype.cpp
+	nsort.cpp treelist.cpp tdisplay.cpp mediatype.cpp read_link.cpp
 #    mp3.parser.cpp file_fmts.cpp 
 
 OBJS = $(CSRC:.c=.o) $(CPPSRC:.cpp=.o)
@@ -107,3 +108,4 @@ nsort.o: common.h ndir32.h
 treelist.o: common.h ndir32.h conio32.h treelist.h
 tdisplay.o: common.h ndir32.h conio32.h treelist.h
 mediatype.o: scsi_defs.h
+read_link.o: common.h ndir32.h

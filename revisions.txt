@@ -266,4 +266,7 @@ Version 2.59, 05/16/23
 Version 2.60, 11/10/23
   Code cleanup in diskparm.cpp - optimizing, remove unused code
     
+Version 2.61, 12/12/23
+  Add support for extracting targets from .lnk (shortcut) files
+    
     

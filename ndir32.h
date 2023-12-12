@@ -113,6 +113,7 @@ struct ffdata {
    char           ext[MAX_EXT_SIZE+1] ;
    uchar          color ;
    uchar          dirflag ;
+   bool           is_link_file ;
    struct ffdata  *next ;
    } ;
 extern ffdata *ftop ;
@@ -201,3 +202,7 @@ void nput_line(uchar attr, char chr);
 //  diskparm.cpp
 bool get_disk_info(char *dstr);
 void display_drive_summary(void);
+
+//  read_link.cpp
+bool read_shortcut_file(ffdata * fptr, char *shortcut_path);
+

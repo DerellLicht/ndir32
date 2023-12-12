@@ -277,6 +277,15 @@ void print1 (ffdata * fptr)
          nputs (fptr->color, tempstr);
       }
 #endif      
+      if (fptr->is_link_file) {
+         char szFilePath[MAX_PATH];
+         if (read_shortcut_file(fptr, szFilePath)) {
+            ncrlf() ;
+            nputs (n.colorsize, "               ");
+            nputs (attrclr, "=====> ");
+            nputs (fptr->color, szFilePath);
+         }
+      }
    }
 }
 

@@ -106,6 +106,7 @@ static void read_long_files (int i)
             error_exit (OUT_OF_MEMORY, NULL);
             return;             //  only to make lint happy
          }
+         ZeroMemory((char *) ftemp, sizeof(ffdata));
 
          //  convert filename to lower case if appropriate
          // if (!n.ucase)
@@ -157,9 +158,15 @@ static void read_long_files (int i)
          if (strptr != 0 && strlen (strptr) <= MAX_EXT_SIZE) {
             strcpy (ftemp->ext, strptr);
             *strptr = 0;        //  NULL-term name field
+            
+            //  12/12/23  Add handling for .lnk files
+            if (strcasecmp(ftemp->ext, ".lnk") == 0) {
+               ftemp->is_link_file = true ;
+            }
          }
-         else
+         else {
             ftemp->ext[0] = 0;  //  no extension found
+         }
 
          //  look up color in table
          if (n.color)
