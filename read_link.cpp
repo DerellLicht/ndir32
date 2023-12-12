@@ -334,11 +334,11 @@ bool read_shortcut_file(ffdata * fptr, char *shortcut_path)
       target_exists = true ;
       // syslog("link: %s\n", shortcut_path);
    }
-   else {
-         // HRESULT: 0x80070002      
-      // printf("HRESULT: 0x%08X\n", (unsigned) hRes);
-      syslog("%s: %s\n", fptr->filename, get_system_message(hRes & 0xFFFF)) ;
-   }
+   // else {
+   //       // HRESULT: 0x80070002      
+   //    // printf("HRESULT: 0x%08X\n", (unsigned) hRes);
+   //    syslog("%s: %s\n", fptr->filename, get_system_message(hRes & 0xFFFF)) ;
+   // }
    // puts("");
    return target_exists ;
 }
