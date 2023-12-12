@@ -130,6 +130,7 @@ static char *GetLinkTarget(char const * const symlink_name)
    }
    else {
 
+      //  this function is only supported by 64-bit gcc toolchains
       const size_t requiredSize = GetFinalPathNameByHandle( hdl, NULL, 0,
                                                              FILE_NAME_NORMALIZED );
       if ( requiredSize == 0 ) {
