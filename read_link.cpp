@@ -14,7 +14,6 @@
 //lint -e10  Expecting '}'
 //lint -esym(534, lstrcpynA)
 
-// using namespace std;
 #ifndef STAND_ALONE
 #include "common.h"
 #include "ndir32.h"
@@ -165,9 +164,7 @@ HRESULT ResolveShortcut(/*in*/ LPCTSTR lpszShortcutPath,
       if (SUCCEEDED(hRes)) {
          // Try to find the target of a shortcut,
          // even if it has been moved or renamed
-         // hRes = psl->Resolve(GetDesktopWindow(), SLR_UPDATE); //lint !e641
          hRes = psl->Resolve(NULL, SLR_UPDATE); //lint !e641
-         // hRes = psl->Resolve(NULL, SLR_ANY_MATCH); //lint !e641
          if (SUCCEEDED(hRes)) {
             // Get the path to the shortcut target
             hRes = psl->GetPath(szPath, MAX_PATH, &wfd, SLGP_RAWPATH); //lint !e641
@@ -194,17 +191,17 @@ HRESULT ResolveShortcut(/*in*/ LPCTSTR lpszShortcutPath,
             // printf("args: %s\n", szArgs);
             lstrcpyn(lpszArgsPath, szArgs, MAX_PATH);
          }
-         else {
-            // printf("Resolve error\n");
-         }
+         // else {
+         //    printf("Resolve error\n");
+         // }
       }
-      else {
-         // printf("Load error\n");
-      }
+      // else {
+      //    printf("Load error\n");
+      // }
    }
-   else {
-      // printf("CoCreateInstance error\n");
-   }
+   // else {
+   //    printf("CoCreateInstance error\n");
+   // }
 error_exit:   
    return hRes;
 }
@@ -296,7 +293,7 @@ bool read_shortcut_file(ffdata * fptr, char *shortcut_path)
    // An HRESULT value consists of the following fields:
    //  > A 1-bit code indicating severity, where zero represents success and 1 represents failure.
    //    Note: this means that this bit means HRESULT as signed int is negative on error.
-   //  > A 4-bit reserved value.
+   //  > A 4-bit reserved value. 
    //  > An 11-bit code indicating responsibility for the error or warning, 
    //    also known as a facility code.
    //  > A 16-bit code describing the error or warning.
