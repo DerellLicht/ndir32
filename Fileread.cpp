@@ -29,7 +29,7 @@ static int  exclcount = 0 ;     //  number of exclusion filespecs
 void update_exclusion_list(char *extptr)
 {
    if (exclcount < MAX_EXCL_COUNT) {
-      strncpy (excl[exclcount], extptr, MAX_EXT_SIZE);
+      _tcsncpy (excl[exclcount], extptr, MAX_EXT_SIZE);
       excl[exclcount][MAX_EXT_SIZE] = 0 ;
       exclcount++;
    }
@@ -140,23 +140,23 @@ static void read_long_files (int i)
             ftemp->filename = (char *) malloc(15) ;
 
             strptr = sfn_convert_filename((char *) fdata.cFileName);
-            strcpy (ftemp->filename, strptr);
+            _tcscpy (ftemp->filename, strptr);
          }
          else {
-            ftemp->filename = (char *) malloc(strlen ((char *) fdata.cFileName) + 1);
-            strcpy (ftemp->filename, (char *) fdata.cFileName);
+            ftemp->filename = (char *) malloc(_tcslen ((char *) fdata.cFileName) + 1);
+            _tcscpy (ftemp->filename, (char *) fdata.cFileName);
          }
 
          //  find and extract the file extension, if valid
          // ftemp->name[0] = 0 ; //  don't use name at all
-         ftemp->name = (char *) malloc(strlen (ftemp->filename) + 1) ;
+         ftemp->name = (char *) malloc(_tcslen (ftemp->filename) + 1) ;
          if (ftemp->name == NULL)
             error_exit (OUT_OF_MEMORY, NULL);
 
-         strcpy (ftemp->name, ftemp->filename);
-         strptr = strrchr (ftemp->name, '.');
-         if (strptr != 0 && strlen (strptr) <= MAX_EXT_SIZE) {
-            strcpy (ftemp->ext, strptr);
+         _tcscpy (ftemp->name, ftemp->filename);
+         strptr = _tcsrchr (ftemp->name, '.');
+         if (strptr != 0 && _tcslen (strptr) <= MAX_EXT_SIZE) {
+            _tcscpy (ftemp->ext, strptr);
             *strptr = 0;        //  NULL-term name field
             
             //  12/12/23  Add handling for .lnk files

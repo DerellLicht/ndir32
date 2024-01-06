@@ -269,4 +269,7 @@ Version 2.60, 11/10/23
 Version 2.61, 12/12/23
   Add support for extracting targets from .lnk (shortcut) files
     
+Version 2.62, 01/06/24
+  Add UNICODE support
+    
     

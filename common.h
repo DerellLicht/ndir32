@@ -5,6 +5,8 @@
 //  Written by:  Daniel D. Miller                             
 //************************************************************
 
+#include <tchar.h>
+
 //lint -esym(756, ul2uc_t, u32, u8)
 
 typedef  unsigned long long   u64 ;
@@ -43,7 +45,7 @@ typedef union ul2uc_u {
 int syslog(const char *fmt, ...);
 char *get_system_message(void);
 char *get_system_message(DWORD errcode);
-int  strcmpiwc(const char *onestr, const char *twostr);
+int  strcmpiwc(const TCHAR *onestr, const TCHAR *twostr);
 
 // ULLONG_MAX = 18,446,744,073,709,551,615
 #define  MAX_ULL_COMMA_LEN  26

@@ -28,7 +28,7 @@ typedef unsigned int          uint ;
 //lint -esym(765, strip_newlines)
 void strip_newlines(char *rstr)
 {
-   int slen = (int) strlen(rstr) ;
+   int slen = (int) _tcslen(rstr) ;
    while (1) {
       if (slen == 0)
          break;
@@ -90,7 +90,7 @@ char *get_system_message(DWORD errcode)
       sprintf(msg, "NULL buffer in response from FormatMessage() [%u]", (uint) GetLastError()) ;
    } else 
    {
-      strncpy(msg, (char *) lpMsgBuf, sizeof(msg)) ;
+      _tcsncpy(msg, (char *) lpMsgBuf, sizeof(msg)) ;
       // Free the buffer.
       LocalFree( lpMsgBuf );  //lint !e534
    }
@@ -214,7 +214,7 @@ int main(int argc, char** argv)
    int idx ;
    for (idx=1; idx<argc; idx++) {
       char *p = argv[idx];
-      strncpy(lnkfile, p, MAX_PATH);
+      _tcsncpy(lnkfile, p, MAX_PATH);
       lnkfile[MAX_PATH] = 0 ;
    }
    
@@ -246,14 +246,14 @@ int main(int argc, char** argv)
       }
       //  see if destination should be extracted from arguments
       // szArgsPath: /e,"D:\photos (all)\photos"
-      else if (strncmp(szArgsPath, "/e,", 3) == 0) {
+      else if (_tcsncmp(szArgsPath, "/e,", 3) == 0) {
          // printf("szArgsPath: %s\n", szArgsPath);
          //  see if quotes need to be removed from path
          char *fptr = &szArgsPath[3] ;
          if (*fptr == '"') {
             // printf("found a quote char\n");
             fptr++ ;
-            char *tl = strrchr(fptr, '"');
+            char *tl = _tcsrchr(fptr, '"');
             if (tl != NULL) {
                *tl = 0 ;
             }
@@ -304,29 +304,29 @@ bool read_shortcut_file(ffdata * fptr, char *shortcut_path)
    if (hRes == 0) {
       if (szArgsPath[0] == 0) {
          // printf("szFilePath: %s\n", szFilePath);
-         strcpy(shortcut_path, szFilePath);
+         _tcscpy(shortcut_path, szFilePath);
       }
       //  see if destination should be extracted from arguments
       // szArgsPath: /e,"D:\photos (all)\photos"
-      else if (strncmp(szArgsPath, "/e,", 3) == 0) {
+      else if (_tcsncmp(szArgsPath, "/e,", 3) == 0) {
          // printf("szArgsPath: %s\n", szArgsPath);
          //  see if quotes need to be removed from path
          char *sptr = &szArgsPath[3] ;
          if (*sptr == '"') {
             // printf("found a quote char\n");
             sptr++ ;
-            char *tl = strrchr(sptr, '"');
+            char *tl = _tcsrchr(sptr, '"');
             if (tl != NULL) {
                *tl = 0 ;
             }
             
          }
          // printf("szFilePath: %s\n", sptr);
-         strcpy(shortcut_path, sptr);
+         _tcscpy(shortcut_path, sptr);
       }
       else {
          // printf("szFilePath: %s\n", szFilePath);
-         strcpy(shortcut_path, szFilePath);
+         _tcscpy(shortcut_path, szFilePath);
       }
       target_exists = true ;
       // syslog("link: %s\n", shortcut_path);

@@ -1,6 +1,7 @@
 SHELL=cmd.exe
 USE_DEBUG = NO
 USE_64BIT = YES
+USE_UNICODE = NO
 
 ifeq ($(USE_64BIT),YES)
 TOOLS=d:\tdm64\bin
@@ -19,6 +20,11 @@ CFLAGS += -Weffc++
 CFLAGS += -Wno-write-strings
 ifeq ($(USE_64BIT),YES)
 CFLAGS += -DUSE_64BIT
+endif
+
+ifeq ($(USE_UNICODE),YES)
+CFLAGS += -DUNICODE -D_UNICODE
+LFLAGS += -dUNICODE -d_UNICODE 
 endif
 
 LIBS=-lmpr -lshlwapi -lole32 -luuid

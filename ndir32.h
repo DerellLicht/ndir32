@@ -6,6 +6,7 @@
 //************************************************************
 
 #include <limits.h>
+// #include <tchar.h>
 
 //*********************************************************
 
@@ -108,9 +109,9 @@ struct ffdata {
    // unsigned       fdate ;
    FILETIME       ft ;
    ULONGLONG      fsize ;
-   char           *filename ;
-   char           *name ;
-   char           ext[MAX_EXT_SIZE+1] ;
+   TCHAR          *filename ;
+   TCHAR          *name ;
+   TCHAR          ext[MAX_EXT_SIZE+1] ;
    uchar          color ;
    uchar          dirflag ;
    bool           is_link_file ;
@@ -123,8 +124,13 @@ extern ffdata *ftail ;
 #define FILE_ATTRIBUTE_VOLID  0x00000008
 
 //**********************************************************
-extern char* target[20] ;
-extern char volume_name[PATH_MAX] ;
+// #ifdef UNICODE
+extern TCHAR* target[20] ;
+extern TCHAR volume_name[PATH_MAX] ;
+// #else
+// extern char* target[20] ;
+// extern char volume_name[PATH_MAX] ;
+// #endif
 
 //*********************************************************
 //                NSORT.CPP

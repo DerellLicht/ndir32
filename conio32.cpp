@@ -142,7 +142,7 @@ void console_init(char *title)
    //  Put up a meaningful console title.
    //  Will this *always* succeed???
    if (title != 0) {
-      bSuccess = SetConsoleTitle(title);
+      bSuccess = SetConsoleTitleA(title);
       PERR(bSuccess, "SetConsoleTitle");
    }
 
@@ -547,7 +547,7 @@ void dputsi(const char *outstr, int slen)
 void dputs(const char *outstr)
    {
    DWORD wrlen ;
-   WORD slen = strlen(outstr) ;
+   WORD slen = _tcslen(outstr) ;
    WORD rlen = sinfo.dwSize.X - sinfo.dwCursorPosition.X ;
    WORD Xi   = sinfo.dwCursorPosition.X ;
    const char *hdptr, *tlptr ;

@@ -76,19 +76,19 @@ static int init_sort(void)
 //*********************************************************
 static int sort_name(struct ffdata *a, struct ffdata *b)
    {
-   return(stricmp(a->name, b->name)) ;
+   return(_tcsicmp(a->name, b->name)) ;
    }
 
 //*********************************************************
 static int sort_lfn_name(struct ffdata *a, struct ffdata *b)
    {
-   return(stricmp(a->filename, b->filename)) ;
+   return(_tcsicmp(a->filename, b->filename)) ;
    }
 
 //*********************************************************
 static int sort_ext(struct ffdata *a, struct ffdata *b)
    {
-   return(stricmp(a->ext, b->ext)) ;
+   return(_tcsicmp(a->ext, b->ext)) ;
    }
 
 //*********************************************************
@@ -125,19 +125,19 @@ static int sort_date_time(struct ffdata *a, struct ffdata *b)
 //*********************************************************
 static int sort_name_rev(struct ffdata *a, struct ffdata *b)
    {
-   return(stricmp(b->name, a->name)) ;
+   return(_tcsicmp(b->name, a->name)) ;
    }
 
 //*********************************************************
 static int sort_lfn_name_rev(struct ffdata *a, struct ffdata *b)
    {
-   return(stricmp(b->filename, a->filename)) ;
+   return(_tcsicmp(b->filename, a->filename)) ;
    }
 
 //*********************************************************
 static int sort_ext_rev(struct ffdata *a, struct ffdata *b)
    {
-   return(stricmp(b->ext, a->ext)) ;
+   return(_tcsicmp(b->ext, a->ext)) ;
    }
 
 //*********************************************************

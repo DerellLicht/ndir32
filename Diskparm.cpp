@@ -68,7 +68,7 @@ static unsigned get_cluster_size(char dltr)
 // v:\:  8,  512, 204827101, 488279551
    dirpath[0] = dltr ;
    DWORD secperclus, bytespersec, numfreeclus, numtotalclus ;
-   if (GetDiskFreeSpace(dirpath, &secperclus, &bytespersec, &numfreeclus, &numtotalclus) != 0) {
+   if (GetDiskFreeSpaceA(dirpath, &secperclus, &bytespersec, &numfreeclus, &numtotalclus) != 0) {
       // sprintf(msgstr, "%s: %u, %u, %u, %u\n", 
       //    dpath, (uint) secperclus, (uint) bytespersec, (uint) numfreeclus, (uint) numtotalclus) ;
       // OutputDebugString(msgstr) ; 
@@ -109,7 +109,7 @@ bool get_disk_info(char *dstr)
    // getchar() ;
    //  NOTE:  GetVolumeInformation() requires a filename ending
    //    with a backslash.  No wildcards are supported.
-   if (!GetVolumeInformation( dirptr,                 // LPCSTR lpRootPathName,
+   if (!GetVolumeInformationA( dirptr,                 // LPCSTR lpRootPathName,
                               (LPSTR) volume_name,    // LPSTR lpVolumeNameBuffer,
                               PATH_MAX,               // DWORD nVolumeNameSize,
                               &vsernbr,               // LPDWORD lpVolumeSerialNumber,
@@ -123,9 +123,15 @@ bool get_disk_info(char *dstr)
       gvi_valid = false ;
    }
 
-   if (strlen(volume_name) == 0) {
-      strcpy(volume_name, "undefined") ;
+#ifdef UNICODE
+   if (_tcslen(volume_name) == 0) {
+      _tcscpy(volume_name, (const wchar_t*) "undefined") ;
    }
+#else
+   if (_tcslen(volume_name) == 0) {
+      _tcscpy(volume_name, "undefined") ;
+   }
+#endif
 
    // dtype = GetDriveType(dpath) ;
 
@@ -133,7 +139,7 @@ bool get_disk_info(char *dstr)
    //  that worked okay... now, get the disk summary
    // unsigned __int64 freec1, frees1, totals1 ;
    // LPCSTR dptr = dirptr ;
-   if (!GetDiskFreeSpaceEx(dstr, 
+   if (!GetDiskFreeSpaceExA(dstr, 
       (ULARGE_INTEGER *) &freec1, 
       (ULARGE_INTEGER *) &totals1, 
       (ULARGE_INTEGER *) &frees1)) {
@@ -224,9 +230,9 @@ void display_drive_summary (void)
 
       // dpath[0] = (char) dltr + 'a';
       dpath[0] = dchar ;
-      dtype = GetDriveType (dpath);
+      dtype = GetDriveTypeA (dpath);
       if (!get_disk_info(dpath)) {
-         wsprintf (tempstr, "%c: %-9s %18s  %18s           no media present\n", 
+         wsprintfA(tempstr, "%c: %-9s %18s  %18s           no media present\n", 
             dchar, get_drive_type_string(dtype, dchar), " ", " ") ;
          nputs (n.colordefalt, tempstr);
          continue;
@@ -245,23 +251,22 @@ void display_drive_summary (void)
          UNCpaths.uptr = UNCpaths.ustr;
          bufsize = PATH_MAX;
 
-         wsprintf (tempstr, "%c: %-9s %18s  %18s  ", dchar, fsnbfr, disktotal, diskavail);
+         wsprintfA(tempstr, "%c: %-9s %18s  %18s  ", dchar, fsnbfr, disktotal, diskavail);
          nputs (n.colordir, tempstr);
 
          // if (WNetGetUniversalName(dpath, REMOTE_NAME_INFO_LEVEL, 
-         if (WNetGetUniversalName (dpath, UNIVERSAL_NAME_INFO_LEVEL,
-               &UNCpaths, &bufsize) != NO_ERROR) {
+         if (WNetGetUniversalNameA(dpath, UNIVERSAL_NAME_INFO_LEVEL, &UNCpaths, &bufsize) != NO_ERROR) {
             nputs (n.colordir, "Network Drive\n");
             // return 1;
          }
          else {
-            wsprintf (tempstr, "%s\n", UNCpaths.uptr);
+            wsprintfA(tempstr, "%s\n", UNCpaths.uptr);
             nputs (n.colordir, tempstr);
          }
       }
       else {
       // else if (dtype == DRIVE_FIXED) {
-         wsprintf (tempstr, "%c: %-9s %18s  %18s  ", dchar, fsn_bfr, disktotal, diskavail);
+         wsprintfA(tempstr, "%c: %-9s %18s  %18s  ", dchar, fsn_bfr, disktotal, diskavail);
          nputs (n.colordefalt, tempstr);
 
          // unsigned cluster_size = get_cluster_size(dpath[0]);
@@ -270,7 +275,7 @@ void display_drive_summary (void)
          // ltotal += totals1.QuadPart;
          lfree  += frees1 ;
          ltotal += totals1 ;
-         wsprintf (tempstr, "[%6u] %s\n", (unsigned) clbytes, volume_name);
+         wsprintfA(tempstr, "[%6u] %s\n", (unsigned) clbytes, volume_name);
          nputs (n.colordefalt, tempstr);
       }
    }
@@ -280,8 +285,8 @@ void display_drive_summary (void)
    convert_to_commas(lfree, diskavail);
 
    nput_line (n.colorframe, '*');
-   wsprintf (tempstr, "             %18s  %18s", disktotal, diskavail);
+   wsprintfA(tempstr, "             %18s  %18s", disktotal, diskavail);
    nputs (n.colorxhead, tempstr);
-   wsprintf (tempstr, "  Total Physical space\n\r");
+   wsprintfA(tempstr, "  Total Physical space\n\r");
    nputs (n.colornhead, tempstr);
 }

@@ -31,7 +31,7 @@ static uint right_div    = 64 ;
 //**********************************************************
 static void display_tree_filename (char *lstr, char *frmstr)
 {
-   uint slen = strlen (lstr);
+   uint slen = _tcslen (lstr);
 
    //  if directory name, etc., is too long, make separate line
    if (slen > center_col) {
@@ -282,8 +282,8 @@ static void printdirheader (void)
    sprintf (tempstr, "%s", base_path);
    nputs (n.colorxhead, tempstr);
 
-   uint vnlen = 16 + strlen(volume_name) ; //  16 is length of 'Volume label is '
-   uint blen  = 13 + strlen(base_path) ;   //  13 is length of 'Directory of '
+   uint vnlen = 16 + _tcslen(volume_name) ; //  16 is length of 'Volume label is '
+   uint blen  = 13 + _tcslen(base_path) ;   //  13 is length of 'Directory of '
    if ((blen + vnlen) >= wincols) 
       ncrlf ();
    else

@@ -96,7 +96,7 @@ void display_logo (void)
       nputs (n.colorlogo, ShortVersion);
    }
    else {
-      ngotoxy ((80 - strlen (Version)) / 2, _where_y ());
+      ngotoxy ((80 - _tcslen (Version)) / 2, _where_y ());
       nputs (n.colorlogo, Version);
       ncrlf ();
    }
@@ -210,7 +210,7 @@ void print1 (ffdata * fptr)
          sprintf (tempstr, "%02d:%02d:%02d ", hour, mins, secs);
          nputs (n.colortime, tempstr);
          sprintf (tempstr, "[%-8s%-4s]", fptr->name, fptr->ext);
-         if (strlen (fptr->name) == 0) {
+         if (_tcslen (fptr->name) == 0) {
             sprintf (tempstr, "[NoShortName ]");
          }
       }
@@ -255,7 +255,7 @@ void print1 (ffdata * fptr)
          sprintf (tempstr, "%s ", fptr->filename);
       else {
          sprintf (tempstr, "%-8s%-4s ", fptr->name, fptr->ext);
-         if (strlen (fptr->name) == 0) {
+         if (_tcslen (fptr->name) == 0) {
             sprintf (tempstr, "NoShortName  ");
          }
       }
@@ -307,7 +307,7 @@ void print2 (ffdata * fptr)
    if (fptr->dirflag)
       {
       sprintf(tempstr, "%-8s%-4s    [DIR]  ", fptr->name, fptr->ext) ;
-      if (strlen(fptr->name) == 0) {
+      if (_tcslen(fptr->name) == 0) {
          sprintf(tempstr, "NoShortName     [DIR]  ") ;
       }
       //  display filename in appropriate color...
@@ -319,7 +319,7 @@ void print2 (ffdata * fptr)
    else
       {
       sprintf(tempstr, "%-8s%-4s  ", fptr->name, fptr->ext) ;
-      if (strlen(fptr->name) == 0) {
+      if (_tcslen(fptr->name) == 0) {
          sprintf(tempstr, "NoShortName   ") ;
       }
       //  display filename in appropriate color...
@@ -356,7 +356,7 @@ void print4 (ffdata * fptr)
    if (fptr->dirflag) {
       sprintf (tempstr, "%-8s%-4s  [DIR]", fptr->name, fptr->ext);
       //  display filename in appropriate color...
-      if (strlen (fptr->name) == 0) {
+      if (_tcslen (fptr->name) == 0) {
          sprintf (tempstr, "NoShortName   [DIR]");
       }
       if (SHRattr != 0 && n.showSHRfiles)
@@ -366,7 +366,7 @@ void print4 (ffdata * fptr)
    }
    else {
       sprintf (tempstr, "%-8s%-4s ", fptr->name, fptr->ext);
-      if (strlen (fptr->name) == 0) {
+      if (_tcslen (fptr->name) == 0) {
          sprintf (tempstr, "NoShortName  ");
       }
       //  display filename in appropriate color...
@@ -398,7 +398,7 @@ void print6 (ffdata * fptr)
    uchar SHRattr = fptr->attrib & 7;
    if (fptr->dirflag) {
       sprintf (tempstr, "%-8s%-4s", fptr->name, fptr->ext);
-      if (strlen (fptr->name) == 0) {
+      if (_tcslen (fptr->name) == 0) {
          sprintf (tempstr, "NoShortName ");
       }
       //  display filename in appropriate color...
@@ -409,7 +409,7 @@ void print6 (ffdata * fptr)
    }
    else {
       sprintf (tempstr, "%-8s%-4s", fptr->name, fptr->ext);
-      if (strlen (fptr->name) == 0) {
+      if (_tcslen (fptr->name) == 0) {
          sprintf (tempstr, "NoShortName ");
       }
       //  display filename in appropriate color...

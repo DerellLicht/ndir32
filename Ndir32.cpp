@@ -22,7 +22,7 @@
 #include "conio32.h"
 #include "qualify.h"
 
-#define  VER_NUMBER "2.61"
+#define  VER_NUMBER "2.62"
 
 //lint -esym(843, Version, ShortVersion) could be declared as const
 char *Version = " NDIR.EXE, Version " VER_NUMBER " " ;
@@ -33,7 +33,7 @@ static char ininame[PATH_MAX] ;
 #define  MAX_EXT        200
 struct attrib_list {
    uchar  attr ;
-   char  ext[MAX_EXT_SIZE+1] ;
+   TCHAR  ext[MAX_EXT_SIZE+1] ;
 } ;
 static attrib_list attr_table[MAX_EXT] ;
 static unsigned attrib_count = 0 ;
@@ -102,8 +102,13 @@ ULONGLONG diskbytes, diskfree, clbytes ;
 //*****************************************************************
 ffdata *ftop = NULL, *ftail ;
 
-char* target[20] ;
-char volume_name[PATH_MAX] ;
+// #ifdef UNICODE
+TCHAR* target[20] ;
+TCHAR volume_name[PATH_MAX] ;
+// #else
+// char* target[20] ;
+// char volume_name[PATH_MAX] ;
+// #endif
 
 //  name of drive+path without filenames
 char base_path[PATH_MAX] ;
@@ -207,7 +212,7 @@ void insert_target_filespec(char *fstr)
    if (target[tcount] == NULL) {
       error_exit(OUT_OF_MEMORY, NULL) ;
    }
-   strcpy(target[tcount], fstr) ;
+   _tcscpy(target[tcount], fstr) ;
 
    unsigned result = qualify(target[tcount], n.lfn_off) ;
    if (result == QUAL_INV_DRIVE) {
@@ -252,13 +257,13 @@ static void process_filespecs(void)
 
       //  Extract base path from first filespec,
       //  and strip off filename
-      strcpy(base_path, target[start]) ;
-      strptr = strrchr(base_path, '\\') ;
+      _tcscpy(base_path, target[start]) ;
+      strptr = _tcsrchr(base_path, '\\') ;
       if (strptr != 0) {
           strptr++ ;  //lint !e613  skip past backslash, to filename
          *strptr = 0 ;  //  strip off filename
       }
-      base_len = strlen(base_path) ;
+      base_len = _tcslen(base_path) ;
 
       //**************************************************
       get_disk_info(base_path) ;
@@ -304,14 +309,14 @@ static void process_filespecs(void)
 
          //  Extract base path from first filespec,
          //  and strip off filename
-         strcpy(base_path, target[start]) ;
+         _tcscpy(base_path, target[start]) ;
          //lint -esym(613,strptr) 
-         strptr = strrchr(base_path, '\\') ;
+         strptr = _tcsrchr(base_path, '\\') ;
          if (strptr != 0) {
             strptr++ ;  // skip past backslash, to filename
             *strptr = 0 ;  //  strip off filename
          }
-         base_len = strlen(base_path) ;
+         base_len = _tcslen(base_path) ;
 
          //**************************************************
          get_disk_info(base_path) ;
@@ -325,8 +330,8 @@ static void process_filespecs(void)
             }
             else {
                //  strip filename from next argument
-               strcpy(tempstr, target[j]) ;
-               strptr = strrchr(tempstr, '\\') ;   //lint !e613
+               _tcscpy(tempstr, target[j]) ;
+               strptr = _tcsrchr(tempstr, '\\') ;   //lint !e613
                strptr++ ;
                *strptr = 0 ;
 
@@ -351,20 +356,20 @@ static void process_filespecs(void)
             for (j=i+1   ; j<=finish ; j++) {
                //  extract filename and extension file target string
                //  to compare for duplicate filespecs.
-               strcpy(fi_name, &target[i][base_len]) ;
-               strptr = strrchr(fi_name, '.') ; //lint !e613
+               _tcscpy(fi_name, &target[i][base_len]) ;
+               strptr = _tcsrchr(fi_name, '.') ; //lint !e613
                if (strptr != 0) {
                   *strptr++ = 0 ;   //lint !e613
-                  strcpy(fi_ext, strptr) ;
+                  _tcscpy(fi_ext, strptr) ;
                } else {
                   fi_ext[0] = 0 ;
                }
 
-               strcpy(fj_name, &target[j][base_len]) ;
-               strptr = strrchr(fj_name, '.') ; //lint !e613
+               _tcscpy(fj_name, &target[j][base_len]) ;
+               strptr = _tcsrchr(fj_name, '.') ; //lint !e613
                if (strptr != 0) {
                   *strptr++ = 0 ;   //lint !e613
-                  strcpy(fj_ext, strptr) ;
+                  _tcscpy(fj_ext, strptr) ;
                } else {
                   fj_ext[0] = 0 ;
                }
@@ -581,7 +586,7 @@ static void parse_ini_line(char *iniptr)
    char *eqptr ;
    int j ;
 
-   eqptr = strchr(iniptr, '=') ;
+   eqptr = _tcschr(iniptr, '=') ;
    if (eqptr == 0)
       return ;
    *eqptr++ = 0 ; //  NULL-terminate lvalue, point to rvalue
@@ -590,7 +595,7 @@ static void parse_ini_line(char *iniptr)
       //  lookup table, assigned the rvalue (pointed to by eqptr)
       //  to the variable stored
       if (strcmpiwc(iniptr, ndir_ini[j].lvalue)) {
-         *(ndir_ini[j].rvalue) = (uchar) strtoul(eqptr, 0, 0) ;
+         *(ndir_ini[j].rvalue) = (uchar) _tcstoul(eqptr, 0, 0) ;
          // printf("found %s=%u\n", ndir_ini[j].lvalue, (int) *(ndir_ini[j].rvalue)) ;
          break;
       }
@@ -609,10 +614,10 @@ static void parse_color_entry(char *iniptr)
    //  check for multiple-color-entry forms...
    //0x32:.com,.bat,.btm,.sys
    //14:.arc,.tgz,.tar,.gz,.z,.zip,.bz2,.rar,.7z,.iso,.zcp
-   hdptr = strchr(iniptr, ':') ;
+   hdptr = _tcschr(iniptr, ':') ;
    if (hdptr != 0) {
       *hdptr++ = 0 ; //  terminate attribute, point to first extension
-      atr = (uchar) strtoul(iniptr, 0, 0) ;
+      atr = (uchar) _tcstoul(iniptr, 0, 0) ;
       if (atr == 0)
          return ;
       
@@ -622,7 +627,7 @@ static void parse_color_entry(char *iniptr)
             return ;
          // if (*hdptr != '.')
          //    return ;
-         tlptr = strchr(hdptr, ',') ;
+         tlptr = _tcschr(hdptr, ',') ;
          //  see if we're at end of line
          if (tlptr != 0) {
             *tlptr++ = 0 ; //  NULL-term extension
@@ -630,10 +635,10 @@ static void parse_color_entry(char *iniptr)
          //  check for too-long extensions in INI file
          //  If extension in INI file is too long, just discard it
          uint extlen = (*hdptr == '.') ? MAX_EXT_SIZE : MAX_EXT_SIZE-1 ;
-         if (strlen(hdptr) <= extlen) {
+         if (_tcslen(hdptr) <= extlen) {
             aptr = &attr_table[attrib_count++] ;
             if (*hdptr == '.') {
-               strcpy(aptr->ext, hdptr) ;
+               _tcscpy(aptr->ext, hdptr) ;
             }
             else {
                sprintf(aptr->ext, ".%s", hdptr) ;
@@ -654,15 +659,15 @@ static void parse_color_entry(char *iniptr)
       if (attrib_count >= MAX_EXT)
          return ;
 
-      eqptr = strchr(iniptr, '=') ;
+      eqptr = _tcschr(iniptr, '=') ;
       if (eqptr == 0)
          return ;
       *eqptr++ = 0 ; //  NULL-terminate lvalue, point to rvalue
 
       //.ARC=14
       aptr = &attr_table[attrib_count++] ;
-      strncpy(aptr->ext, iniptr, MAX_EXT_SIZE) ;
-      aptr->attr = (uchar) strtoul(eqptr, 0, 0) ;
+      _tcsncpy(aptr->ext, iniptr, MAX_EXT_SIZE) ;
+      aptr->attr = (uchar) _tcstoul(eqptr, 0, 0) ;
    }
 }
 
@@ -688,7 +693,7 @@ static void parse_dir_color_entry(char *iniptr)
    static int dcIdx = 0 ;
    iniptr++ ;  //  skip colon flag
    if (dcIdx < MAX_DIR_ENTRY) {
-      dtree_colors[dcIdx++] = (uchar) strtoul(iniptr, 0, 0) ;
+      dtree_colors[dcIdx++] = (uchar) _tcstoul(iniptr, 0, 0) ;
    }
 }
 
@@ -707,7 +712,7 @@ static int read_ini_file(char const * ini_str)
 
    while (fgets(line, sizeof(line), ofile) != 0) {
       //  strip off newline char
-      slen = strlen(line) ;
+      slen = _tcslen(line) ;
       strptr = &line[slen-1] ;
       if (*strptr == '\n') {
          *strptr-- = 0 ;   //  strip off newline
@@ -715,12 +720,12 @@ static int read_ini_file(char const * ini_str)
       }
 
       //  next, find and strip off comments
-      strptr = strchr(line, ';') ;
+      strptr = _tcschr(line, ';') ;
       if (strptr != 0)
          *strptr-- = 0 ;
 
       //  skip blank lines
-      slen = strlen(line) ;
+      slen = _tcslen(line) ;
       if (slen == 0)
          continue;
       strptr = &line[slen-1] ;
@@ -784,7 +789,7 @@ static void read_config_file(void)
    // printf("ininame=%s\n", ininame) ;
    // getchar() ;
    if (ininame[0] == 0) {
-      strcpy(ini_path, local_ini_name) ;
+      _tcscpy(ini_path, local_ini_name) ;
    } 
    //  If global INI filename IS present, try to load it
    else {
@@ -792,7 +797,7 @@ static void read_config_file(void)
       if (result == 0) {
          return ;
       }
-      strcpy(ini_path, ininame) ;
+      _tcscpy(ini_path, ininame) ;
    }
 
    //  If we couldn't open any existing INI files,
@@ -832,29 +837,29 @@ int main(int argc, char **argv)
    //  
    //  P.S.  While we're here, derive default INI filename also
    // printf("argv0=%s\n", argv[0]) ;
-   char* strptr = strrchr(argv[0], '\\') ;
+   char* strptr = _tcsrchr(argv[0], '\\') ;
    //  no path present
    if (strptr == 0) {
       SearchPath(NULL, argv[0], ".exe", PATH_MAX, ininame, NULL) ;
-      strptr = strrchr(ininame, '\\') ;
+      strptr = _tcsrchr(ininame, '\\') ;
       if (strptr != 0) 
-         strcpy(strptr, "\\ndir.ini") ;
+         _tcscpy(strptr, "\\ndir.ini") ;
 
-      strcpy(exename, argv[0]) ;
+      _tcscpy(exename, argv[0]) ;
       // ininame[0] = 0 ;  //  ONLY support current location
    }
    else {
       //  pick up INI filename
-      strcpy(ininame, argv[0]) ;
-      strptr = strrchr(ininame, '\\') ;
+      _tcscpy(ininame, argv[0]) ;
+      strptr = _tcsrchr(ininame, '\\') ;
       if (strptr == 0)
          return 1;
-      strcpy(strptr, "\\ndir.ini") ;
+      _tcscpy(strptr, "\\ndir.ini") ;
       
       //  now process exe name for getenv()
       strptr++ ;  //lint !e613:  skip backslash
-      strcpy(exename, strptr) ;  //lint !e613
-      strptr = strchr(exename, '.') ;
+      _tcscpy(exename, strptr) ;  //lint !e613
+      strptr = _tcschr(exename, '.') ;
       if (strptr != 0) {
          *strptr = 0 ;  //  strip the extension
       }

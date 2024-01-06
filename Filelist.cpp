@@ -81,7 +81,7 @@ static void lfn_get_columns(void)
    //  find length of longest filename
    unsigned max_name_len = 0 ;
    while (ftemp != NULL) {
-      unsigned cur_name_len = strlen(ftemp->filename) ;
+      unsigned cur_name_len = _tcslen(ftemp->filename) ;
       if (cur_name_len > max_name_len)
          max_name_len = cur_name_len ;
       ftemp = ftemp->next ;
@@ -227,7 +227,7 @@ static void list_files_qwise(void)
    ftemp = ftop ;
    maxext = 0 ;
    while (ftemp != NULL) {
-      slen = strlen(ftemp->ext) ;
+      slen = _tcslen(ftemp->ext) ;
       if (maxext < slen)
           maxext = slen ;
       
@@ -241,7 +241,7 @@ static void list_files_qwise(void)
    new_line = 1 ;
    while (ftemp != NULL) {
       //  see if file extention is changing
-      if (first_line  ||  stricmp(prev_ext, ftemp->ext) != 0) {
+      if (first_line  ||  _tcsicmp(prev_ext, ftemp->ext) != 0) {
          if (first_line)
             first_line = 0 ;
          else 
@@ -249,13 +249,13 @@ static void list_files_qwise(void)
          sprintf(tempstr, "%-*s: ", maxext, ftemp->ext) ;
          nputs(ftemp->color, tempstr) ;
          col = maxext+2 ;
-         strcpy(prev_ext, ftemp->ext) ;
+         _tcscpy(prev_ext, ftemp->ext) ;
          new_line = 1 ;
       }
 
       //  see if next filename is going to overrun line; 
       //  if so, start next line...
-      slen = (n.lfn_off) ? 9 : (strlen(ftemp->name) + 2) ;
+      slen = (n.lfn_off) ? 9 : (_tcslen(ftemp->name) + 2) ;
       if (col + slen > width) {
          if (!n.lfn_off) {
             nputs((ftemp->dirflag) ? n.colordir : ftemp->color, ", ") ;
@@ -320,7 +320,7 @@ static void filehead(void)
 
       sprintf(tempstr, "Directory of %-38s ", base_path) ;
       nputs(n.colornhead, tempstr) ;
-      if (strlen(base_path) > 43)
+      if (_tcslen(base_path) > 43)
          ncrlf() ;
 
       nputs(n.colornhead, "Volume label is ") ;

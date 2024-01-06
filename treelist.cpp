@@ -72,7 +72,7 @@ static void pattern_init(char *lstr)
       lcol = 0 ;
    } else {
       dprints(lrow, 0, lstr) ;
-      lcol = strlen(lstr) ;
+      lcol = _tcslen(lstr) ;
    }
 }
 
@@ -126,15 +126,15 @@ static int read_dir_tree (dirs * cur_node)
    //  dirpath is already complete
    if (level > 0) {
       //  insert new path name
-      strptr = strrchr (dirpath, '\\');
+      strptr = _tcsrchr (dirpath, '\\');
       strptr++;
       *strptr = 0;
-      slen = strlen (dirpath);
-      strcat (dirpath, cur_node->name);
-      strcat (dirpath, "\\*.*");
+      slen = _tcslen (dirpath);
+      _tcscat (dirpath, cur_node->name);
+      _tcscat (dirpath, "\\*.*");
    }
    else
-      slen = strlen (dirpath);
+      slen = _tcslen (dirpath);
 
    //  first, build tree list for current level
    level++;
@@ -206,13 +206,13 @@ debug_dump(dirpath, tempstr) ;
                      error_exit (OUT_OF_MEMORY, NULL);
 
                   strptr = sfn_convert_filename((char *) fdata.cFileName);
-                  strcpy (dtail->name, strptr);
+                  _tcscpy (dtail->name, strptr);
                }
                else {
-                  dtail->name = (char *) malloc(strlen ((char *) fdata.cFileName) + 1);
+                  dtail->name = (char *) malloc(_tcslen ((char *) fdata.cFileName) + 1);
                   if (dtail->name == 0)
                      error_exit (OUT_OF_MEMORY, NULL);
-                  strcpy (dtail->name, (char far *) fdata.cFileName);
+                  _tcscpy (dtail->name, (char far *) fdata.cFileName);
                }
                dtail->attrib = (uchar) fdata.dwFileAttributes;
                // dtail->directs++ ;
@@ -294,7 +294,7 @@ else
    }
 
    //  when done, strip name from path and restore '\*.*'
-   strcpy (&dirpath[slen], "*.*");  //lint !e669  string overrun??
+   _tcscpy (&dirpath[slen], "*.*");  //lint !e669  string overrun??
 
    //  restore the level number
    level--;
@@ -349,13 +349,13 @@ static int tree_init_sort (void)
 //*********************************************************
 static int tree_sort_name (struct dirs *a, struct dirs *b)
 {
-   return (stricmp (a->name, b->name));
+   return (_tcsicmp (a->name, b->name));
 }
 
 //*********************************************************
 static int tree_sort_name_rev (struct dirs *a, struct dirs *b)
 {
-   return (stricmp (b->name, a->name));
+   return (_tcsicmp (b->name, a->name));
 }
 
 //*********************************************************
@@ -495,8 +495,8 @@ static int build_dir_tree (char *tpath)
 
    //  Extract base path from first filespec,
    //  and strip off filename
-   strcpy (base_path, tpath);
-   strptr = strrchr (base_path, '\\');
+   _tcscpy (base_path, tpath);
+   strptr = _tcsrchr (base_path, '\\');
    if (strptr != 0)
       *(++strptr) = 0;          //  strip off filename
 
@@ -507,37 +507,37 @@ static int build_dir_tree (char *tpath)
 
    //  Extract base path from first filespec,
    //  and strip off filename
-   strcpy (base_path, tpath);
-   strptr = strrchr (base_path, '\\');
+   _tcscpy (base_path, tpath);
+   strptr = _tcsrchr (base_path, '\\');
    strptr++;                    //  skip past backslash, to filename
    *strptr = 0;                 //  strip off filename
-   base_len = strlen (base_path);
+   base_len = _tcslen (base_path);
 
    //  derive root path name
-   if (strlen (base_path) == 3) {
+   if (_tcslen (base_path) == 3) {
       top->name = (char *) malloc(8) ;
       if (top->name == 0)
          error_exit (OUT_OF_MEMORY, NULL);
-      strcpy (top->name, "<root>");
+      _tcscpy (top->name, "<root>");
    }
    else {
-      strcpy (tempstr, base_path);
+      _tcscpy (tempstr, base_path);
       tempstr[base_len - 1] = 0; //  strip off tailing backslash
-      strptr = strrchr (tempstr, '\\');
+      strptr = _tcsrchr (tempstr, '\\');
       strptr++;                 //  skip past backslash, to filename
 
-      top->name = (char *) malloc(strlen (strptr) + 1);
+      top->name = (char *) malloc(_tcslen (strptr) + 1);
       if (top->name == 0)
          error_exit (OUT_OF_MEMORY, NULL);
-      strcpy (top->name, strptr);
+      _tcscpy (top->name, strptr);
    }
 
    // top->attrib = 0 ;   //  top-level dir is always displayed
 
    if (n.ucase)
-      strupr (top->name);
+      _tcsupr (top->name);
 
-   strcpy (dirpath, tpath);
+   _tcscpy (dirpath, tpath);
 
    pattern_init("wait; reading directory ") ;
    result = read_dir_tree (top);

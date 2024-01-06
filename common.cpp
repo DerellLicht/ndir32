@@ -27,8 +27,8 @@ void save_sfn_base_path(char *sfn_base_path)
 {
    //  we need the whole path before we can get short filename
    // syslog("[%s]\n", sfn_base_path);
-   strcpy (lfn_src, sfn_base_path);
-   tail_ptr = strrchr (lfn_src, '\\');  //  strip off wildcards or target name
+   _tcscpy (lfn_src, sfn_base_path);
+   tail_ptr = _tcsrchr (lfn_src, '\\');  //  strip off wildcards or target name
    if (tail_ptr != 0) {
       *(++tail_ptr) = 0;
    }
@@ -40,16 +40,16 @@ void save_sfn_base_path(char *sfn_base_path)
 char *sfn_convert_filename(char *lfn_filename)
 {
    // syslog("<%s>\n", lfn_filename);
-   strcpy (tail_ptr, (char *) lfn_filename); //  append filename to lfn path
-   // strcpy(ftemp->filename, (char *) fdata.cAlternateFileName) ;
+   _tcscpy (tail_ptr, (char *) lfn_filename); //  append filename to lfn path
+   // _tcscpy(ftemp->filename, (char *) fdata.cAlternateFileName) ;
    // syslog("{%s}\n", lfn_src);
    int result = GetShortPathName (lfn_src, lfn_dest, sizeof(lfn_dest));
    if (result == 0) {
       return (char *) "no_path" ;   //lint !e1773
    }
-   char *strptr = strrchr (lfn_dest, '\\');
+   char *strptr = _tcsrchr (lfn_dest, '\\');
    if (strptr == 0) {
-      return (char *) "No_strrchr" ;   //lint !e1773
+      return (char *) "No__tcsrchr" ;   //lint !e1773
    }
    strptr++;
    *tail_ptr = 0 ;   //  restore base length
@@ -78,13 +78,13 @@ char *get_system_message(void)
    // Process any inserts in lpMsgBuf.
    // ...
    // Display the string.
-   strncpy(msg, (char *) lpMsgBuf, 260) ;
+   _tcsncpy(msg, (char *) lpMsgBuf, 260) ;
 
    // Free the buffer.
    LocalFree( lpMsgBuf );
 
    //  trim the newline off the message before copying it...
-   slen = strlen(msg) ;
+   slen = _tcslen(msg) ;
    if (msg[slen-1] == 10  ||  msg[slen-1] == 10) {
       msg[slen-1] = 0 ;
    }
@@ -110,13 +110,13 @@ char *get_system_message(DWORD errcode)
    // Process any inserts in lpMsgBuf.
    // ...
    // Display the string.
-   strncpy(msg, (char *) lpMsgBuf, 260) ;
+   _tcsncpy(msg, (char *) lpMsgBuf, 260) ;
 
    // Free the buffer.
    LocalFree( lpMsgBuf );
 
    //  trim the newline off the message before copying it...
-   slen = strlen(msg) ;
+   slen = _tcslen(msg) ;
    if (msg[slen-1] == 10  ||  msg[slen-1] == 10) {
       msg[slen-1] = 0 ;
    }
@@ -167,7 +167,7 @@ char *convert_to_commas(ULONGLONG uli, char *outstr)
    // sprintf(temp_ull_str, "%llu", uli);
    sprintf(temp_ull_str, "%I64u", uli);
    // _ui64toa(uli, temp_ull_str, 10) ;
-   slen = strlen(temp_ull_str) ;
+   slen = _tcslen(temp_ull_str) ;
    inIdx = --slen ;//  convert byte-count to string index 
 
    //  put NULL at end of output string
@@ -182,7 +182,7 @@ char *convert_to_commas(ULONGLONG uli, char *outstr)
    *strptr = temp_ull_str[inIdx] ;
 
    //  copy string from tail-aligned to head-aligned
-   strcpy(outstr, strptr) ;
+   _tcscpy(outstr, strptr) ;
    return outstr ;
 }
 
@@ -190,7 +190,7 @@ char *convert_to_commas(ULONGLONG uli, char *outstr)
 //  string compare routine, case-insensitive, 
 //  wildcards are handled in the DOS fashion.
 //**************************************************************
-int strcmpiwc(const char *onestr, const char *twostr)
+int strcmpiwc(const TCHAR *onestr, const TCHAR *twostr)
 {
    char onechar, twochar ;
    int k = 0 ;
