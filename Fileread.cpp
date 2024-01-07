@@ -48,6 +48,7 @@ static void read_long_files (int i)
    HANDLE handle;
    char *strptr;
    ffdata *ftemp;
+   WIN32_FIND_DATA fdata ; //  long-filename file struct
 
    if (n.lfn_off) {
       save_sfn_base_path(target[i]);

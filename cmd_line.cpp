@@ -152,18 +152,18 @@ void parse_command_string (char *cmdstr)
          break;
 
       case '[':
-         _tcscpy (leftstr, ++cmdstr);
+         strcpy (leftstr, ++cmdstr);
          break;
 
       case ']':
-         _tcscpy (rightstr, ++cmdstr);
+         strcpy (rightstr, ++cmdstr);
          break;
 
       case '!':
-         _tcscpy (tempstr, ++cmdstr);
+         strcpy (tempstr, ++cmdstr);
 
          //  process exclusion extentions...
-         extptr = _tcsrchr (tempstr, '.');
+         extptr = strchr (tempstr, '.');
          //  why worry about length of extension??
          // if (extptr != 0 && _tcslen (extptr) <= 4) 
          if (extptr != 0) 
@@ -173,7 +173,7 @@ void parse_command_string (char *cmdstr)
          break;
 
       default:
-         _tcscpy (tempstr, cmdstr);
+         strcpy (tempstr, cmdstr);
          // cmdstr = copy_tempstr(cmdstr, tempstr) ;
          insert_target_filespec (tempstr);
          break;
@@ -189,7 +189,7 @@ void parse_command_args (int startIdx, int argc, char **argv)
    if (startIdx == 0) {
       argvptr = argv[0];
       while (LOOP_FOREVER) {
-         spcptr = _tcschr (argvptr, ' ');
+         spcptr = strchr (argvptr, ' ');
          if (spcptr == 0) {
             parse_command_string (argvptr);
             break;

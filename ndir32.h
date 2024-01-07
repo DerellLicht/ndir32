@@ -86,8 +86,6 @@ extern unsigned tree_level_limit ;
 extern ULONGLONG diskbytes, diskfree, clbytes ;
 
 //***************************************************************
-extern WIN32_FIND_DATA fdata ;
-
 extern int lfn_supported ; //  always true for 32-bit version
 
 //************************************************************

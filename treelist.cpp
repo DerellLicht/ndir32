@@ -106,6 +106,7 @@ static int read_dir_tree (dirs * cur_node)
    int slen, done, result;
    DWORD err;
    ULONGLONG file_clusters, clusters;
+   WIN32_FIND_DATA fdata ; //  long-filename file struct
 
    if (((dircount % 50) == 0)  &&  _kbhit()) {
       result = _getch() ;

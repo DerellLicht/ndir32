@@ -398,14 +398,14 @@ void dshow_row_info(char *msg)
 }
 
 //**********************************************************
-void dprintc(unsigned row, unsigned col, const char outchr)
+void dprintc(unsigned row, unsigned col, const TCHAR outchr)
 {
    dgotoxy(col, row) ;
    dputc(outchr) ;
 }   
 
 //**********************************************************
-void dprintc(unsigned row, unsigned col, unsigned attr, const char outchr)
+void dprintc(unsigned row, unsigned col, unsigned attr, const TCHAR outchr)
 {
    dgotoxy(col, row) ;
    set_text_attr(attr) ;
@@ -485,9 +485,9 @@ void dclreos(void)
 }         
 
 //**********************************************************
-void dputnchar(CHAR chr, CHAR attr, int count)
+void dputnchar(TCHAR chr, TCHAR attr, int count)
 {
-   static char ncbfr[MAX_CHAR_COLS+1] ;
+   static TCHAR ncbfr[MAX_CHAR_COLS+1] ;
    if (count > MAX_CHAR_COLS) {
       syslog("dputnchar: count too large: %d\n", count);
       count = MAX_CHAR_COLS ;
@@ -525,7 +525,7 @@ static int is_CRLF_present(const char *cstr)
 }   
 
 //**********************************************************
-void dputc(const CHAR c)
+void dputc(const TCHAR c)
 {
    DWORD wrlen ;
    WriteFile(hStdOut, &c, 1, &wrlen, 0) ;
@@ -536,7 +536,7 @@ void dputc(const CHAR c)
 //  This does not process special characters,
 //  but writes faster than dputs()
 //**********************************************************
-void dputsi(const char *outstr, int slen)
+void dputsi(const TCHAR *outstr, int slen)
 {
    DWORD wrlen ;
    WriteFile(hStdOut, outstr, slen, &wrlen, 0) ;
@@ -544,13 +544,13 @@ void dputsi(const char *outstr, int slen)
 }
 
 //**********************************************************
-void dputs(const char *outstr)
+void dputs(const TCHAR *outstr)
    {
    DWORD wrlen ;
    WORD slen = _tcslen(outstr) ;
    WORD rlen = sinfo.dwSize.X - sinfo.dwCursorPosition.X ;
    WORD Xi   = sinfo.dwCursorPosition.X ;
-   const char *hdptr, *tlptr ;
+   const TCHAR *hdptr, *tlptr ;
    int ccount, done ;
 
    //  watch out for trouble conditions
@@ -558,7 +558,11 @@ void dputs(const char *outstr)
       return ;
 
    //  if entire string fits on line, do this the easy way.
+#ifdef UNICODE   
+   if (rlen >= slen) {
+#else   
    if (!is_CRLF_present(outstr)  &&  rlen >= slen) {
+#endif   
       WriteFile(hStdOut, outstr, slen, &wrlen, 0) ;
       sinfo.dwCursorPosition.X += slen ;
    }
@@ -618,7 +622,7 @@ void dputs(const char *outstr)
    }
 
 //**********************************************************
-void dprints(unsigned row, unsigned col, const char* outstr)
+void dprints(unsigned row, unsigned col, const TCHAR* outstr)
    {
    dgotoxy(col, row) ;
    dputs(outstr) ;

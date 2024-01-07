@@ -95,26 +95,17 @@ unsigned tree_level_limit = 0 ;
 //              END OF CONFIGURATION VARIABLES
 //*****************************************************************
 
-WIN32_FIND_DATA fdata ; //  long-filename file struct
-
 ULONGLONG diskbytes, diskfree, clbytes ;
 
 //*****************************************************************
 ffdata *ftop = NULL, *ftail ;
 
-// #ifdef UNICODE
 TCHAR* target[20] ;
 TCHAR volume_name[PATH_MAX] ;
-// #else
-// char* target[20] ;
-// char volume_name[PATH_MAX] ;
-// #endif
 
 //  name of drive+path without filenames
 char base_path[PATH_MAX] ;
 unsigned base_len ;  //  length of base_path
-
-// struct _find_t fblk;
 
 unsigned start, finish ;
 char leftstr[37], rightstr[37] ; //  used by batch mode
