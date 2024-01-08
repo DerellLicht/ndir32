@@ -81,7 +81,7 @@ ndir_data n =
    0, //  switch to EGA43/VGA50 line mode (deprecated 01.17.23)
    0, //  display disk_drive summary
    0, //  file-date option (MSDOS 7.00+ only)
-   0, //  1 = force old DOS 8.3 filenames in MSDOS 7.00+
+   // 0, //  1 = force old DOS 8.3 filenames in MSDOS 7.00+ (removed in V2.62)
    0, //  0=normal tree, 1=show limited level of children
    0, //  uchar long_attr: show full attribute as hex data
    0  //  0=bytes/normal, 1=KB, 2=MB
@@ -170,7 +170,7 @@ static char *helptxt[] = {
 "   -6          \"    six   \"   ,   with name only.",
 "   -i       Display drive summary for all drives in system.",
 "   -ii      Display drive summary for all drives in system, with used vs free space.",
-"   -l *     Toggle long-filename enable flag (NDIR16 and MSDOS 7.00+ only)",
+"   -l *     Toggle long-filename enable flag (removed in V2.62)",
 "   -k *     Toggle color mode.",
 "   -j *     Use standard ASCII (for redirection). (forces -k)",
 "   -u *     List filenames in UPPERCASE.",
@@ -205,7 +205,7 @@ void insert_target_filespec(char *fstr)
    }
    _tcscpy(target[tcount], fstr) ;
 
-   unsigned result = qualify(target[tcount], n.lfn_off) ;
+   unsigned result = qualify(target[tcount]) ;
    if (result == QUAL_INV_DRIVE) {
       error_exit(INV_DRIVE, target[tcount]) ;
    }
@@ -240,7 +240,7 @@ static void process_filespecs(void)
    else if (tcount == 1  &&  !n.exec_only) {
       start = finish = 0 ;
 
-      lfn_supported = 1 - n.lfn_off ;
+      lfn_supported = 1 ;  //  1 - n.lfn_off ;
 
       //  in lfn format, convert /3 to /4
       if (lfn_supported != 0  &&  columns == 3) 
@@ -555,7 +555,7 @@ static ini_entry const ndir_ini[] = {
 { "color",        &n.color },
 { "showSHRfiles", &n.showSHRfiles },
 // { "ega_keep",     &n.ega_keep },
-{ "lfn_off",      &n.lfn_off },
+// { "lfn_off",      &n.lfn_off },
 { "fdate_option", &n.fdate_option },
 { "long_attr",    &n.long_attr },
 { "colorlogo",    &n.colorlogo },

@@ -62,7 +62,7 @@ struct ndir_data {
    uchar ega_keep_unused ;     // deprecated on 01.17.23
    uchar drive_summary ;//  0 = no, 1 = show free space, 2 = show used space
    uchar fdate_option ; //  0 = LAST_MODIFY, 1 = FILE_CREATE (MSDOS 7.00+ only)
-   uchar lfn_off ;      //  0 = force DOS 8.3 filenames (MSDOS 7.00+ only)
+   // uchar lfn_off ;      //  0 = force DOS 8.3 filenames (removed in V2.62)
    uchar tree_short ;   //  0=normal tree, 1=show limited level of children
    uchar long_attr ;
    uchar size_display ; //  0=bytes/normal, 1=KB, 2=MB

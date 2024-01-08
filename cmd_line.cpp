@@ -70,7 +70,8 @@ static int update_switches (char *argstr)
          break;
       case 'j':  n.low_ascii ^= 1;  break;
       case 'k':  n.color ^= 1;  break;     //  redirection flag
-      case 'l':  n.lfn_off ^= 1;  break;   //  toggle long_filename flag
+      //  V2.62, 01/08/24 - short-filename support removed
+      // case 'l':  n.lfn_off ^= 1;  break;   //  toggle long_filename flag
       case 'm':
          n.minimize ^= 1;
          break;

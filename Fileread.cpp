@@ -48,14 +48,23 @@ static void read_long_files (int i)
    HANDLE handle;
    char *strptr;
    ffdata *ftemp;
-   WIN32_FIND_DATA fdata ; //  long-filename file struct
+   // WIN32_FIND_DATA fdata ; //  long-filename file struct
+   WIN32_FIND_DATAW fdata ; //  long-filename file struct
 
-   if (n.lfn_off) {
-      save_sfn_base_path(target[i]);
+   // if (n.lfn_off) {
+   //    save_sfn_base_path(target[i]);
+   // }
+
+   WCHAR wfilespec[MAX_PATH+1];
+   int result = MultiByteToWideChar(CP_ACP, 0, target[i], -1, wfilespec, (int) _tcslen(target[i])+1);
+   if (result == 0) {
+      syslog("%s: a2u failed: %u\n", target[i], (unsigned) GetLastError());
+      return ;
    }
-
+   
    // syslog("%s\n", target[i]);
-   handle = FindFirstFile (target[i], &fdata);
+   // handle = FindFirstFile (target[i], &fdata);
+   handle = FindFirstFileW(wfilespec, &fdata);
    //  according to MSDN, Jan 1999, the following is equivalent to the preceding... 
    //  unfortunately, under Win98SE, it's not...
    // handle = FindFirstFileEx(target[i], FindExInfoStandard, &fdata, 
@@ -134,19 +143,35 @@ static void read_long_files (int i)
          iconv.u[1] = fdata.nFileSizeHigh;
          ftemp->fsize = iconv.i;
 
-         //  If Steven Bensky's short filenames are requested,
-         //  generate fully-qualified filenames so I can
-         //  request the short name... <sigh> 
-         if (n.lfn_off) {
-            ftemp->filename = (char *) malloc(15) ;
-
-            strptr = sfn_convert_filename((char *) fdata.cFileName);
-            _tcscpy (ftemp->filename, strptr);
+         //  convert Unicode filenames to UTF8
+         int bufferSize ;
+         if (fdata.cFileName[0] > 255) {
+            SetConsoleOutputCP(CP_UTF8);
+            bufferSize = WideCharToMultiByte(CP_UTF8, 0, fdata.cFileName, -1, NULL, 0, NULL, NULL);
+            ftemp->filename = (TCHAR *) malloc(bufferSize + 1); //lint !e732
+            WideCharToMultiByte(CP_UTF8, 0, fdata.cFileName, -1, ftemp->filename, bufferSize, NULL, NULL);
+            // [26412] [40/39] [буяновский страйкбол]
+            // syslog("[%u/%u] [%s]\n", bufferSize, _tcslen (ftemp->filename), ftemp->filename);
+            // [DIR] ?????????? ?????????                    | 55813 glock17_shoot_2.ogg            
          }
          else {
-            ftemp->filename = (char *) malloc(_tcslen ((char *) fdata.cFileName) + 1);
-            _tcscpy (ftemp->filename, (char *) fdata.cFileName);
+            bufferSize = WideCharToMultiByte(CP_UTF8, 0, fdata.cFileName, -1, NULL, 0, NULL, NULL);
+            ftemp->filename = (TCHAR *) malloc(bufferSize + 1);  //lint !e732
+            WideCharToMultiByte(CP_ACP, 0, fdata.cFileName, -1, ftemp->filename, bufferSize, NULL, NULL);
          }
+         
+         //  If Steven Bensky's short filenames are requested,
+         //  generate fully-qualified filenames so I can request the short name...
+         // if (n.lfn_off) {
+         //    ftemp->filename = (char *) malloc(15) ;
+         // 
+         //    strptr = sfn_convert_filename((char *) fdata.cFileName);
+         //    _tcscpy (ftemp->filename, strptr);
+         // }
+         // else {
+         //    ftemp->filename = (char *) malloc(_tcslen ((char *) fdata.cFileName) + 1);
+         //    _tcscpy (ftemp->filename, (char *) fdata.cFileName);
+         // }
 
          //  find and extract the file extension, if valid
          // ftemp->name[0] = 0 ; //  don't use name at all
@@ -187,7 +212,7 @@ static void read_long_files (int i)
 
 search_next_file:
       //  search for another file
-      if (FindNextFile (handle, &fdata) == 0)
+      if (FindNextFileW (handle, &fdata) == 0)
          done = 1;
    }
 

@@ -35,7 +35,7 @@
 static char path[PATH_MAX];
 
 /******************************************************************/
-unsigned qualify (char *argptr, int lfn_off)
+unsigned qualify (char *argptr)
 {
    char *pathptr = &path[0];
    char *strptr, *srchptr, tempchar;
@@ -160,4 +160,4 @@ unsigned qualify (char *argptr, int lfn_off)
 // printf("found: [%s]\n", pathptr) ;
 // getchar() ;
    return (qresult);
-}  //lint !e715 lfn_off
+}

@@ -106,7 +106,8 @@ static int read_dir_tree (dirs * cur_node)
    int slen, done, result;
    DWORD err;
    ULONGLONG file_clusters, clusters;
-   WIN32_FIND_DATA fdata ; //  long-filename file struct
+   // WIN32_FIND_DATA fdata ; //  long-filename file struct
+   WIN32_FIND_DATAW fdata ; //  long-filename file struct
 
    if (((dircount % 50) == 0)  &&  _kbhit()) {
       result = _getch() ;
@@ -140,15 +141,22 @@ static int read_dir_tree (dirs * cur_node)
    //  first, build tree list for current level
    level++;
 
-   if (n.lfn_off) {
-      save_sfn_base_path(dirpath);
-   }
+   // if (n.lfn_off) {
+   //    save_sfn_base_path(dirpath);
+   // }
 
 #ifdef  DESPERATE
 debug_dump(dirpath, "entry") ;
 #endif
    err = 0;
-   handle = FindFirstFile (dirpath, &fdata);
+   WCHAR wfilespec[MAX_PATH+1];
+   result = MultiByteToWideChar(CP_ACP, 0, dirpath, -1, wfilespec, (int) _tcslen(dirpath)+1);
+   if (result == 0) {
+      syslog("%s: a2u failed: %u\n", dirpath, (unsigned) GetLastError());
+      return -1;
+   }
+   
+   handle = FindFirstFileW(wfilespec, &fdata);
    if (handle == INVALID_HANDLE_VALUE) {
       err = GetLastError ();
       if (err == ERROR_ACCESS_DENIED) {
@@ -201,20 +209,36 @@ debug_dump(dirpath, tempstr) ;
                dtail = dtemp;
                // if (!n.ucase) 
                //    strlwr(ff.name) ;
-               if (n.lfn_off) {
-                  dtail->name = (char *) malloc(14) ;
-                  if (dtail->name == 0)
-                     error_exit (OUT_OF_MEMORY, NULL);
-
-                  strptr = sfn_convert_filename((char *) fdata.cFileName);
-                  _tcscpy (dtail->name, strptr);
+               
+               //  convert Unicode filenames to UTF8
+               int bufferSize ;
+               if (fdata.cFileName[0] > 255) {
+                  SetConsoleOutputCP(CP_UTF8);
+                  bufferSize = WideCharToMultiByte(CP_UTF8, 0, fdata.cFileName, -1, NULL, 0, NULL, NULL);
+                  dtail->name = (TCHAR *) malloc(bufferSize + 1); //lint !e732
+                  WideCharToMultiByte(CP_UTF8, 0, fdata.cFileName, -1, dtail->name, bufferSize, NULL, NULL);
                }
                else {
-                  dtail->name = (char *) malloc(_tcslen ((char *) fdata.cFileName) + 1);
-                  if (dtail->name == 0)
-                     error_exit (OUT_OF_MEMORY, NULL);
-                  _tcscpy (dtail->name, (char far *) fdata.cFileName);
+                  bufferSize = WideCharToMultiByte(CP_UTF8, 0, fdata.cFileName, -1, NULL, 0, NULL, NULL);
+                  dtail->name = (TCHAR *) malloc(bufferSize + 1);  //lint !e732
+                  WideCharToMultiByte(CP_ACP, 0, fdata.cFileName, -1, dtail->name, bufferSize, NULL, NULL);
                }
+
+               // if (n.lfn_off) {
+               //    dtail->name = (char *) malloc(14) ;
+               //    if (dtail->name == 0)
+               //       error_exit (OUT_OF_MEMORY, NULL);
+               // 
+               //    strptr = sfn_convert_filename((char *) fdata.cFileName);
+               //    _tcscpy (dtail->name, strptr);
+               // }
+               // else {
+               //    dtail->name = (char *) malloc(_tcslen ((char *) fdata.cFileName) + 1);
+               //    if (dtail->name == 0)
+               //       error_exit (OUT_OF_MEMORY, NULL);
+               //    _tcscpy (dtail->name, (char far *) fdata.cFileName);
+               // }
+               
                dtail->attrib = (uchar) fdata.dwFileAttributes;
                // dtail->directs++ ;
             }                   //  if this is not a DOT directory
@@ -246,7 +270,7 @@ debug_dump(dirpath, tempstr) ;
       //******************************************
       //  search for another file
       //******************************************
-      if (FindNextFile (handle, &fdata) == 0) {
+      if (FindNextFileW(handle, &fdata) == 0) {
          // done = 1;
          err = GetLastError ();
          if (err == ERROR_ACCESS_DENIED) {
@@ -557,9 +581,8 @@ void tree_listing (unsigned total_filespec_count)
    if (z == 0)
       tree_init_sort ();
 
+   lfn_supported = 1 ;  //  1 - n.lfn_off;
    for (unsigned l = 0; l < total_filespec_count; l++) {
-      lfn_supported = 1 - n.lfn_off;
-
       //  read and build the dir tree
       build_dir_tree (target[l]) ;
 

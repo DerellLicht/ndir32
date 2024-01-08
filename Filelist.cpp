@@ -255,11 +255,12 @@ static void list_files_qwise(void)
 
       //  see if next filename is going to overrun line; 
       //  if so, start next line...
-      slen = (n.lfn_off) ? 9 : (_tcslen(ftemp->name) + 2) ;
+      // slen = (n.lfn_off) ? 9 : (_tcslen(ftemp->name) + 2) ;
+      slen = _tcslen(ftemp->name) + 2 ;
       if (col + slen > width) {
-         if (!n.lfn_off) {
+         // if (!n.lfn_off) {
             nputs((ftemp->dirflag) ? n.colordir : ftemp->color, ", ") ;
-         }
+         // }
          ncrlf() ;
          sprintf(tempstr, "%*s  ", maxext, " ") ;
          nputs(ftemp->color, tempstr) ;
@@ -269,12 +270,14 @@ static void list_files_qwise(void)
       //  if not starting new line, add comma separator
       if (new_line) {
          new_line = 0 ;
-      } else if (!n.lfn_off) {
+      // } else if (!n.lfn_off) {
+      } else {
          nputs((ftemp->dirflag) ? n.colordir : ftemp->color, ", ") ;
       }
       //  select appropriate color and print the filename
-      sprintf(tempstr, (n.lfn_off) ? "%-8s " : "%s", ftemp->name) ;
-      nputs((ftemp->dirflag) ? n.colordir : ftemp->color, tempstr) ;
+      // sprintf(tempstr, (n.lfn_off) ? "%-8s " : "%s", ftemp->name) ;
+      // nputs((ftemp->dirflag) ? n.colordir : ftemp->color, tempstr) ;
+      nputs((ftemp->dirflag) ? n.colordir : ftemp->color, ftemp->name) ;
       col += slen ;
       
       //  get next filename

@@ -51,6 +51,6 @@ int  strcmpiwc(const TCHAR *onestr, const TCHAR *twostr);
 #define  MAX_ULL_COMMA_LEN  26
 char *convert_to_commas(ULONGLONG uli, char *outstr);
 
-void save_sfn_base_path(char *sfn_base_path);
-char *sfn_convert_filename(char *lfn_filename);
+// void save_sfn_base_path(char *sfn_base_path);
+// char *sfn_convert_filename(char *lfn_filename);
 
