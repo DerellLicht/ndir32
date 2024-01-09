@@ -51,10 +51,6 @@ static void read_long_files (int i)
    // WIN32_FIND_DATA fdata ; //  long-filename file struct
    WIN32_FIND_DATAW fdata ; //  long-filename file struct
 
-   // if (n.lfn_off) {
-   //    save_sfn_base_path(target[i]);
-   // }
-
    WCHAR wfilespec[MAX_PATH+1];
    int result = MultiByteToWideChar(CP_ACP, 0, target[i], -1, wfilespec, (int) _tcslen(target[i])+1);
    if (result == 0) {
@@ -153,6 +149,11 @@ static void read_long_files (int i)
             // [26412] [40/39] [буяновский страйкбол]
             // syslog("[%u/%u] [%s]\n", bufferSize, _tcslen (ftemp->filename), ftemp->filename);
             // [DIR] ?????????? ?????????                    | 55813 glock17_shoot_2.ogg            
+// [68968] 00000:  D0 B1 D1 83 D1 8F D0 BD D0 BE D0 B2 D1 81 D0 BA  | ???????????????? |
+// [68968] 00010:  D0 B8 D0 B9 20 D1 81 D1 82 D1 80 D0 B0 D0 B9 D0  | ???? ??????????? |
+// [68968] 00020:  BA D0 B1 D0 BE D0 BB 00 77 72 69 74 74 65 6E 2E  | ???????.written. |
+            // hex_dump((u8 *)ftemp->filename, 48);
+            ftemp->is_multi_byte = true ;
          }
          else {
             bufferSize = WideCharToMultiByte(CP_UTF8, 0, fdata.cFileName, -1, NULL, 0, NULL, NULL);

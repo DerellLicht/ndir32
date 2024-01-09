@@ -46,18 +46,38 @@ static int tree_init_sort (void);
 
 dirs *top = NULL;
 
-//***************  function prototypes  ***************
-static dirs *new_dir_node (void);
-
 //*****************************************************************
 //  this was used for debugging directory-tree read and build
 //*****************************************************************
 #ifdef  DESPERATE
 void debug_dump(char *fname, char *msg)
 {
-   syslog("l%u %s: %s\n", level, fname, msg) ;
+   syslog("l%u %s: %s\n", level, fname, msg) ;  //  debug dump
 }
 #endif
+
+//**********************************************************
+//  allocate struct for dir listing                         
+//  NOTE:  It is assumed that the caller will               
+//         initialize the name[], ext[], attrib fields!!    
+//**********************************************************
+static dirs *new_dir_node (void)
+{
+   //  switching this statement from malloc() to new()
+   //  changes total exe size from 70,144 to 179,200 !!!
+   //   70144 ->     32256   45.99%    win64/pe     ndir64.exe
+   dirs *dtemp = (dirs *) malloc(sizeof(dirs)) ;
+   if (dtemp == NULL) {
+      error_exit (OUT_OF_MEMORY, NULL);
+   }
+   //     179200 ->     72704   40.57%    win64/pe     ndir64.exe
+   // dirs *dtemp = new dirs ;
+   ZeroMemory(dtemp, sizeof (struct dirs));  //lint !e668
+   // memset ((char *) dtemp, 0, sizeof (struct dirs));  //lint !e668
+   dtemp->dirsecsize = clbytes;
+   dtemp->subdirsecsize = clbytes;
+   return dtemp;
+}
 
 //*********************************************************
 //  "waiting" pattern generator
@@ -217,6 +237,7 @@ debug_dump(dirpath, tempstr) ;
                   bufferSize = WideCharToMultiByte(CP_UTF8, 0, fdata.cFileName, -1, NULL, 0, NULL, NULL);
                   dtail->name = (TCHAR *) malloc(bufferSize + 1); //lint !e732
                   WideCharToMultiByte(CP_UTF8, 0, fdata.cFileName, -1, dtail->name, bufferSize, NULL, NULL);
+                  dtail->is_multi_byte = true ;
                }
                else {
                   bufferSize = WideCharToMultiByte(CP_UTF8, 0, fdata.cFileName, -1, NULL, 0, NULL, NULL);
@@ -324,27 +345,6 @@ else
    //  restore the level number
    level--;
    return 0;
-}
-
-//**********************************************************
-//  allocate struct for dir listing                         
-//  NOTE:  It is assumed that the caller will               
-//         initialize the name[], ext[], attrib fields!!    
-//**********************************************************
-static dirs *new_dir_node (void)
-{
-   //  switching this statement from malloc() to new()
-   //  changes total exe size from 70,144 to 179,200 !!!
-   //   70144 ->     32256   45.99%    win64/pe     ndir64.exe
-   dirs *dtemp = (dirs *) malloc(sizeof(dirs)) ;
-   if (dtemp == NULL)
-      error_exit (OUT_OF_MEMORY, NULL);
-   //     179200 ->     72704   40.57%    win64/pe     ndir64.exe
-   // dirs *dtemp = new dirs ;
-   memset ((char *) dtemp, 0, sizeof (struct dirs));  //lint !e668
-   dtemp->dirsecsize = clbytes;
-   dtemp->subdirsecsize = clbytes;
-   return dtemp;
 }
 
 //****************************************************

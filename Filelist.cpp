@@ -25,19 +25,7 @@ static void print_null(ffdata *fptr)
 extern void lfn_print2(ffdata *fptr);
 extern void lfn_print4(ffdata *fptr);
 extern void lfn_print6(ffdata *fptr);
-//void print1(ffdata *fptr)
-static void (*fprint[7])(ffdata *fptr) = 
-{
-   print_null,
-   print1,
-   print2,
-   print_null,
-   print4,
-   print_null,
-   print6,
-} ;
 
-//  DDM: I'm not quite sure how I need to do this!!
 //lint -esym(843, fprint, lfn_fprint)  could be declared as const
 static void (*lfn_fprint[7])(ffdata *fptr) = 
 {
@@ -167,14 +155,14 @@ static void list_files_horizontally(void)
 
    ffdata *ftemp = ftop ;
 
-   if (lfn_supported) {
+   // if (lfn_supported) {
       //  see how many columns we can support with requested formats
       lfn_get_columns() ;  //  set disp_cols, tempfmtstr
 
       filehead() ;
       //  then list the files
       while (ftemp != NULL) {
-         lfn_fprint[columns](ftemp) ;
+         lfn_fprint[columns](ftemp) ;  //  horizontal listing
          if (++j == disp_cols) {
             ncrlf() ;
             j = 0 ;
@@ -183,24 +171,24 @@ static void list_files_horizontally(void)
 
          ftemp = ftemp->next ;
       }
-   }
+   // }
 
    //  if long filenames are not supported, list files
    //  in old MSDOS 8.3 format.
-   else {
-      disp_cols = (unsigned) columns ;
-      filehead() ;
-      while (ftemp != NULL) {
-         fprint[columns](ftemp) ;
-         if (++j == columns) {
-            ncrlf() ;
-            j = 0 ;
-         } else
-            nput_char(n.colorframe, vline, 1) ;
-
-         ftemp = ftemp->next ;
-      }
-   }
+   // else {
+   //    disp_cols = (unsigned) columns ;
+   //    filehead() ;
+   //    while (ftemp != NULL) {
+   //       fprint[columns](ftemp) ;
+   //       if (++j == columns) {
+   //          ncrlf() ;
+   //          j = 0 ;
+   //       } else
+   //          nput_char(n.colorframe, vline, 1) ;
+   // 
+   //       ftemp = ftemp->next ;
+   //    }
+   // }
 
    //  put in closing newline, if needed
    if (j != 0)
@@ -466,7 +454,7 @@ static void list_files_vertically(void)
    //  now, start displaying files
    //************************************************
    unsigned fcount = 0 ;
-   if (lfn_supported) {
+   // if (lfn_supported) {
       lfn_get_columns() ;  //  set disp_cols, tempfmtstr
 
       rows = (unsigned) filecount / disp_cols ;
@@ -500,7 +488,7 @@ static void list_files_vertically(void)
       j = 0 ;
       while (LOOP_FOREVER) {
          if (fcount < filecount) {
-            lfn_fprint[columns](ftemps[j]) ;
+            lfn_fprint[columns](ftemps[j]) ; //  vertical listing
             ftemps[j] = ftemps[j]->next ;
          }
          //  if no files left to display, fill in row with spaces
@@ -520,60 +508,60 @@ static void list_files_vertically(void)
             nputc(n.colorframe, vline) ;
          }
       }  //  loop forever
-   } 
+   // } 
    //  if LFN *not* supported (use 8.3 format)
-   else {
-      disp_cols = (unsigned) columns ;
-      rows = filecount / columns ;
-      partrows = filecount % columns ;
-
-      for (j=0; j<columns ; j++)  pcols[j] = rows ;
-      for (j=0; j<partrows; j++)  pcols[j]++ ;  //lint !e771
-
-      if (partrows > 0)
-         rows++ ;
-
-      //************************************************
-      //  split the  file list into (columns) lists.
-      //  However, remember to re-combine the lists
-      //  before ftemps[] goes out of scope, or
-      //  we won't be able to free them later!!
-      //************************************************
-      // ffdata *fprev ;
-      ftemps[0] = ftop ;
-      ftemps[1] = ftop ;
-      for (j=1; j<columns; j++) {
-         //  find end of current list
-         for (k=0; k<pcols[j-1]; k++)  //lint !e771
-            ftemps[j] = ftemps[j]->next ;
-
-         //  now, break the list
-         ftemps[j+1] = ftemps[j] ;
-      }
-
-      filehead() ;   //  uses rows, columns
-      j = 0 ;
-      while (LOOP_FOREVER) {
-         if (fcount < filecount) {
-            fprint[columns](ftemps[j]) ;
-            ftemps[j] = ftemps[j]->next ;
-         } else {
-            // nput_char(n.colorframe, ' ', col_width[columns]) ;
-            // nput_char(n.colorframe, ' ', col_width[disp_cols]) ;
-            nput_char(n.colorframe, ' ', line_len) ;
-         }   
-
-         fcount++ ;
-         if (++j == columns) {
-            ncrlf() ;
-            j = 0 ;
-            if (--rows == 0)
-               break;
-         } else {
-            nputc(n.colorframe, vline) ;
-         }
-      }
-   }
+   // else {
+   //    disp_cols = (unsigned) columns ;
+   //    rows = filecount / columns ;
+   //    partrows = filecount % columns ;
+   // 
+   //    for (j=0; j<columns ; j++)  pcols[j] = rows ;
+   //    for (j=0; j<partrows; j++)  pcols[j]++ ;  //lint !e771
+   // 
+   //    if (partrows > 0)
+   //       rows++ ;
+   // 
+   //    //************************************************
+   //    //  split the  file list into (columns) lists.
+   //    //  However, remember to re-combine the lists
+   //    //  before ftemps[] goes out of scope, or
+   //    //  we won't be able to free them later!!
+   //    //************************************************
+   //    // ffdata *fprev ;
+   //    ftemps[0] = ftop ;
+   //    ftemps[1] = ftop ;
+   //    for (j=1; j<columns; j++) {
+   //       //  find end of current list
+   //       for (k=0; k<pcols[j-1]; k++)  //lint !e771
+   //          ftemps[j] = ftemps[j]->next ;
+   // 
+   //       //  now, break the list
+   //       ftemps[j+1] = ftemps[j] ;
+   //    }
+   // 
+   //    filehead() ;   //  uses rows, columns
+   //    j = 0 ;
+   //    while (LOOP_FOREVER) {
+   //       if (fcount < filecount) {
+   //          fprint[columns](ftemps[j]) ;
+   //          ftemps[j] = ftemps[j]->next ;
+   //       } else {
+   //          // nput_char(n.colorframe, ' ', col_width[columns]) ;
+   //          // nput_char(n.colorframe, ' ', col_width[disp_cols]) ;
+   //          nput_char(n.colorframe, ' ', line_len) ;
+   //       }   
+   // 
+   //       fcount++ ;
+   //       if (++j == columns) {
+   //          ncrlf() ;
+   //          j = 0 ;
+   //          if (--rows == 0)
+   //             break;
+   //       } else {
+   //          nputc(n.colorframe, vline) ;
+   //       }
+   //    }
+   // }
    fileend() ;
 }
 

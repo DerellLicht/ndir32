@@ -113,6 +113,7 @@ struct ffdata {
    uchar          color ;
    uchar          dirflag ;
    bool           is_link_file ;
+   bool           is_multi_byte ;
    struct ffdata  *next ;
    } ;
 extern ffdata *ftop ;
@@ -194,9 +195,6 @@ void tree_listing (unsigned total_filespec_count);
 void info(char *data[]);
 void display_logo(void);
 void print1(ffdata *fptr);
-void print2(ffdata *fptr);
-void print4(ffdata *fptr);
-void print6(ffdata *fptr);
 void ncrlf(void);
 void nputc(uchar attr, const uchar outchr);
 void nputs(uchar attr, const char* outstr);

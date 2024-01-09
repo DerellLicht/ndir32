@@ -42,6 +42,7 @@ typedef union ul2uc_u {
 } ul2uc_t;
 
 //  function prototypes
+int hex_dump(u8 *bfr, int bytes);
 int syslog(const char *fmt, ...);
 char *get_system_message(void);
 char *get_system_message(DWORD errcode);
