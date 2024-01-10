@@ -38,8 +38,6 @@ struct attrib_list {
 static attrib_list attr_table[MAX_EXT] ;
 static unsigned attrib_count = 0 ;
 
-int lfn_supported = 1 ; //  always true for 32-bit version
-
 //  per Jason Hood, this turns off MinGW's command-line expansion, 
 //  so we can handle wildcards like we want to.                    
 //lint -e765  external '_CRT_glob' (line 134, file Ndir32.cpp) could be made static
@@ -240,11 +238,10 @@ static void process_filespecs(void)
    else if (tcount == 1  &&  !n.exec_only) {
       start = finish = 0 ;
 
-      lfn_supported = 1 ;  //  1 - n.lfn_off ;
-
       //  in lfn format, convert /3 to /4
-      if (lfn_supported != 0  &&  columns == 3) 
+      if (columns == 3) {
          columns = 4 ;
+      }
 
       //  Extract base path from first filespec,
       //  and strip off filename
@@ -292,11 +289,10 @@ static void process_filespecs(void)
          //  and strip off filename
          j = start ;
 
-         lfn_supported = 1 ;
-
          //  in lfn format, convert /3 to /4
-         if (lfn_supported != 0  &&  columns == 3) 
+         if (columns == 3) {
             columns = 4 ;
+         }
 
          //  Extract base path from first filespec,
          //  and strip off filename

@@ -567,7 +567,6 @@ void tree_listing (unsigned total_filespec_count)
    if (z == 0)
       tree_init_sort ();
 
-   lfn_supported = 1 ;  //  1 - n.lfn_off;
    for (unsigned l = 0; l < total_filespec_count; l++) {
       //  read and build the dir tree
       build_dir_tree (target[l]) ;

@@ -20,7 +20,7 @@ static char const * const error_text[4] = {
 
 //*********************************************************
 void error_exit(int index, char* outstr)
-   {
+{
    if (index == DATA_OKAY)
       ;
    else if (outstr == NULL)
@@ -31,5 +31,5 @@ void error_exit(int index, char* outstr)
    restore_console_attribs();
 
    exit(index) ;
-   }
+}
 

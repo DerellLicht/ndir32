@@ -15,7 +15,6 @@
 
 #include "common.h"
 #include "ndir32.h"
-#include "conio32.h"
 
 char dpath[4] = "d:\\";
 

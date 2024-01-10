@@ -50,7 +50,7 @@ LIBS=-lmpr -lshlwapi -lole32 -luuid
 #***************************************************************
 
 CPPSRC=cmd_line.cpp conio32.cpp Diskparm.cpp err_exit.cpp Filelist.cpp Fileread.cpp \
-	common.cpp Ndir32.cpp Ndisplay.cpp Qualify.cpp \
+	common.cpp Ndir32.cpp Ndisplay.cpp nio.cpp Qualify.cpp \
 	nsort.cpp treelist.cpp tdisplay.cpp mediatype.cpp read_link.cpp
 #    mp3.parser.cpp file_fmts.cpp 
 
@@ -102,13 +102,14 @@ endif
 
 cmd_line.o: common.h ndir32.h conio32.h
 conio32.o: common.h ndir32.h conio32.h
-Diskparm.o: common.h ndir32.h conio32.h
+Diskparm.o: common.h ndir32.h
 err_exit.o: common.h ndir32.h conio32.h
 Filelist.o: common.h ndir32.h conio32.h
 Fileread.o: common.h ndir32.h
 common.o: common.h ndir32.h
 Ndir32.o: common.h ndir32.h conio32.h qualify.h
 Ndisplay.o: common.h ndir32.h conio32.h
+nio.o: common.h ndir32.h conio32.h
 Qualify.o: qualify.h
 nsort.o: common.h ndir32.h
 treelist.o: common.h ndir32.h conio32.h treelist.h

@@ -85,9 +85,6 @@ extern unsigned tree_level_limit ;
 //***************************************************************
 extern ULONGLONG diskbytes, diskfree, clbytes ;
 
-//***************************************************************
-extern int lfn_supported ; //  always true for 32-bit version
-
 //************************************************************
 #define topchar       0xD1   /*  Ñ  */
 #define bottomchar    0xCF   /*  Ï  */
@@ -196,6 +193,7 @@ void tree_listing (unsigned total_filespec_count);
 void info(char *data[]);
 void display_logo(void);
 void print1(ffdata *fptr);
+void nclrscr(void);
 void ncrlf(void);
 void nputc(uchar attr, const uchar outchr);
 void nputs(uchar attr, const char* outstr);

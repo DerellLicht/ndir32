@@ -25,8 +25,6 @@ extern char *Version ;
 extern char *ShortVersion;
 extern unsigned name_width ;
 
-static unsigned linecnt = 0 ;           //  non-color display line counter
-
 //  this array is 64 elements, not 32 (== 2^5) 
 //  because the volume_label bit (0x80) is not displayed.  
 //  There are actually six bits in the field.
@@ -85,10 +83,8 @@ void display_logo (void)
    }
 
    if (n.clear && !is_redirected ()) {
-      dclrscr ();
+      nclrscr ();
    }
-
-   linecnt = 0;
 
    if (n.minimize) {
       ngotoxy (0, _where_y ());
@@ -196,26 +192,14 @@ void print1 (ffdata * fptr)
       sprintf (tempstr, "%14s ", "");
       nputs (n.colorsize, tempstr);
       nputs (attrclr, attr);
-      // if (lfn_supported) {
          //sprintf(tempstr, "%02d-%02d-%04lu ", month, day, year);
          sprintf (tempstr, "%3s %02d, %04lu ", monthstr[month - 1], day, year);
          nputs (n.colordate, tempstr);
          sprintf (tempstr, "%02d:%02d:%02d ", hour, mins, secs);
          nputs (n.colortime, tempstr);
-         sprintf (tempstr, "[%s]", fptr->filename);
-      // }
-      // else {
-      //    sprintf (tempstr, "%3s %02d, %04lu ", monthstr[month - 1], day,
-      //       year);
-      //    nputs (n.colordate, tempstr);
-      //    sprintf (tempstr, "%02d:%02d:%02d ", hour, mins, secs);
-      //    nputs (n.colortime, tempstr);
-      //    sprintf (tempstr, "[%-8s%-4s]", fptr->name, fptr->ext);
-      //    if (_tcslen (fptr->name) == 0) {
-      //       sprintf (tempstr, "[NoShortName ]");
-      //    }
-      // }
+         
       //  display filename in appropriate color...
+      //   sprintf (tempstr, "[%s]", fptr->filename);
       // if (SHRattr != 0 && n.showSHRfiles)
       //    nputs (n.colorSHR | SHRattr, tempstr);
       // else
@@ -257,17 +241,8 @@ void print1 (ffdata * fptr)
       sprintf (tempstr, "%02d:%02d:%02d ", hour, mins, secs);
       nputs (n.colortime, tempstr);
 
-      //  format filename as required
-      if (lfn_supported)
-         sprintf (tempstr, "%s ", fptr->filename);
-      else {
-         sprintf (tempstr, "%-8s%-4s ", fptr->name, fptr->ext);
-         if (_tcslen (fptr->name) == 0) {
-            sprintf (tempstr, "NoShortName  ");
-         }
-      }
-
       //  display filename in appropriate color...
+      //  sprintf (tempstr, "%s ", fptr->filename);
       // if (SHRattr != 0 && n.showSHRfiles)
       //    nputs (n.colorSHR | SHRattr, tempstr);
       // else
@@ -444,143 +419,5 @@ void lfn_print6 (ffdata * fptr)
       }
    }
    nput_char(n.colorframe, ' ', slen) ;
-}
-
-//*********************************************************
-//  this handles full-screen in NON-COLOR mode.
-//*********************************************************
-static void testpause (void)
-{
-   if (!n.pause)
-      return;
-   if (is_redirected ())
-     return;
-
-   if (++linecnt >= lines - 1) {
-      nputs (n.colornhead, "Press any key to continue (or ESC to exit)");
-      unsigned inkey = get_scode ();
-      if (inkey == ESC) {
-         // if ((curlines != lines) && (!(n.ega_keep))) {
-         //    set_lines (25);
-         // }
-         error_exit (DATA_OKAY, NULL);
-      }
-
-      if (n.color) {
-         dreturn ();            // CR only!! 
-         dclreol ();
-      }
-      else {
-         printf ("\n");
-      }
-      linecnt = 1;
-   }
-}
-
-/******************************************************************/
-void ncrlf_raw(void)
-{
-   if (n.color) {
-      dnewline ();
-   }
-   else {
-      printf ("\n");
-   }
-   testpause ();
-}
-
-/******************************************************************/
-void ncrlf (void)
-{
-   if (n.color) {
-      dnewline ();
-   }
-   else {
-      printf ("\n");
-   }
-   
-   // testpause ();
-   if (!n.pause)
-      return;
-   if (is_redirected ())
-     return;
-
-   if (++linecnt >= lines - 1) {
-      nputs (n.colornhead, "Press any key to continue (or ESC to exit)");
-      unsigned inkey = get_scode ();
-      if (inkey == ESC) {
-         error_exit (DATA_OKAY, NULL);
-      }
-
-      if (n.color) {
-         dreturn ();            // CR only!! 
-         dclreol ();
-      }
-      else {
-         printf ("\n");
-      }
-      linecnt = 1;
-   }
-}
-
-/******************************************************************/
-void nputc (uchar attr, const uchar outchr)
-{
-   // unsigned hattr ;
-   if (n.color) {
-      set_text_attr (attr);
-      dputc (outchr);
-   }
-   else
-      printf ("%c", outchr);
-}
-
-/******************************************************************/
-void nputs (uchar attr, const char *outstr)
-{
-   if (n.color) {
-      set_text_attr (attr);
-      dputs (outstr);
-   }
-   else
-      printf ("%s", outstr);
-}
-
-/******************************************************************/
-void nputsw(uchar attr, const char *outstr, int wlen, int clen)
-{
-   if (n.color) {
-      set_text_attr (attr);
-      dputsiw(outstr, wlen, clen);
-   }
-   else {
-      dputsiw(outstr, wlen, clen);
-   }
-}
-
-/******************************************************************/
-void nput_char (uchar attr, char chr, int count)
-{
-   if (n.color) {
-      dputnchar (chr, attr, count);
-   }
-   else {
-      for (int j = 0; j < count; j++)
-         putchar (chr);
-   }
-}
-
-/******************************************************************/
-void nput_line (uchar attr, char chr)
-{
-   int j, wincols = get_window_cols() - 1 ;
-   if (n.color) {
-      dputnchar (chr, attr, wincols);
-   }
-   else {
-      for (j = 0; j < wincols; j++)
-         putchar (chr);
-   }
-   ncrlf ();
 }
 

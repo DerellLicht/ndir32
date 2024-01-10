@@ -21,13 +21,11 @@
 //lint -e63    Expected an lvalue
 
 //***************  function prototypes  ***************
-static int sort_name(struct ffdata *a, struct ffdata *b);
 static int sort_lfn_name(struct ffdata *a, struct ffdata *b);
 static int sort_ext(struct ffdata *a, struct ffdata *b);
 static int sort_size(struct ffdata *a, struct ffdata *b);
 // static int sort_date(struct ffdata *a, struct ffdata *b);
 // static int sort_time(struct ffdata *a, struct ffdata *b);
-static int sort_name_rev(struct ffdata *a, struct ffdata *b);
 static int sort_lfn_name_rev(struct ffdata *a, struct ffdata *b);
 static int sort_ext_rev(struct ffdata *a, struct ffdata *b);
 static int sort_size_rev(struct ffdata *a, struct ffdata *b);
@@ -74,12 +72,6 @@ static int init_sort(void)
 //    }
 
 //*********************************************************
-static int sort_name(struct ffdata *a, struct ffdata *b)
-   {
-   return(_tcsicmp(a->name, b->name)) ;
-   }
-
-//*********************************************************
 static int sort_lfn_name(struct ffdata *a, struct ffdata *b)
    {
    return(_tcsicmp(a->filename, b->filename)) ;
@@ -121,12 +113,6 @@ static int sort_date_time(struct ffdata *a, struct ffdata *b)
    else 
       return(0) ;
    }  //lint !e550
-
-//*********************************************************
-static int sort_name_rev(struct ffdata *a, struct ffdata *b)
-   {
-   return(_tcsicmp(b->name, a->name)) ;
-   }
 
 //*********************************************************
 static int sort_lfn_name_rev(struct ffdata *a, struct ffdata *b)
@@ -278,18 +264,12 @@ void sort_filelist(void)
    if (n.reverse) {
       switch (n.sort) {
       case SORT_EXT:
-         if (lfn_supported) 
-            sort_files(sort_lfn_name_rev) ;
-         else 
-            sort_files(sort_name_rev) ;
+         sort_files(sort_lfn_name_rev) ;
          sort_files(sort_ext_rev) ;
          break;
       case SORT_NAME:
          sort_files(sort_ext_rev) ;
-         if (lfn_supported) 
-            sort_files(sort_lfn_name_rev) ;
-         else 
-            sort_files(sort_name_rev) ;
+         sort_files(sort_lfn_name_rev) ;
          break;
       case SORT_SIZE:
          sort_files(sort_size_rev) ;
@@ -305,18 +285,12 @@ void sort_filelist(void)
    else {
       switch (n.sort) {
       case SORT_EXT:
-         if (lfn_supported) 
-            sort_files(sort_lfn_name) ;
-         else 
-            sort_files(sort_name) ;
+         sort_files(sort_lfn_name) ;
          sort_files(sort_ext) ;
          break;
       case SORT_NAME:
          sort_files(sort_ext) ;
-         if (lfn_supported) 
-            sort_files(sort_lfn_name) ;
-         else 
-            sort_files(sort_name) ;
+         sort_files(sort_lfn_name) ;
          break;
       case SORT_SIZE:
          sort_files(sort_size) ;
@@ -331,9 +305,4 @@ void sort_filelist(void)
    if (n.dir_first)
       sort_files(sort_dir) ;
 }
-
-//lint +e1013  Symbol 'LowPart' not a member of class '_LARGE_INTEGER'
-//lint +e40    Undeclared identifier 'LowPart'
-//lint +e63    Expected an lvalue
-
 
