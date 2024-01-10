@@ -140,6 +140,7 @@ static void read_long_files (int i)
          ftemp->fsize = iconv.i;
 
          //  convert Unicode filenames to UTF8
+         ftemp->mb_len = wcslen(fdata.cFileName) ;
          int bufferSize ;
          if (fdata.cFileName[0] > 255) {
             SetConsoleOutputCP(CP_UTF8);
@@ -160,6 +161,7 @@ static void read_long_files (int i)
             ftemp->filename = (TCHAR *) malloc(bufferSize + 1);  //lint !e732
             WideCharToMultiByte(CP_ACP, 0, fdata.cFileName, -1, ftemp->filename, bufferSize, NULL, NULL);
          }
+         // syslog("%s len: %u\n", ftemp->filename, ftemp->mb_len);
          
          //  If Steven Bensky's short filenames are requested,
          //  generate fully-qualified filenames so I can request the short name...

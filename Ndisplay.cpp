@@ -23,8 +23,7 @@
 //  from NDIR.CPP
 extern char *Version ;
 extern char *ShortVersion;
-
-extern char tempfmtstr[10] ; //  for forming strings of the form %-nns
+extern unsigned name_width ;
 
 static unsigned linecnt = 0 ;           //  non-color display line counter
 
@@ -164,6 +163,8 @@ void print1 (ffdata * fptr)
    int day   = sdt.wDay    ;
    int month = sdt.wMonth  ;
    long year = sdt.wYear   ;
+   int wlen = _tcslen(fptr->filename);
+   // int slen = name_width - fptr->mb_len ;
 
    char attr[12];
    //  detect non-standard file attributes and display specially.
@@ -195,30 +196,36 @@ void print1 (ffdata * fptr)
       sprintf (tempstr, "%14s ", "");
       nputs (n.colorsize, tempstr);
       nputs (attrclr, attr);
-      if (lfn_supported) {
+      // if (lfn_supported) {
          //sprintf(tempstr, "%02d-%02d-%04lu ", month, day, year);
          sprintf (tempstr, "%3s %02d, %04lu ", monthstr[month - 1], day, year);
          nputs (n.colordate, tempstr);
          sprintf (tempstr, "%02d:%02d:%02d ", hour, mins, secs);
          nputs (n.colortime, tempstr);
          sprintf (tempstr, "[%s]", fptr->filename);
+      // }
+      // else {
+      //    sprintf (tempstr, "%3s %02d, %04lu ", monthstr[month - 1], day,
+      //       year);
+      //    nputs (n.colordate, tempstr);
+      //    sprintf (tempstr, "%02d:%02d:%02d ", hour, mins, secs);
+      //    nputs (n.colortime, tempstr);
+      //    sprintf (tempstr, "[%-8s%-4s]", fptr->name, fptr->ext);
+      //    if (_tcslen (fptr->name) == 0) {
+      //       sprintf (tempstr, "[NoShortName ]");
+      //    }
+      // }
+      //  display filename in appropriate color...
+      // if (SHRattr != 0 && n.showSHRfiles)
+      //    nputs (n.colorSHR | SHRattr, tempstr);
+      // else
+      //    nputs (n.colordir, tempstr);
+      if (SHRattr != 0 && n.showSHRfiles) {
+         nputsw(n.colorSHR | SHRattr, fptr->filename, wlen, fptr->mb_len);
       }
       else {
-         sprintf (tempstr, "%3s %02d, %04lu ", monthstr[month - 1], day,
-            year);
-         nputs (n.colordate, tempstr);
-         sprintf (tempstr, "%02d:%02d:%02d ", hour, mins, secs);
-         nputs (n.colortime, tempstr);
-         sprintf (tempstr, "[%-8s%-4s]", fptr->name, fptr->ext);
-         if (_tcslen (fptr->name) == 0) {
-            sprintf (tempstr, "[NoShortName ]");
-         }
+         nputsw(n.colordir, fptr->filename, wlen, fptr->mb_len);
       }
-      //  display filename in appropriate color...
-      if (SHRattr != 0 && n.showSHRfiles)
-         nputs (n.colorSHR | SHRattr, tempstr);
-      else
-         nputs (n.colordir, tempstr);
    }
 
    //  display file entry
@@ -261,10 +268,16 @@ void print1 (ffdata * fptr)
       }
 
       //  display filename in appropriate color...
-      if (SHRattr != 0 && n.showSHRfiles)
-         nputs (n.colorSHR | SHRattr, tempstr);
-      else
-         nputs (fptr->color, tempstr);
+      // if (SHRattr != 0 && n.showSHRfiles)
+      //    nputs (n.colorSHR | SHRattr, tempstr);
+      // else
+      //    nputs (fptr->color, tempstr);
+      if (SHRattr != 0 && n.showSHRfiles) {
+         nputsw(n.colorSHR | SHRattr, fptr->filename, wlen, fptr->mb_len);
+      }
+      else {
+         nputsw(fptr->color, fptr->filename, wlen, fptr->mb_len);
+      }
          
 #ifdef USE_64BIT
       //  if this file is a symlink, try to display the actual file
@@ -309,6 +322,8 @@ void lfn_print2 (ffdata * fptr)
    int day   = sdt.wDay    ;
    int month = sdt.wMonth  ;
    long year = sdt.wYear   ;
+   int wlen = _tcslen(fptr->filename);
+   int slen = name_width - fptr->mb_len ;
 
    ULONGLONG fsize = fptr->fsize;
 
@@ -320,11 +335,12 @@ void lfn_print2 (ffdata * fptr)
       sprintf (tempstr, "%02d:%02d ", hour, mins);
       nputs (n.colortime, tempstr);
 
-      sprintf (tempstr, tempfmtstr, fptr->filename);
-      if (SHRattr != 0 && n.showSHRfiles)
-         nputs (n.colorSHR | SHRattr, tempstr);
-      else
-         nputs (n.colordir, tempstr);
+      if (SHRattr != 0 && n.showSHRfiles) {
+         nputsw(n.colorSHR | SHRattr, fptr->filename, wlen, fptr->mb_len);
+      }
+      else {
+         nputsw(n.colordir, fptr->filename, wlen, fptr->mb_len);
+      }
    }
    else {
       //  print file size
@@ -350,12 +366,14 @@ void lfn_print2 (ffdata * fptr)
       nputs (n.colortime, tempstr);
 
       //  generate filename
-      sprintf (tempstr, tempfmtstr, fptr->filename);
-      if (SHRattr != 0 && n.showSHRfiles)
-         nputs (n.colorSHR | SHRattr, tempstr);
-      else
-         nputs (fptr->color, tempstr);
+      if (SHRattr != 0 && n.showSHRfiles) {
+         nputsw(n.colorSHR | SHRattr, fptr->filename, wlen, fptr->mb_len);
+      }
+      else {
+         nputsw(fptr->color, fptr->filename, wlen, fptr->mb_len);
+      }
    }
+   nput_char(n.colorframe, ' ', slen) ;
 }
 
 /*****************************************************************/
@@ -363,14 +381,17 @@ void lfn_print4 (ffdata * fptr)
 {
    ULONGLONG fsize = fptr->fsize;
    uchar SHRattr = fptr->attrib & 7;
+   int wlen = _tcslen(fptr->filename);
+   int slen = name_width - fptr->mb_len ;
 
    if (fptr->dirflag) {
       nputs (n.colordir, " [DIR] ");
-      sprintf (tempstr, tempfmtstr, fptr->filename);
-      if (SHRattr != 0 && n.showSHRfiles)
-         nputs (n.colorSHR | SHRattr, tempstr);
-      else
-         nputs (n.colordir, tempstr);
+      if (SHRattr != 0 && n.showSHRfiles) {
+         nputsw(n.colorSHR | SHRattr, fptr->filename, wlen, fptr->mb_len);
+      }
+      else {
+         nputsw(n.colordir, fptr->filename, wlen, fptr->mb_len);
+      }
    }
    else {
       //  print file size
@@ -390,32 +411,39 @@ void lfn_print4 (ffdata * fptr)
       }
 
       //  generate filename
-      sprintf (tempstr, tempfmtstr, fptr->filename);
-      if (SHRattr != 0 && n.showSHRfiles)
-         nputs (n.colorSHR | SHRattr, tempstr);
-      else
-         nputs (fptr->color, tempstr);
+      if (SHRattr != 0 && n.showSHRfiles) {
+         nputsw(n.colorSHR | SHRattr, fptr->filename, wlen, fptr->mb_len);
+      }
+      else {
+         nputsw(fptr->color, fptr->filename, wlen, fptr->mb_len);
+      }
    }
+   nput_char(n.colorframe, ' ', slen) ;
 }
 
 /*****************************************************************/
 void lfn_print6 (ffdata * fptr)
 {
+   int wlen = _tcslen(fptr->filename);
+   int slen = name_width - fptr->mb_len ;
    uchar SHRattr = fptr->attrib & 7;
    if (fptr->dirflag) {
-      sprintf (tempstr, tempfmtstr, fptr->filename);
-      if (SHRattr != 0 && n.showSHRfiles)
-         nputs (n.colorSHR | SHRattr, tempstr);
-      else
-         nputs (n.colordir, tempstr);
+      if (SHRattr != 0 && n.showSHRfiles) {
+         nputsw(n.colorSHR | SHRattr, fptr->filename, wlen, fptr->mb_len);
+      }
+      else {
+         nputsw(n.colordir, fptr->filename, wlen, fptr->mb_len);
+      }
    }
    else {
-      sprintf (tempstr, tempfmtstr, fptr->filename);
-      if (SHRattr != 0 && n.showSHRfiles)
-         nputs (n.colorSHR | SHRattr, tempstr);
-      else
-         nputs (fptr->color, tempstr);
+      if (SHRattr != 0 && n.showSHRfiles) {
+         nputsw(n.colorSHR | SHRattr, fptr->filename, wlen, fptr->mb_len);
+      }
+      else {
+         nputsw(fptr->color, fptr->filename, wlen, fptr->mb_len);
+      }
    }
+   nput_char(n.colorframe, ' ', slen) ;
 }
 
 //*********************************************************
@@ -516,6 +544,18 @@ void nputs (uchar attr, const char *outstr)
    }
    else
       printf ("%s", outstr);
+}
+
+/******************************************************************/
+void nputsw(uchar attr, const char *outstr, int wlen, int clen)
+{
+   if (n.color) {
+      set_text_attr (attr);
+      dputsiw(outstr, wlen, clen);
+   }
+   else {
+      dputsiw(outstr, wlen, clen);
+   }
 }
 
 /******************************************************************/

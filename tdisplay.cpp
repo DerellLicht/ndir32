@@ -29,9 +29,12 @@ static uint left_div     = 49 ;
 static uint right_div    = 64 ;
 
 //**********************************************************
-static void display_tree_filename (char *lstr, char *frmstr)
+//  Note: lstr contains form string plus filename
+//**********************************************************
+static void display_tree_filename (char *frmstr, char *lstr, dirs *ktemp)
 {
-   uint slen = _tcslen (lstr);
+   // uint slen = _tcslen (lstr);
+   uint slen = ktemp->mb_len;
 
    //  if directory name, etc., is too long, make separate line
    if (slen > center_col) {
@@ -63,6 +66,11 @@ static void display_tree_filename (char *lstr, char *frmstr)
       sprintf (tempstr, "%-*s", name_end_col+1, lstr);
       nputs (dtree_colors[level], tempstr);
    }
+   // if (ktemp->is_multi_byte) {
+   //    uint cur_padding = 2 ;
+   //    nput_char(n.colorframe, ' ', cur_padding) ;
+   //    syslog("necol: %u, slen: %u, mb_len: %u\n", name_end_col, slen, ktemp->mb_len);
+   // }
 }
 
 //**********************************************************
@@ -115,13 +123,16 @@ static void display_dir_tree (dirs * ktop)
             formstr[level] = (char) NULL;
          }
       }
+// [51660] l1 len: 8, +glock17
+// [51660] l2 len: 41, |\буяновский страйкбол
       sprintf (levelstr, "%s%s", formstr, ktemp->name);
-      // syslog("l%u %s\n", level, levelstr) ;
+      uint slen = _tcslen(levelstr);
+      syslog("l%u len: %u, %s\n", level, slen, levelstr) ;
 
       //*****************************************************************
       //                display data for this level                      
       //*****************************************************************
-      display_tree_filename (levelstr, formstr);
+      display_tree_filename (formstr, levelstr, ktemp);
       switch (n.tree) {
          //  show file/directory sizes only
          case 1:

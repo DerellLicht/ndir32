@@ -114,6 +114,7 @@ struct ffdata {
    uchar          dirflag ;
    bool           is_link_file ;
    bool           is_multi_byte ;
+   uint           mb_len ;
    struct ffdata  *next ;
    } ;
 extern ffdata *ftop ;
@@ -200,6 +201,7 @@ void nputc(uchar attr, const uchar outchr);
 void nputs(uchar attr, const char* outstr);
 void nput_char(uchar attr, char chr, int count);
 void nput_line(uchar attr, char chr);
+void nputsw(uchar attr, const char *outstr, int wlen, int clen);
 
 //  diskparm.cpp
 bool get_disk_info(char *dstr);

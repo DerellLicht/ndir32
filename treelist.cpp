@@ -231,6 +231,7 @@ debug_dump(dirpath, tempstr) ;
                //    strlwr(ff.name) ;
                
                //  convert Unicode filenames to UTF8
+               dtemp->mb_len = wcslen(fdata.cFileName) ;
                int bufferSize ;
                if (fdata.cFileName[0] > 255) {
                   SetConsoleOutputCP(CP_UTF8);

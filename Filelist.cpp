@@ -55,23 +55,24 @@ static void display_batch_mode(void)
 //*****************************************************************
 static unsigned disp_cols ;    //  calculated screen columns for listings
 static unsigned line_len ; //  width of column
-char tempfmtstr[10] ; //  for forming strings of the form %-nns
+// char tempfmtstr[10] ; //  for forming strings of the form %-nns
+unsigned name_width = 0 ;
 
 static const int FILE_SIZE_LEN =  6 ;
-static const int DATE_TIME_LEN = 14 ;
+static const int DATE_TIME_LEN = 15 ;
 
 static void lfn_get_columns(void)
 {
    ffdata *ftemp = ftop ;
-   unsigned name_width ;
    unsigned wincols ;
 
    //  find length of longest filename
    unsigned max_name_len = 0 ;
    while (ftemp != NULL) {
-      unsigned cur_name_len = _tcslen(ftemp->filename) ;
-      if (cur_name_len > max_name_len)
+      unsigned cur_name_len = ftemp->mb_len ;
+      if (cur_name_len > max_name_len) {
          max_name_len = cur_name_len ;
+      }
       ftemp = ftemp->next ;
    }
 
@@ -103,6 +104,8 @@ static void lfn_get_columns(void)
 
    default: line_len = max_name_len ;  break ;  //  make lint happy
    }
+   // [66188] win_cols: 135, max_name_len: 39, line_len: 61
+   // syslog("win_cols: %u, max_name_len: %u, line_len: %u\n", wincols, max_name_len, line_len);
 
    //  compute line count:
    //   (disp_cols * line_len) + (disp_cols-1)*1 < row_len
@@ -130,7 +133,7 @@ static void lfn_get_columns(void)
       break;
 
    case 2:
-      name_width = line_len - (FILE_SIZE_LEN + 1 + DATE_TIME_LEN + 1) - 1 ;
+      name_width = line_len - (FILE_SIZE_LEN + 1 + DATE_TIME_LEN + 1) ;
       break;
 
    case 4:
@@ -145,7 +148,10 @@ static void lfn_get_columns(void)
       name_width = line_len ;
       break ;
    }
-   sprintf(tempfmtstr, "%c-%us", '%', name_width) ;
+   // [66900] win_cols: 135, max_name_len: 39, line_len: 66, name_width: 43
+   // syslog("win_cols: %u, line_len: %u, disp_cols: %u, max_name_len: %u, name_width: %u\n", 
+   //    wincols, line_len, disp_cols, max_name_len, name_width);
+   // sprintf(tempfmtstr, "%c-%us", '%', name_width) ;
 }
 
 //*****************************************************************
@@ -157,7 +163,7 @@ static void list_files_horizontally(void)
 
    // if (lfn_supported) {
       //  see how many columns we can support with requested formats
-      lfn_get_columns() ;  //  set disp_cols, tempfmtstr
+      lfn_get_columns() ;  //  set disp_cols, name_width
 
       filehead() ;
       //  then list the files
@@ -166,8 +172,9 @@ static void list_files_horizontally(void)
          if (++j == disp_cols) {
             ncrlf() ;
             j = 0 ;
-         } else
+         } else {
             nput_char(n.colorframe, vline, 1) ;
+         }
 
          ftemp = ftemp->next ;
       }
@@ -455,7 +462,7 @@ static void list_files_vertically(void)
    //************************************************
    unsigned fcount = 0 ;
    // if (lfn_supported) {
-      lfn_get_columns() ;  //  set disp_cols, tempfmtstr
+      lfn_get_columns() ;  //  set disp_cols, name_width
 
       rows = (unsigned) filecount / disp_cols ;
       partrows = (unsigned) filecount % disp_cols ;

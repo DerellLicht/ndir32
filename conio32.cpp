@@ -532,15 +532,29 @@ void dputc(const TCHAR c)
    sinfo.dwCursorPosition.X++ ;
 }
 
-//**********************************************************
-//  This does not process special characters,
-//  but writes faster than dputs()
-//**********************************************************
-void dputsi(const TCHAR *outstr, int slen)
+//**********************************************************************************
+//  This does not process special characters, but writes faster than dputs().
+//  It also is *only* used by dputs()
+//**********************************************************************************
+static void dputsi(const TCHAR *outstr, int slen)
 {
    DWORD wrlen ;
    WriteFile(hStdOut, outstr, slen, &wrlen, 0) ;
    sinfo.dwCursorPosition.X += slen ;
+}
+
+//**********************************************************************************
+//  This function will deal with printing multi-byte strings
+//  in an ASCII (i.e., non-Unicode) program.
+//  It passes both the byte-length of the string, for printing,
+//  and the multi-byte length for updating screen position.
+//**********************************************************************************
+void dputsiw(const char *outstr, int wlen, int clen)
+{
+   DWORD wrlen ;
+   WriteFile(hStdOut, outstr, wlen, &wrlen, 0) ;
+   // wprintf(L"%s", outstr, slen) ;
+   sinfo.dwCursorPosition.X += clen ;
 }
 
 //**********************************************************
