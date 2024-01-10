@@ -553,7 +553,6 @@ void dputsiw(const char *outstr, int wlen, int clen)
 {
    DWORD wrlen ;
    WriteFile(hStdOut, outstr, wlen, &wrlen, 0) ;
-   // wprintf(L"%s", outstr, slen) ;
    sinfo.dwCursorPosition.X += clen ;
 }
 

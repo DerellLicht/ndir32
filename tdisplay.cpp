@@ -20,58 +20,12 @@ static char const * const dhdrl =
 //012345678901234567890123456789
 //=========================+===========+===========+==============+==============
 static char formstr[50];
-static char levelstr[PATH_MAX];
 
 static uint wincols      = 80 ;
 static uint name_end_col = 25 ;
 static uint center_col   = 37 ;
 static uint left_div     = 49 ;
 static uint right_div    = 64 ;
-
-//**********************************************************
-//  Note: lstr contains form string plus filename
-//**********************************************************
-static void display_tree_filename (char *frmstr, char *lstr, dirs *ktemp)
-{
-   // uint slen = _tcslen (lstr);
-   uint slen = ktemp->mb_len;
-
-   //  if directory name, etc., is too long, make separate line
-   if (slen > center_col) {
-      sprintf (tempstr, "%-*s", right_div, lstr); //  write filename
-      nputs (dtree_colors[level], tempstr);
-
-      //  insert blank line
-      nputc (n.colorframe, vline);
-      ncrlf ();
-
-      sprintf (tempstr, "%-*s", name_end_col+1, frmstr);
-      nputs (dtree_colors[level], tempstr);  //  spaces
-   }
-   else if (slen > name_end_col) {
-      sprintf (tempstr, "%-*s", center_col, lstr); //  write filename
-      nputs (dtree_colors[level], tempstr);
-
-      //  insert blank line
-      nputc (n.colorframe, vline);
-      sprintf (tempstr, "%*s", name_end_col+1, "");
-      nputs (dtree_colors[level], tempstr);  //  spaces
-
-      nputc (n.colorframe, vline);
-      ncrlf ();
-      sprintf (tempstr, "%-*s", name_end_col+1, frmstr);
-      nputs (dtree_colors[level], tempstr);  //  spaces
-   }
-   else {
-      sprintf (tempstr, "%-*s", name_end_col+1, lstr);
-      nputs (dtree_colors[level], tempstr);
-   }
-   // if (ktemp->is_multi_byte) {
-   //    uint cur_padding = 2 ;
-   //    nput_char(n.colorframe, ' ', cur_padding) ;
-   //    syslog("necol: %u, slen: %u, mb_len: %u\n", name_end_col, slen, ktemp->mb_len);
-   // }
-}
 
 //**********************************************************
 static void display_size(ULONGLONG dlen, unsigned slen, unsigned attr)
@@ -94,6 +48,73 @@ static void display_size(ULONGLONG dlen, unsigned slen, unsigned attr)
       // dsize.convert (dlen);
       sprintf (tempstr, "%*s", slen, convert_to_commas(dlen, NULL));
       nputs (attr, tempstr);
+   }
+}
+
+//**********************************************************
+//  Note: lstr contains form string plus filename
+//**********************************************************
+static void display_tree_filename (char *frmstr, dirs *ktemp)
+{
+   // char levelstr[PATH_MAX];
+   // sprintf (levelstr, "%s%s", frmstr, ktemp->name);
+   int wlen = _tcslen(ktemp->name);
+   //  why is mb_len == 0 on base folder??
+   if (ktemp->mb_len == 0) {
+      //  this won't work for Unicode targets
+      ktemp->mb_len = wlen ;
+   }
+   uint slen = ktemp->mb_len;
+   
+   //  calculate required padding spaces
+   int frmlen = _tcslen(frmstr);
+   uint splen = 0 ;
+
+   //  if directory name, etc., is too long, make separate line
+   if (slen > center_col) {
+      // sprintf (tempstr, "%-*s", right_div, levelstr); //  write filename
+      // nputs (dtree_colors[level], tempstr);
+      
+      nputs (n.colorframe, frmstr);
+      nputsw(dtree_colors[level], ktemp->name, wlen, ktemp->mb_len);
+      splen = (right_div) - frmlen - slen ;
+      nput_char(n.colorframe, ' ', splen) ;
+
+      //  insert blank line
+      nputc (n.colorframe, vline);
+      ncrlf ();
+
+      sprintf (tempstr, "%-*s", name_end_col+1, frmstr);
+      nputs (dtree_colors[level], tempstr);  //  spaces
+   }
+   else if (slen > name_end_col) {
+      // sprintf (tempstr, "%-*s", center_col, levelstr); //  write filename
+      // nputs (dtree_colors[level], tempstr);
+      
+      nputs (n.colorframe, frmstr);
+      nputsw(dtree_colors[level], ktemp->name, wlen, ktemp->mb_len);
+      splen = (center_col) - frmlen - slen ;
+      nput_char(n.colorframe, ' ', splen) ;
+
+      //  insert blank line
+      nputc (n.colorframe, vline);
+      // sprintf (tempstr, "%*s", name_end_col+1, "");
+      // nputs (dtree_colors[level], tempstr);  //  spaces
+      nput_char(dtree_colors[level], ' ', name_end_col+1) ;
+
+      nputc (n.colorframe, vline);
+      ncrlf ();
+      sprintf (tempstr, "%-*s", name_end_col+1, frmstr);
+      nputs (dtree_colors[level], tempstr);  //  spaces
+   }
+   else {
+      // sprintf (tempstr, "%-*s", name_end_col+1, levelstr);
+      // nputs (dtree_colors[level], tempstr);
+      
+      nputs (n.colorframe, frmstr);
+      nputsw(dtree_colors[level], ktemp->name, wlen, ktemp->mb_len);
+      splen = (name_end_col + 1) - frmlen - slen ;
+      nput_char(n.colorframe, ' ', splen) ;
    }
 }
 
@@ -123,16 +144,11 @@ static void display_dir_tree (dirs * ktop)
             formstr[level] = (char) NULL;
          }
       }
-// [51660] l1 len: 8, +glock17
-// [51660] l2 len: 41, |\буяновский страйкбол
-      sprintf (levelstr, "%s%s", formstr, ktemp->name);
-      uint slen = _tcslen(levelstr);
-      syslog("l%u len: %u, %s\n", level, slen, levelstr) ;
 
       //*****************************************************************
       //                display data for this level                      
       //*****************************************************************
-      display_tree_filename (formstr, levelstr, ktemp);
+      display_tree_filename (formstr, ktemp);
       switch (n.tree) {
          //  show file/directory sizes only
          case 1:

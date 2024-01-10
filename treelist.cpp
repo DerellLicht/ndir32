@@ -246,21 +246,6 @@ debug_dump(dirpath, tempstr) ;
                   WideCharToMultiByte(CP_ACP, 0, fdata.cFileName, -1, dtail->name, bufferSize, NULL, NULL);
                }
 
-               // if (n.lfn_off) {
-               //    dtail->name = (char *) malloc(14) ;
-               //    if (dtail->name == 0)
-               //       error_exit (OUT_OF_MEMORY, NULL);
-               // 
-               //    strptr = sfn_convert_filename((char *) fdata.cFileName);
-               //    _tcscpy (dtail->name, strptr);
-               // }
-               // else {
-               //    dtail->name = (char *) malloc(_tcslen ((char *) fdata.cFileName) + 1);
-               //    if (dtail->name == 0)
-               //       error_exit (OUT_OF_MEMORY, NULL);
-               //    _tcscpy (dtail->name, (char far *) fdata.cFileName);
-               // }
-               
                dtail->attrib = (uchar) fdata.dwFileAttributes;
                // dtail->directs++ ;
             }                   //  if this is not a DOT directory
