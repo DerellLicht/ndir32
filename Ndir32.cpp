@@ -204,7 +204,7 @@ void insert_target_filespec(char *fstr)
    _tcscpy(target[tcount], fstr) ;
 
    unsigned result = qualify(target[tcount]) ;
-   if (result == QUAL_INV_DRIVE) {
+   if ((result & QUAL_INV_DRIVE) != 0) {
       error_exit(INV_DRIVE, target[tcount]) ;
    }
 
