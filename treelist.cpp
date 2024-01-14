@@ -206,16 +206,14 @@ debug_dump(dirpath, tempstr) ;
          if (fdata.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
             bool cut_dot_dirs;
 
-            // printf("DIRECTORY %04X %s\n", fdata.attrib, fdata.fname) ;
             //  skip '.' and '..', but NOT .ncftp (for example)
-            if (fdata.cFileName[0] != '.')
-               cut_dot_dirs = false;
-            else if (fdata.cFileName[1] == 0)
+            if (wcscmp(fdata.cFileName, L".")  == 0  ||
+                     wcscmp(fdata.cFileName, L"..") == 0) {
                cut_dot_dirs = true;
-            else if (fdata.cFileName[1] == '.' && fdata.cFileName[2] == 0)
-               cut_dot_dirs = true;
-            else
+            }
+            else {
                cut_dot_dirs = false;
+            }
 
             if (!cut_dot_dirs) {
                cur_node->directs++;
