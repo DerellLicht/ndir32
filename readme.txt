@@ -5,7 +5,7 @@ Derell Licht
 Fremont, CA
 
 Email: derelict@comcast.net
-Web:   derelllicht.com
+Web:   https://derelllicht.42web.io/
 
 ****************************************************************************************
 This project is licensed under Creative Commons CC0 1.0 Universal;  
