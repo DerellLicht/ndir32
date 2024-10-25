@@ -2,6 +2,7 @@ SHELL=cmd.exe
 USE_DEBUG = NO
 USE_64BIT = YES
 USE_UNICODE = NO
+USE_UPX = NO
 
 ifeq ($(USE_64BIT),YES)
 TOOLS=d:\tdm64\bin
@@ -90,11 +91,13 @@ depend:
 
 $(BIN): $(OBJS)
 	$(TOOLS)\g++ $(OBJS) $(LFLAGS) -o $(BIN) $(LIBS) 
+ifeq ($(USE_UPX),YES)
 ifeq ($(USE_DEBUG),NO)
 ifeq ($(USE_64BIT),NO)
 	upx -9 $(BIN)
 else
 	upx64 -9 $(BIN)
+endif
 endif
 endif
 
