@@ -273,5 +273,5 @@ Version 2.62, 01/10/24
   Add support for UNICODE file/folder names
   Removed support for short filenames
     
-Version 2.63, 01/04/24
+Version 2.63, 01/04/25
   Dirtree: fix bug with very long folder names
