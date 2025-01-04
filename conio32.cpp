@@ -128,13 +128,13 @@ void console_init(char *title)
    /* get the standard handles */
    hStdOut = GetStdHandle(STD_OUTPUT_HANDLE); 
    if (hStdOut == INVALID_HANDLE_VALUE) {
-      printf("GetStdHandle(STD_OUTPUT_HANDLE): %s\n", get_system_message()) ;
+      syslog("GetStdHandle(STD_OUTPUT_HANDLE): %s\n", get_system_message()) ;
       exit(1) ;
    }
    // PERR(hStdOut != INVALID_HANDLE_VALUE, "GetStdHandle");
    hStdIn = GetStdHandle(STD_INPUT_HANDLE);
    if (hStdIn == INVALID_HANDLE_VALUE) {
-      printf("GetStdHandle(STD_INPUT_HANDLE): %s\n", get_system_message()) ;
+      syslog("GetStdHandle(STD_INPUT_HANDLE): %s\n", get_system_message()) ;
       exit(1) ;
    }
    // PERR(hStdIn != INVALID_HANDLE_VALUE, "GetStdHandle");

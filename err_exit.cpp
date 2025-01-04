@@ -24,9 +24,9 @@ void error_exit(int index, char* outstr)
    if (index == DATA_OKAY)
       ;
    else if (outstr == NULL)
-      printf("%s\n", error_text[index]) ;
+      syslog("%s\n", error_text[index]) ;
    else
-      printf("%s: %s\n", outstr, error_text[index]) ;
+      syslog ("%s: %s\n", outstr, error_text[index]) ;
 
    restore_console_attribs();
 

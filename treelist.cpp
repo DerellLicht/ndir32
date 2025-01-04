@@ -235,12 +235,18 @@ debug_dump(dirpath, tempstr) ;
                   SetConsoleOutputCP(CP_UTF8);
                   bufferSize = WideCharToMultiByte(CP_UTF8, 0, fdata.cFileName, -1, NULL, 0, NULL, NULL);
                   dtail->name = (TCHAR *) malloc(bufferSize + 1); //lint !e732
+                  if (dtail->name == NULL) {
+                     error_exit(OUT_OF_MEMORY, NULL);
+                  }
                   WideCharToMultiByte(CP_UTF8, 0, fdata.cFileName, -1, dtail->name, bufferSize, NULL, NULL);
                   dtail->is_multi_byte = true ;
                }
                else {
                   bufferSize = WideCharToMultiByte(CP_UTF8, 0, fdata.cFileName, -1, NULL, 0, NULL, NULL);
                   dtail->name = (TCHAR *) malloc(bufferSize + 1);  //lint !e732
+                  if (dtail->name == NULL) {
+                     error_exit(OUT_OF_MEMORY, NULL);
+                  }
                   WideCharToMultiByte(CP_ACP, 0, fdata.cFileName, -1, dtail->name, bufferSize, NULL, NULL);
                }
 

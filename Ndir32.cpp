@@ -22,7 +22,7 @@
 #include "conio32.h"
 #include "qualify.h"
 
-#define  VER_NUMBER "2.62"
+#define  VER_NUMBER "2.63"
 
 //lint -esym(843, Version, ShortVersion) could be declared as const
 char *Version = " NDIR.EXE, Version " VER_NUMBER " " ;

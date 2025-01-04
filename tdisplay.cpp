@@ -68,53 +68,44 @@ static void display_tree_filename (char *frmstr, dirs *ktemp)
    
    //  calculate required padding spaces
    int frmlen = _tcslen(frmstr);
-   uint splen = 0 ;
-
-   //  if directory name, etc., is too long, make separate line
-   if (slen > center_col) {
-      // sprintf (tempstr, "%-*s", right_div, levelstr); //  write filename
-      // nputs (dtree_colors[level], tempstr);
-      
+   uint namelen = slen + (uint) frmlen ;
+   int splen = 0 ;
+   
+   //  if name string overruns data spaces, skip to new line
+   if (namelen >= name_end_col) {
       nputs (n.colorframe, frmstr);
       nputsw(dtree_colors[level], ktemp->name, wlen, ktemp->mb_len);
-      splen = (right_div) - frmlen - slen ;
-      nput_char(n.colorframe, ' ', splen) ;
-
-      //  insert blank line
-      nputc (n.colorframe, vline);
-      ncrlf ();
-
-      sprintf (tempstr, "%-*s", name_end_col+1, frmstr);
-      nputs (dtree_colors[level], tempstr);  //  spaces
-   }
-   else if (slen > name_end_col) {
-      // sprintf (tempstr, "%-*s", center_col, levelstr); //  write filename
-      // nputs (dtree_colors[level], tempstr);
       
-      nputs (n.colorframe, frmstr);
-      nputsw(dtree_colors[level], ktemp->name, wlen, ktemp->mb_len);
-      splen = (center_col) - frmlen - slen ;
-      nput_char(n.colorframe, ' ', splen) ;
-
-      //  insert blank line
-      nputc (n.colorframe, vline);
-      // sprintf (tempstr, "%*s", name_end_col+1, "");
-      // nputs (dtree_colors[level], tempstr);  //  spaces
-      nput_char(dtree_colors[level], ' ', name_end_col+1) ;
-
-      nputc (n.colorframe, vline);
+      //  skip the vlines on name row
+      // splen = (center_col) - frmlen - slen ;
+      // splen = name_end_col - namelen ;
+      // if (splen > 0) {
+      //    nput_char(n.colorframe, ' ', splen) ;
+      // }
+      // else {
+      //    syslog("(s > nec), splen: %d, ccol: %u, flen: %u, slen: %u, nec: %u, rdiv: %u\n", 
+      //       splen, center_col, frmlen, slen, name_end_col, right_div);
+      // }
+      // nputc (n.colorframe, vline);
+      // nput_char(dtree_colors[level], ' ', name_end_col+1) ;
+      // nputc (n.colorframe, vline);
       ncrlf ();
       sprintf (tempstr, "%-*s", name_end_col+1, frmstr);
       nputs (dtree_colors[level], tempstr);  //  spaces
    }
    else {
-      // sprintf (tempstr, "%-*s", name_end_col+1, levelstr);
-      // nputs (dtree_colors[level], tempstr);
-      
       nputs (n.colorframe, frmstr);
       nputsw(dtree_colors[level], ktemp->name, wlen, ktemp->mb_len);
-      splen = (name_end_col + 1) - frmlen - slen ;
-      nput_char(n.colorframe, ' ', splen) ;
+      
+      //  pad gap between end of folder name and data area, with spaces
+      splen = name_end_col - namelen ;
+      if (splen > 0) {
+         nput_char(n.colorframe, ' ', splen) ;
+      }
+      else {
+         syslog("(other), splen: %d, nec: %u, flen: %u, slen: %u, rdiv: %u\n", 
+            splen,  name_end_col, frmlen, slen, right_div);
+      }
    }
 }
 
