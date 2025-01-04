@@ -98,7 +98,7 @@ static void display_tree_filename (char *frmstr, dirs *ktemp)
       nputsw(dtree_colors[level], ktemp->name, wlen, ktemp->mb_len);
       
       //  pad gap between end of folder name and data area, with spaces
-      splen = name_end_col - namelen ;
+      splen = (name_end_col + 1) - namelen ;
       if (splen > 0) {
          nput_char(n.colorframe, ' ', splen) ;
       }
