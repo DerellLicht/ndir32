@@ -130,8 +130,8 @@ static int update_switches (char *argstr)
       default:
          break;                 //  make lint happy
    }                            /* end SWITCH      */
-   return slen;
-}
+   return slen;   //lint !e438  argstr
+}  
 
 //**********************************************************
 void parse_command_string (char *cmdstr)

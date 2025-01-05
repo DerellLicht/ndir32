@@ -15,6 +15,10 @@
 /*                                                                */
 /******************************************************************/
 
+// #ifdef _WIN32_IE >= 0x0600
+// c:\mingw\include\shlwapi.h  72  Error 87: expression too complicated for #ifdef or #ifndef
+//lint -e87   expression too complicated for #ifdef or #ifndef  (rejecting >= )
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>             //  _tcslen()
@@ -159,5 +163,5 @@ unsigned qualify (char *argptr)
    _tcscpy (argptr, pathptr);
 // printf("found: [%s]\n", pathptr) ;
 // getchar() ;
-   return (qresult);
+   return (qresult); //lint !e438  drive
 }

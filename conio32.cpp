@@ -395,7 +395,7 @@ void dshow_row_info(char *msg)
    //    _where_x(), _where_y(),
    //    get_window_cols()
    //    ) ;
-}
+}  //lint !e438  msg
 
 //**********************************************************
 void dprintc(unsigned row, unsigned col, const TCHAR outchr)

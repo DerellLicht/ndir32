@@ -266,7 +266,7 @@ static void list_files_qwise(void)
 /*****************************************************************/
 static void filehead(void)
 {
-   int j ;
+   unsigned j ;
    unsigned k ;
    int wincols = get_window_cols() - 1 ;
    if (is_redirected()) {

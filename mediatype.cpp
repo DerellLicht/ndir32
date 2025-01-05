@@ -128,7 +128,7 @@ static int GetDeviceConfig(HANDLE hCD)
    // sptwb.Spt.Cdb[0] = SCSIOP_INQUIRY;
    // sptwb.Spt.Cdb[4] = 192;
    length = offsetof(SCSI_PASS_THROUGH_WITH_BUFFERS,DataBuf) +
-            sptwb.Spt.DataTransferLength;
+            sptwb.Spt.DataTransferLength; //lint !e737
 
    // If device supports SCSI-3, then we can get the CD drive capabilities, i.e. ability to 
    // read/write to CD-ROM/R/RW or/and read/write to DVD-ROM/R/RW.  

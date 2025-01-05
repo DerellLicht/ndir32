@@ -64,11 +64,11 @@ static void display_tree_filename (char *frmstr, dirs *ktemp)
       //  this won't work for Unicode targets
       ktemp->mb_len = wlen ;
    }
-   uint slen = ktemp->mb_len;
+   // uint slen = ktemp->mb_len;
    
    //  calculate required padding spaces
    int frmlen = _tcslen(frmstr);
-   uint namelen = slen + (uint) frmlen ;
+   uint namelen = ktemp->mb_len + (uint) frmlen ;
    int splen = 0 ;
    
    //  if name string overruns data spaces, skip to new line
@@ -103,11 +103,11 @@ static void display_tree_filename (char *frmstr, dirs *ktemp)
          nput_char(n.colorframe, ' ', splen) ;
       }
       else {
-         syslog("(other), splen: %d, nec: %u, flen: %u, slen: %u, rdiv: %u\n", 
-            splen,  name_end_col, frmlen, slen, right_div);
+         syslog("(other), splen: %d, nec: %u, flen: %u, slen: %u\n", 
+            splen,  name_end_col, frmlen, ktemp->mb_len);
       }
    }
-}
+}  //  slen
 
 //**********************************************************
 //  recursive routine to display directory tree
