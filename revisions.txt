@@ -185,7 +185,7 @@ Version 2.34, 10/10/07 00:28
 Version 2.35, 01/04/09 15:27
   Re-implement redirection flag, so output files are useable.
 
-Version 2.36, 06/17/07 17:17
+Version 2.36, 06/17/09 17:17
   - /mm, added support for .ico and .cur files
   - linted the code
 
