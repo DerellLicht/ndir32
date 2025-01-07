@@ -208,7 +208,7 @@ debug_dump(dirpath, tempstr) ;
 
             //  skip '.' and '..', but NOT .ncftp (for example)
             if (wcscmp(fdata.cFileName, L".")  == 0  ||
-                     wcscmp(fdata.cFileName, L"..") == 0) {
+                wcscmp(fdata.cFileName, L"..") == 0) {
                cut_dot_dirs = true;
             }
             else {
@@ -241,7 +241,31 @@ debug_dump(dirpath, tempstr) ;
                   WideCharToMultiByte(CP_UTF8, 0, fdata.cFileName, -1, dtail->name, bufferSize, NULL, NULL);
                   dtail->is_multi_byte = true ;
                }
+               else 
+               if (isUpperAscii((WCHAR *) fdata.cFileName, dtemp->mb_len)) {
+                  // hex_dump((u8 *)fdata.cFileName, dtemp->mb_len) ;
+                  // syslogW(L"%s has upper ASCII chars\n", fdata.cFileName);
+// #define USE_WIDE_CODE                  
+#ifdef  USE_WIDE_CODE
+                  SetConsoleOutputCP(CP_UTF8);
+                  bufferSize = WideCharToMultiByte(CP_UTF8, 0, fdata.cFileName, -1, NULL, 0, NULL, NULL);
+                  dtail->name = (TCHAR *) malloc(bufferSize + 1); //lint !e732
+                  if (dtail->name == NULL) {
+                     error_exit(OUT_OF_MEMORY, NULL);
+                  }
+                  WideCharToMultiByte(CP_UTF8, 0, fdata.cFileName, -1, dtail->name, bufferSize, NULL, NULL);
+                  // dtail->is_multi_byte = true ;
+#else                  
+                  bufferSize = WideCharToMultiByte(CP_UTF8, 0, fdata.cFileName, -1, NULL, 0, NULL, NULL);
+                  dtail->name = (TCHAR *) malloc(bufferSize + 1);  //lint !e732
+                  if (dtail->name == NULL) {
+                     error_exit(OUT_OF_MEMORY, NULL);
+                  }
+                  WideCharToMultiByte(CP_ACP, 0, fdata.cFileName, -1, dtail->name, bufferSize, NULL, NULL);
+#endif
+               }
                else {
+                  SetConsoleOutputCP(CP_ACP);
                   bufferSize = WideCharToMultiByte(CP_UTF8, 0, fdata.cFileName, -1, NULL, 0, NULL, NULL);
                   dtail->name = (TCHAR *) malloc(bufferSize + 1);  //lint !e732
                   if (dtail->name == NULL) {

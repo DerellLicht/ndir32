@@ -56,6 +56,19 @@
 //    return strptr ;
 // }
 
+//**********************************************************
+bool isUpperAscii(WCHAR *outstr, uint slen)
+{
+   uint idx ;
+   for (idx=0; idx<slen; idx++) {
+      if (*outstr > 0x7F) {
+         return true ;
+      }
+      outstr++ ;
+   }
+   return false ;
+}
+
 //**********************************************************************
 //  Modify this to build entire string and print once.
 //  This command has several forms:
@@ -221,6 +234,34 @@ int syslog(const char *fmt, ...)
    // if (common_logging_enabled)
    //    fprintf(cmlogfd, "%s", consoleBuffer) ;
    OutputDebugStringA(consoleBuffer) ;
+   va_end(al);
+   return 1;
+}
+
+//********************************************************************
+//  On Windows platform, try to redefine printf/fprintf
+//  so we can output code to a debug window.
+//  Also, shadow syslog() within OutputDebugStringA()
+//  Note: printf() remapping was unreliable,
+//  but syslog worked great.
+//********************************************************************
+//lint -esym(714, syslogW)
+//lint -esym(759, syslogW)
+//lint -esym(765, syslogW)
+//lint -esym(1055, _vswprintf)
+//lint -esym(746, _vswprintf)
+//lint -esym(526, _vswprintf)
+//lint -esym(628, _vswprintf)
+int syslogW(const WCHAR *fmt, ...)
+{
+   WCHAR consoleBuffer[3000] ;
+   va_list al; //lint !e522
+
+   va_start(al, fmt);   //lint !e1055 !e530 !e516
+   _vswprintf(consoleBuffer, fmt, al);   //lint !e64
+   // if (common_logging_enabled)
+   //    fprintf(cmlogfd, "%s", consoleBuffer) ;
+   OutputDebugStringW(consoleBuffer) ;
    va_end(al);
    return 1;
 }

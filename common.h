@@ -42,8 +42,10 @@ typedef union ul2uc_u {
 } ul2uc_t;
 
 //  function prototypes
+bool isUpperAscii(WCHAR *outstr, uint slen);
 int hex_dump(u8 *bfr, int bytes);
 int syslog(const char *fmt, ...);
+int syslogW(const WCHAR *fmt, ...);
 char *get_system_message(void);
 char *get_system_message(DWORD errcode);
 int  strcmpiwc(const TCHAR *onestr, const TCHAR *twostr);
