@@ -155,15 +155,12 @@ static int read_dir_tree (dirs * cur_node)
       _tcscat (dirpath, cur_node->name);
       _tcscat (dirpath, "\\*.*");
    }
-   else
+   else {
       slen = _tcslen (dirpath);
+   }
 
    //  first, build tree list for current level
    level++;
-
-   // if (n.lfn_off) {
-   //    save_sfn_base_path(dirpath);
-   // }
 
 #ifdef  DESPERATE
 debug_dump(dirpath, "entry") ;
@@ -187,7 +184,7 @@ debug_dump(dirpath, "FindFirstFile denied") ;
       }
       else {
 #ifdef  DESPERATE
-sprintf (tempstr, "FindNext: %s\n", get_system_message (err));
+sprintf (tempstr, "FindFindFirst: %s\n", get_system_message (err));
 debug_dump(dirpath, tempstr) ;
 #endif
          // sprintf (tempstr, "path [%s]\n", dirpath);
