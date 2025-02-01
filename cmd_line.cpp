@@ -265,6 +265,7 @@ void verify_flags (void)
       insert_target_filespec ("*.com");
       insert_target_filespec ("*.bat");
       insert_target_filespec ("*.btm");
+      insert_target_filespec ("*.cmd");
    }
 
    //*********************************************
