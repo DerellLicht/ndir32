@@ -153,11 +153,11 @@ void parse_command_string (char *cmdstr)
          break;
 
       case '[':
-         strcpy (leftstr, ++cmdstr);
+         _tcscpy (leftstr, ++cmdstr);
          break;
 
       case ']':
-         strcpy (rightstr, ++cmdstr);
+         _tcscpy (rightstr, ++cmdstr);
          break;
 
       case '!':

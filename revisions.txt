@@ -258,7 +258,7 @@ Version 2.56, 01/17/23
   Fix bug in non-minimize display, with screen > 132 characters
   
 Version 2.58, 05/13/23
-  Remove /mm (list multimedia info) option, moved to media_list utility
+  Remove /mm (list multimedia info) option, moved to medialist utility
     
 Version 2.59, 05/16/23
   Reverted change in V2.56, which broke scrolling

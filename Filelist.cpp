@@ -47,7 +47,11 @@ static void display_batch_mode(void)
 {
    ffdata *ftemp = ftop ;
    while (ftemp != NULL) {
+#ifdef UNICODE   
+      wprintf("%s%s%s\n", leftstr, ftemp->filename, rightstr) ;
+#else      
       printf("%s%s%s\n", leftstr, ftemp->filename, rightstr) ;
+#endif      
       ftemp = ftemp->next ;
    }
 }
@@ -184,6 +188,8 @@ static void list_files_horizontally(void)
    fileend() ;
 }
 
+//*****************************************************************
+//  XTDIR mode
 //*****************************************************************
 static void list_files_qwise(void)
 {
@@ -522,7 +528,7 @@ void display_files(void)
    //  present normal file listings
    //************************************************
    if (n.horz & 2)
-      list_files_qwise() ;
+      list_files_qwise() ; //  XTDIR mode
    else if (n.horz & 1)
       list_files_horizontally() ;
    else {

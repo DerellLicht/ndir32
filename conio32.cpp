@@ -514,6 +514,7 @@ void dclrscr(void)
    }   
 
 //**********************************************************
+#ifndef UNICODE   
 static int is_CRLF_present(const char *cstr)
 {
    while (*cstr != 0) {
@@ -523,6 +524,7 @@ static int is_CRLF_present(const char *cstr)
    }
    return 0;
 }   
+#endif
 
 //**********************************************************
 void dputc(const TCHAR c)

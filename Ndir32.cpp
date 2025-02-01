@@ -179,6 +179,7 @@ static char *helptxt[] = {
 "   -g *     List directories FIRST.",
 "   -h *     List files horizontally.",
 "   -f *     List files only (No directories).",
+"   -q *     XTDIR mode - list files by extension.",
 "   -, *     Dir Tree: show only L level of subdirectories.",
 "               L is incremented for each additional comma",
 " ",

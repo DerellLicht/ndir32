@@ -20,6 +20,13 @@ extern uchar dtree_colors[MAX_DIR_ENTRY] ;
 #define DSUMMARY_FREE   1
 #define DSUMMARY_USED   2
 
+//  UNICODE translations
+#ifdef  UNICODE
+typedef  WCHAR  NUCHAR ;
+#else
+typedef  char  NUCHAR ;
+#endif
+
 //*****************************************************************
 //                  CONFIGURATION VARIABLES (new style)
 //
@@ -166,7 +173,7 @@ extern unsigned base_len ;  //  length of base_path
 
 extern char tempstr[MAXLINE] ;
 extern unsigned filecount ;             //  number of files found
-extern char leftstr[37], rightstr[37] ; //  used by batch mode
+extern NUCHAR leftstr[37], rightstr[37] ; //  used by batch mode
 
 extern unsigned columns ;           //  number of display columns on screen
 
