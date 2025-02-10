@@ -22,7 +22,6 @@
 #include <windows.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>             //  _tcslen()
 #include <direct.h>             //  _getdrive()
 #include <sys/stat.h>
 //  lint says I don't need this header, and in fact for MSVC6.0

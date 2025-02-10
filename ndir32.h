@@ -174,27 +174,14 @@ extern unsigned columns ;           //  number of display columns on screen
 extern unsigned start, finish ;
 //*****************  function prototypes**********************
 
-//  ndir.cpp
-void getcolor (ffdata * fnew);
-
-//***************  function prototypes  ***************
 //  cmd_line.cpp
 void parse_command_string(TCHAR *cmdstr) ;
 void parse_command_args(int start, int argc, TCHAR** argv);
 void verify_flags(void);
 
 //  config.cpp
-#define  MAX_EXT        200
-struct attrib_list {
-   uchar  attr ;
-   TCHAR  ext[MAX_EXT_SIZE+1] ;
-} ;
-extern attrib_list attr_table[MAX_EXT] ;
-extern unsigned attrib_count ;
-
+void getcolor (ffdata * fnew);
 void read_config_file(void);
-int write_default_ini_file(TCHAR *ini_str);
-int read_ini_file(TCHAR const * ini_str);
 
 //  filelist.cpp
 void display_files(void);

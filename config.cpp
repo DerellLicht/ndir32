@@ -15,8 +15,14 @@
 #include "common.h"
 #include "ndir32.h"
 
-attrib_list attr_table[MAX_EXT] ;
-unsigned attrib_count = 0 ;
+#define  MAX_EXT        200
+struct attrib_list {
+   uchar  attr ;
+   TCHAR  ext[MAX_EXT_SIZE+1] ;
+} ;
+
+static attrib_list attr_table[MAX_EXT] ;
+static unsigned attrib_count = 0 ;
 
 //#########################################################################
 //    INI-file handlers
@@ -38,6 +44,22 @@ static uchar const dir_default_list[MAX_DIR_ENTRY] = {
 3, 4, 5, 6, 7, 8, 9, 0x0A,
 3, 4, 5, 6, 7, 8, 9, 0x0A,
 3, 4, 5, 6 } ;
+
+//***************************************************************
+void getcolor(ffdata *fnew)
+{
+   unsigned j;
+   attrib_list *aptr;
+
+   for (j = 0; j < attrib_count; j++) {
+      aptr = &attr_table[j];
+      if (strcmpiwc (fnew->ext, aptr->ext) != 0) {
+         fnew->color = aptr->attr;
+         return;
+      }
+   }
+   fnew->color = n.colordefalt; //  if not found, assign default color
+}  //lint !e429  Custodial pointer 'fnew' has not been freed or returned
 
 //*********************************************************************
 static void parse_color_entry(TCHAR *iniptr)
@@ -119,7 +141,7 @@ static void parse_dir_color_entry(TCHAR *iniptr)
 }
 
 //*********************************************************************
-int write_default_ini_file(TCHAR *ini_str)
+static int write_default_ini_file(TCHAR *ini_str)
 {
    FILE *ofile ;
    int j ;
@@ -258,7 +280,7 @@ static void parse_ini_line(char *iniptr)
 }
 
 //*********************************************************************
-int read_ini_file(TCHAR const * ini_str)
+static int read_ini_file(TCHAR const * ini_str)
 {
    FILE *ofile ;
    int slen ;

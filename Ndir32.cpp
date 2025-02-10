@@ -418,22 +418,6 @@ static void sort_target_paths(void)
       }
    }
 
-//***************************************************************
-void getcolor(ffdata *fnew)
-{
-   unsigned j;
-   attrib_list *aptr;
-
-   for (j = 0; j < attrib_count; j++) {
-      aptr = &attr_table[j];
-      if (strcmpiwc (fnew->ext, aptr->ext) != 0) {
-         fnew->color = aptr->attr;
-         return;
-      }
-   }
-   fnew->color = n.colordefalt; //  if not found, assign default color
-}  //lint !e429  Custodial pointer 'fnew' has not been freed or returned
-
 //*****************************************************************
 int _tmain(int argc, TCHAR **argv)
 {
@@ -445,7 +429,7 @@ int _tmain(int argc, TCHAR **argv)
 
    //  get program filename
    int startIdx = 1 ;
-   char exename[PATH_MAX] ;
+   TCHAR exename[PATH_MAX] ;
 
    //  interesting lessons from WinNT 4.0:
    //  If the OS is WinNT 4.0, and;
@@ -457,11 +441,11 @@ int _tmain(int argc, TCHAR **argv)
    //  
    //  P.S.  While we're here, derive default INI filename also
    // printf("argv0=%s\n", argv[0]) ;
-   char* strptr = _tcsrchr(argv[0], '\\') ;
+   TCHAR* strptr = _tcsrchr(argv[0], _T('\\')) ;
    //  no path present
    if (strptr == 0) {
-      SearchPath(NULL, argv[0], ".exe", PATH_MAX, ininame, NULL) ;
-      strptr = _tcsrchr(ininame, '\\') ;
+      SearchPath(NULL, argv[0], _T(".exe"), PATH_MAX, ininame, NULL) ;
+      strptr = _tcsrchr(ininame, _T('\\')) ;
       if (strptr != 0) 
          _tcscpy(strptr, "\\ndir.ini") ;
 
@@ -471,7 +455,7 @@ int _tmain(int argc, TCHAR **argv)
    else {
       //  pick up INI filename
       _tcscpy(ininame, argv[0]) ;
-      strptr = _tcsrchr(ininame, '\\') ;
+      strptr = _tcsrchr(ininame, _T('\\')) ;
       if (strptr == 0)
          return 1;
       _tcscpy(strptr, "\\ndir.ini") ;
@@ -479,7 +463,7 @@ int _tmain(int argc, TCHAR **argv)
       //  now process exe name for getenv()
       strptr++ ;  //lint !e613:  skip backslash
       _tcscpy(exename, strptr) ;  //lint !e613
-      strptr = _tcschr(exename, '.') ;
+      strptr = _tcschr(exename, _T('.')) ;
       if (strptr != 0) {
          *strptr = 0 ;  //  strip the extension
       }
