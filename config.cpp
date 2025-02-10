@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #endif
 #include <ctype.h>
-#include <tchar.h>
+// #include <tchar.h>
 
 #include "common.h"
 #include "ndir32.h"
@@ -25,7 +25,7 @@ unsigned attrib_count = 0 ;
 
 //*********************************************************************
 //  default file colors
-attrib_list const attr_default_list[] = {
+static attrib_list const attr_default_list[] = {
 { 0x02, _T(".1ST") }, { 0x0E, _T(".ARC") }, { 0x03, _T(".ASM") }, { 0x03, _T(".BAS") }, 
 { 0x04, _T(".BAT") }, { 0x03, _T(".C")   }, { 0x0C, _T(".COM") }, { 0x03, _T(".CPP") },
 { 0x02, _T(".DOC") }, { 0x0C, _T(".EXE") }, { 0x0D, _T(".H")   }, { 0x0D, _T(".HEX") }, 

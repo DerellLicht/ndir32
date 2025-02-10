@@ -185,7 +185,6 @@ struct attrib_list {
    uchar  attr ;
    TCHAR  ext[MAX_EXT_SIZE+1] ;
 } ;
-extern attrib_list const attr_default_list[] ;
 extern attrib_list attr_table[MAX_EXT] ;
 extern unsigned attrib_count ;
 

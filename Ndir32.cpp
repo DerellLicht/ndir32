@@ -16,7 +16,7 @@
 #include <stdio.h>
 #include <stdlib.h>     //  getenv(), exit()
 #include <ctype.h>
-#include <tchar.h>
+// #include <tchar.h>
 
 #include "common.h"
 #include "ndir32.h"
