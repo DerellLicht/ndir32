@@ -275,3 +275,8 @@ Version 2.62, 01/10/24
     
 Version 2.63, 01/04/25
   Dirtree: fix bug with very long folder names
+
+Version 2.64, 02/10/25
+  Trying to implement UNICODE support
+
+

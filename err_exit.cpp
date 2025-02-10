@@ -19,7 +19,7 @@ static char const * const error_text[4] = {
    0 } ;
 
 //*********************************************************
-void error_exit(int index, char* outstr)
+void error_exit(int index, TCHAR* outstr)
 {
    if (index == DATA_OKAY)
       ;

@@ -39,7 +39,7 @@
 static char path[PATH_MAX];
 
 /******************************************************************/
-unsigned qualify (char *argptr)
+unsigned qualify (TCHAR *argptr)
 {
    char *pathptr = &path[0];
    char *strptr, *srchptr, tempchar;

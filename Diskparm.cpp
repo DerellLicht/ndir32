@@ -38,9 +38,9 @@ static char disktotal[MAX_ULL_COMMA_LEN+1];
 //*****************************************************************
 const unsigned int DEFAULT_CLUSTER_SIZE = 4096 ;
 
-static unsigned get_cluster_size(char dltr)
+static unsigned get_cluster_size(TCHAR dltr)
 {
-   char dirpath[4] = "c:\\" ;
+   TCHAR dirpath[4] = "c:\\" ;
    unsigned cl_bytes = DEFAULT_CLUSTER_SIZE ;
 
    //  12/17/13 
@@ -90,11 +90,11 @@ static unsigned get_cluster_size(char dltr)
 //        but it is no longer referenced now.
 //**************************************************************************
 static u64 freec1 = 0, frees1 = 0, totals1 = 0 ;
-bool get_disk_info(char *dstr)
+bool get_disk_info(TCHAR *dstr)
 {
    DWORD vsernbr, mclen, fsflags ;
    // UINT dtype ;
-   char *dirptr ;
+   TCHAR *dirptr ;
    bool gvi_valid = true ;
 
    dpath[0] = *dstr ;

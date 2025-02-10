@@ -20,13 +20,6 @@ extern uchar dtree_colors[MAX_DIR_ENTRY] ;
 #define DSUMMARY_FREE   1
 #define DSUMMARY_USED   2
 
-//  UNICODE translations
-#ifdef  UNICODE
-typedef  WCHAR  NUCHAR ;
-#else
-typedef  char  NUCHAR ;
-#endif
-
 //*****************************************************************
 //                  CONFIGURATION VARIABLES (new style)
 //
@@ -158,22 +151,22 @@ SORT_INV_TYPE } ;
 /************************************************************/
 enum error_values { DATA_OKAY = 0, OUT_OF_MEMORY, INV_DRIVE } ;
 
-void error_exit(int index, char* outstr);
+void error_exit(int index, TCHAR* outstr);
 
 //************************************************************
 //  ndata.cpp
 //************************************************************
 //  name of drive+path without filenames
-extern char base_path[PATH_MAX] ;
+extern TCHAR base_path[PATH_MAX] ;
 extern unsigned base_len ;  //  length of base_path
 
 //************************************************************
 //  ndata.cpp
 //************************************************************
 
-extern char tempstr[MAXLINE] ;
+extern TCHAR tempstr[MAXLINE] ;
 extern unsigned filecount ;             //  number of files found
-extern NUCHAR leftstr[37], rightstr[37] ; //  used by batch mode
+extern TCHAR leftstr[37], rightstr[37] ; //  used by batch mode
 
 extern unsigned columns ;           //  number of display columns on screen
 
@@ -185,6 +178,19 @@ void getcolor (ffdata * fnew);
 
 //  cmd_line.cpp
 void verify_flags(void);
+
+//  config.cpp
+#define  MAX_EXT        200
+struct attrib_list {
+   uchar  attr ;
+   TCHAR  ext[MAX_EXT_SIZE+1] ;
+} ;
+extern attrib_list const attr_default_list[] ;
+extern attrib_list attr_table[MAX_EXT] ;
+extern unsigned attrib_count ;
+
+int write_default_ini_file(TCHAR *ini_str);
+void parse_ini_line(TCHAR *iniptr);
 
 //  filelist.cpp
 void display_files(void);
@@ -209,7 +215,7 @@ void nput_line(uchar attr, char chr);
 void nputsw(uchar attr, const char *outstr, int wlen, int clen);
 
 //  diskparm.cpp
-bool get_disk_info(char *dstr);
+bool get_disk_info(TCHAR *dstr);
 void display_drive_summary(void);
 
 //  read_link.cpp

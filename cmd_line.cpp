@@ -134,9 +134,9 @@ static int update_switches (char *argstr)
 }  
 
 //**********************************************************
-void parse_command_string (char *cmdstr)
+void parse_command_string (TCHAR *cmdstr)
 {
-   char *extptr;
+   TCHAR *extptr;
    int slen;
 
    switch (*cmdstr) {

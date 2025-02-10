@@ -22,4 +22,4 @@
 #define  QUAL_INV_DRIVE    0x80
 
 //  from QUALIFY.CPP
-unsigned qualify(char *argptr);
+unsigned qualify(TCHAR *argptr);
