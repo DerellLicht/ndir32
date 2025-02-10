@@ -19,6 +19,7 @@
 // c:\mingw\include\shlwapi.h  72  Error 87: expression too complicated for #ifdef or #ifndef
 //lint -e87   expression too complicated for #ifdef or #ifndef  (rejecting >= )
 
+#include <windows.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>             //  _tcslen()
@@ -27,7 +28,6 @@
 //  lint says I don't need this header, and in fact for MSVC6.0
 //  I *don't* need it, but for gcc I do...
 #include <ctype.h>              //  tolower()
-#include <windows.h>
 #include <shlwapi.h>
 #include <limits.h>
 #include <tchar.h>

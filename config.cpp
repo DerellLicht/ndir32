@@ -41,6 +41,85 @@ static uchar const dir_default_list[MAX_DIR_ENTRY] = {
 3, 4, 5, 6 } ;
 
 //*********************************************************************
+static void parse_color_entry(TCHAR *iniptr)
+{
+   char *eqptr ;
+   char *hdptr ;
+   char *tlptr ;
+   uchar atr ;
+   attrib_list *aptr ;
+
+   //  check for multiple-color-entry forms...
+   //0x32:.com,.bat,.btm,.sys
+   //14:.arc,.tgz,.tar,.gz,.z,.zip,.bz2,.rar,.7z,.iso,.zcp
+   hdptr = _tcschr(iniptr, ':') ;
+   if (hdptr != 0) {
+      *hdptr++ = 0 ; //  terminate attribute, point to first extension
+      atr = (uchar) _tcstoul(iniptr, 0, 0) ;
+      if (atr == 0)
+         return ;
+      
+      while (LOOP_FOREVER) {
+         //  make sure we don't overrun our table
+         if (attrib_count >= MAX_EXT)
+            return ;
+         // if (*hdptr != '.')
+         //    return ;
+         tlptr = _tcschr(hdptr, ',') ;
+         //  see if we're at end of line
+         if (tlptr != 0) {
+            *tlptr++ = 0 ; //  NULL-term extension
+         }
+         //  check for too-long extensions in INI file
+         //  If extension in INI file is too long, just discard it
+         uint extlen = (*hdptr == '.') ? MAX_EXT_SIZE : MAX_EXT_SIZE-1 ;
+         if (_tcslen(hdptr) <= extlen) {
+            aptr = &attr_table[attrib_count++] ;
+            if (*hdptr == '.') {
+               _tcscpy(aptr->ext, hdptr) ;
+            }
+            else {
+               sprintf(aptr->ext, ".%s", hdptr) ;
+            }
+            aptr->attr = atr ;
+         }
+         if (tlptr == 0) {
+            break;
+         }
+         hdptr = tlptr ;
+      }
+      
+   }
+   //  handle single-color entries
+   //.FAQ=2
+   else {
+      //  make sure we don't overrun our table
+      if (attrib_count >= MAX_EXT)
+         return ;
+
+      eqptr = _tcschr(iniptr, '=') ;
+      if (eqptr == 0)
+         return ;
+      *eqptr++ = 0 ; //  NULL-terminate lvalue, point to rvalue
+
+      //.ARC=14
+      aptr = &attr_table[attrib_count++] ;
+      _tcsncpy(aptr->ext, iniptr, MAX_EXT_SIZE) ;
+      aptr->attr = (uchar) _tcstoul(eqptr, 0, 0) ;
+   }
+}
+
+//*********************************************************************
+static void parse_dir_color_entry(TCHAR *iniptr)
+{
+   static int dcIdx = 0 ;
+   iniptr++ ;  //  skip colon flag
+   if (dcIdx < MAX_DIR_ENTRY) {
+      dtree_colors[dcIdx++] = (uchar) _tcstoul(iniptr, 0, 0) ;
+   }
+}
+
+//*********************************************************************
 int write_default_ini_file(TCHAR *ini_str)
 {
    FILE *ofile ;
@@ -158,7 +237,7 @@ static ini_entry const ndir_ini[] = {
 { "sizeopt",      &n.size_display },
 { 0, 0} } ;
 
-void parse_ini_line(char *iniptr)
+static void parse_ini_line(char *iniptr)
 {
    char *eqptr ;
    int j ;
@@ -177,5 +256,69 @@ void parse_ini_line(char *iniptr)
          break;
       }
    }
+}
+
+//*********************************************************************
+int read_ini_file(TCHAR const * ini_str)
+{
+   FILE *ofile ;
+   int slen ;
+   char *strptr ;
+   static char line[PATH_MAX] ;
+
+// printf("reading %s\n", ini_str) ;
+   ofile = _tfopen(ini_str, _T("rt")) ;
+   if (ofile == 0) 
+      return errno ;
+
+   while (fgets(line, sizeof(line), ofile) != 0) {
+      //  strip off newline char
+      slen = _tcslen(line) ;
+      strptr = &line[slen-1] ;
+      if (*strptr == '\n') {
+         *strptr-- = 0 ;   //  strip off newline
+         // slen-- ;
+      }
+
+      //  next, find and strip off comments
+      strptr = _tcschr(line, ';') ;
+      if (strptr != 0)
+         *strptr-- = 0 ;
+
+      //  skip blank lines
+      slen = _tcslen(line) ;
+      if (slen == 0)
+         continue;
+      strptr = &line[slen-1] ;
+
+      //  then strip off tailing spaces
+      while (slen > 0  &&  *strptr == ' ') {
+         *strptr-- = 0 ;
+         slen-- ;
+      }
+      if (slen == 0)
+         continue;
+
+      //  now we should have a simple line in field=value format.
+      //  See if we can parse it...
+
+      //  see whether we're dealing with an extention-color entry,
+      //  or a flags entry
+      if (line[0] == '!') {
+         parse_command_string(line) ;
+      } else if (line[0] == '.') {
+         parse_color_entry(line) ;
+      } else if (line[0] >= '0'  &&  line[0] <= '9') {
+         parse_color_entry(line) ;
+      } else if (line[0] == ':') {
+         parse_dir_color_entry(line) ;
+      } else {
+// printf("line=%s", line) ;
+         parse_ini_line(line) ;
+      }
+   }
+   
+   fclose(ofile) ;
+   return 0;
 }
 

@@ -161,10 +161,10 @@ void parse_command_string (TCHAR *cmdstr)
          break;
 
       case '!':
-         strcpy (tempstr, ++cmdstr);
+         _tcscpy (tempstr, ++cmdstr);
 
          //  process exclusion extentions...
-         extptr = strchr (tempstr, '.');
+         extptr = _tcschr (tempstr, '.');
          //  why worry about length of extension??
          // if (extptr != 0 && _tcslen (extptr) <= 4) 
          if (extptr != 0) 
@@ -174,7 +174,7 @@ void parse_command_string (TCHAR *cmdstr)
          break;
 
       default:
-         strcpy (tempstr, cmdstr);
+         _tcscpy (tempstr, cmdstr);
          // cmdstr = copy_tempstr(cmdstr, tempstr) ;
          insert_target_filespec (tempstr);
          break;
@@ -182,7 +182,7 @@ void parse_command_string (TCHAR *cmdstr)
 }
 
 //**********************************************************
-void parse_command_args (int startIdx, int argc, char **argv)
+void parse_command_args (int startIdx, int argc, TCHAR **argv)
 {
    char *argvptr, *spcptr;
 
@@ -209,7 +209,7 @@ void parse_command_args (int startIdx, int argc, char **argv)
       argvptr = argv[j];
       //  fix an obscure bug under win32 and 4DOS7;
       //  for some reason, "/?" is getting changed to "/~" ...
-      if (strcmp(argvptr, "/~") == 0) {
+      if (_tcscmp(argvptr, "/~") == 0) {
          *(argvptr+1) = '/' ;
       }
       parse_command_string (argvptr);

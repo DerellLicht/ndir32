@@ -177,6 +177,10 @@ extern unsigned start, finish ;
 void getcolor (ffdata * fnew);
 
 //  cmd_line.cpp
+//***************  function prototypes  ***************
+//  cmd_line.cpp
+void parse_command_string(TCHAR *cmdstr) ;
+void parse_command_args(int start, int argc, TCHAR** argv);
 void verify_flags(void);
 
 //  config.cpp
@@ -189,7 +193,7 @@ extern attrib_list attr_table[MAX_EXT] ;
 extern unsigned attrib_count ;
 
 int write_default_ini_file(TCHAR *ini_str);
-void parse_ini_line(TCHAR *iniptr);
+int read_ini_file(TCHAR const * ini_str);
 
 //  filelist.cpp
 void display_files(void);
