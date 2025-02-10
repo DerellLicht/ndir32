@@ -11,7 +11,6 @@
 #include <stdlib.h>
 #endif
 #include <ctype.h>
-// #include <tchar.h>
 
 #include "common.h"
 #include "ndir32.h"
@@ -320,5 +319,58 @@ int read_ini_file(TCHAR const * ini_str)
    
    fclose(ofile) ;
    return 0;
+}
+
+//*********************************************************************
+static char const local_ini_name[] = ".\\ndir.ini" ;
+static char ini_path[PATH_MAX] ;
+
+void read_config_file(void)
+{
+   int result ;
+
+   //  search for existing file.
+   //  1. look in current directory
+   //  2. if not found, search location of executable
+   //  3. if not found, generate default file in location of executable
+   // printf("seek local ini=%s\n", local_ini_name) ;
+   result = read_ini_file(local_ini_name) ;
+   if (result == 0) {
+      return ;
+   }
+
+   //  If search for local file failed, try location of executable,
+   //  if that isn't the local directory.
+
+   //  If global INI filename isn't present, give up on search.
+   //  This will usually mean that we are running under WinNT 4.0,
+   //  and the executable is already in the current directory.
+   //  Just write the file in the current directory.
+   // printf("ininame=%s\n", ininame) ;
+   // getchar() ;
+   if (ininame[0] == 0) {
+      _tcscpy(ini_path, local_ini_name) ;
+   } 
+   //  If global INI filename IS present, try to load it
+   else {
+      result = read_ini_file(ininame) ;
+      if (result == 0) {
+         return ;
+      }
+      _tcscpy(ini_path, ininame) ;
+   }
+
+   //  If we couldn't open any existing INI files,
+   //  generate default file in appropriate location.
+   result = write_default_ini_file(ini_path) ;
+   if (result != 0) {
+      // perror(ini_path) ;
+      sprintf (tempstr, "path [%s]\n", ini_path);
+      nputs (0xA, tempstr);
+      sprintf (tempstr, "FindFirst: %s\n", get_system_message ());
+      nputs (0xA, tempstr);
+   }
+   //  try to read again, after writing defaults
+   read_ini_file(ini_path) ;
 }
 

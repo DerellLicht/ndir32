@@ -159,6 +159,7 @@ void error_exit(int index, TCHAR* outstr);
 //  name of drive+path without filenames
 extern TCHAR base_path[PATH_MAX] ;
 extern unsigned base_len ;  //  length of base_path
+extern TCHAR ininame[PATH_MAX] ;
 
 //************************************************************
 //  ndata.cpp
@@ -176,7 +177,6 @@ extern unsigned start, finish ;
 //  ndir.cpp
 void getcolor (ffdata * fnew);
 
-//  cmd_line.cpp
 //***************  function prototypes  ***************
 //  cmd_line.cpp
 void parse_command_string(TCHAR *cmdstr) ;
@@ -192,6 +192,7 @@ struct attrib_list {
 extern attrib_list attr_table[MAX_EXT] ;
 extern unsigned attrib_count ;
 
+void read_config_file(void);
 int write_default_ini_file(TCHAR *ini_str);
 int read_ini_file(TCHAR const * ini_str);
 
