@@ -194,21 +194,21 @@ void file_listing(void);
 void tree_listing (unsigned total_filespec_count);
 
 //  ndisplay.cpp
-void info(char *data[]);
+void info(TCHAR *data[]);
 void display_logo(void);
 void print1(ffdata *fptr);
 void nclrscr(void);
 void ncrlf(void);
 void nputc(uchar attr, const uchar outchr);
-void nputs(uchar attr, const char* outstr);
-void nput_char(uchar attr, char chr, int count);
-void nput_line(uchar attr, char chr);
-void nputsw(uchar attr, const char *outstr, int wlen, int clen);
+void nputs(uchar attr, const TCHAR* outstr);
+void nput_char(uchar attr, TCHAR chr, int count);
+void nput_line(uchar attr, TCHAR chr);
+void nputsw(uchar attr, const TCHAR *outstr, int wlen, int clen);
 
 //  diskparm.cpp
 bool get_disk_info(TCHAR *dstr);
 void display_drive_summary(void);
 
 //  read_link.cpp
-bool read_shortcut_file(ffdata * fptr, char *shortcut_path);
+bool read_shortcut_file(ffdata *fptr, TCHAR *shortcut_path);
 

@@ -6,7 +6,7 @@ struct dirs
 {
    dirs *brothers;
    dirs *sons;
-   char *name;
+   TCHAR *name;
    uchar attrib;
    ULONGLONG dirsize;
    ULONGLONG dirsecsize;

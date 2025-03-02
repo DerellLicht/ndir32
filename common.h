@@ -44,16 +44,12 @@ typedef union ul2uc_u {
 //  function prototypes
 bool isUpperAscii(WCHAR *outstr, uint slen);
 int hex_dump(u8 *bfr, int bytes);
-int syslog(const char *fmt, ...);
-int syslogW(const WCHAR *fmt, ...);
-char *get_system_message(void);
-char *get_system_message(DWORD errcode);
+int syslog(const TCHAR *fmt, ...);
+TCHAR *get_system_message(void);
+TCHAR *get_system_message(DWORD errcode);
 int  strcmpiwc(const TCHAR *onestr, const TCHAR *twostr);
 
 // ULLONG_MAX = 18,446,744,073,709,551,615
 #define  MAX_ULL_COMMA_LEN  26
-char *convert_to_commas(ULONGLONG uli, char *outstr);
-
-// void save_sfn_base_path(char *sfn_base_path);
-// char *sfn_convert_filename(char *lfn_filename);
-
+// char *convert_to_commas(ULONGLONG uli, char *outstr);
+TCHAR *convert_to_commas(ULONGLONG uli, TCHAR *outstr);

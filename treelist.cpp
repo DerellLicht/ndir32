@@ -1,5 +1,5 @@
 //*****************************************************************
-//  Copyright (c) 1995-2023  Daniel D Miller
+//  Copyright (c) 1995-2025  Daniel D Miller
 //  TREELIST.CPP: Read directory tree                  
 //*****************************************************************
 
@@ -19,7 +19,7 @@
 #include "treelist.h"
 
 //************************************************************
-static char dirpath[PATH_MAX];
+static TCHAR dirpath[PATH_MAX];
 unsigned level;
 
 //************************************************************
@@ -50,15 +50,11 @@ dirs *top = NULL;
 //  this was used for debugging directory-tree read and build
 //*****************************************************************
 #ifdef  DESPERATE
-void debug_dump(char *fname, char *msg)
+void debug_dump(TCHAR *fname, TCHAR *msg)
 {
-   syslog("L%u %s: %s\n", level, fname, msg) ;  //  debug dump
+   syslog(_T("L%u %s: %s\n"), level, fname, msg) ;  //  debug dump
 }
 
-void debug_dumpW(WCHAR *fname, WCHAR *msg)
-{
-   syslogW(L"Wl%u %s: %s\n", level, fname, msg) ;  //  debug dump
-}
 #endif
 
 //**********************************************************
@@ -89,7 +85,7 @@ static dirs *new_dir_node (void)
 //*********************************************************
 static unsigned lrow, lcol, dircount ;
 
-static void pattern_init(char *lstr)
+static void pattern_init(TCHAR *lstr)
 {
    dircount = 0 ;
    lrow = _where_y() ;
@@ -110,10 +106,10 @@ static void pattern_reset(void)
 
 static void pattern_update(void)
 {
-   static char pucount[20] ;
+   static TCHAR pucount[20] ;
 
    dircount++ ;
-   sprintf(pucount, "%u", dircount) ;
+   _stprintf(pucount, _T("%u"), dircount) ;
    dprints(lrow, lcol, pucount) ;
 }
 
@@ -126,13 +122,13 @@ static int early_abort = 0 ;
 static int read_dir_tree (dirs * cur_node)
 {
    dirs *dtail = 0;
-   char *strptr;
+   TCHAR *strptr;
    HANDLE handle;
    int slen, done, result;
    DWORD err;
    ULONGLONG file_clusters, clusters;
    // WIN32_FIND_DATA fdata ; //  long-filename file struct
-   WIN32_FIND_DATAW fdata ; //  long-filename file struct
+   WIN32_FIND_DATA fdata ; //  long-filename file struct
 
    if (((dircount % 50) == 0)  &&  _kbhit()) {
       result = _getch() ;
@@ -153,12 +149,12 @@ static int read_dir_tree (dirs * cur_node)
    //  dirpath is already complete
    if (level > 0) {
       //  insert new path name
-      strptr = _tcsrchr (dirpath, '\\');
+      strptr = _tcsrchr (dirpath, _T('\\'));
       strptr++;
       *strptr = 0;
       slen = _tcslen (dirpath);
       _tcscat (dirpath, cur_node->name);
-      _tcscat (dirpath, "\\*");
+      _tcscat (dirpath, _T("\\*"));
    }
    else {
       slen = _tcslen (dirpath);
@@ -171,14 +167,14 @@ static int read_dir_tree (dirs * cur_node)
 debug_dump(dirpath, "entry") ;
 #endif
    err = 0;
-   WCHAR wfilespec[MAX_PATH+1];
-   result = MultiByteToWideChar(CP_ACP, 0, dirpath, -1, wfilespec, (int) _tcslen(dirpath)+1);
-   if (result == 0) {
-      syslog("%s: a2u failed: %u\n", dirpath, (unsigned) GetLastError());
-      return -1;
-   }
+   // TCHAR wfilespec[MAX_PATH+1];
+   // result = MultiByteToWideChar(CP_ACP, 0, dirpath, -1, wfilespec, (int) _tcslen(dirpath)+1);
+   // if (result == 0) {
+   //    syslog("%s: a2u failed: %u\n", dirpath, (unsigned) GetLastError());
+   //    return -1;
+   // }
    
-   handle = FindFirstFileW(wfilespec, &fdata);
+   handle = FindFirstFile(dirpath, &fdata);
    if (handle == INVALID_HANDLE_VALUE) {
       err = GetLastError ();
       if (err == ERROR_ACCESS_DENIED) {
@@ -189,12 +185,11 @@ debug_dump(dirpath, "FindFirstFile denied") ;
       }
       else {
 #ifdef  DESPERATE
-syslogW(L"%s", wfilespec) ;
-syslog("FindFindFirst: %s\n", get_system_message (err));
+syslog(_T("%s: FindFindFirst: %s\n"), dirpath, get_system_message (err));
 #endif
-         // sprintf (tempstr, "path [%s]\n", dirpath);
+         // _stprintf (tempstr, "path [%s]\n", dirpath);
          // nputs (0xA, tempstr);
-         // sprintf (tempstr, "FindFirst: %s\n", get_system_message ());
+         // _stprintf (tempstr, "FindFirst: %s\n", get_system_message ());
          // nputs (0xA, tempstr);
          return err ;
       }
@@ -209,8 +204,8 @@ syslog("FindFindFirst: %s\n", get_system_message (err));
             bool cut_dot_dirs;
 
             //  skip '.' and '..', but NOT .ncftp (for example)
-            if (wcscmp(fdata.cFileName, L".")  == 0  ||
-                wcscmp(fdata.cFileName, L"..") == 0) {
+            if (_tcscmp(fdata.cFileName, _T("."))  == 0  ||
+                _tcscmp(fdata.cFileName, _T("..")) == 0) {
                cut_dot_dirs = true;
             }
             else {
@@ -231,51 +226,56 @@ syslog("FindFindFirst: %s\n", get_system_message (err));
                //    strlwr(ff.name) ;
                
                //  convert Unicode filenames to UTF8
-               dtemp->mb_len = wcslen(fdata.cFileName) ;
-               int bufferSize ;
-               if (fdata.cFileName[0] > 255) {
-                  SetConsoleOutputCP(CP_UTF8);
-                  bufferSize = WideCharToMultiByte(CP_UTF8, 0, fdata.cFileName, -1, NULL, 0, NULL, NULL);
-                  dtemp->name = (TCHAR *) malloc(bufferSize + 1); //lint !e732
-                  if (dtemp->name == NULL) {
-                     error_exit(OUT_OF_MEMORY, NULL);
-                  }
-                  WideCharToMultiByte(CP_UTF8, 0, fdata.cFileName, -1, dtemp->name, bufferSize, NULL, NULL);
-                  dtemp->is_multi_byte = true ;
+               dtemp->mb_len = _tcslen(fdata.cFileName) ;
+               dtemp->name = (TCHAR *) malloc(dtemp->mb_len + 1);  //lint !e732
+               if (dtemp->name == NULL) {
+                  error_exit(OUT_OF_MEMORY, NULL);
                }
-               else 
-               if (isUpperAscii((WCHAR *) fdata.cFileName, dtemp->mb_len)) {
-                  // hex_dump((u8 *)fdata.cFileName, dtemp->mb_len) ;
-                  // syslogW(L"%s has upper ASCII chars\n", fdata.cFileName);
-#define USE_WIDE_CODE                  
-#ifdef  USE_WIDE_CODE
-                  SetConsoleOutputCP(CP_UTF8);
-                  bufferSize = WideCharToMultiByte(CP_UTF8, 0, fdata.cFileName, -1, NULL, 0, NULL, NULL);
-                  dtemp->name = (TCHAR *) malloc(2*(bufferSize + 1)); //lint !e732
-                  if (dtemp->name == NULL) {
-                     error_exit(OUT_OF_MEMORY, NULL);
-                  }
-                  WideCharToMultiByte(CP_UTF8, 0, fdata.cFileName, -1, dtemp->name, bufferSize, NULL, NULL);
-                  // dtemp->is_multi_byte = true ;
-                  SetConsoleOutputCP(CP_ACP);
-#else                  
-                  bufferSize = WideCharToMultiByte(CP_UTF8, 0, fdata.cFileName, -1, NULL, 0, NULL, NULL);
-                  dtemp->name = (TCHAR *) malloc(bufferSize + 1);  //lint !e732
-                  if (dtemp->name == NULL) {
-                     error_exit(OUT_OF_MEMORY, NULL);
-                  }
-                  WideCharToMultiByte(CP_ACP, 0, fdata.cFileName, -1, dtemp->name, bufferSize, NULL, NULL);
-#endif
-               }
-               else {
-                  SetConsoleOutputCP(CP_ACP);
-                  bufferSize = WideCharToMultiByte(CP_UTF8, 0, fdata.cFileName, -1, NULL, 0, NULL, NULL);
-                  dtemp->name = (TCHAR *) malloc(bufferSize + 1);  //lint !e732
-                  if (dtemp->name == NULL) {
-                     error_exit(OUT_OF_MEMORY, NULL);
-                  }
-                  WideCharToMultiByte(CP_ACP, 0, fdata.cFileName, -1, dtemp->name, bufferSize, NULL, NULL);
-               }
+
+//                int bufferSize ;
+//                if (fdata.cFileName[0] > 255) {
+//                   SetConsoleOutputCP(CP_UTF8);
+//                   bufferSize = WideCharToMultiByte(CP_UTF8, 0, fdata.cFileName, -1, NULL, 0, NULL, NULL);
+//                   dtemp->name = (TCHAR *) malloc(bufferSize + 1); //lint !e732
+//                   if (dtemp->name == NULL) {
+//                      error_exit(OUT_OF_MEMORY, NULL);
+//                   }
+//                   WideCharToMultiByte(CP_UTF8, 0, fdata.cFileName, -1, dtemp->name, bufferSize, NULL, NULL);
+//                   dtemp->is_multi_byte = true ;
+//                }
+//                else 
+//                if (isUpperAscii((WCHAR *) fdata.cFileName, dtemp->mb_len)) {
+//                   // hex_dump((u8 *)fdata.cFileName, dtemp->mb_len) ;
+//                   // syslogW(L"%s has upper ASCII chars\n", fdata.cFileName);
+// #define USE_WIDE_CODE                  
+// #ifdef  USE_WIDE_CODE
+//                   SetConsoleOutputCP(CP_UTF8);
+//                   bufferSize = WideCharToMultiByte(CP_UTF8, 0, fdata.cFileName, -1, NULL, 0, NULL, NULL);
+//                   dtemp->name = (TCHAR *) malloc(2*(bufferSize + 1)); //lint !e732
+//                   if (dtemp->name == NULL) {
+//                      error_exit(OUT_OF_MEMORY, NULL);
+//                   }
+//                   WideCharToMultiByte(CP_UTF8, 0, fdata.cFileName, -1, dtemp->name, bufferSize, NULL, NULL);
+//                   // dtemp->is_multi_byte = true ;
+//                   SetConsoleOutputCP(CP_ACP);
+// #else                  
+//                   bufferSize = WideCharToMultiByte(CP_UTF8, 0, fdata.cFileName, -1, NULL, 0, NULL, NULL);
+//                   dtemp->name = (TCHAR *) malloc(bufferSize + 1);  //lint !e732
+//                   if (dtemp->name == NULL) {
+//                      error_exit(OUT_OF_MEMORY, NULL);
+//                   }
+//                   WideCharToMultiByte(CP_ACP, 0, fdata.cFileName, -1, dtemp->name, bufferSize, NULL, NULL);
+// #endif
+//                }
+//                else {
+//                   SetConsoleOutputCP(CP_ACP);
+//                   bufferSize = WideCharToMultiByte(CP_UTF8, 0, fdata.cFileName, -1, NULL, 0, NULL, NULL);
+//                   dtemp->name = (TCHAR *) malloc(bufferSize + 1);  //lint !e732
+//                   if (dtemp->name == NULL) {
+//                      error_exit(OUT_OF_MEMORY, NULL);
+//                   }
+//                   WideCharToMultiByte(CP_ACP, 0, fdata.cFileName, -1, dtemp->name, bufferSize, NULL, NULL);
+//                }
 
                dtemp->attrib = (uchar) fdata.dwFileAttributes;
                // dtail->directs++ ;
@@ -308,25 +308,25 @@ syslog("FindFindFirst: %s\n", get_system_message (err));
       //******************************************
       //  search for another file
       //******************************************
-      if (FindNextFileW(handle, &fdata) == 0) {
+      if (FindNextFile(handle, &fdata) == 0) {
          // done = 1;
          err = GetLastError ();
          if (err == ERROR_ACCESS_DENIED) {
 #ifdef  DESPERATE
-debug_dumpW(fdata.cFileName, L"denied") ;
+debug_dump(fdata.cFileName, L"denied") ;
 #else
             ;                     //  continue reading
 #endif
          }
          else if (err == ERROR_NO_MORE_FILES) {
 #ifdef  DESPERATE
-syslog("FindNextFileW: no more files\n") ;
+syslog(_T("FindNextFileW: no more files\n")) ;
 #endif
             done = 1 ;
          }
          else {
 #ifdef  DESPERATE
-sprintf (tempstr, "FindNext: %s\n", get_system_message (err));
+_stprintf (tempstr, _T("FindNext: %s\n"), get_system_message (err));
 debug_dump(dirpath, tempstr) ;
 #endif
             done = 1 ;
@@ -357,7 +357,7 @@ debug_dump(ktemp->name, "call read_dir_tree") ;
    }
 
    //  when done, strip name from path and restore '\*.*'
-   _tcscpy (&dirpath[slen], "*");  //lint !e669  string overrun??
+   _tcscpy (&dirpath[slen], _T("*"));  //lint !e669  string overrun??
 
    //  restore the level number
    level--;
@@ -529,16 +529,16 @@ static void sort_trees (void)
 }
 
 //**********************************************************
-static int build_dir_tree (char *tpath)
+static int build_dir_tree (TCHAR *tpath)
 {
    int result ;
-   char *strptr;
+   TCHAR *strptr;
    level = 0;
 
    //  Extract base path from first filespec,
    //  and strip off filename
    _tcscpy (base_path, tpath);
-   strptr = _tcsrchr (base_path, '\\');
+   strptr = _tcsrchr (base_path, _T('\\'));
    if (strptr != 0)
       *(++strptr) = 0;          //  strip off filename
 
@@ -550,25 +550,25 @@ static int build_dir_tree (char *tpath)
    //  Extract base path from first filespec,
    //  and strip off filename
    _tcscpy (base_path, tpath);
-   strptr = _tcsrchr (base_path, '\\');
+   strptr = _tcsrchr (base_path, _T('\\'));
    strptr++;                    //  skip past backslash, to filename
    *strptr = 0;                 //  strip off filename
    base_len = _tcslen (base_path);
 
    //  derive root path name
    if (_tcslen (base_path) == 3) {
-      top->name = (char *) malloc(8) ;
+      top->name = (TCHAR *) malloc(8) ;
       if (top->name == 0)
          error_exit (OUT_OF_MEMORY, NULL);
-      _tcscpy (top->name, "<root>");
+      _tcscpy (top->name, _T("<root>"));
    }
    else {
       _tcscpy (tempstr, base_path);
       tempstr[base_len - 1] = 0; //  strip off tailing backslash
-      strptr = _tcsrchr (tempstr, '\\');
+      strptr = _tcsrchr (tempstr, _T('\\'));
       strptr++;                 //  skip past backslash, to filename
 
-      top->name = (char *) malloc(_tcslen (strptr) + 1);
+      top->name = (TCHAR *) malloc(_tcslen (strptr) + 1);
       if (top->name == 0)
          error_exit (OUT_OF_MEMORY, NULL);
       _tcscpy (top->name, strptr);
@@ -581,7 +581,7 @@ static int build_dir_tree (char *tpath)
 
    _tcscpy (dirpath, tpath);
 
-   pattern_init("wait; reading directory ") ;
+   pattern_init(_T("wait; reading directory ")) ;
    result = read_dir_tree (top);
 #ifdef  DESPERATE
 debug_dump("exit", "returned from read_dir_tree") ;

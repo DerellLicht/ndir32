@@ -57,7 +57,7 @@
 // }
 
 //**********************************************************
-bool isUpperAscii(WCHAR *outstr, uint slen)
+bool isUpperAscii(TCHAR *outstr, uint slen)
 {
    uint idx ;
    for (idx=0; idx<slen; idx++) {
@@ -128,7 +128,7 @@ int hex_dump(u8 *bfr, int bytes, unsigned addr)
       strcat(pstr, tail) ;
       strcat(pstr, " |") ;
       // printf("%s\n", pstr) ;
-      syslog("%s\n", pstr) ;
+      syslog(_T("%s\n"), pstr) ;
 
       idx += leftovers ;
       if (idx >= bytes)
@@ -148,9 +148,9 @@ int hex_dump(u8 *bfr, int bytes)
 //  each subsequent call to this function overwrites 
 //  the previous report.
 //*************************************************************
-char *get_system_message(void)
+TCHAR *get_system_message(void)
 {
-   static char msg[261] ;
+   static TCHAR msg[261] ;
    int slen ;
 
    LPVOID lpMsgBuf;
@@ -166,7 +166,7 @@ char *get_system_message(void)
    // Process any inserts in lpMsgBuf.
    // ...
    // Display the string.
-   _tcsncpy(msg, (char *) lpMsgBuf, 260) ;
+   _tcsncpy(msg, (TCHAR *) lpMsgBuf, 260) ;
 
    // Free the buffer.
    LocalFree( lpMsgBuf );
@@ -180,9 +180,9 @@ char *get_system_message(void)
    return msg;
 }
 
-char *get_system_message(DWORD errcode)
+TCHAR *get_system_message(DWORD errcode)
 {
-   static char msg[261] ;
+   static TCHAR msg[261] ;
    int slen ;
 
    LPVOID lpMsgBuf;
@@ -198,7 +198,7 @@ char *get_system_message(DWORD errcode)
    // Process any inserts in lpMsgBuf.
    // ...
    // Display the string.
-   _tcsncpy(msg, (char *) lpMsgBuf, 260) ;
+   _tcsncpy(msg, (TCHAR *) lpMsgBuf, 260) ;
 
    // Free the buffer.
    LocalFree( lpMsgBuf );
@@ -222,46 +222,18 @@ char *get_system_message(DWORD errcode)
 //lint -esym(714, syslog)
 //lint -esym(759, syslog)
 //lint -esym(765, syslog)
-int syslog(const char *fmt, ...)
+int syslog(const TCHAR *fmt, ...)
 {
-   char consoleBuffer[3000] ;
+   TCHAR consoleBuffer[3000] ;
    va_list al; //lint !e522
 
 //lint -esym(526, __builtin_va_start)
 //lint -esym(628, __builtin_va_start)
    va_start(al, fmt);   //lint !e1055 !e530
-   vsprintf(consoleBuffer, fmt, al);   //lint !e64
+   _vstprintf(consoleBuffer, fmt, al);   //lint !e64
    // if (common_logging_enabled)
    //    fprintf(cmlogfd, "%s", consoleBuffer) ;
-   OutputDebugStringA(consoleBuffer) ;
-   va_end(al);
-   return 1;
-}
-
-//********************************************************************
-//  On Windows platform, try to redefine printf/fprintf
-//  so we can output code to a debug window.
-//  Also, shadow syslog() within OutputDebugStringA()
-//  Note: printf() remapping was unreliable,
-//  but syslog worked great.
-//********************************************************************
-//lint -esym(714, syslogW)
-//lint -esym(759, syslogW)
-//lint -esym(765, syslogW)
-//lint -esym(1055, _vswprintf)
-//lint -esym(746, _vswprintf)
-//lint -esym(526, _vswprintf)
-//lint -esym(628, _vswprintf)
-int syslogW(const WCHAR *fmt, ...)
-{
-   WCHAR consoleBuffer[3000] ;
-   va_list al; //lint !e522
-
-   va_start(al, fmt);   //lint !e1055 !e530 !e516
-   _vswprintf(consoleBuffer, fmt, al);   //lint !e64
-   // if (common_logging_enabled)
-   //    fprintf(cmlogfd, "%s", consoleBuffer) ;
-   OutputDebugStringW(consoleBuffer) ;
+   OutputDebugString(consoleBuffer) ;
    va_end(al);
    return 1;
 }
@@ -269,19 +241,19 @@ int syslogW(const WCHAR *fmt, ...)
 //*****************************************************************************
 // ULLONG_MAX = 18,446,744,073,709,551,615
 //*****************************************************************************
-char *convert_to_commas(ULONGLONG uli, char *outstr)
+TCHAR *convert_to_commas(ULONGLONG uli, TCHAR *outstr)
 {  //lint !e1066
    int slen, inIdx, j ;
-   char *strptr ;
-   char temp_ull_str[MAX_ULL_COMMA_LEN+1] ;
-   static char local_ull_str[MAX_ULL_COMMA_LEN+1] ;
+   TCHAR *strptr ;
+   TCHAR temp_ull_str[MAX_ULL_COMMA_LEN+1] ;
+   static TCHAR local_ull_str[MAX_ULL_COMMA_LEN+1] ;
    if (outstr == NULL) {
        outstr = local_ull_str ;
    }
 
    // sprintf(temp_ull_str, "%"PRIu64"", uli);
    // sprintf(temp_ull_str, "%llu", uli);
-   sprintf(temp_ull_str, "%I64u", uli);
+   _stprintf(temp_ull_str, _T("%I64u"), uli);
    // _ui64toa(uli, temp_ull_str, 10) ;
    slen = _tcslen(temp_ull_str) ;
    inIdx = --slen ;//  convert byte-count to string index 

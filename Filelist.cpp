@@ -47,11 +47,7 @@ static void display_batch_mode(void)
 {
    ffdata *ftemp = ftop ;
    while (ftemp != NULL) {
-#ifdef UNICODE   
-      wprintf("%s%s%s\n", leftstr, ftemp->filename, rightstr) ;
-#else      
-      printf("%s%s%s\n", leftstr, ftemp->filename, rightstr) ;
-#endif      
+      _tprintf(_T("%s%s%s\n"), leftstr, ftemp->filename, rightstr) ;
       ftemp = ftemp->next ;
    }
 }
@@ -155,7 +151,7 @@ static void lfn_get_columns(void)
    // [66900] win_cols: 135, max_name_len: 39, line_len: 66, name_width: 43
    // syslog("win_cols: %u, line_len: %u, disp_cols: %u, max_name_len: %u, name_width: %u\n", 
    //    wincols, line_len, disp_cols, max_name_len, name_width);
-   // sprintf(tempfmtstr, "%c-%us", '%', name_width) ;
+   // _stprintf(tempfmtstr, "%c-%us", '%', name_width) ;
 }
 
 //*****************************************************************
@@ -197,7 +193,7 @@ static void list_files_qwise(void)
    ffdata *ftemp ;
    unsigned width, col = 0, slen ;
    int first_line = 1, new_line ;
-   char prev_ext[10] ;
+   TCHAR prev_ext[10] ;
    unsigned maxext ;
 
    prev_ext[0] = 0 ; //  make lint happy
@@ -228,7 +224,7 @@ static void list_files_qwise(void)
             first_line = 0 ;
          else 
             ncrlf() ;
-         sprintf(tempstr, "%-*s: ", maxext, ftemp->ext) ;
+         _stprintf(tempstr, _T("%-*s: "), maxext, ftemp->ext) ;
          nputs(ftemp->color, tempstr) ;
          col = maxext+2 ;
          _tcscpy(prev_ext, ftemp->ext) ;
@@ -241,10 +237,10 @@ static void list_files_qwise(void)
       slen = _tcslen(ftemp->name) + 2 ;
       if (col + slen > width) {
          // if (!n.lfn_off) {
-            nputs((ftemp->dirflag) ? n.colordir : ftemp->color, ", ") ;
+            nputs((ftemp->dirflag) ? n.colordir : ftemp->color, _T(", ")) ;
          // }
          ncrlf() ;
-         sprintf(tempstr, "%*s  ", maxext, " ") ;
+         _stprintf(tempstr, _T("%*s  "), maxext, " ") ;
          nputs(ftemp->color, tempstr) ;
          col = maxext+2 ;
          new_line = 1 ;
@@ -254,10 +250,10 @@ static void list_files_qwise(void)
          new_line = 0 ;
       // } else if (!n.lfn_off) {
       } else {
-         nputs((ftemp->dirflag) ? n.colordir : ftemp->color, ", ") ;
+         nputs((ftemp->dirflag) ? n.colordir : ftemp->color, _T(", ")) ;
       }
       //  select appropriate color and print the filename
-      // sprintf(tempstr, (n.lfn_off) ? "%-8s " : "%s", ftemp->name) ;
+      // _stprintf(tempstr, (n.lfn_off) ? "%-8s " : "%s", ftemp->name) ;
       // nputs((ftemp->dirflag) ? n.colordir : ftemp->color, tempstr) ;
       nputs((ftemp->dirflag) ? n.colordir : ftemp->color, ftemp->name) ;
       col += slen ;
@@ -284,13 +280,13 @@ static void filehead(void)
    //****************************************************
    if (n.minimize) {
       if (list_count == 0)
-         sprintf(tempstr, "%-38s   ", base_path) ;
+         _stprintf(tempstr, _T("%-38s   "), base_path) ;
       else
-         sprintf(tempstr, "%-49s   ", base_path) ;
+         _stprintf(tempstr, _T("%-49s   "), base_path) ;
       nputs(n.colornhead, tempstr) ;
 
       if (_where_x() < (wincols - 28)) {
-         nputs(n.colornhead, "Volume label is ") ;
+         nputs(n.colornhead, _T("Volume label is ")) ;
          nputs(n.colorxhead, volume_name) ;
       }
       ncrlf() ;
@@ -303,12 +299,12 @@ static void filehead(void)
    else {
       nput_line(n.colorframe, '*') ;
 
-      sprintf(tempstr, "Directory of %-38s ", base_path) ;
+      _stprintf(tempstr, _T("Directory of %-38s "), base_path) ;
       nputs(n.colornhead, tempstr) ;
       if (_tcslen(base_path) > 43)
          ncrlf() ;
 
-      nputs(n.colornhead, "Volume label is ") ;
+      nputs(n.colornhead, _T("Volume label is ")) ;
       nputs(n.colorxhead, volume_name) ;
       ncrlf() ;
 
@@ -336,11 +332,11 @@ static void filehead(void)
 /*****************************************************************/
 void put_disk_summary(void)
 {
-   nputs(n.colornhead, "Disk capacity = ") ;
+   nputs(n.colornhead, _T("Disk capacity = ")) ;
    nputs(n.colorxhead, convert_to_commas(diskbytes, NULL)) ;
-   nputs(n.colornhead, " bytes; Free disk space = ") ;
+   nputs(n.colornhead, _T(" bytes; Free disk space = ")) ;
    nputs(n.colorxhead, convert_to_commas(diskfree, NULL)) ;
-   nputs(n.colornhead, " bytes") ;
+   nputs(n.colornhead, _T(" bytes")) ;
    ncrlf() ;
 }
 
@@ -373,26 +369,26 @@ static void fileend(void)
    //  If minimize is selected, display short header/footer
    //**************************************************************
    if (n.minimize) {
-      sprintf(tempstr, "%d", filecount) ;
+      _stprintf(tempstr, _T("%d"), filecount) ;
       nputs(n.colorxhead, tempstr) ;
 
-      nputs(n.colornhead, " files: ") ;
+      nputs(n.colornhead, _T(" files: ")) ;
 
       // itemp64.convert(dbytes) ;
       nputs(n.colorxhead, convert_to_commas(dbytes, NULL)) ;
-      nputs(n.colornhead, " <") ;
+      nputs(n.colornhead, _T(" <")) ;
       // itemp64.convert(dsbytes) ;
       nputs(n.colorxhead, convert_to_commas(dsbytes, NULL)) ;
 
-      nputs(n.colornhead, ">; Disk: ") ;
+      nputs(n.colornhead, _T(">; Disk: ")) ;
 //    diskbytes = totals1.QuadPart ;
 //    diskfree = frees1.QuadPart ;
       // itemp64.convert(diskfree) ;
       nputs(n.colorxhead, convert_to_commas(diskfree, NULL)) ;
-      nputs(n.colornhead, " <") ;
+      nputs(n.colornhead, _T(" <")) ;
       // itemp64.convert(diskbytes) ;
       nputs(n.colorxhead, convert_to_commas(diskbytes, NULL)) ;
-      nputs(n.colornhead, ">") ;
+      nputs(n.colornhead, _T(">")) ;
       ncrlf() ;
    }
    //**************************************************************
@@ -420,15 +416,15 @@ static void fileend(void)
       }
 
       //  draw the ending labels
-      sprintf(tempstr, "%d", filecount) ;
+      _stprintf(tempstr, _T("%d"), filecount) ;
       nputs(n.colorxhead, tempstr) ;
-      nputs(n.colornhead, " files total ") ;
+      nputs(n.colornhead, _T(" files total ")) ;
       // itemp64.convert(dbytes) ;
       nputs(n.colorxhead, convert_to_commas(dbytes, NULL)) ;
-      nputs(n.colornhead, " bytes, using ") ;
+      nputs(n.colornhead, _T(" bytes, using ")) ;
       // itemp64.convert(dsbytes) ;
       nputs(n.colorxhead, convert_to_commas(dsbytes, NULL)) ;
-      nputs(n.colornhead, " bytes of disk space.") ;
+      nputs(n.colornhead, _T(" bytes of disk space.")) ;
       ncrlf() ;
 
       put_disk_summary() ;
@@ -519,7 +515,7 @@ void display_files(void)
    //****************************************************
    if (ftop == NULL) {
       filehead() ;
-      nputs(n.colordefalt, "No matching files found.\n\r") ;
+      nputs(n.colordefalt, _T("No matching files found.\n\r")) ;
       fileend() ;
       return ;
    }

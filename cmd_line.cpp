@@ -16,18 +16,18 @@
 #include "conio32.h" //  is_redirected()
 
 //  from NDIR32.CPP 
-extern void insert_target_filespec (char *fstr);
+extern void insert_target_filespec (TCHAR *fstr);
 
 //  fileread.cpp
-extern void update_exclusion_list(char *extptr);
+extern void update_exclusion_list(TCHAR *extptr);
 
 //*************************************************************
 //  Convert command-line switches into flags
 //*************************************************************
-static int update_switches (char *argstr)
+static int update_switches (TCHAR *argstr)
 {
    int slen = 1;
-   char inchar = *argstr++;
+   TCHAR inchar = *argstr++;
 
    switch (inchar) {
       case 'a':  
@@ -184,13 +184,13 @@ void parse_command_string (TCHAR *cmdstr)
 //**********************************************************
 void parse_command_args (int startIdx, int argc, TCHAR **argv)
 {
-   char *argvptr, *spcptr;
+   TCHAR *argvptr, *spcptr;
 
    //  see if we have an environment variable to deal with
    if (startIdx == 0) {
       argvptr = argv[0];
       while (LOOP_FOREVER) {
-         spcptr = strchr (argvptr, ' ');
+         spcptr = _tcschr (argvptr, ' ');
          if (spcptr == 0) {
             parse_command_string (argvptr);
             break;
@@ -209,8 +209,8 @@ void parse_command_args (int startIdx, int argc, TCHAR **argv)
       argvptr = argv[j];
       //  fix an obscure bug under win32 and 4DOS7;
       //  for some reason, "/?" is getting changed to "/~" ...
-      if (_tcscmp(argvptr, "/~") == 0) {
-         *(argvptr+1) = '/' ;
+      if (_tcscmp(argvptr, _T("/~")) == 0) {
+         *(argvptr+1) = _T('/') ;
       }
       parse_command_string (argvptr);
    }
@@ -261,11 +261,11 @@ void verify_flags (void)
    //  cannot apply -x to multiple drives simultaneously.  
    //******************************************************
    if (n.exec_only) {
-      insert_target_filespec ("*.exe");
-      insert_target_filespec ("*.com");
-      insert_target_filespec ("*.bat");
-      insert_target_filespec ("*.btm");
-      insert_target_filespec ("*.cmd");
+      insert_target_filespec (_T("*.exe"));
+      insert_target_filespec (_T("*.com"));
+      insert_target_filespec (_T("*.bat"));
+      insert_target_filespec (_T("*.btm"));
+      insert_target_filespec (_T("*.cmd"));
    }
 
    //*********************************************

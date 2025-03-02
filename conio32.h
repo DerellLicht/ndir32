@@ -1,10 +1,10 @@
 //***************************************************************************
-//  Copyright (c) 1995-2023  Daniel D Miller
+//  Copyright (c) 1995-2025  Daniel D Miller
 //  CONIO32.HPP: Template for 32-bit console programs                        
 //                                                                           
 //  Written by:   Daniel D. Miller                                           
 //                                                                           
-//  Last Update:  01/17/23
+//  Last Update:  02/25/25
 //***************************************************************************
 
 #define  MAX_CHAR_COLS     1024
@@ -12,7 +12,7 @@
 extern unsigned lines ;
 
 //**********************************************************
-void console_init(char *title);
+void console_init(TCHAR*title);
 void hide_cursor(void);
 
 void restore_console_attribs(void);
@@ -44,4 +44,4 @@ BOOL control_handler(DWORD dwCtrlType);
 //  It passes both the byte-length of the string, for printing,
 //  and the multi-byte length for updating screen position.
 //**********************************************************************************
-void dputsiw(const char *outstr, int wlen, int clen);
+void dputsiw(const TCHAR *outstr, int wlen, int clen);

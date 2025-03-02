@@ -7,9 +7,7 @@
 #include <windows.h>
 #include <stdio.h>
 #include <shlobj.h>   /* For IShellLink */
-#if defined _UNICODE
 #include <tchar.h>
-#endif
 
 //lint -e10  Expecting '}'
 //lint -esym(534, lstrcpynA)
@@ -275,17 +273,17 @@ int main(int argc, char** argv)
 }  //lint !e818
 #else
 //*********************************************************************
-bool read_shortcut_file(ffdata * fptr, char *shortcut_path)
+bool read_shortcut_file(ffdata * fptr, TCHAR *shortcut_path)
 {
    bool target_exists = false ;
-   char szFilePath[MAX_PATH];
-   char szArgsPath[MAX_PATH];
+   TCHAR szFilePath[MAX_PATH];
+   TCHAR szArgsPath[MAX_PATH];
    *shortcut_path = 0 ; //  initially empty string
    
    //  we need to build a full path+filename string here
-   char szFullSrcPath[MAX_PATH];
-   sprintf(szFullSrcPath, "%s\\%s", base_path, fptr->filename);
-   syslog("[%s]\n", szFullSrcPath);
+   TCHAR szFullSrcPath[MAX_PATH];
+   _stprintf(szFullSrcPath, _T("%s\\%s"), base_path, fptr->filename);
+   syslog(_T("[%s]\n"), szFullSrcPath);
 
    CoInitialize(NULL);  //lint !e534
    // NOTE: HRESULT is an unsigned value!!
@@ -308,14 +306,14 @@ bool read_shortcut_file(ffdata * fptr, char *shortcut_path)
       }
       //  see if destination should be extracted from arguments
       // szArgsPath: /e,"D:\photos (all)\photos"
-      else if (_tcsncmp(szArgsPath, "/e,", 3) == 0) {
+      else if (_tcsncmp(szArgsPath, _T("/e,"), 3) == 0) {
          // printf("szArgsPath: %s\n", szArgsPath);
          //  see if quotes need to be removed from path
-         char *sptr = &szArgsPath[3] ;
+         TCHAR *sptr = &szArgsPath[3] ;
          if (*sptr == '"') {
             // printf("found a quote char\n");
             sptr++ ;
-            char *tl = _tcsrchr(sptr, '"');
+            TCHAR *tl = _tcsrchr(sptr, '"');
             if (tl != NULL) {
                *tl = 0 ;
             }

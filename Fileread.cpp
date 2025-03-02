@@ -22,11 +22,11 @@ static void read_long_files (int i);
 
 //*************************************************************
 #define  MAX_EXCL_COUNT    20
-static char excl[MAX_EXCL_COUNT][MAX_EXT_SIZE+1] ; //  allocate dynamically??
+static TCHAR excl[MAX_EXCL_COUNT][MAX_EXT_SIZE+1] ; //  allocate dynamically??
 static int  exclcount = 0 ;     //  number of exclusion filespecs
 
 //*************************************************************
-void update_exclusion_list(char *extptr)
+void update_exclusion_list(TCHAR *extptr)
 {
    if (exclcount < MAX_EXCL_COUNT) {
       _tcsncpy (excl[exclcount], extptr, MAX_EXT_SIZE);
@@ -46,21 +46,21 @@ static void read_long_files (int i)
 {
    int done, fn_okay ;  //, result;
    HANDLE handle;
-   char *strptr;
+   TCHAR *strptr;
    ffdata *ftemp;
    // WIN32_FIND_DATA fdata ; //  long-filename file struct
-   WIN32_FIND_DATAW fdata ; //  long-filename file struct
+   WIN32_FIND_DATA fdata ; //  long-filename file struct
 
-   WCHAR wfilespec[MAX_PATH+1];
-   int result = MultiByteToWideChar(CP_ACP, 0, target[i], -1, wfilespec, (int) _tcslen(target[i])+1);
-   if (result == 0) {
-      syslog("%s: a2u failed: %u\n", target[i], (unsigned) GetLastError());
-      return ;
-   }
+   // WCHAR wfilespec[MAX_PATH+1];
+   // int result = MultiByteToWideChar(CP_ACP, 0, target[i], -1, wfilespec, (int) _tcslen(target[i])+1);
+   // if (result == 0) {
+   //    syslog("%s: a2u failed: %u\n", target[i], (unsigned) GetLastError());
+   //    return ;
+   // }
    
    // syslog("%s\n", target[i]);
-   // handle = FindFirstFile (target[i], &fdata);
-   handle = FindFirstFileW(wfilespec, &fdata);
+   handle = FindFirstFile (target[i], &fdata);
+   // handle = FindFirstFileW(wfilespec, &fdata);
    //  according to MSDN, Jan 1999, the following is equivalent to the preceding... 
    //  unfortunately, under Win98SE, it's not...
    // handle = FindFirstFileEx(target[i], FindExInfoStandard, &fdata, 
@@ -87,8 +87,8 @@ static void read_long_files (int i)
       else if (n.tree == 2)     //  "files only" flag
          fn_okay = 0;
       //  skip '.' and '..', but NOT .ncftp (for example)
-      else if (wcscmp(fdata.cFileName, L".")  == 0  ||
-               wcscmp(fdata.cFileName, L"..") == 0) {
+      else if (_tcscmp(fdata.cFileName, _T("."))  == 0  ||
+               _tcscmp(fdata.cFileName, _T("..")) == 0) {
          fn_okay = 0;
       }
       else {
@@ -135,27 +135,28 @@ static void read_long_files (int i)
          ftemp->fsize = iconv.i;
 
          //  convert Unicode filenames to UTF8
-         ftemp->mb_len = wcslen(fdata.cFileName) ;
-         int bufferSize ;
-         if (fdata.cFileName[0] > 255) {
-            SetConsoleOutputCP(CP_UTF8);
-            bufferSize = WideCharToMultiByte(CP_UTF8, 0, fdata.cFileName, -1, NULL, 0, NULL, NULL);
-            ftemp->filename = (TCHAR *) malloc(bufferSize + 1); //lint !e732
-            WideCharToMultiByte(CP_UTF8, 0, fdata.cFileName, -1, ftemp->filename, bufferSize, NULL, NULL);
-            // [26412] [40/39] [буяновский страйкбол]
-            // syslog("[%u/%u] [%s]\n", bufferSize, _tcslen (ftemp->filename), ftemp->filename);
-            // [DIR] ?????????? ?????????                    | 55813 glock17_shoot_2.ogg            
-// [68968] 00000:  D0 B1 D1 83 D1 8F D0 BD D0 BE D0 B2 D1 81 D0 BA  | ???????????????? |
-// [68968] 00010:  D0 B8 D0 B9 20 D1 81 D1 82 D1 80 D0 B0 D0 B9 D0  | ???? ??????????? |
-// [68968] 00020:  BA D0 B1 D0 BE D0 BB 00 77 72 69 74 74 65 6E 2E  | ???????.written. |
-            // hex_dump((u8 *)ftemp->filename, 48);
-            ftemp->is_multi_byte = true ;
-         }
-         else {
-            bufferSize = WideCharToMultiByte(CP_UTF8, 0, fdata.cFileName, -1, NULL, 0, NULL, NULL);
-            ftemp->filename = (TCHAR *) malloc(bufferSize + 1);  //lint !e732
-            WideCharToMultiByte(CP_ACP, 0, fdata.cFileName, -1, ftemp->filename, bufferSize, NULL, NULL);
-         }
+         ftemp->mb_len = _tcslen(fdata.cFileName) ;
+         ftemp->filename = (TCHAR *) malloc(ftemp->mb_len + 1);  //lint !e732
+         // int bufferSize ;
+         // if (fdata.cFileName[0] > 255) {
+         //    SetConsoleOutputCP(CP_UTF8);
+         //    bufferSize = WideCharToMultiByte(CP_UTF8, 0, fdata.cFileName, -1, NULL, 0, NULL, NULL);
+         //    ftemp->filename = (TCHAR *) malloc(bufferSize + 1); //lint !e732
+         //    WideCharToMultiByte(CP_UTF8, 0, fdata.cFileName, -1, ftemp->filename, bufferSize, NULL, NULL);
+         //    // [26412] [40/39] [буяновский страйкбол]
+         //    // syslog("[%u/%u] [%s]\n", bufferSize, _tcslen (ftemp->filename), ftemp->filename);
+         //    // [DIR] ?????????? ?????????                    | 55813 glock17_shoot_2.ogg            
+         //    // [68968] 00000:  D0 B1 D1 83 D1 8F D0 BD D0 BE D0 B2 D1 81 D0 BA  | ???????????????? |
+         //    // [68968] 00010:  D0 B8 D0 B9 20 D1 81 D1 82 D1 80 D0 B0 D0 B9 D0  | ???? ??????????? |
+         //    // [68968] 00020:  BA D0 B1 D0 BE D0 BB 00 77 72 69 74 74 65 6E 2E  | ???????.written. |
+         //    // hex_dump((u8 *)ftemp->filename, 48);
+         //    ftemp->is_multi_byte = true ;
+         // }
+         // else {
+         //    bufferSize = WideCharToMultiByte(CP_UTF8, 0, fdata.cFileName, -1, NULL, 0, NULL, NULL);
+         //    ftemp->filename = (TCHAR *) malloc(bufferSize + 1);  //lint !e732
+         //    WideCharToMultiByte(CP_ACP, 0, fdata.cFileName, -1, ftemp->filename, bufferSize, NULL, NULL);
+         // }
          // syslog("%s len: %u\n", ftemp->filename, ftemp->mb_len);
          
          //  If Steven Bensky's short filenames are requested,
@@ -173,18 +174,18 @@ static void read_long_files (int i)
 
          //  find and extract the file extension, if valid
          // ftemp->name[0] = 0 ; //  don't use name at all
-         ftemp->name = (char *) malloc(_tcslen (ftemp->filename) + 1) ;
+         ftemp->name = (TCHAR *) malloc(_tcslen (ftemp->filename) + 1) ;
          if (ftemp->name == NULL)
             error_exit (OUT_OF_MEMORY, NULL);
 
          _tcscpy (ftemp->name, ftemp->filename);
-         strptr = _tcsrchr (ftemp->name, '.');
-         if (strptr != 0 && _tcslen (strptr) <= MAX_EXT_SIZE) {
+         strptr = _tcsrchr (ftemp->name, _T('.'));
+         if (strptr != NULL && _tcslen (strptr) <= MAX_EXT_SIZE) {
             _tcscpy (ftemp->ext, strptr);
             *strptr = 0;        //  NULL-term name field
             
             //  12/12/23  Add handling for .lnk files
-            if (strcasecmp(ftemp->ext, ".lnk") == 0) {
+            if (_tcsicmp(ftemp->ext, _T(".lnk")) == 0) {
                ftemp->is_link_file = true ;
             }
          }
@@ -210,7 +211,7 @@ static void read_long_files (int i)
 
 search_next_file:
       //  search for another file
-      if (FindNextFileW (handle, &fdata) == 0)
+      if (FindNextFile(handle, &fdata) == 0)
          done = 1;
    }
 

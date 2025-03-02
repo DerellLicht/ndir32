@@ -21,8 +21,8 @@
 #include "conio32.h"
 
 //  from NDIR.CPP
-extern char *Version ;
-extern char *ShortVersion;
+extern TCHAR *Version ;
+extern TCHAR *ShortVersion;
 extern unsigned name_width ;
 
 //  this array is 64 elements, not 32 (== 2^5) 
@@ -50,8 +50,9 @@ extern unsigned name_width ;
 // };
 static uchar attrclr;
 
-static char const monthstr[12][4] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-   "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+static TCHAR const monthstr[12][4] = { 
+   _T("Jan"), _T("Feb"), _T("Mar"), _T("Apr"), _T("May"), _T("Jun"),
+   _T("Jul"), _T("Aug"), _T("Sep"), _T("Oct"), _T("Nov"), _T("Dec")
 };
 
 /*****************************************************************/
@@ -63,7 +64,7 @@ static void ngotoxy (int x, int y)
 }
 
 //**************************************************
-void info (char *data[])
+void info (TCHAR *data[])
 {
    unsigned j = 0;
 
@@ -107,9 +108,9 @@ void display_logo (void)
 #ifdef USE_64BIT
 
 #define  MAX_FILE_LENGTH   1024
-static char *GetLinkTarget(char const * const symlink_name) 
+static TCHAR *GetLinkTarget(TCHAR const * const symlink_name) 
 {
-   static char final_file[MAX_FILE_LENGTH+1] = "";
+   static TCHAR final_file[MAX_FILE_LENGTH+1] = _T("");
    // Define smart pointer type for automatic HANDLE cleanup.
    // typedef std::unique_ptr<std::remove_pointer<HANDLE>::type,
    //                         decltype( &::CloseHandle )> FileHandle;
@@ -121,7 +122,7 @@ static char *GetLinkTarget(char const * const symlink_name)
    if ( hdl == INVALID_HANDLE_VALUE ) {
       // h.release();
       // throw std::runtime_error( "CreateFileW() failed." );
-      sprintf(final_file, "cannot create file");
+      _stprintf(final_file, _T("cannot create file"));
    }
    else {
 
@@ -129,7 +130,7 @@ static char *GetLinkTarget(char const * const symlink_name)
       const size_t requiredSize = GetFinalPathNameByHandle( hdl, NULL, 0,
                                                              FILE_NAME_NORMALIZED );
       if ( requiredSize == 0 ) {
-         sprintf(final_file, "dest file size is 0");
+         _stprintf(final_file, _T("dest file size is 0"));
       }
       else {
       // std::vector<wchar_t> buffer( requiredSize );
@@ -162,19 +163,19 @@ void print1 (ffdata * fptr)
    int wlen = _tcslen(fptr->filename);
    // int slen = name_width - fptr->mb_len ;
 
-   char attr[12];
+   TCHAR attr[12];
    //  detect non-standard file attributes and display specially.
    // if ((fptr->attrib) > 0x3F) {
-   //   sprintf (attr, " 0x%2X ", fptr->attrib);
+   //   _stprintf (attr, " 0x%2X ", fptr->attrib);
    //   attrclr = 0x0C;
    // }
    // else {
-   //   sprintf (attr, "%5s ", attrstr[fptr->attrib]);
+   //   _stprintf (attr, "%5s ", attrstr[fptr->attrib]);
    //   attrclr = n.colorattr;
    // }
    // char attrstr[] = "-adshr";
    if (n.long_attr) {
-      sprintf(attr, "%08X ", fptr->attrib) ;
+      _stprintf(attr, _T("%08X "), fptr->attrib) ;
    } else {
       attr[0] = (fptr->attrib & FILE_ATTRIBUTE_ARCHIVE)        ? 'a' : '_' ;
       attr[1] = (fptr->attrib & FILE_ATTRIBUTE_DIRECTORY)      ? 'd' : '_' ;
@@ -189,17 +190,17 @@ void print1 (ffdata * fptr)
 
    //  display directory entry
    if (fptr->dirflag) {
-      sprintf (tempstr, "%14s ", "");
+      _stprintf (tempstr, _T("%14s "), "");
       nputs (n.colorsize, tempstr);
       nputs (attrclr, attr);
-         //sprintf(tempstr, "%02d-%02d-%04lu ", month, day, year);
-         sprintf (tempstr, "%3s %02d, %04lu ", monthstr[month - 1], day, year);
-         nputs (n.colordate, tempstr);
-         sprintf (tempstr, "%02d:%02d:%02d ", hour, mins, secs);
-         nputs (n.colortime, tempstr);
+      //_stprintf(tempstr, "%02d-%02d-%04lu ", month, day, year);
+      _stprintf (tempstr, _T("%3s %02d, %04lu "), monthstr[month - 1], day, year);
+      nputs (n.colordate, tempstr);
+      _stprintf (tempstr, _T("%02d:%02d:%02d "), hour, mins, secs);
+      nputs (n.colortime, tempstr);
          
       //  display filename in appropriate color...
-      //   sprintf (tempstr, "[%s]", fptr->filename);
+      //   _stprintf (tempstr, "[%s]", fptr->filename);
       // if (SHRattr != 0 && n.showSHRfiles)
       //    nputs (n.colorSHR | SHRattr, tempstr);
       // else
@@ -218,31 +219,31 @@ void print1 (ffdata * fptr)
       switch (n.size_display) {
       case 2:
          // fsize.convert(fptr->fsize / 1000000) ;
-         sprintf (tempstr, "%13s", convert_to_commas(fptr->fsize / 1000000, NULL));
+         _stprintf (tempstr, _T("%13s"), convert_to_commas(fptr->fsize / 1000000, NULL));
          nputs (n.colorsize, tempstr);
-         nputs (n.colorsize ^ 0x08, "M ");
+         nputs (n.colorsize ^ 0x08, _T("M "));
          break;
       case 1:
          // fsize.convert(fptr->fsize / 1000) ;
-         sprintf (tempstr, "%13s", convert_to_commas(fptr->fsize / 1000, NULL));
+         _stprintf (tempstr, _T("%13s"), convert_to_commas(fptr->fsize / 1000, NULL));
          nputs (n.colorsize, tempstr);
-         nputs (n.colorsize ^ 0x08, "K ");
+         nputs (n.colorsize ^ 0x08, _T("K "));
          break;
       default:
          // fsize.convert(fptr->fsize) ;
-         sprintf (tempstr, "%14s ", convert_to_commas(fptr->fsize, NULL));
+         _stprintf (tempstr, _T("%14s "), convert_to_commas(fptr->fsize, NULL));
          nputs (n.colorsize, tempstr);
          break;
       }
 
       nputs (attrclr, attr);
-      sprintf (tempstr, "%3s %02d, %04lu ", monthstr[month - 1], day, year);
+      _stprintf (tempstr, _T("%3s %02d, %04lu "), monthstr[month - 1], day, year);
       nputs (n.colordate, tempstr);
-      sprintf (tempstr, "%02d:%02d:%02d ", hour, mins, secs);
+      _stprintf (tempstr, _T("%02d:%02d:%02d "), hour, mins, secs);
       nputs (n.colortime, tempstr);
 
       //  display filename in appropriate color...
-      //  sprintf (tempstr, "%s ", fptr->filename);
+      //  _stprintf (tempstr, "%s ", fptr->filename);
       // if (SHRattr != 0 && n.showSHRfiles)
       //    nputs (n.colorSHR | SHRattr, tempstr);
       // else
@@ -258,19 +259,19 @@ void print1 (ffdata * fptr)
       //  if this file is a symlink, try to display the actual file
       if ((fptr->attrib & FILE_ATTRIBUTE_REPARSE_POINT)) {
          ncrlf() ;
-         nputs (n.colorsize, "               ");
-         nputs (attrclr, "=====> ");
-         char *lptr = GetLinkTarget(fptr->filename) ;
-         sprintf (tempstr, "%s ", lptr);
+         nputs (n.colorsize, _T("               "));
+         nputs (attrclr, _T("=====> "));
+         TCHAR *lptr = GetLinkTarget(fptr->filename) ;
+         _stprintf (tempstr, _T("%s "), lptr);
          nputs (fptr->color, tempstr);
       }
 #endif      
       if (fptr->is_link_file) {
-         char szFilePath[MAX_PATH];
+         TCHAR szFilePath[MAX_PATH];
          if (read_shortcut_file(fptr, szFilePath)) {
             ncrlf() ;
-            nputs (n.colorsize, "               ");
-            nputs (attrclr, "=====> ");
+            nputs (n.colorsize, _T("               "));
+            nputs (attrclr, _T("=====> "));
             nputs (fptr->color, szFilePath);
          }
       }
@@ -303,11 +304,11 @@ void lfn_print2 (ffdata * fptr)
    ULONGLONG fsize = fptr->fsize;
 
    if (fptr->dirflag) {
-      nputs (n.colordir, " [DIR] ");
-      sprintf (tempstr, "%02d-%3s-%02d ", day, monthstr[month - 1],
+      nputs (n.colordir, _T(" [DIR] "));
+      _stprintf (tempstr, _T("%02d-%3s-%02d "), day, monthstr[month - 1],
          (int) (year % 100));
       nputs (n.colordate, tempstr);
-      sprintf (tempstr, "%02d:%02d ", hour, mins);
+      _stprintf (tempstr, _T("%02d:%02d "), hour, mins);
       nputs (n.colortime, tempstr);
 
       if (SHRattr != 0 && n.showSHRfiles) {
@@ -320,24 +321,24 @@ void lfn_print2 (ffdata * fptr)
    else {
       //  print file size
       if (fsize > 99999999L  ||  n.size_display == 2) {
-         sprintf (tempstr, "%5u", (uint) (fsize / 1000000ULL));
+         _stprintf (tempstr, _T("%5u"), (uint) (fsize / 1000000ULL));
          nputs (n.colorsize, tempstr);
-         nputs (n.colorsize ^ 0x08, "M ");
+         nputs (n.colorsize ^ 0x08, _T("M "));
       }
       else if (fsize > 999999L  ||  n.size_display == 1) {
-         sprintf (tempstr, "%5u", (uint) (fsize / 1000ULL));
+         _stprintf (tempstr, _T("%5u"), (uint) (fsize / 1000ULL));
          nputs (n.colorsize, tempstr);
-         nputs (n.colorsize ^ 0x08, "K ");
+         nputs (n.colorsize ^ 0x08, _T("K "));
       }
       else {
-         sprintf (tempstr, "%6u ", (uint) fsize);
+         _stprintf (tempstr, _T("%6u "), (uint) fsize);
          nputs (n.colorsize, tempstr);
       }
 
-      sprintf (tempstr, "%02d-%3s-%02d ", day, monthstr[month - 1],
+      _stprintf (tempstr, _T("%02d-%3s-%02d "), day, monthstr[month - 1],
          (int) (year % 100));
       nputs (n.colordate, tempstr);
-      sprintf (tempstr, "%02d:%02d ", hour, mins);
+      _stprintf (tempstr, _T("%02d:%02d "), hour, mins);
       nputs (n.colortime, tempstr);
 
       //  generate filename
@@ -360,7 +361,7 @@ void lfn_print4 (ffdata * fptr)
    int slen = name_width - fptr->mb_len ;
 
    if (fptr->dirflag) {
-      nputs (n.colordir, " [DIR] ");
+      nputs (n.colordir, _T(" [DIR] "));
       if (SHRattr != 0 && n.showSHRfiles) {
          nputsw(n.colorSHR | SHRattr, fptr->filename, wlen, fptr->mb_len);
       }
@@ -371,17 +372,17 @@ void lfn_print4 (ffdata * fptr)
    else {
       //  print file size
       if (fsize > 99999999L  ||  n.size_display == 2) {
-         sprintf (tempstr, "%5u", (uint) (fsize / 1000000L));
+         _stprintf (tempstr, _T("%5u"), (uint) (fsize / 1000000L));
          nputs (n.colorsize, tempstr);
-         nputs (n.colorsize ^ 0x08, "M ");
+         nputs (n.colorsize ^ 0x08, _T("M "));
       }
       else if (fsize > 999999L  ||  n.size_display == 1) {
-         sprintf (tempstr, "%5u", (uint) (fsize / 1000L));
+         _stprintf (tempstr, _T("%5u"), (uint) (fsize / 1000L));
          nputs (n.colorsize, tempstr);
-         nputs (n.colorsize ^ 0x08, "K ");
+         nputs (n.colorsize ^ 0x08, _T("K "));
       }
       else {
-         sprintf (tempstr, "%6u ", (uint) fsize);
+         _stprintf (tempstr, _T("%6u "), (uint) fsize);
          nputs (n.colorsize, tempstr);
       }
 

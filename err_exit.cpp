@@ -12,10 +12,10 @@
 #include "ndir32.h"
 #include "conio32.h"
 
-static char const * const error_text[4] = {
-   "Type 'NDIR /?' for help", //  not actually used in this program
-   "Out of memory",
-   "Invalid drive or path specified",
+static TCHAR const * const error_text[4] = {
+   _T("Type 'NDIR /?' for help"), //  not actually used in this program
+   _T("Out of memory"),
+   _T("Invalid drive or path specified"),
    0 } ;
 
 //*********************************************************
@@ -24,9 +24,9 @@ void error_exit(int index, TCHAR* outstr)
    if (index == DATA_OKAY)
       ;
    else if (outstr == NULL)
-      syslog("%s\n", error_text[index]) ;
+      syslog(_T("%s\n"), error_text[index]) ;
    else
-      syslog ("%s: %s\n", outstr, error_text[index]) ;
+      syslog(_T("%s: %s\n"), outstr, error_text[index]) ;
 
    restore_console_attribs();
 

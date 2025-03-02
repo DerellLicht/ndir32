@@ -41,7 +41,7 @@ static void testpause (void)
      return;
 
    if (++linecnt >= lines - 1) {
-      nputs (n.colornhead, "Press any key to continue (or ESC to exit)");
+      nputs (n.colornhead, _T("Press any key to continue (or ESC to exit)"));
       unsigned inkey = get_scode ();
       if (inkey == ESC) {
          // if ((curlines != lines) && (!(n.ega_keep))) {
@@ -90,7 +90,7 @@ void ncrlf (void)
      return;
 
    if (++linecnt >= lines - 1) {
-      nputs (n.colornhead, "Press any key to continue (or ESC to exit)");
+      nputs (n.colornhead, _T("Press any key to continue (or ESC to exit)"));
       unsigned inkey = get_scode ();
       if (inkey == ESC) {
          error_exit (DATA_OKAY, NULL);
@@ -101,7 +101,7 @@ void ncrlf (void)
          dclreol ();
       }
       else {
-         printf ("\n");
+         _tprintf (_T("\n"));
       }
       linecnt = 1;
    }
@@ -116,22 +116,22 @@ void nputc (uchar attr, const uchar outchr)
       dputc (outchr);
    }
    else
-      printf ("%c", outchr);
+      _tprintf (_T("%c"), outchr);
 }
 
 /******************************************************************/
-void nputs (uchar attr, const char *outstr)
+void nputs (uchar attr, const TCHAR *outstr)
 {
    if (n.color) {
       set_text_attr (attr);
       dputs (outstr);
    }
    else
-      printf ("%s", outstr);
+      _tprintf (_T("%s"), outstr);
 }
 
 /******************************************************************/
-void nputsw(uchar attr, const char *outstr, int wlen, int clen)
+void nputsw(uchar attr, const TCHAR *outstr, int wlen, int clen)
 {
    if (n.color) {
       set_text_attr (attr);
@@ -143,7 +143,7 @@ void nputsw(uchar attr, const char *outstr, int wlen, int clen)
 }
 
 /******************************************************************/
-void nput_char (uchar attr, char chr, int count)
+void nput_char (uchar attr, TCHAR chr, int count)
 {
    if (n.color) {
       dputnchar (chr, attr, count);
@@ -155,7 +155,7 @@ void nput_char (uchar attr, char chr, int count)
 }
 
 /******************************************************************/
-void nput_line (uchar attr, char chr)
+void nput_line (uchar attr, TCHAR chr)
 {
    int j, wincols = get_window_cols() - 1 ;
    if (n.color) {

@@ -67,7 +67,7 @@ unsigned lines = 0 ;
 static void PERR(bool bSuccess, PCHAR szApiName)
 {
    if (!bSuccess) {
-      syslog("[%u] %s\n", GetLastError(), szApiName);
+      syslog(_T("[%u] %s\n"), GetLastError(), szApiName);
    }
 }
 
@@ -120,7 +120,7 @@ bool is_redirected(void)
 //***************************************************************************
 //  This stores CONSOLE_SCREEN_BUFFER_INFO in global var sinfo
 //***************************************************************************
-void console_init(char *title)
+void console_init(TCHAR *title)
 {
    BOOL bSuccess;
    DWORD dwMode;
@@ -128,13 +128,13 @@ void console_init(char *title)
    /* get the standard handles */
    hStdOut = GetStdHandle(STD_OUTPUT_HANDLE); 
    if (hStdOut == INVALID_HANDLE_VALUE) {
-      syslog("GetStdHandle(STD_OUTPUT_HANDLE): %s\n", get_system_message()) ;
+      syslog(_T("GetStdHandle(STD_OUTPUT_HANDLE): %s\n"), get_system_message()) ;
       exit(1) ;
    }
    // PERR(hStdOut != INVALID_HANDLE_VALUE, "GetStdHandle");
    hStdIn = GetStdHandle(STD_INPUT_HANDLE);
    if (hStdIn == INVALID_HANDLE_VALUE) {
-      syslog("GetStdHandle(STD_INPUT_HANDLE): %s\n", get_system_message()) ;
+      syslog(_T("GetStdHandle(STD_INPUT_HANDLE): %s\n"), get_system_message()) ;
       exit(1) ;
    }
    // PERR(hStdIn != INVALID_HANDLE_VALUE, "GetStdHandle");
@@ -142,7 +142,7 @@ void console_init(char *title)
    //  Put up a meaningful console title.
    //  Will this *always* succeed???
    if (title != 0) {
-      bSuccess = SetConsoleTitleA(title);
+      bSuccess = SetConsoleTitle(title);
       PERR(bSuccess, "SetConsoleTitle");
    }
 
@@ -489,7 +489,7 @@ void dputnchar(TCHAR chr, TCHAR attr, int count)
 {
    static TCHAR ncbfr[MAX_CHAR_COLS+1] ;
    if (count > MAX_CHAR_COLS) {
-      syslog("dputnchar: count too large: %d\n", count);
+      syslog(_T("dputnchar: count too large: %d\n"), count);
       count = MAX_CHAR_COLS ;
    }
    set_text_attr(attr) ;
@@ -551,7 +551,7 @@ static void dputsi(const TCHAR *outstr, int slen)
 //  It passes both the byte-length of the string, for printing,
 //  and the multi-byte length for updating screen position.
 //**********************************************************************************
-void dputsiw(const char *outstr, int wlen, int clen)
+void dputsiw(const TCHAR *outstr, int wlen, int clen)
 {
    DWORD wrlen ;
    WriteFile(hStdOut, outstr, wlen, &wrlen, 0) ;

@@ -35,18 +35,18 @@
 
 #define  LOOP_FOREVER   true
 
-static char path[PATH_MAX];
+static TCHAR path[PATH_MAX];
 
 /******************************************************************/
 unsigned qualify (TCHAR *argptr)
 {
-   char *pathptr = &path[0];
-   char *strptr, *srchptr, tempchar;
+   TCHAR *pathptr = &path[0];
+   TCHAR *strptr, *srchptr, tempchar;
    DWORD plen;
    int drive, result ;
    // int done ;
    // HANDLE handle;
-   struct stat my_stat ;
+   struct _stat my_stat ;
    unsigned len, qresult = 0;
    // struct _find_t c_file;
 
@@ -61,7 +61,7 @@ unsigned qualify (TCHAR *argptr)
       //  see if we have a UNC drive...
       if (drive == 0) {
          GetCurrentDirectory (250, pathptr);
-         _tcscat (pathptr, "\\*");
+         _tcscat (pathptr, _T("\\*"));
          goto exit_point;
       }
    }
@@ -97,14 +97,14 @@ unsigned qualify (TCHAR *argptr)
 
    len = _tcslen (pathptr);
    if (len == 3) {
-      _tcscat (pathptr, "*");
+      _tcscat (pathptr, _T("*"));
       qresult |= QUAL_WILDCARDS;
    }
    else {
       //  see if there are wildcards in argument.
       //  If not, see whether path is a directory or a file,
       //  or nothing.  If directory, append wildcard char
-      if (_tcspbrk (pathptr, "*?") == NULL) {
+      if (_tcspbrk (pathptr, _T("*?")) == NULL) {
          if (*(pathptr + len - 1) == '\\') {
             len--;
             *(pathptr + len) = 0;
@@ -116,22 +116,22 @@ unsigned qualify (TCHAR *argptr)
          // handle = FindFirstFile (pathptr, &fffdata);
          if (PathIsUNC(pathptr)) {
             if (PathIsDirectory(pathptr)) {
-               _tcscpy (pathptr + len, "\\*");   //lint !e669  possible overrun
+               _tcscpy (pathptr + len, _T("\\*"));   //lint !e669  possible overrun
                qresult |= QUAL_WILDCARDS; //  wildcards are present.
             } else if (PathFileExists(pathptr)) {
                qresult |= QUAL_IS_FILE;   //  path exists as a normal file.
             } else {
-               _tcscpy (pathptr + len, "\\*");   //lint !e669  possible overrun
+               _tcscpy (pathptr + len, _T("\\*"));   //lint !e669  possible overrun
                qresult |= QUAL_WILDCARDS; //  wildcards are present.
             }
          } 
          //  process drive-oriented (non-UNC) paths
          else {
-            result = stat(pathptr, &my_stat) ;
+            result = _tstat(pathptr, &my_stat) ;
             if (result != 0) {
                qresult |= QUAL_INV_DRIVE; //  path does not exist.
             } else if (my_stat.st_mode & S_IFDIR) {
-               _tcscpy (pathptr + len, "\\*");   //lint !e669  possible overrun
+               _tcscpy (pathptr + len, _T("\\*"));   //lint !e669  possible overrun
                qresult |= QUAL_WILDCARDS; //  wildcards are present.
             } else {
                qresult |= QUAL_IS_FILE;   //  path exists as a normal file.

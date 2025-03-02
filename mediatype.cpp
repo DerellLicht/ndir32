@@ -18,6 +18,7 @@
 #include <ddk/ntdddisk.h>
 #include <ddk/ntddscsi.h>
 #endif
+#include <tchar.h>
 
 #include "scsi_defs.h"
 
@@ -28,33 +29,33 @@ typedef unsigned int  uint ;
 
 //*************************************************************************
 typedef struct ProfileInfo_s {
-   char *description ;
+   TCHAR *description ;
    uint profile_code ;
 } ProfileInfo_t ;
 
 ProfileInfo_t const ProfileInfo[] = {
-{ "CDROM",     0x08 },  // CD-ROM Read only Compact Disc capable
-{ "CDR",       0x09 },  // CD-R Write once Compact Disc capable
-{ "CDRW",      0x0A },  // CD-RW Re-writable Compact Disc capable
-{ "DVDROM",    0x10 },  // DVD-ROM Read only DVD
-{ "DVDR",      0x11 },  // DVD-R Sequential Recording Write once DVD using Sequential recording
-{ "DVDRAM",    0x12 },  // DVD-RAM Re-writable DVD
-{ "DVD-RWOvr", 0x13 },  // DVD-RW Restricted Overwrite Re-recordable DVD using Restricted Overwrite
-{ "DVD-RWSeq", 0x14 },  // Sequential recording Re-recordable DVD using Sequential recording
-{ "DVD-R_DL",  0x15 },  // DVD-R Dual Layer Sequential Recording Dual Layer DVD-R using Sequential recording
-{ "DVD-R_DL",  0x16 },  // DVD-R Dual Layer Jump Recording Dual Layer DVD-R using Layer Jump recording
-{ "DVD+RW",    0x1A },  // DVD+RW DVD+ReWritable
-{ "DVD+R",     0x1B },  // DVD+R DVD+Recordable
-{ "DVD+RW_DL", 0x2A },  // Dual Layer DVD+Rewritable Dual Layer
-{ "DVD+R_DL",  0x2B },  // DVD+R Dual Layer DVD+Recordable Dual Layer
-{ "BluRayRom", 0x40 },  // BD-ROM Blu-ray Disc ROM
-{ "BluRayBDR", 0x41 },  // BD-R SRM Blu-ray Disc Recordable – Sequential Recording
-{ "BluRayRRM", 0x42 },  // Blu-ray Disc Recordable – Random Recording Mode
-{ "BluRayRE",  0x43 },  // BD-RE Blu-ray Disc Rewritable
-{ "HDDVDROM",  0x50 },  // HD DVD-ROM Read-only HD DVD
-{ "HDDVDR",    0x51 },  // HD DVD-R Write-once HD DVD
-{ "HDDVDRAM",  0x52 },  // HD DVD-RAM Rewritable HD DVD
-{ "Unknown",   0 } } ;
+{ _T("CDROM"),     0x08 },  // CD-ROM Read only Compact Disc capable
+{ _T("CDR"),       0x09 },  // CD-R Write once Compact Disc capable
+{ _T("CDRW"),      0x0A },  // CD-RW Re-writable Compact Disc capable
+{ _T("DVDROM"),    0x10 },  // DVD-ROM Read only DVD
+{ _T("DVDR"),      0x11 },  // DVD-R Sequential Recording Write once DVD using Sequential recording
+{ _T("DVDRAM"),    0x12 },  // DVD-RAM Re-writable DVD
+{ _T("DVD-RWOvr"), 0x13 },  // DVD-RW Restricted Overwrite Re-recordable DVD using Restricted Overwrite
+{ _T("DVD-RWSeq"), 0x14 },  // Sequential recording Re-recordable DVD using Sequential recording
+{ _T("DVD-R_DL"),  0x15 },  // DVD-R Dual Layer Sequential Recording Dual Layer DVD-R using Sequential recording
+{ _T("DVD-R_DL"),  0x16 },  // DVD-R Dual Layer Jump Recording Dual Layer DVD-R using Layer Jump recording
+{ _T("DVD+RW"),    0x1A },  // DVD+RW DVD+ReWritable
+{ _T("DVD+R"),     0x1B },  // DVD+R DVD+Recordable
+{ _T("DVD+RW_DL"), 0x2A },  // Dual Layer DVD+Rewritable Dual Layer
+{ _T("DVD+R_DL"),  0x2B },  // DVD+R Dual Layer DVD+Recordable Dual Layer
+{ _T("BluRayRom"), 0x40 },  // BD-ROM Blu-ray Disc ROM
+{ _T("BluRayBDR"), 0x41 },  // BD-R SRM Blu-ray Disc Recordable – Sequential Recording
+{ _T("BluRayRRM"), 0x42 },  // Blu-ray Disc Recordable – Random Recording Mode
+{ _T("BluRayRE"),  0x43 },  // BD-RE Blu-ray Disc Rewritable
+{ _T("HDDVDROM"),  0x50 },  // HD DVD-ROM Read-only HD DVD
+{ _T("HDDVDR"),    0x51 },  // HD DVD-R Write-once HD DVD
+{ _T("HDDVDRAM"),  0x52 },  // HD DVD-RAM Rewritable HD DVD
+{ _T("Unknown"),   0 } } ;
 
 //****************************************************************************
 static unsigned get_cd_cfg(BOOL Status, PSCSI_PASS_THROUGH_WITH_BUFFERS Psptwb )
@@ -152,7 +153,7 @@ static int GetDeviceConfig(HANDLE hCD)
 }
 
 //*************************************************************************
-char *get_dev_name(uint profile_code)
+static TCHAR *get_dev_name(uint profile_code)
 {
    uint idx ;
    for (idx=0; ProfileInfo[idx].profile_code != 0; idx++) {
@@ -160,14 +161,14 @@ char *get_dev_name(uint profile_code)
          return ProfileInfo[idx].description ;
       }
    }
-   return "Unknown" ;
+   return _T("Unknown") ;
 }
 
 //****************************************************************************
 // #define  STAND_ALONE    1
 #ifdef  STAND_ALONE
-static char *cd_names[4] = {
-"CD_ROM", "CD_RW", "DVD_ROM", "DVD_RW"   
+static TCHAR *cd_names[4] = {
+_T("CD_ROM"), _T("CD_RW"), _T("DVD_ROM"), _T("DVD_RW")   
 } ;
 
 int main (void)
@@ -198,17 +199,17 @@ int main (void)
    return 0;
 }
 #else
-char *get_cd_device_desc(char drv)
+TCHAR *get_cd_device_desc(TCHAR drv)
 {
    // char szTemp[4096], szName[64];
-   char drive_path[10] = "\\\\.\\D:" ; //lint !e1778  not const safe
+   TCHAR drive_path[10] = _T("\\\\.\\D:") ; //lint !e1778  not const safe
    drive_path[4] = drv ;
 
    HANDLE hCD = CreateFile (drive_path, 
       GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
 
    int cd_cfg = GetDeviceConfig(hCD) ;
-   char *dev_name = get_dev_name(cd_cfg) ;
+   TCHAR *dev_name = get_dev_name(cd_cfg) ;
 
    // GetCDDeviceName (hCD, szTemp, szName);
    // printf("szTemp=[%s]\n", szTemp) ;

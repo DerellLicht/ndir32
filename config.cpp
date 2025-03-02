@@ -64,16 +64,16 @@ void getcolor(ffdata *fnew)
 //*********************************************************************
 static void parse_color_entry(TCHAR *iniptr)
 {
-   char *eqptr ;
-   char *hdptr ;
-   char *tlptr ;
+   TCHAR *eqptr ;
+   TCHAR *hdptr ;
+   TCHAR *tlptr ;
    uchar atr ;
    attrib_list *aptr ;
 
    //  check for multiple-color-entry forms...
    //0x32:.com,.bat,.btm,.sys
    //14:.arc,.tgz,.tar,.gz,.z,.zip,.bz2,.rar,.7z,.iso,.zcp
-   hdptr = _tcschr(iniptr, ':') ;
+   hdptr = _tcschr(iniptr, _T(':')) ;
    if (hdptr != 0) {
       *hdptr++ = 0 ; //  terminate attribute, point to first extension
       atr = (uchar) _tcstoul(iniptr, 0, 0) ;
@@ -86,21 +86,21 @@ static void parse_color_entry(TCHAR *iniptr)
             return ;
          // if (*hdptr != '.')
          //    return ;
-         tlptr = _tcschr(hdptr, ',') ;
+         tlptr = _tcschr(hdptr, _T(',')) ;
          //  see if we're at end of line
          if (tlptr != 0) {
             *tlptr++ = 0 ; //  NULL-term extension
          }
          //  check for too-long extensions in INI file
          //  If extension in INI file is too long, just discard it
-         uint extlen = (*hdptr == '.') ? MAX_EXT_SIZE : MAX_EXT_SIZE-1 ;
+         uint extlen = (*hdptr == _T('.')) ? MAX_EXT_SIZE : MAX_EXT_SIZE-1 ;
          if (_tcslen(hdptr) <= extlen) {
             aptr = &attr_table[attrib_count++] ;
-            if (*hdptr == '.') {
+            if (*hdptr == _T('.')) {
                _tcscpy(aptr->ext, hdptr) ;
             }
             else {
-               sprintf(aptr->ext, ".%s", hdptr) ;
+               _stprintf(aptr->ext, _T(".%s"), hdptr) ;
             }
             aptr->attr = atr ;
          }
@@ -150,70 +150,70 @@ static int write_default_ini_file(TCHAR *ini_str)
    if (ofile == 0) 
       return errno ;
    
-   fprintf(ofile, "; Default configuration file for NDIR32.EXE\n") ;
-   fprintf(ofile, "; This file was generated automatically by NDIR, \n") ;
-   fprintf(ofile, "; but it will not be over-written.  \n") ;
-   fprintf(ofile, "; Edit this file as you desire to re-configure NDIR.\n") ;
-   fprintf(ofile, "; \n") ;
-   fprintf(ofile, "; Lines beginning with semicolons, and blank lines, are ignored\n") ;
-   fprintf(ofile, "\n") ;
+   _ftprintf(ofile, _T("; Default configuration file for NDIR32.EXE\n")) ;
+   _ftprintf(ofile, _T("; This file was generated automatically by NDIR, \n")) ;
+   _ftprintf(ofile, _T("; but it will not be over-written.  \n")) ;
+   _ftprintf(ofile, _T("; Edit this file as you desire to re-configure NDIR.\n")) ;
+   _ftprintf(ofile, _T("; \n")) ;
+   _ftprintf(ofile, _T("; Lines beginning with semicolons, and blank lines, are ignored\n")) ;
+   _ftprintf(ofile, _T("\n")) ;
    
    //  generate state flags
-   fprintf(ofile, "ucase=%u     ; use upper-case for all names\n", n.ucase) ;
-   fprintf(ofile, "sort=%u      ; 0=ext, 1=name, 2=size, 3=date/time, 4=none\n", n.sort) ;
-   fprintf(ofile, "reverse=%u   ; reverse normal sort order\n", n.reverse) ;
-   fprintf(ofile, "clear=%u     ; clear screen before display\n", n.clear) ;
-   fprintf(ofile, "pause=%u     ; pause on full screen\n", n.pause) ;
-   fprintf(ofile, "format=%u    ; output columns, 0=1, 1=2, 2=4, 3=6, 5=3\n", n.format) ;
-   fprintf(ofile, "minimize=%u  ; minimize header/footer\n", n.minimize) ;
-   fprintf(ofile, "show_all=%u  ; show S/H/R files\n", n.show_all) ;
-   fprintf(ofile, "dir_first=%u ; list directories only\n", n.dir_first) ;
-   fprintf(ofile, "exec_only=%u ; show executables only (exe,com,bat,btm)\n", n.exec_only) ;
-   fprintf(ofile, "long_attr=%u ; show executables only (exe,com,bat,btm)\n", n.long_attr) ;
-   fprintf(ofile, "horz=%u      ; list files horizontally\n", n.horz) ;
-   fprintf(ofile, "low_ascii=%u\n", n.low_ascii) ;
-   fprintf(ofile, "color=%u\n", n.color) ;
-   fprintf(ofile, "showSHRfiles=%u  ; use diff attrib for S/H/R files\n", n.showSHRfiles) ;
-   // fprintf(ofile, "ega_keep=%u  ; switch to 50-line mode\n", n.ega_keep) ;
-   fprintf(ofile, "fdate_option=%u  ; 0=LastWriteTime (default), 1=LastAccessTime, 2=CreationTime\n", n.fdate_option) ;
+   _ftprintf(ofile, _T("ucase=%u     ; use upper-case for all names\n"), n.ucase) ;
+   _ftprintf(ofile, _T("sort=%u      ; 0=ext, 1=name, 2=size, 3=date/time, 4=none\n"), n.sort) ;
+   _ftprintf(ofile, _T("reverse=%u   ; reverse normal sort order\n"), n.reverse) ;
+   _ftprintf(ofile, _T("clear=%u     ; clear screen before display\n"), n.clear) ;
+   _ftprintf(ofile, _T("pause=%u     ; pause on full screen\n"), n.pause) ;
+   _ftprintf(ofile, _T("format=%u    ; output columns, 0=1, 1=2, 2=4, 3=6, 5=3\n"), n.format) ;
+   _ftprintf(ofile, _T("minimize=%u  ; minimize header/footer\n"), n.minimize) ;
+   _ftprintf(ofile, _T("show_all=%u  ; show S/H/R files\n"), n.show_all) ;
+   _ftprintf(ofile, _T("dir_first=%u ; list directories only\n"), n.dir_first) ;
+   _ftprintf(ofile, _T("exec_only=%u ; show executables only (exe,com,bat,btm)\n"), n.exec_only) ;
+   _ftprintf(ofile, _T("long_attr=%u ; show executables only (exe,com,bat,btm)\n"), n.long_attr) ;
+   _ftprintf(ofile, _T("horz=%u      ; list files horizontally\n"), n.horz) ;
+   _ftprintf(ofile, _T("low_ascii=%u\n"), n.low_ascii) ;
+   _ftprintf(ofile, _T("color=%u\n"), n.color) ;
+   _ftprintf(ofile, _T("showSHRfiles=%u  ; use diff attrib for S/H/R files\n"), n.showSHRfiles) ;
+   // _ftprintf(ofile, "ega_keep=%u  ; switch to 50-line mode\n", n.ega_keep) ;
+   _ftprintf(ofile, _T("fdate_option=%u  ; 0=LastWriteTime (default), 1=LastAccessTime, 2=CreationTime\n"), n.fdate_option) ;
 
    //  generate default colors
-   fprintf(ofile, "\n") ;
-   fprintf(ofile, "global display colors.\n") ;
-   fprintf(ofile, "All colors can be decimal or hex (preceded by 0x)\n") ;
-   fprintf(ofile, "colorlogo=%u\n", n.colorlogo) ;
-   fprintf(ofile, "colornhead=%u\n", n.colornhead) ;
-   fprintf(ofile, "colorxhead=%u\n", n.colorxhead) ;
-   fprintf(ofile, "colorframe=%u\n", n.colorframe) ;
-   fprintf(ofile, "colorattr=%u\n", n.colorattr) ;
-   fprintf(ofile, "colorsize=%u\n", n.colorsize) ;
-   fprintf(ofile, "colordate=%u\n", n.colordate) ;
-   fprintf(ofile, "colortime=%u\n", n.colortime) ;
-   fprintf(ofile, "colordir=%u\n", n.colordir) ;
-   fprintf(ofile, "colorSHR=%u\n", n.colorSHR) ;
-   fprintf(ofile, "colordefalt=%u\n", n.colordefalt) ;
+   _ftprintf(ofile, _T("\n")) ;
+   _ftprintf(ofile, _T("global display colors.\n")) ;
+   _ftprintf(ofile, _T("All colors can be decimal or hex (preceded by 0x)\n")) ;
+   _ftprintf(ofile, _T("colorlogo=%u\n"), n.colorlogo) ;
+   _ftprintf(ofile, _T("colornhead=%u\n"), n.colornhead) ;
+   _ftprintf(ofile, _T("colorxhead=%u\n"), n.colorxhead) ;
+   _ftprintf(ofile, _T("colorframe=%u\n"), n.colorframe) ;
+   _ftprintf(ofile, _T("colorattr=%u\n"), n.colorattr) ;
+   _ftprintf(ofile, _T("colorsize=%u\n"), n.colorsize) ;
+   _ftprintf(ofile, _T("colordate=%u\n"), n.colordate) ;
+   _ftprintf(ofile, _T("colortime=%u\n"), n.colortime) ;
+   _ftprintf(ofile, _T("colordir=%u\n"), n.colordir) ;
+   _ftprintf(ofile, _T("colorSHR=%u\n"), n.colorSHR) ;
+   _ftprintf(ofile, _T("colordefalt=%u\n"), n.colordefalt) ;
 
    //  generate colors for desired extentions
    // attrib_list attr_default_list[] = {
-   fprintf(ofile, "\n") ;
-   fprintf(ofile, "; assign colors to file extensions.\n") ;
-   fprintf(ofile, "; You can add your extensions here, limited to 200 extentions\n") ;
-   fprintf(ofile, "; Wildcards are supported!!\n") ;
-   fprintf(ofile, "; two formats are supported:\n") ;
-   fprintf(ofile, "; ext=color   and\n") ;
-   fprintf(ofile, "; color:ext,ext,ext,ext\n") ;
-   fprintf(ofile, "; Note that period is required for each extension\n") ;
+   _ftprintf(ofile, _T("\n")) ;
+   _ftprintf(ofile, _T("; assign colors to file extensions.\n")) ;
+   _ftprintf(ofile, _T("; You can add your extensions here, limited to 200 extentions\n")) ;
+   _ftprintf(ofile, _T("; Wildcards are supported!!\n")) ;
+   _ftprintf(ofile, _T("; two formats are supported:\n")) ;
+   _ftprintf(ofile, _T("; ext=color   and\n")) ;
+   _ftprintf(ofile, _T("; color:ext,ext,ext,ext\n")) ;
+   _ftprintf(ofile, _T("; Note that period is required for each extension\n")) ;
    for (j=0; attr_default_list[j].ext[0] != 0; j++) {
-      fprintf(ofile, "%s=%u\n", attr_default_list[j].ext, 
+      _ftprintf(ofile, _T("%s=%u\n"), attr_default_list[j].ext, 
                                 attr_default_list[j].attr ) ;
    }
 
    //  generate directory-tree colors
-   fprintf(ofile, "\n") ;
-   fprintf(ofile, "; assigned colors for levels in directory tree.\n") ;
-   fprintf(ofile, "; Each line defines an additional level, limit=20 colors\n") ;
+   _ftprintf(ofile, _T("\n")) ;
+   _ftprintf(ofile, _T("; assigned colors for levels in directory tree.\n")) ;
+   _ftprintf(ofile, _T("; Each line defines an additional level, limit=20 colors\n")) ;
    for (j=0; j<MAX_DIR_ENTRY; j++) {
-      fprintf(ofile, ":%u\n", dir_default_list[j] ) ;
+      _ftprintf(ofile, _T(":%u\n"), dir_default_list[j] ) ;
    }
 
    fclose(ofile) ;
@@ -222,49 +222,49 @@ static int write_default_ini_file(TCHAR *ini_str)
 
 //*********************************************************************
 struct ini_entry {
-   char  *lvalue ;
+   TCHAR  *lvalue ;
    uchar *rvalue ;
 };
 static ini_entry const ndir_ini[] = {
-{ "ucase",        &n.ucase },
-{ "sort",         &n.sort },
-{ "reverse",      &n.reverse },
-{ "clear",        &n.clear },
-{ "pause",        &n.pause },
-{ "format",       &n.format },
-{ "minimize",     &n.minimize },
-{ "show_all",     &n.show_all },
-{ "dir_first",    &n.dir_first },
-{ "exec_only",    &n.exec_only },
-{ "horz",         &n.horz },
-{ "low_ascii",    &n.low_ascii },
-{ "color",        &n.color },
-{ "showSHRfiles", &n.showSHRfiles },
-// { "ega_keep",     &n.ega_keep },
-// { "lfn_off",      &n.lfn_off },
-{ "fdate_option", &n.fdate_option },
-{ "long_attr",    &n.long_attr },
-{ "colorlogo",    &n.colorlogo },
-{ "colornhead",   &n.colornhead },
-{ "colorxhead",   &n.colorxhead },
-{ "colorframe",   &n.colorframe },
-{ "colorattr",    &n.colorattr },
-{ "colorsize",    &n.colorsize },
-{ "colordate",    &n.colordate },
-{ "colortime",    &n.colortime },
-{ "colordir",     &n.colordir },
-{ "colorSHR",     &n.colorSHR },
-{ "colordefalt",  &n.colordefalt },
-{ "sizeopt",      &n.size_display },
+{ _T("ucase"),        &n.ucase },
+{ _T("sort"),         &n.sort },
+{ _T("reverse"),      &n.reverse },
+{ _T("clear"),        &n.clear },
+{ _T("pause"),        &n.pause },
+{ _T("format"),       &n.format },
+{ _T("minimize"),     &n.minimize },
+{ _T("show_all"),     &n.show_all },
+{ _T("dir_first"),    &n.dir_first },
+{ _T("exec_only"),    &n.exec_only },
+{ _T("horz"),         &n.horz },
+{ _T("low_ascii"),    &n.low_ascii },
+{ _T("color"),        &n.color },
+{ _T("showSHRfiles"), &n.showSHRfiles },
+// { _T("ega_keep"),     &n.ega_keep },
+// { _T("lfn_off"),      &n.lfn_off },
+{ _T("fdate_option"), &n.fdate_option },
+{ _T("long_attr"),    &n.long_attr },
+{ _T("colorlogo"),    &n.colorlogo },
+{ _T("colornhead"),   &n.colornhead },
+{ _T("colorxhead"),   &n.colorxhead },
+{ _T("colorframe"),   &n.colorframe },
+{ _T("colorattr"),    &n.colorattr },
+{ _T("colorsize"),    &n.colorsize },
+{ _T("colordate"),    &n.colordate },
+{ _T("colortime"),    &n.colortime },
+{ _T("colordir"),     &n.colordir },
+{ _T("colorSHR"),     &n.colorSHR },
+{ _T("colordefalt"),  &n.colordefalt },
+{ _T("sizeopt"),      &n.size_display },
 { 0, 0} } ;
 
-static void parse_ini_line(char *iniptr)
+static void parse_ini_line(TCHAR *iniptr)
 {
-   char *eqptr ;
+   TCHAR *eqptr ;
    int j ;
 
-   eqptr = _tcschr(iniptr, '=') ;
-   if (eqptr == 0)
+   eqptr = _tcschr(iniptr, _T('=')) ;
+   if (eqptr == NULL)
       return ;
    *eqptr++ = 0 ; //  NULL-terminate lvalue, point to rvalue
    for (j=0; ndir_ini[j].lvalue != 0; j++) {
@@ -284,15 +284,15 @@ static int read_ini_file(TCHAR const * ini_str)
 {
    FILE *ofile ;
    int slen ;
-   char *strptr ;
-   static char line[PATH_MAX] ;
+   TCHAR *strptr ;
+   static TCHAR line[PATH_MAX] ;
 
 // printf("reading %s\n", ini_str) ;
    ofile = _tfopen(ini_str, _T("rt")) ;
    if (ofile == 0) 
       return errno ;
 
-   while (fgets(line, sizeof(line), ofile) != 0) {
+   while (_fgetts(line, sizeof(line), ofile) != 0) {
       //  strip off newline char
       slen = _tcslen(line) ;
       strptr = &line[slen-1] ;
@@ -344,8 +344,8 @@ static int read_ini_file(TCHAR const * ini_str)
 }
 
 //*********************************************************************
-static char const local_ini_name[] = ".\\ndir.ini" ;
-static char ini_path[PATH_MAX] ;
+static TCHAR const local_ini_name[] = _T(".\\ndir.ini") ;
+static TCHAR ini_path[PATH_MAX] ;
 
 void read_config_file(void)
 {
@@ -387,9 +387,9 @@ void read_config_file(void)
    result = write_default_ini_file(ini_path) ;
    if (result != 0) {
       // perror(ini_path) ;
-      sprintf (tempstr, "path [%s]\n", ini_path);
+      _stprintf (tempstr, _T("path [%s]\n"), ini_path);
       nputs (0xA, tempstr);
-      sprintf (tempstr, "FindFirst: %s\n", get_system_message ());
+      _stprintf (tempstr, _T("FindFirst: %s\n"), get_system_message ());
       nputs (0xA, tempstr);
    }
    //  try to read again, after writing defaults

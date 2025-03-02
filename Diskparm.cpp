@@ -12,35 +12,36 @@
 
 // #include <stdlib.h>             //  ultoa()
 #include <windows.h>
+#include <stdio.h>
 
 #include "common.h"
 #include "ndir32.h"
 
-char dpath[4] = "d:\\";
+TCHAR dpath[4] = _T("d:\\");
 
-static char fsnbfr[PATH_MAX];
+static TCHAR fsnbfr[PATH_MAX];
 
 //  mediatype.cpp
-extern char *get_cd_device_desc(char drv);
+extern TCHAR *get_cd_device_desc(TCHAR drv);
 
 // static char UNCname[PATH_MAX] ;
 struct UNC
 {
-   char *uptr;
-   char ustr[PATH_MAX];
+   TCHAR *uptr;
+   TCHAR ustr[PATH_MAX];
 };
 
-static char fsn_bfr[32] ;      //  buffer for name of lfn file system
+static TCHAR fsn_bfr[32] ;      //  buffer for name of lfn file system
 
-static char diskavail[MAX_ULL_COMMA_LEN+1]; 
-static char disktotal[MAX_ULL_COMMA_LEN+1]; 
+static TCHAR diskavail[MAX_ULL_COMMA_LEN+1]; 
+static TCHAR disktotal[MAX_ULL_COMMA_LEN+1]; 
 
 //*****************************************************************
 const unsigned int DEFAULT_CLUSTER_SIZE = 4096 ;
 
 static unsigned get_cluster_size(TCHAR dltr)
 {
-   TCHAR dirpath[4] = "c:\\" ;
+   TCHAR dirpath[4] = _T("c:\\") ;
    unsigned cl_bytes = DEFAULT_CLUSTER_SIZE ;
 
    //  12/17/13 
@@ -67,7 +68,7 @@ static unsigned get_cluster_size(TCHAR dltr)
 // v:\:  8,  512, 204827101, 488279551
    dirpath[0] = dltr ;
    DWORD secperclus, bytespersec, numfreeclus, numtotalclus ;
-   if (GetDiskFreeSpaceA(dirpath, &secperclus, &bytespersec, &numfreeclus, &numtotalclus) != 0) {
+   if (GetDiskFreeSpace(dirpath, &secperclus, &bytespersec, &numfreeclus, &numtotalclus) != 0) {
       // sprintf(msgstr, "%s: %u, %u, %u, %u\n", 
       //    dpath, (uint) secperclus, (uint) bytespersec, (uint) numfreeclus, (uint) numtotalclus) ;
       // OutputDebugString(msgstr) ; 
@@ -108,13 +109,13 @@ bool get_disk_info(TCHAR *dstr)
    // getchar() ;
    //  NOTE:  GetVolumeInformation() requires a filename ending
    //    with a backslash.  No wildcards are supported.
-   if (!GetVolumeInformationA( dirptr,                 // LPCSTR lpRootPathName,
-                              (LPSTR) volume_name,    // LPSTR lpVolumeNameBuffer,
+   if (!GetVolumeInformation( dirptr,                 // LPCSTR lpRootPathName,
+                              (TCHAR *)volume_name,    // LPSTR lpVolumeNameBuffer,
                               PATH_MAX,               // DWORD nVolumeNameSize,
                               &vsernbr,               // LPDWORD lpVolumeSerialNumber,
                               &mclen,                 // LPDWORD lpMaximumComponentLength,
                               &fsflags,               // LPDWORD lpFileSystemFlags,
-                              (LPSTR) fsn_bfr,        // LPSTR lpFileSystemNameBuffer,
+                              (TCHAR *)fsn_bfr,        // LPSTR lpFileSystemNameBuffer,
                               PATH_MAX                // DWORD nFileSystemNameSize
                             )) {
       // syslog("cannot read volume info from %s:\n", dirptr) ;
@@ -122,23 +123,16 @@ bool get_disk_info(TCHAR *dstr)
       gvi_valid = false ;
    }
 
-#ifdef UNICODE
    if (_tcslen(volume_name) == 0) {
-      _tcscpy(volume_name, (const wchar_t*) "undefined") ;
+      _tcscpy(volume_name, _T("undefined")) ;
    }
-#else
-   if (_tcslen(volume_name) == 0) {
-      _tcscpy(volume_name, "undefined") ;
-   }
-#endif
-
    // dtype = GetDriveType(dpath) ;
 
    clbytes = get_cluster_size(dpath[0]) ;   //  assume dpath[] is valid
    //  that worked okay... now, get the disk summary
    // unsigned __int64 freec1, frees1, totals1 ;
    // LPCSTR dptr = dirptr ;
-   if (!GetDiskFreeSpaceExA(dstr, 
+   if (!GetDiskFreeSpaceEx(dstr, 
       (ULARGE_INTEGER *) &freec1, 
       (ULARGE_INTEGER *) &totals1, 
       (ULARGE_INTEGER *) &frees1)) {
@@ -178,23 +172,23 @@ bool get_disk_info(TCHAR *dstr)
 // "CD_ROM", "CD_RW", "DVD_ROM", "DVD_RW"   
 // } ;
 
-static char *get_drive_type_string(UINT gdt, char dchar)
+static TCHAR *get_drive_type_string(UINT gdt, TCHAR dchar)
 {
    // int cd_type ;
    switch (gdt) {
-   case DRIVE_NO_ROOT_DIR: return "NoRootDir" ;
+   case DRIVE_NO_ROOT_DIR: return _T("NoRootDir") ;
    //  is there any chance of getting info on this drive type??
    //  These are typically USB hubs...
-   case DRIVE_REMOVABLE  : return "removable" ;
-   case DRIVE_FIXED      : return "fixed" ;
-   case DRIVE_REMOTE     : return "remote" ;
+   case DRIVE_REMOVABLE  : return _T("removable") ;
+   case DRIVE_FIXED      : return _T("fixed") ;
+   case DRIVE_REMOTE     : return _T("remote") ;
    case DRIVE_CDROM      : 
       return get_cd_device_desc(dchar) ;
 
-   case DRIVE_RAMDISK    : return "ramdisk" ;
+   case DRIVE_RAMDISK    : return _T("ramdisk") ;
    case DRIVE_UNKNOWN    : 
    default:
-      return "unknown" ;
+      return _T("unknown") ;
    }
 }
 
@@ -207,15 +201,15 @@ void display_drive_summary (void)
    //  draw header
    nput_line (n.colorframe, '*');
    nputs (n.colornhead,
-      "                               Disk Drive Summary                              \n\r");
+      _T("                               Disk Drive Summary                              \n\r"));
    nput_line (n.colorframe, '=');
 
    if (n.drive_summary == DSUMMARY_FREE) {
-      nputs (n.colornhead, "   file sys      total space          free space     [Cluster Size] UNC path \n");
+      nputs (n.colornhead, _T("   file sys      total space          free space     [Cluster Size] UNC path \n"));
    } else {
-      nputs (n.colornhead, "   file sys      total space          used space     [Cluster Size] UNC path \n");
+      nputs (n.colornhead, _T("   file sys      total space          used space     [Cluster Size] UNC path \n"));
    }
-   nputs (n.colornhead, "   ========  ==================  ==================  ========================\n");
+   nputs (n.colornhead, _T("   ========  ==================  ==================  ========================\n"));
 
    ULONGLONG lfree = 0;
    ULONGLONG ltotal = 0;
@@ -229,10 +223,11 @@ void display_drive_summary (void)
 
       // dpath[0] = (char) dltr + 'a';
       dpath[0] = dchar ;
-      dtype = GetDriveTypeA (dpath);
+      dtype = GetDriveType(dpath);
       if (!get_disk_info(dpath)) {
-         wsprintfA(tempstr, "%c: %-9s %18s  %18s           no media present\n", 
-            dchar, get_drive_type_string(dtype, dchar), " ", " ") ;
+         TCHAR *tp = get_drive_type_string(dtype, dchar);
+         _stprintf(tempstr, _T("%c: %-9s %18s  %18s           no media present\n"), 
+            dchar, tp, " ", " ") ;
          nputs (n.colordefalt, tempstr);
          continue;
       }
@@ -250,22 +245,22 @@ void display_drive_summary (void)
          UNCpaths.uptr = UNCpaths.ustr;
          bufsize = PATH_MAX;
 
-         wsprintfA(tempstr, "%c: %-9s %18s  %18s  ", dchar, fsnbfr, disktotal, diskavail);
+         _stprintf(tempstr, _T("%c: %-9s %18s  %18s  "), dchar, fsnbfr, disktotal, diskavail);
          nputs (n.colordir, tempstr);
 
          // if (WNetGetUniversalName(dpath, REMOTE_NAME_INFO_LEVEL, 
-         if (WNetGetUniversalNameA(dpath, UNIVERSAL_NAME_INFO_LEVEL, &UNCpaths, &bufsize) != NO_ERROR) {
-            nputs (n.colordir, "Network Drive\n");
+         if (WNetGetUniversalName(dpath, UNIVERSAL_NAME_INFO_LEVEL, &UNCpaths, &bufsize) != NO_ERROR) {
+            nputs (n.colordir, _T("Network Drive\n"));
             // return 1;
          }
          else {
-            wsprintfA(tempstr, "%s\n", UNCpaths.uptr);
+            _stprintf(tempstr, _T("%s\n"), UNCpaths.uptr);
             nputs (n.colordir, tempstr);
          }
       }
       else {
       // else if (dtype == DRIVE_FIXED) {
-         wsprintfA(tempstr, "%c: %-9s %18s  %18s  ", dchar, fsn_bfr, disktotal, diskavail);
+         _stprintf(tempstr, _T("%c: %-9s %18s  %18s  "), dchar, fsn_bfr, disktotal, diskavail);
          nputs (n.colordefalt, tempstr);
 
          // unsigned cluster_size = get_cluster_size(dpath[0]);
@@ -274,7 +269,7 @@ void display_drive_summary (void)
          // ltotal += totals1.QuadPart;
          lfree  += frees1 ;
          ltotal += totals1 ;
-         wsprintfA(tempstr, "[%6u] %s\n", (unsigned) clbytes, volume_name);
+         _stprintf(tempstr, _T("[%6u] %s\n"), (unsigned) clbytes, volume_name);
          nputs (n.colordefalt, tempstr);
       }
    }
@@ -284,8 +279,8 @@ void display_drive_summary (void)
    convert_to_commas(lfree, diskavail);
 
    nput_line (n.colorframe, '*');
-   wsprintfA(tempstr, "             %18s  %18s", disktotal, diskavail);
+   _stprintf(tempstr, _T("             %18s  %18s"), disktotal, diskavail);
    nputs (n.colorxhead, tempstr);
-   wsprintfA(tempstr, "  Total Physical space\n\r");
+   _stprintf(tempstr, _T("  Total Physical space\n\r"));
    nputs (n.colornhead, tempstr);
 }

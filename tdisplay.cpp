@@ -1,5 +1,5 @@
 //*****************************************************************
-//  Copyright (c) 1995-2023  Daniel D Miller
+//  Copyright (c) 1995-2025  Daniel D Miller
 //  tdisplay.cpp: display directory tree                  
 //*****************************************************************
 #include <windows.h>
@@ -10,16 +10,20 @@
 #include "conio32.h"
 #include "treelist.h"
 
-static char const * const dhdr =
-   "쳐컴컴컴컴컴쩡컴컴컴컴컴탠컴컴컴컴컴컴컫컴컴컴컴컴컴컴";
+static TCHAR const * const dhdr =
+#ifdef UNICODE
+   _T("+-----------+-----------+--------------+--------------");
+#else   
+   _T("쳐컴컴컴컴컴쩡컴컴컴컴컴탠컴컴컴컴컴컴컫컴컴컴컴컴컴컴");
+#endif   
 
-static char const * const dhdrl =
-   "+-----------+-----------+--------------+--------------";
+static TCHAR const * const dhdrl =
+   _T("+-----------+-----------+--------------+--------------");
 
 //0         1         2
 //012345678901234567890123456789
 //=========================+===========+===========+==============+==============
-static char formstr[50];
+static TCHAR formstr[50];
 
 static uint wincols      = 80 ;
 static uint name_end_col = 25 ;
@@ -33,20 +37,20 @@ static void display_size(ULONGLONG dlen, unsigned slen, unsigned attr)
    if (n.size_display == 2) {
       dlen /= 1000000 ;
       // dsize.convert (dlen);
-      sprintf (tempstr, "%*s", slen-1, convert_to_commas(dlen, NULL));
+      _stprintf (tempstr, _T("%*s"), slen-1, convert_to_commas(dlen, NULL));
       nputs (attr, tempstr);
-      nputc(attr ^ 0x08, 'M') ;
+      nputc(attr ^ 0x08, _T('M')) ;
    } else 
    if (dlen > (ULONGLONG) 999999999  ||  n.size_display == 1) {
       dlen /= 1000 ;
       // dsize.convert (dlen);
-      sprintf (tempstr, "%*s", slen-1, convert_to_commas(dlen, NULL));
+      _stprintf (tempstr, _T("%*s"), slen-1, convert_to_commas(dlen, NULL));
       nputs (attr, tempstr);
-      nputc(attr ^ 0x08, 'K') ;
+      nputc(attr ^ 0x08, _T('K')) ;
    } else 
    {
       // dsize.convert (dlen);
-      sprintf (tempstr, "%*s", slen, convert_to_commas(dlen, NULL));
+      _stprintf (tempstr, _T("%*s"), slen, convert_to_commas(dlen, NULL));
       nputs (attr, tempstr);
    }
 }
@@ -54,10 +58,10 @@ static void display_size(ULONGLONG dlen, unsigned slen, unsigned attr)
 //**********************************************************
 //  Note: lstr contains form string plus filename
 //**********************************************************
-static void display_tree_filename (char *frmstr, dirs *ktemp)
+static void display_tree_filename (TCHAR *frmstr, dirs *ktemp)
 {
-   // char levelstr[PATH_MAX];
-   // sprintf (levelstr, "%s%s", frmstr, ktemp->name);
+   // TCHAR levelstr[PATH_MAX];
+   // _stprintf (levelstr, "%s%s", frmstr, ktemp->name);
    int wlen = _tcslen(ktemp->name);
    //  why is mb_len == 0 on base folder??
    if (ktemp->mb_len == 0) {
@@ -90,7 +94,7 @@ static void display_tree_filename (char *frmstr, dirs *ktemp)
       // nput_char(dtree_colors[level], ' ', name_end_col+1) ;
       // nputc (n.colorframe, vline);
       ncrlf ();
-      sprintf (tempstr, "%-*s", name_end_col+1, frmstr);
+      _stprintf (tempstr, _T("%-*s"), name_end_col+1, frmstr);
       nputs (dtree_colors[level], tempstr);  //  spaces
    }
    else {
@@ -103,7 +107,7 @@ static void display_tree_filename (char *frmstr, dirs *ktemp)
          nput_char(n.colorframe, ' ', splen) ;
       }
       else {
-         syslog("(other), splen: %d, nec: %u, flen: %u, slen: %u\n", 
+         syslog(_T("(other), splen: %d, nec: %u, flen: %u, slen: %u\n"), 
             splen,  name_end_col, frmlen, ktemp->mb_len);
       }
    }
@@ -123,16 +127,16 @@ static void display_dir_tree (dirs * ktop)
    while (ktemp != NULL) {
       //  first, build tree list for current level
       if (level == 0) {
-         formstr[0] = (char) NULL;
+         formstr[0] = (TCHAR) NULL;
       }
       else {
          if (ktemp->brothers == (struct dirs *) NULL) {
-            formstr[level - 1] = (char) (n.low_ascii) ? '\\' : '�';   //lint !e743 
-            formstr[level] = (char) NULL;
+            formstr[level - 1] = (TCHAR) (n.low_ascii) ? '\\' : '�';   //lint !e743 
+            formstr[level] = (TCHAR) NULL;
          }
          else {
-            formstr[level - 1] = (char) (n.low_ascii) ? '+' : '�';   //lint !e743 
-            formstr[level] = (char) NULL;
+            formstr[level - 1] = (TCHAR) (n.low_ascii) ? '+' : '�';   //lint !e743 
+            formstr[level] = (TCHAR) NULL;
          }
       }
 
@@ -150,17 +154,17 @@ static void display_dir_tree (dirs * ktop)
                // sdsize.convert (ktemp->subdirsize);
 
                //  now, print the normal directory
-               // sprintf (tempstr, "%11s", dsize.putstr ());
+               // _stprintf (tempstr, "%11s", dsize.putstr ());
                // nputs (dtree_colors[level], tempstr);
 
-               // sprintf(tempstr, "%11s %14s", dssize_ptr, sdsize_ptr) ;
-               // sprintf (tempstr, "%11s %14s", dssize.putstr (),
+               // _stprintf(tempstr, "%11s %14s", dssize_ptr, sdsize_ptr) ;
+               // _stprintf (tempstr, "%11s %14s", dssize.putstr (),
                //   sdsize.putstr ());
                // nputs (dtree_colors[level], tempstr);
                display_size(ktemp->dirsize, 11, dtree_colors[level]) ;
                nputc (n.colorframe, vline);
                display_size(ktemp->dirsecsize, 11, dtree_colors[level]) ;
-               nputc (dtree_colors[level], ' ');
+               nputc (dtree_colors[level], _T(' '));
                display_size(ktemp->subdirsize, 14, dtree_colors[level]) ;
                nputc (n.colorframe, vline);
             }
@@ -168,20 +172,20 @@ static void display_dir_tree (dirs * ktop)
             /*  no subdirectories are under this one  */
             else {
                //  now, print the normal directory
-               nputs (dtree_colors[level], "           ");
+               nputs (dtree_colors[level], _T("           "));
                nputc (n.colorframe, vline);
-               nputs (dtree_colors[level], "            ");
-               // sprintf(tempstr, "            %14s", sdsize_ptr) ;
+               nputs (dtree_colors[level], _T("            "));
+               // _stprintf(tempstr, "            %14s", sdsize_ptr) ;
                // sdsize.convert (ktemp->subdirsize);
-               // sprintf (tempstr, "%14s", sdsize.putstr ());
+               // _stprintf (tempstr, "%14s", sdsize.putstr ());
                // nputs (dtree_colors[level], tempstr);
                display_size(ktemp->subdirsize, 14, dtree_colors[level]) ;
                nputc (n.colorframe, vline);
             }                   /* end  else !(ktemp->nsdi) */
 
-            // sprintf(tempstr, "%14s", sdssize_ptr) ;
+            // _stprintf(tempstr, "%14s", sdssize_ptr) ;
             // sdssize.convert (ktemp->subdirsecsize);
-            // sprintf (tempstr, "%14s", sdssize.putstr ());
+            // _stprintf (tempstr, "%14s", sdssize.putstr ());
             // nputs (dtree_colors[level], tempstr);
             display_size(ktemp->subdirsecsize, 14, dtree_colors[level]) ;
             break;
@@ -191,20 +195,20 @@ static void display_dir_tree (dirs * ktop)
             if ((ktemp->files == ktemp->subfiles) &&
                (ktemp->directs == ktemp->subdirects)) {
                //  now, print the normal directory
-               nputs (dtree_colors[level], "           ");
+               nputs (dtree_colors[level], _T("           "));
                nputc (n.colorframe, vline);
 
                // sdsize.convert ((unsigned long long) ktemp->files);
-               // sprintf (tempstr, "            %12s  ", sdsize.putstr ());
+               // _stprintf (tempstr, "            %12s  ", sdsize.putstr ());
                // nputs (dtree_colors[level], tempstr);
-               nputs (dtree_colors[level], "            ");
+               nputs (dtree_colors[level], _T("            "));
                display_size((ULONGLONG) ktemp->files, 12, dtree_colors[level]) ;
 
-               nputs (dtree_colors[level], "  ");
+               nputs (dtree_colors[level], _T("  "));
                nputc (n.colorframe, vline);
-               // sprintf(tempstr, "%14s", sdssize_ptr) ;
+               // _stprintf(tempstr, "%14s", sdssize_ptr) ;
                // sdssize.convert ((unsigned long long) ktemp->directs);
-               // sprintf (tempstr, "%10s", sdssize.putstr ());
+               // _stprintf (tempstr, "%10s", sdssize.putstr ());
                // nputs (dtree_colors[level], tempstr);
                display_size((ULONGLONG) ktemp->directs, 10, dtree_colors[level]) ;
             }
@@ -213,25 +217,25 @@ static void display_dir_tree (dirs * ktop)
             else {
                //  now, print the normal directory
                // dsize.convert ((unsigned long long) ktemp->files);
-               // sprintf (tempstr, "%9s  ", dsize.putstr ());
+               // _stprintf (tempstr, "%9s  ", dsize.putstr ());
                // nputs (dtree_colors[level], tempstr);
                display_size((ULONGLONG) ktemp->files, 9, dtree_colors[level]) ;
-               nputs (dtree_colors[level], "  ");
+               nputs (dtree_colors[level], _T("  "));
                nputc (n.colorframe, vline);
 
                // dssize.convert ((unsigned long long) ktemp->directs);
                // sdsize.convert ((unsigned long long) ktemp->subfiles);
-               // sprintf (tempstr, "%9s   %12s  ", dssize.putstr (),
+               // _stprintf (tempstr, "%9s   %12s  ", dssize.putstr (),
                //   sdsize.putstr ());
                // nputs (dtree_colors[level], tempstr);
                display_size((ULONGLONG) ktemp->directs, 9, dtree_colors[level]) ;
-               nputs (dtree_colors[level], "   ");
+               nputs (dtree_colors[level], _T("   "));
                display_size((ULONGLONG) ktemp->subfiles, 12, dtree_colors[level]) ;
-               nputs (dtree_colors[level], "  ");
+               nputs (dtree_colors[level], _T("  "));
                nputc (n.colorframe, vline);
 
                // sdssize.convert ((unsigned long long) ktemp->subdirects);
-               // sprintf (tempstr, "%10s", sdssize.putstr ());
+               // _stprintf (tempstr, "%10s", sdssize.putstr ());
                // nputs (dtree_colors[level], tempstr);
                display_size((ULONGLONG) ktemp->subdirects, 10, dtree_colors[level]) ;
             }                   /* end  else !(ktemp->nsdi) */
@@ -241,25 +245,25 @@ static void display_dir_tree (dirs * ktop)
          case 5:
             //  now, print the normal directory
             // dsize.convert ((unsigned long long) ktemp->subfiles);
-            // sprintf (tempstr, "%9s  ", dsize.putstr ());
+            // _stprintf (tempstr, "%9s  ", dsize.putstr ());
             // nputs (dtree_colors[level], tempstr);
             display_size((ULONGLONG) ktemp->subfiles, 9, dtree_colors[level]) ;
-            nputs (dtree_colors[level], "  ");
+            nputs (dtree_colors[level], _T("  "));
                   nputc (n.colorframe, vline);
 
             // dssize.convert ((unsigned long long) ktemp->subdirects);
             // sdsize.convert ((unsigned long long) ktemp->dirsecsize);
-            // sprintf (tempstr, "%9s   %13s ", dssize.putstr (),
+            // _stprintf (tempstr, "%9s   %13s ", dssize.putstr (),
             //   sdsize.putstr ());
             // nputs (dtree_colors[level], tempstr);
             display_size((ULONGLONG) ktemp->subdirects, 9, dtree_colors[level]) ;
-            nputs (dtree_colors[level], "   ");
+            nputs (dtree_colors[level], _T("   "));
             display_size(ktemp->dirsecsize, 13, dtree_colors[level]) ;
-            nputs (dtree_colors[level], " ");
+            nputs (dtree_colors[level], _T(" "));
                   nputc (n.colorframe, vline);
 
             // sdssize.convert ((unsigned long long) ktemp->subdirsecsize);
-            // sprintf (tempstr, "%14s", sdssize.putstr ());
+            // _stprintf (tempstr, "%14s", sdssize.putstr ());
             // nputs (dtree_colors[level], tempstr);
             display_size(ktemp->subdirsecsize, 14, dtree_colors[level]) ;
             break;
@@ -282,7 +286,7 @@ static void display_dir_tree (dirs * ktop)
       if (!n.tree_short || level <= tree_level_limit) {
          display_dir_tree (ktemp->sons);
       }
-      formstr[--level] = (char) NULL;
+      formstr[--level] = (TCHAR) NULL;
 
       //  goto next brother
       ktemp = ktemp->brothers;
@@ -296,8 +300,8 @@ static void printdirheader (void)
 
    if (!n.color) 
       display_logo();
-   nputs (n.colornhead, "Directory of "); //  len = 13
-   sprintf (tempstr, "%s", base_path);
+   nputs (n.colornhead, _T("Directory of ")); //  len = 13
+   _stprintf (tempstr, _T("%s"), base_path);
    nputs (n.colorxhead, tempstr);
 
    uint vnlen = 16 + _tcslen(volume_name) ; //  16 is length of 'Volume label is '
@@ -306,7 +310,7 @@ static void printdirheader (void)
       ncrlf ();
    else
       nput_char (n.colornhead, ' ', (wincols - blen - vnlen - 1));
-   nputs (n.colornhead, "Volume label is "); //  len = 16
+   nputs (n.colornhead, _T("Volume label is ")); //  len = 16
    nputs (n.colorxhead, volume_name);
    ncrlf ();
 
@@ -326,9 +330,9 @@ static void printdirheader (void)
          //**************************************
          nput_char (n.colornhead, ' ', name_end_col);
          nputc (n.colorframe, vline);
-         nputs (n.colornhead, "   size of requested   ");
+         nputs (n.colornhead, _T("   size of requested   "));
          nputc (n.colorframe, vline);
-         nputs (n.colornhead, "    total size,  including");
+         nputs (n.colornhead, _T("    total size,  including"));
          ncrlf ();
 
          //**************************************
@@ -337,9 +341,9 @@ static void printdirheader (void)
          nput_char (n.colornhead, ' ', name_end_col);
          // nputs (n.colornhead, "Subdirectory names       ");
          nputc (n.colorframe, vline);
-         nputs (n.colornhead, "       directory       ");
+         nputs (n.colornhead, _T("       directory       "));
          nputc (n.colorframe, vline);
-         nputs (n.colornhead, "     lower subdirectories");
+         nputs (n.colornhead, _T("     lower subdirectories"));
          ncrlf ();
          break;
 
@@ -349,9 +353,9 @@ static void printdirheader (void)
          //**************************************
          nput_char (n.colornhead, ' ', name_end_col);
          nputc (n.colorframe, vline);
-         nputs (n.colornhead, " files and directories ");
+         nputs (n.colornhead, _T(" files and directories "));
          nputc (n.colorframe, vline);
-         nputs (n.colornhead, "   files and directories ");
+         nputs (n.colornhead, _T("   files and directories "));
          ncrlf ();
 
          //**************************************
@@ -359,9 +363,9 @@ static void printdirheader (void)
          //**************************************
          nput_char (n.colornhead, ' ', name_end_col);
          nputc (n.colorframe, vline);
-         nputs (n.colornhead, " in current directory  ");
+         nputs (n.colornhead, _T(" in current directory  "));
          nputc (n.colorframe, vline);
-         nputs (n.colornhead, " in current and lower dirs");
+         nputs (n.colornhead, _T(" in current and lower dirs"));
          ncrlf ();
          break;
 
@@ -371,9 +375,9 @@ static void printdirheader (void)
          //**************************************
          nput_char (n.colornhead, ' ', name_end_col);
          nputc (n.colorframe, vline);
-         nputs (n.colornhead, " files and directories ");
+         nputs (n.colornhead, _T(" files and directories "));
          nputc (n.colorframe, vline);
-         nputs (n.colornhead, "    files and directories");
+         nputs (n.colornhead, _T("    files and directories"));
          ncrlf ();
 
          //**************************************
@@ -381,9 +385,9 @@ static void printdirheader (void)
          //**************************************
          nput_char (n.colornhead, ' ', name_end_col);
          nputc (n.colorframe, vline);
-         nputs (n.colornhead, "   cumulative counts   ");
+         nputs (n.colornhead, _T("   cumulative counts   "));
          nputc (n.colorframe, vline);
-         nputs (n.colornhead, "       cumulative sizes   ");
+         nputs (n.colornhead, _T("       cumulative sizes   "));
          ncrlf ();
          break;
 
@@ -402,40 +406,40 @@ static void printdirheader (void)
    //  Heading line 5
    //**************************************
    // nputs (n.colornhead, "Subdirectory names       ");
-   sprintf(tempstr,"%-*s", name_end_col, "Subdirectory names");
+   _stprintf(tempstr,_T("%-*s"), name_end_col, "Subdirectory names");
    nputs (n.colornhead, tempstr);
    nputc (n.colorframe, vline);
    switch (n.tree) {
       case 1:
-         nputs (n.colornhead, "  in bytes ");
+         nputs (n.colornhead, _T("  in bytes "));
          nputc (n.colorframe, vline);
-         nputs (n.colornhead, " disk space");
+         nputs (n.colornhead, _T(" disk space"));
          nputc (n.colorframe, vline);
-         nputs (n.colornhead, "   in bytes   ");
+         nputs (n.colornhead, _T("   in bytes   "));
          nputc (n.colorframe, vline);
-         nputs (n.colornhead, "  disk space");
+         nputs (n.colornhead, _T("  disk space"));
          ncrlf ();
          break;
 
       case 4:
-         nputs (n.colornhead, "    files  ");
+         nputs (n.colornhead, _T("    files  "));
          nputc (n.colorframe, vline);
-         nputs (n.colornhead, "directories");
+         nputs (n.colornhead, _T("directories"));
          nputc (n.colorframe, vline);
-         nputs (n.colornhead, "       files  ");
+         nputs (n.colornhead, _T("       files  "));
          nputc (n.colorframe, vline);
-         nputs (n.colornhead, " directories");
+         nputs (n.colornhead, _T(" directories"));
          ncrlf ();
          break;
 
       case 5:
-         nputs (n.colornhead, "    files  ");
+         nputs (n.colornhead, _T("    files  "));
          nputc (n.colorframe, vline);
-         nputs (n.colornhead, "directories");
+         nputs (n.colornhead, _T("directories"));
          nputc (n.colorframe, vline);
-         nputs (n.colornhead, "  disk space  ");
+         nputs (n.colornhead, _T("  disk space  "));
          nputc (n.colorframe, vline);
-         nputs (n.colornhead, "  disk space");
+         nputs (n.colornhead, _T("  disk space"));
          ncrlf ();
          break;
 

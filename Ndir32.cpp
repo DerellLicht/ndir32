@@ -1,5 +1,5 @@
 //*************************************************************************
-//  Copyright (c) 1998-2023 Daniel D. Miller                       
+//  Copyright (c) 1998-2025 Daniel D. Miller                       
 //  NDIR32.CPP - The Ultimate directory program (32-bit).          
 //                                                                 
 //  Written by:   Daniel D. Miller  (the derelict)                 
@@ -16,6 +16,7 @@
 #include <stdio.h>
 #include <stdlib.h>     //  getenv(), exit()
 #include <ctype.h>
+#include <tchar.h>
 
 #include "common.h"
 #include "ndir32.h"
@@ -25,10 +26,10 @@
 #define  VER_NUMBER "2.64"
 
 //lint -esym(843, Version, ShortVersion) could be declared as const
-char *Version = " NDIR.EXE, Version " VER_NUMBER " " ;
-char *ShortVersion = " NDIR " VER_NUMBER " " ;
+TCHAR *Version = _T(" NDIR.EXE, Version " VER_NUMBER " ") ;
+TCHAR *ShortVersion = _T(" NDIR " VER_NUMBER " ") ;
 
-TCHAR ininame[PATH_MAX] = "";
+TCHAR ininame[PATH_MAX] = _T("");
 
 //  per Jason Hood, this turns off MinGW's command-line expansion, 
 //  so we can handle wildcards like we want to.                    
@@ -107,76 +108,76 @@ unsigned columns ;           //  number of display columns on screen
 //*********************************************************
 //  NDIR information screen
 //*********************************************************
-static char *idtxt[] = {
-   " ",
-   "Copyright 1990, 1993-2023 by:",
-   " ",
-   "          Daniel D. Miller",
-   "          4835 Coco Palm Drive",
-   "          Fremont, CA  94538",
-   " ",
-   "          Email:    derelict@comcast.net",
-   "          Website:  home.comcast.net/~derelict",
-   " ",
-   "This program, NDIR.EXE, and its associated files, are hereby released as",
-   "Freeware, though I retain the copyrights on them.  Please feel free to",
-   "distribute copies to anyone who is (or might be) interested in them.",
+static TCHAR *idtxt[] = {
+   _T(" "),
+   _T("Copyright 1990, 1993-2023 by:"),
+   _T(" "),
+   _T("          Daniel D. Miller"),
+   _T("          4835 Coco Palm Drive"),
+   _T("          Fremont, CA  94538"),
+   _T(" "),
+   _T("          Email:    derelict@comcast.net"),
+   _T("          Website:  home.comcast.net/~derelict"),
+   _T(" "),
+   _T("This program, NDIR.EXE, and its associated files, are hereby released as"),
+   _T("Freeware, though I retain the copyrights on them.  Please feel free to"),
+   _T("distribute copies to anyone who is (or might be) interested in them."),
    NULL } ;
 
 //*********************************************************
 //  NDIR help screen
 //*********************************************************
-static char *helptxt[] = {
-" ",
-"USAGE:  NDIR <filespecs> -options or /options !<exclusions>",
-" ",
-" OPTIONS                      FUNCTIONS",
-"   -a *     List ALL files (hidden, system, read-only, etc.).",
-"   -a1      List attributes in HEX format.",
-"   -c *     Clear screen before listing.",
-"   -p *     Pause on full screen.",
-"   -m *     Minimize size of header and footer.",
-"   -w *     Use special colors for system/hidden/readonly files.",
-"   -d       dir TREE: normal size display (work with -s, -n (default), -r).",
-"   -d2      dir TREE: file/directory counts",
-"   -d3      dir TREE: mixed size and file/directory counts",
-"   -e       Sort by extension.",
-"   -n        \"   by name.",
-"   -s        \"   by file size, smallest first.",
-"   -t        \"   by Date, oldest first.",
-"   -z        \"   by DOS order (no sort).",
-"   -S0      Show sizes in mixed bytes/KB",
-"   -S1      Show sizes in Kilobytes",
-"   -S2      Show sizes in Megabytes",
-"   -r *     Reverse normal sort order.",
-"   -1       Display one column,   with name/size/date/attr.",
-"   -2          \"    two   \"   ,   with name/size/date.",
-"   -4          \"    four  \"   ,   with name/size.",
-"   -6          \"    six   \"   ,   with name only.",
-"   -i       Display drive summary for all drives in system.",
-"   -ii      Display drive summary for all drives in system, with used vs free space.",
-"   -l *     Toggle long-filename enable flag (removed in V2.62)",
-"   -k *     Toggle color mode.",
-"   -j *     Use standard ASCII (for redirection). (forces -k)",
-"   -u *     List filenames in UPPERCASE.",
-"   -oN      Date/Time display: 0=Last Write, 1=Last Access, 2=File Created",
-"   -x *     List executables only (.EXE,.COM,.BAT).",
-"   -v       Display registration/update information.",
-"   -?       Display HELP screen.",
-"   -g *     List directories FIRST.",
-"   -h *     List files horizontally.",
-"   -f *     List files only (No directories).",
-"   -q *     XTDIR mode - list files by extension.",
-"   -, *     Dir Tree: show only L level of subdirectories.",
-"               L is incremented for each additional comma",
-" ",
-"   -b       Batch mode;  files listed in one column.",
-"            (This format can be redirected to a batch file)",
-"   [\"string\"  specifies a string BEFORE each filename (Batch mode)",
-"   ]\"string\"  specifies a string AFTER  each filename (Batch mode)",
-" ",
-"NOTE: items with a * after the flag are TOGGLES",
-" ",
+static TCHAR *helptxt[] = {
+_T(" "),
+_T("USAGE:  NDIR <filespecs> -options or /options !<exclusions>"),
+_T(" "),
+_T(" OPTIONS                      FUNCTIONS"),
+_T("   -a *     List ALL files (hidden, system, read-only, etc.)."),
+_T("   -a1      List attributes in HEX format."),
+_T("   -c *     Clear screen before listing."),
+_T("   -p *     Pause on full screen."),
+_T("   -m *     Minimize size of header and footer."),
+_T("   -w *     Use special colors for system/hidden/readonly files."),
+_T("   -d       dir TREE: normal size display (work with -s, -n (default), -r)."),
+_T("   -d2      dir TREE: file/directory counts"),
+_T("   -d3      dir TREE: mixed size and file/directory counts"),
+_T("   -e       Sort by extension."),
+_T("   -n        \"   by name."),
+_T("   -s        \"   by file size, smallest first."),
+_T("   -t        \"   by Date, oldest first."),
+_T("   -z        \"   by DOS order (no sort)."),
+_T("   -S0      Show sizes in mixed bytes/KB"),
+_T("   -S1      Show sizes in Kilobytes"),
+_T("   -S2      Show sizes in Megabytes"),
+_T("   -r *     Reverse normal sort order."),
+_T("   -1       Display one column,   with name/size/date/attr."),
+_T("   -2          \"    two   \"   ,   with name/size/date."),
+_T("   -4          \"    four  \"   ,   with name/size."),
+_T("   -6          \"    six   \"   ,   with name only."),
+_T("   -i       Display drive summary for all drives in system."),
+_T("   -ii      Display drive summary for all drives in system, with used vs free space."),
+_T("   -l *     Toggle long-filename enable flag (removed in V2.62)"),
+_T("   -k *     Toggle color mode."),
+_T("   -j *     Use standard ASCII (for redirection). (forces -k)"),
+_T("   -u *     List filenames in UPPERCASE."),
+_T("   -oN      Date/Time display: 0=Last Write, 1=Last Access, 2=File Created"),
+_T("   -x *     List executables only (.EXE,.COM,.BAT)."),
+_T("   -v       Display registration/update information."),
+_T("   -?       Display HELP screen."),
+_T("   -g *     List directories FIRST."),
+_T("   -h *     List files horizontally."),
+_T("   -f *     List files only (No directories)."),
+_T("   -q *     XTDIR mode - list files by extension."),
+_T("   -, *     Dir Tree: show only L level of subdirectories."),
+_T("               L is incremented for each additional comma"),
+_T(" "),
+_T("   -b       Batch mode;  files listed in one column."),
+_T("            (This format can be redirected to a batch file)"),
+_T("   [\"string\"  specifies a string BEFORE each filename (Batch mode)"),
+_T("   ]\"string\"  specifies a string AFTER  each filename (Batch mode)"),
+_T(" "),
+_T("NOTE: items with a * after the flag are TOGGLES"),
+_T(" "),
 NULL } ;
 
 //***********************************************************
@@ -419,7 +420,11 @@ static void sort_target_paths(void)
    }
 
 //*****************************************************************
-int _tmain(int argc, TCHAR **argv)
+#ifdef UNICODE
+int wmain(int argc, TCHAR **argv)
+#else
+int main(int argc, char **argv)
+#endif
 {
    console_init(Version) ;
 
@@ -447,7 +452,7 @@ int _tmain(int argc, TCHAR **argv)
       SearchPath(NULL, argv[0], _T(".exe"), PATH_MAX, ininame, NULL) ;
       strptr = _tcsrchr(ininame, _T('\\')) ;
       if (strptr != 0) 
-         _tcscpy(strptr, "\\ndir.ini") ;
+         _tcscpy(strptr, _T("\\ndir.ini")) ;
 
       _tcscpy(exename, argv[0]) ;
       // ininame[0] = 0 ;  //  ONLY support current location
@@ -458,7 +463,7 @@ int _tmain(int argc, TCHAR **argv)
       strptr = _tcsrchr(ininame, _T('\\')) ;
       if (strptr == 0)
          return 1;
-      _tcscpy(strptr, "\\ndir.ini") ;
+      _tcscpy(strptr, _T("\\ndir.ini")) ;
       
       //  now process exe name for getenv()
       strptr++ ;  //lint !e613:  skip backslash
@@ -469,7 +474,7 @@ int _tmain(int argc, TCHAR **argv)
       }
    }
 
-   char* options = getenv(exename) ; 
+   TCHAR* options = _tgetenv(exename) ; 
    if (options != 0) {
       argv[0] = options ;
       startIdx = 0 ;
@@ -500,7 +505,7 @@ int _tmain(int argc, TCHAR **argv)
    else {
       //  If no filespec was given, insert current path with *.*
       if (tcount==0)
-         insert_target_filespec(".") ;
+         insert_target_filespec(_T(".")) ;
 
       sort_target_paths() ;      //  LFN: okay
       process_filespecs() ;
@@ -510,3 +515,9 @@ int _tmain(int argc, TCHAR **argv)
    return 0 ;
 }
 
+// #ifdef UNICODE
+// int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+// {
+//   return wmain(_argc, _argv);
+// }
+// #endif
