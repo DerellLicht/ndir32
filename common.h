@@ -5,8 +5,6 @@
 //  Written by:  Daniel D. Miller                             
 //************************************************************
 
-#include <tchar.h>
-
 //lint -esym(756, ul2uc_t, u32, u8)
 
 typedef  unsigned long long   u64 ;

@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #endif
 #include <ctype.h>
+#include <tchar.h>
 
 #include "common.h"
 #include "ndir32.h"

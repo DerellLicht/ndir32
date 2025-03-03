@@ -15,6 +15,7 @@
 #ifdef USE_64BIT
 #include <fileapi.h>
 #endif
+#include <tchar.h>
 
 #include "common.h"
 #include "ndir32.h"

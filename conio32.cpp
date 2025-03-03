@@ -32,7 +32,10 @@
 #include <windows.h>
 #include <stdio.h>
 #include <conio.h>   // _getch(), _kbhit()
-#include <stdlib.h>
+#include <tchar.h>
+
+//lint -esym(1055, exit)   // Symbol 'exit(int)' undeclared, assumed to return int
+//lint -esym(18, exit)     // Symbol 'exit(int)' redeclared 
 
 #include "common.h"
 #include "ndir32.h"

@@ -12,6 +12,7 @@
 #ifdef _lint
 #include <malloc.h>
 #endif
+#include <tchar.h>
 
 #include "common.h"
 #include "ndir32.h"
@@ -231,6 +232,7 @@ syslog(_T("%s: FindFindFirst: %s\n"), dirpath, get_system_message (err));
                if (dtemp->name == NULL) {
                   error_exit(OUT_OF_MEMORY, NULL);
                }
+               _tcscpy (dtemp->name, (char *) fdata.cFileName);
 
 //                int bufferSize ;
 //                if (fdata.cFileName[0] > 255) {

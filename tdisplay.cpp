@@ -4,6 +4,7 @@
 //*****************************************************************
 #include <windows.h>
 #include <stdio.h>
+#include <tchar.h>
 
 #include "common.h"
 #include "ndir32.h"

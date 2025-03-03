@@ -10,6 +10,7 @@
 #include <windows.h>
 #include <stdio.h>
 #include <ctype.h>              //  tolower()
+#include <tchar.h>
 
 #include "common.h"
 #include "ndir32.h"
@@ -57,11 +58,12 @@
 // }
 
 //**********************************************************
+//lint -esym(757, isUpperAscii)  // global declarator not referenced
 bool isUpperAscii(TCHAR *outstr, uint slen)
 {
    uint idx ;
    for (idx=0; idx<slen; idx++) {
-      if (*outstr > 0x7F) {
+      if (*outstr > 0x7F) {   //lint !e685
          return true ;
       }
       outstr++ ;

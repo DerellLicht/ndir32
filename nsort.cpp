@@ -12,6 +12,7 @@
 #ifdef _lint
 #include <malloc.h>
 #endif
+#include <tchar.h>
 
 #include "common.h"
 #include "ndir32.h"

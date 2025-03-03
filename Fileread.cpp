@@ -9,6 +9,7 @@
 #include <windows.h>
 #include <stdio.h>
 #include <malloc.h>
+#include <tchar.h>
 
 #include "common.h"
 #include "ndir32.h"
@@ -137,6 +138,7 @@ static void read_long_files (int i)
          //  convert Unicode filenames to UTF8
          ftemp->mb_len = _tcslen(fdata.cFileName) ;
          ftemp->filename = (TCHAR *) malloc(ftemp->mb_len + 1);  //lint !e732
+         _tcscpy (ftemp->filename, (char *) fdata.cFileName);
          // int bufferSize ;
          // if (fdata.cFileName[0] > 255) {
          //    SetConsoleOutputCP(CP_UTF8);
