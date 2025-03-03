@@ -232,7 +232,7 @@ syslog(_T("%s: FindFindFirst: %s\n"), dirpath, get_system_message (err));
                if (dtemp->name == NULL) {
                   error_exit(OUT_OF_MEMORY, NULL);
                }
-               _tcscpy (dtemp->name, (char *) fdata.cFileName);
+               _tcscpy (dtemp->name, (TCHAR *) fdata.cFileName);
 
 //                int bufferSize ;
 //                if (fdata.cFileName[0] > 255) {
