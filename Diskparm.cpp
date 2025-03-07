@@ -229,6 +229,8 @@ void display_drive_summary (void)
          TCHAR *tp = get_drive_type_string(dtype, dchar);
          _stprintf(tempstr, _T("%c: %-9s %18s  %18s           no media present\n"), 
             dchar, tp, " ", " ") ;
+syslog(_T("%c: %-9s %18s  %18s           no media present\n"), 
+            dchar, tp, " ", " ") ;
          nputs (n.colordefalt, tempstr);
          continue;
       }
@@ -247,6 +249,7 @@ void display_drive_summary (void)
          bufsize = PATH_MAX;
 
          _stprintf(tempstr, _T("%c: %-9s %18s  %18s  "), dchar, fsnbfr, disktotal, diskavail);
+// syslog(_T("%c: %-9s %18s  %18s  "), dchar, fsnbfr, disktotal, diskavail);
          nputs (n.colordir, tempstr);
 
          // if (WNetGetUniversalName(dpath, REMOTE_NAME_INFO_LEVEL, 
@@ -256,12 +259,14 @@ void display_drive_summary (void)
          }
          else {
             _stprintf(tempstr, _T("%s\n"), UNCpaths.uptr);
+// syslog(_T("%s\n"), UNCpaths.uptr);
             nputs (n.colordir, tempstr);
          }
       }
       else {
       // else if (dtype == DRIVE_FIXED) {
          _stprintf(tempstr, _T("%c: %-9s %18s  %18s  "), dchar, fsn_bfr, disktotal, diskavail);
+// syslog(_T("%c: %-9s %18s  %18s  "), dchar, fsn_bfr, disktotal, diskavail);
          nputs (n.colordefalt, tempstr);
 
          // unsigned cluster_size = get_cluster_size(dpath[0]);
@@ -271,6 +276,7 @@ void display_drive_summary (void)
          lfree  += frees1 ;
          ltotal += totals1 ;
          _stprintf(tempstr, _T("[%6u] %s\n"), (unsigned) clbytes, volume_name);
+// syslog(_T("[%6u] %s\n"), (unsigned) clbytes, volume_name);
          nputs (n.colordefalt, tempstr);
       }
    }
@@ -281,7 +287,9 @@ void display_drive_summary (void)
 
    nput_line (n.colorframe, '*');
    _stprintf(tempstr, _T("             %18s  %18s"), disktotal, diskavail);
+// syslog(_T("             %18s  %18s"), disktotal, diskavail);
    nputs (n.colorxhead, tempstr);
    _stprintf(tempstr, _T("  Total Physical space\n\r"));
+// syslog(_T("  Total Physical space\n\r"));
    nputs (n.colornhead, tempstr);
 }

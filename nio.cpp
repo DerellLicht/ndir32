@@ -123,8 +123,8 @@ void nputc (uchar attr, const uchar outchr)
 /******************************************************************/
 void nputs (uchar attr, const TCHAR *outstr)
 {
+   set_text_attr (attr);
    if (n.color) {
-      set_text_attr (attr);
       dputs (outstr);
    }
    else
@@ -159,6 +159,7 @@ void nput_char (uchar attr, TCHAR chr, int count)
 void nput_line (uchar attr, TCHAR chr)
 {
    int j, wincols = get_window_cols() - 1 ;
+   set_text_attr (attr);
    if (n.color) {
       dputnchar (chr, attr, wincols);
    }

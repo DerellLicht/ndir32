@@ -128,7 +128,9 @@ void console_init(TCHAR *title)
    BOOL bSuccess;
    DWORD dwMode;
 
-   /* get the standard handles */
+#ifdef UNICODE
+    system( "chcp 65001 >nul" );        // Set the console to expect codepage 65001 = UTF-8.
+#endif   /* get the standard handles */
    hStdOut = GetStdHandle(STD_OUTPUT_HANDLE); 
    if (hStdOut == INVALID_HANDLE_VALUE) {
       syslog(_T("GetStdHandle(STD_OUTPUT_HANDLE): %s\n"), get_system_message()) ;
@@ -488,7 +490,7 @@ void dclreos(void)
 }         
 
 //**********************************************************
-void dputnchar(TCHAR chr, TCHAR attr, int count)
+void dputnchar(TCHAR chr, TCHAR attr, uint count)
 {
    static TCHAR ncbfr[MAX_CHAR_COLS+1] ;
    if (count > MAX_CHAR_COLS) {
@@ -496,8 +498,13 @@ void dputnchar(TCHAR chr, TCHAR attr, int count)
       count = MAX_CHAR_COLS ;
    }
    set_text_attr(attr) ;
-   memset(ncbfr, chr, count) ;
-   ncbfr[count] = 0 ;   //  NULL-term the string
+   // memset(ncbfr, chr, count) ;
+   // ncbfr[count] = 0 ;   //  NULL-term the string
+   uint slen = 0 ;
+   for (slen=0; slen<count; slen++) {
+      _stprintf(ncbfr+slen, _T("%c"), chr);
+   }
+   // ncbfr+slen = 0 ;
    dputs(ncbfr) ;
 }   
 
@@ -533,7 +540,7 @@ static int is_CRLF_present(const char *cstr)
 void dputc(const TCHAR c)
 {
    DWORD wrlen ;
-   WriteFile(hStdOut, &c, 1, &wrlen, 0) ;
+   WriteFile(hStdOut, &c, 1 * sizeof(TCHAR), &wrlen, 0) ;
    sinfo.dwCursorPosition.X++ ;
 }
 
@@ -581,7 +588,19 @@ void dputs(const TCHAR *outstr)
 #else   
    if (!is_CRLF_present(outstr)  &&  rlen >= slen) {
 #endif   
-      WriteFile(hStdOut, outstr, slen, &wrlen, 0) ;
+#ifdef UNICODE   
+      SetConsoleOutputCP(CP_UTF8);
+      int bufferSize = WideCharToMultiByte(CP_UTF8, 0, outstr, -1, NULL, 0, NULL, NULL);
+      LPSTR dname = (LPSTR) malloc(bufferSize + 1); //lint !e732
+      if (dname == NULL) {
+         error_exit(OUT_OF_MEMORY, NULL);
+      }
+      WideCharToMultiByte(CP_UTF8, 0, outstr, -1, dname, bufferSize, NULL, NULL);
+      WriteFile(hStdOut, dname, slen, &wrlen, 0) ;
+      SetConsoleOutputCP(CP_ACP);
+#else   
+      WriteFile(hStdOut, outstr, slen * sizeof(TCHAR), &wrlen, 0) ;
+#endif   
       sinfo.dwCursorPosition.X += slen ;
    }
 

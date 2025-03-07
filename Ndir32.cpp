@@ -420,11 +420,12 @@ static void sort_target_paths(void)
    }
 
 //*****************************************************************
-#ifdef UNICODE
-int wmain(int argc, TCHAR **argv)
-#else
-int main(int argc, char **argv)
-#endif
+// #ifdef UNICODE
+// int wmain(int argc, WCHAR **argv)
+// #else
+// int main(int argc, char **argv)
+// #endif
+int _tmain(int argc, TCHAR **argv)
 {
    console_init(Version) ;
 
