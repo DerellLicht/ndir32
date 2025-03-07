@@ -127,8 +127,9 @@ void nputs (uchar attr, const TCHAR *outstr)
    if (n.color) {
       dputs (outstr);
    }
-   else
+   else {
       _tprintf (_T("%s"), outstr);
+   }
 }
 
 /******************************************************************/
@@ -146,6 +147,7 @@ void nputsw(uchar attr, const TCHAR *outstr, int wlen, int clen)
 /******************************************************************/
 void nput_char (uchar attr, TCHAR chr, int count)
 {
+   set_text_attr (attr);
    if (n.color) {
       dputnchar (chr, attr, count);
    }
@@ -159,11 +161,11 @@ void nput_char (uchar attr, TCHAR chr, int count)
 void nput_line (uchar attr, TCHAR chr)
 {
    int j, wincols = get_window_cols() - 1 ;
-   set_text_attr (attr);
    if (n.color) {
       dputnchar (chr, attr, wincols);
    }
    else {
+      set_text_attr (attr);
       for (j = 0; j < wincols; j++)
          putchar (chr);
    }
