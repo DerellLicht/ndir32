@@ -277,7 +277,7 @@ Version 2.63, 01/04/25
   Dirtree: fix bug with very long folder names
 
 Version 2.64, 03/17/25
-  > Trying to implement UNICODE support
+  > implement UNICODE support
   > Deprecate low_ascii (actually, remove high_ascii) due to Unicode requirements
   
 
