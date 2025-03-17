@@ -73,13 +73,9 @@ all: $(BIN)
 clean:
 	rm -f *.o ndir*.exe *~ *.zip
 
-source src:
-	rm -f *.zip
-	zip -D ndir32src.zip *.cpp *.h *.cpp readme.txt revisions.txt makefile
-   
 dist:
 	rm -f ndir.zip
-	zip ndir.zip $(BIN) readme.txt revisions.txt   
+	zip ndir.zip $(BIN) readme.txt revisions.txt LICENSE
 
 wc:
 	wc -l *.cpp
