@@ -27,6 +27,8 @@ NOTES:
   
 > In V2.58 (May 2023), removed /mm (list multimedia info) option, moved to media_list utility  
 
+> In V2.64 (March 2025), converted to Unicode, to support int'l filenames
+
 ****************************************************************************************
 
 NDIR - The directory lister.
