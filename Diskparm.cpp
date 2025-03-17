@@ -1,5 +1,5 @@
 //*****************************************************************************
-//  Copyright (c) 1995-2023  Daniel D Miller
+//  Copyright (c) 1995-2025  Daniel D Miller
 //  DISKPARM.CPP - Display partition information about disk drive.     
 //                                                                     
 //  Written by:   Daniel D. Miller                                     
@@ -198,11 +198,12 @@ void display_drive_summary (void)
 {
    unsigned dtype;
    unsigned long bufsize;
+   //                                    012345678901234567
+   static TCHAR const spaces18[20] = _T("                  ");
 
    //  draw header
    nput_line (n.colorframe, '*');
-   nputs (n.colornhead,
-      _T("                               Disk Drive Summary                              \n\r"));
+   nputs (n.colornhead, _T("                               Disk Drive Summary                              \n"));
    nput_line (n.colorframe, '=');
 
    if (n.drive_summary == DSUMMARY_FREE) {
@@ -228,9 +229,7 @@ void display_drive_summary (void)
       if (!get_disk_info(dpath)) {
          TCHAR *tp = get_drive_type_string(dtype, dchar);
          _stprintf(tempstr, _T("%c: %-9s %18s  %18s           no media present\n"), 
-            dchar, tp, " ", " ") ;
-syslog(_T("%c: %-9s %18s  %18s           no media present\n"), 
-            dchar, tp, " ", " ") ;
+            dchar, tp, spaces18, spaces18) ;
          nputs (n.colordefalt, tempstr);
          continue;
       }
@@ -265,9 +264,10 @@ syslog(_T("%c: %-9s %18s  %18s           no media present\n"),
       }
       else {
       // else if (dtype == DRIVE_FIXED) {
-         _stprintf(tempstr, _T("%c: %-9s %18s  %18s  "), dchar, fsn_bfr, disktotal, diskavail);
-// syslog(_T("%c: %-9s %18s  %18s  "), dchar, fsn_bfr, disktotal, diskavail);
+         _stprintf(tempstr, _T("%c: %-9s %18s  %18s  [%6u] %s\n"), 
+            dchar, fsn_bfr, disktotal, diskavail, (unsigned) clbytes, volume_name);
          nputs (n.colordefalt, tempstr);
+// syslog(_T("%s\n"), tempstr) ;
 
          // unsigned cluster_size = get_cluster_size(dpath[0]);
          // get_disk_info(dpath) ;  //  why are you calling this again??
@@ -275,9 +275,6 @@ syslog(_T("%c: %-9s %18s  %18s           no media present\n"),
          // ltotal += totals1.QuadPart;
          lfree  += frees1 ;
          ltotal += totals1 ;
-         _stprintf(tempstr, _T("[%6u] %s\n"), (unsigned) clbytes, volume_name);
-// syslog(_T("[%6u] %s\n"), (unsigned) clbytes, volume_name);
-         nputs (n.colordefalt, tempstr);
       }
    }
 

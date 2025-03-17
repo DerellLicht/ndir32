@@ -26,6 +26,7 @@ typedef unsigned int  uint ;
 
 //lint -e40  Undeclared identifier, which it obviously is not
 //lint -e78  Symbol typedef'ed at line 113, file scsi_defs.h used in expression (so what??)
+//lint -esym(123, __IOCTL_STORAGE_)  Macro defined with arguments at ...
 
 //*************************************************************************
 typedef struct ProfileInfo_s {

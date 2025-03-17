@@ -32,6 +32,8 @@
 #include <windows.h>
 #include <stdio.h>
 #include <conio.h>   // _getch(), _kbhit()
+// #include <io.h>
+// #include <fcntl.h>
 #include <tchar.h>
 
 //lint -esym(1055, exit)   // Symbol 'exit(int)' undeclared, assumed to return int
@@ -128,10 +130,10 @@ void console_init(TCHAR *title)
    BOOL bSuccess;
    DWORD dwMode;
 
-#ifdef UNICODE
-    system( "chcp 65001 >nul" );        // Set the console to expect codepage 65001 = UTF-8.
-#endif   /* get the standard handles */
-   hStdOut = GetStdHandle(STD_OUTPUT_HANDLE); 
+   //  this doesn't work either
+   // _setmode(_fileno(stdout), _O_U16TEXT);
+  
+   hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
    if (hStdOut == INVALID_HANDLE_VALUE) {
       syslog(_T("GetStdHandle(STD_OUTPUT_HANDLE): %s\n"), get_system_message()) ;
       exit(1) ;
@@ -151,8 +153,6 @@ void console_init(TCHAR *title)
       PERR(bSuccess, "SetConsoleTitle");
    }
 
-   //  get screen information.
-   //  If this call fails, assume we are re-directing output.
    //  Unfortunately, this also fails on all Bash-window terminals
    bSuccess = GetConsoleScreenBufferInfo(hStdOut, &sinfo) ;
    // PERR(bSuccess, "GetConsoleScreenBufferInfo");
@@ -186,10 +186,6 @@ void console_init(TCHAR *title)
        original_attribs = 7 ;
    }
 
-// FILE *fp = fopen("duh", "wt") ;
-// fprintf(fp, "original attribs=%X\n", original_attribs) ;
-// fclose(fp) ;
-
    /* set up mouse and window input */
    bSuccess = GetConsoleMode(hStdOut, &dwMode);
    PERR(bSuccess, "GetConsoleMode");
@@ -202,10 +198,14 @@ void console_init(TCHAR *title)
       dwMode & (ENABLE_PROCESSED_OUTPUT | ENABLE_WRAP_AT_EOL_OUTPUT)) ;
 //      (dwMode & ~(ENABLE_PROCESSED_OUTPUT | ENABLE_WRAP_AT_EOL_OUTPUT) )) ;
    PERR(bSuccess, "SetConsoleMode");
+   
+   //  this doesn't work
+   // _setmode(_fileno(stdout), _O_U16TEXT);
 
    //  set up Ctrl-Break handler
    SetConsoleCtrlHandler((PHANDLER_ROUTINE) control_handler, TRUE) ;
    
+   // system( "chcp 65001 >nul" );        // Set the console to expect codepage 65001 = UTF-8.
    // lines = (unsigned) (int) (sinfo.srWindow.Bottom - sinfo.srWindow.Top + 1) ;
    lines = get_window_rows ();
 }   
@@ -500,7 +500,7 @@ void dputnchar(TCHAR chr, TCHAR attr, uint count)
    set_text_attr(attr) ;
    // memset(ncbfr, chr, count) ;
    // ncbfr[count] = 0 ;   //  NULL-term the string
-   uint slen = 0 ;
+   uint slen ;
    for (slen=0; slen<count; slen++) {
       _stprintf(ncbfr+slen, _T("%c"), chr);
    }
@@ -524,23 +524,22 @@ void dclrscr(void)
    }   
 
 //**********************************************************
-#ifndef UNICODE   
-static int is_CRLF_present(const char *cstr)
+static int is_CRLF_present(const TCHAR *cstr)
 {
    while (*cstr != 0) {
-      if (*cstr == 0x0D  ||  *cstr == 0x0A)
+      if (*cstr == _T('\n')  ||  *cstr == _T('\r'))
          return 1;
       cstr++ ;
    }
    return 0;
 }   
-#endif
 
 //**********************************************************
 void dputc(const TCHAR c)
 {
    DWORD wrlen ;
-   WriteFile(hStdOut, &c, 1 * sizeof(TCHAR), &wrlen, 0) ;
+   // WriteFile(hStdOut, &c, 1 * sizeof(TCHAR), &wrlen, 0) ;
+   WriteConsole(hStdOut, &c, 1, &wrlen, 0) ;
    sinfo.dwCursorPosition.X++ ;
 }
 
@@ -551,7 +550,8 @@ void dputc(const TCHAR c)
 static void dputsi(const TCHAR *outstr, int slen)
 {
    DWORD wrlen ;
-   WriteFile(hStdOut, outstr, slen, &wrlen, 0) ;
+   // WriteFile(hStdOut, outstr, slen, &wrlen, 0) ;
+   WriteConsole(hStdOut, outstr, slen, &wrlen, 0) ;
    sinfo.dwCursorPosition.X += slen ;
 }
 
@@ -564,7 +564,8 @@ static void dputsi(const TCHAR *outstr, int slen)
 void dputsiw(const TCHAR *outstr, int wlen, int clen)
 {
    DWORD wrlen ;
-   WriteFile(hStdOut, outstr, wlen, &wrlen, 0) ;
+   // WriteFile(hStdOut, outstr, wlen, &wrlen, 0) ;
+   WriteConsole(hStdOut, outstr, clen, &wrlen, 0) ;
    sinfo.dwCursorPosition.X += clen ;
 }
 
@@ -582,25 +583,25 @@ void dputs(const TCHAR *outstr)
    if (outstr == 0  ||  *outstr == 0  ||  rlen > sinfo.dwSize.X)  //lint !e774
       return ;
 
+   // _setmode(_fileno(stdout), _O_WTEXT); 
+   // SetConsoleOutputCP(65001); 
    //  if entire string fits on line, do this the easy way.
-#ifdef UNICODE   
-   if (rlen >= slen) {
-#else   
    if (!is_CRLF_present(outstr)  &&  rlen >= slen) {
-#endif   
-#ifdef UNICODE   
-      SetConsoleOutputCP(CP_UTF8);
-      int bufferSize = WideCharToMultiByte(CP_UTF8, 0, outstr, -1, NULL, 0, NULL, NULL);
-      LPSTR dname = (LPSTR) malloc(bufferSize + 1); //lint !e732
-      if (dname == NULL) {
-         error_exit(OUT_OF_MEMORY, NULL);
-      }
-      WideCharToMultiByte(CP_UTF8, 0, outstr, -1, dname, bufferSize, NULL, NULL);
-      WriteFile(hStdOut, dname, slen, &wrlen, 0) ;
-      SetConsoleOutputCP(CP_ACP);
-#else   
-      WriteFile(hStdOut, outstr, slen * sizeof(TCHAR), &wrlen, 0) ;
-#endif   
+// #ifdef UNICODE   
+//       SetConsoleOutputCP(CP_UTF8);
+//       int bufferSize = WideCharToMultiByte(CP_UTF8, 0, outstr, -1, NULL, 0, NULL, NULL);
+//       LPSTR dname = (LPSTR) malloc(bufferSize + 1); //lint !e732
+//       if (dname == NULL) {
+//          error_exit(OUT_OF_MEMORY, NULL);
+//       }
+//       WideCharToMultiByte(CP_UTF8, 0, outstr, -1, dname, bufferSize, NULL, NULL);
+//       WriteFile(hStdOut, dname, slen, &wrlen, 0) ;
+//       SetConsoleOutputCP(CP_ACP);
+// #else   
+      // WriteFile(hStdOut, outstr, slen * sizeof(TCHAR), &wrlen, 0) ;
+      WriteConsole(hStdOut, outstr, slen, &wrlen, 0) ;
+      // _tprintf(_T("%s"), outstr);
+// #endif   
       sinfo.dwCursorPosition.X += slen ;
    }
 
@@ -659,8 +660,10 @@ void dputs(const TCHAR *outstr)
    }
 
 //**********************************************************
+//  only used by treelist.cpp
+//**********************************************************
 void dprints(unsigned row, unsigned col, const TCHAR* outstr)
-   {
+{
    dgotoxy(col, row) ;
    dputs(outstr) ;
-   }   
+}   
