@@ -21,8 +21,9 @@ static TCHAR const * const error_text[4] = {
 //*********************************************************
 void error_exit(int index, TCHAR* outstr)
 {
-   if (index == DATA_OKAY)
+   if (index == DATA_OKAY) {
       ;
+   }
    else if (outstr == NULL)
       syslog(_T("%s\n"), error_text[index]) ;
    else

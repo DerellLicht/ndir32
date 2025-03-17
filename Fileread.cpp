@@ -66,8 +66,10 @@ static void read_long_files (int i)
    //  unfortunately, under Win98SE, it's not...
    // handle = FindFirstFileEx(target[i], FindExInfoStandard, &fdata, 
    //                      FindExSearchNameMatch, NULL, 0) ;
-   if (handle == INVALID_HANDLE_VALUE)
+   if (handle == INVALID_HANDLE_VALUE) {
+      syslog(_T("FindFirstFile: %s"), get_system_message());
       return;
+   }
 
    //  loop on find_next
    done = 0;
@@ -102,7 +104,6 @@ static void read_long_files (int i)
          //****************************************************
          //  allocate and initialize the structure
          //****************************************************
-         // ftemp = new ffdata;
          ftemp = (struct ffdata *) malloc(sizeof(ffdata)) ;
          if (ftemp == NULL) {
             error_exit (OUT_OF_MEMORY, NULL);
@@ -137,29 +138,12 @@ static void read_long_files (int i)
 
          //  convert Unicode filenames to UTF8
          ftemp->mb_len = _tcslen(fdata.cFileName) ;
-         ftemp->filename = (TCHAR *) malloc(ftemp->mb_len + 1);  //lint !e732
-         _tcscpy (ftemp->filename, (TCHAR *) fdata.cFileName);
-         // int bufferSize ;
-         // if (fdata.cFileName[0] > 255) {
-         //    SetConsoleOutputCP(CP_UTF8);
-         //    bufferSize = WideCharToMultiByte(CP_UTF8, 0, fdata.cFileName, -1, NULL, 0, NULL, NULL);
-         //    ftemp->filename = (TCHAR *) malloc(bufferSize + 1); //lint !e732
-         //    WideCharToMultiByte(CP_UTF8, 0, fdata.cFileName, -1, ftemp->filename, bufferSize, NULL, NULL);
-         //    // [26412] [40/39] [буяновский страйкбол]
-         //    // syslog("[%u/%u] [%s]\n", bufferSize, _tcslen (ftemp->filename), ftemp->filename);
-         //    // [DIR] ?????????? ?????????                    | 55813 glock17_shoot_2.ogg            
-         //    // [68968] 00000:  D0 B1 D1 83 D1 8F D0 BD D0 BE D0 B2 D1 81 D0 BA  | ???????????????? |
-         //    // [68968] 00010:  D0 B8 D0 B9 20 D1 81 D1 82 D1 80 D0 B0 D0 B9 D0  | ???? ??????????? |
-         //    // [68968] 00020:  BA D0 B1 D0 BE D0 BB 00 77 72 69 74 74 65 6E 2E  | ???????.written. |
-         //    // hex_dump((u8 *)ftemp->filename, 48);
-         //    ftemp->is_multi_byte = true ;
-         // }
-         // else {
-         //    bufferSize = WideCharToMultiByte(CP_UTF8, 0, fdata.cFileName, -1, NULL, 0, NULL, NULL);
-         //    ftemp->filename = (TCHAR *) malloc(bufferSize + 1);  //lint !e732
-         //    WideCharToMultiByte(CP_ACP, 0, fdata.cFileName, -1, ftemp->filename, bufferSize, NULL, NULL);
-         // }
-         // syslog("%s len: %u\n", ftemp->filename, ftemp->mb_len);
+         ftemp->filename = (TCHAR *) malloc((ftemp->mb_len + 1) * sizeof(TCHAR));  //lint !e732
+         if (ftemp->filename == NULL) {
+            error_exit (OUT_OF_MEMORY, NULL);
+            // return;             //  only to make lint happy
+         }
+         _tcscpy (ftemp->filename, fdata.cFileName);
          
          //  If Steven Bensky's short filenames are requested,
          //  generate fully-qualified filenames so I can request the short name...
@@ -176,9 +160,11 @@ static void read_long_files (int i)
 
          //  find and extract the file extension, if valid
          // ftemp->name[0] = 0 ; //  don't use name at all
-         ftemp->name = (TCHAR *) malloc(_tcslen (ftemp->filename) + 1) ;
-         if (ftemp->name == NULL)
+         uint fnlen = _tcslen (ftemp->filename);
+         ftemp->name = (TCHAR *) malloc((fnlen + 1) * sizeof(TCHAR)) ;
+         if (ftemp->name == NULL) {
             error_exit (OUT_OF_MEMORY, NULL);
+         }
 
          _tcscpy (ftemp->name, ftemp->filename);
          strptr = _tcsrchr (ftemp->name, _T('.'));
@@ -213,8 +199,9 @@ static void read_long_files (int i)
 
 search_next_file:
       //  search for another file
-      if (FindNextFile(handle, &fdata) == 0)
+      if (FindNextFile(handle, &fdata) == 0) {
          done = 1;
+      }
    }
 
    FindClose (handle);

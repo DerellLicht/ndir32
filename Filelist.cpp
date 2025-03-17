@@ -269,7 +269,7 @@ static void list_files_qwise(void)
 /*****************************************************************/
 static void filehead(void)
 {
-   unsigned j ;
+   // unsigned j ;
    unsigned k ;
    int wincols = get_window_cols() - 1 ;
    if (is_redirected()) {
@@ -312,21 +312,25 @@ static void filehead(void)
       if (ftop == NULL) {
          nput_line(n.colorframe, dline) ;
       } else {
-         memset(&tempstr[0], dline, wincols) ;
-         tempstr[wincols] = 0 ;
+         // memset(&tempstr[0], dline, wincols) ;
+         // tempstr[wincols] = 0 ;
          // if (col_width[disp_cols] > 0) {
          if (line_len > 0) {
+            // syslog(_T("line_len: %u, disp_cols: %u\n"), line_len, disp_cols);
             // j = col_width[disp_cols] ;
-            j = line_len ;
+            // j = line_len ;
             for (k=1; k<disp_cols; k++) {
-               tempstr[j] = tline ;
+               // tempstr[j] = tline ;
+               nput_char(n.colorframe, dline, line_len) ;
+               nput_char(n.colorframe, tline, 1) ;
                // j += col_width[disp_cols] + 1 ;
-               j += line_len + 1 ;
+               // j += line_len + 1 ;
             }
+            //  last, draw remaining lines
+            nput_char(n.colorframe, dline, line_len) ;
          }
-         nputs(n.colorframe, tempstr) ;
          ncrlf() ;
-      }
+      } 
    }
 }
 
@@ -344,7 +348,7 @@ void put_disk_summary(void)
 /*****************************************************************/
 static void fileend(void)
 {
-   unsigned j, k ;
+   unsigned k ;
    ULONGLONG dirsecbytes, clusters ;
    ULONGLONG dbytes, dsbytes ;
    ffdata *ftemp ;
@@ -401,18 +405,22 @@ static void fileend(void)
          nput_line(n.colorframe, dline) ;
       } else {
          memset(&tempstr[0], dline, wincols) ;
-         tempstr[wincols] = 0 ;
+         // tempstr[wincols] = 0 ;
          // if (col_width[disp_cols] > 0) {
          if (line_len > 0) {
             // j = col_width[disp_cols] ;
-            j = line_len ;
+            // j = line_len ;
             for (k=1; k<disp_cols; k++) {
-               tempstr[j] = bline ;
+               // tempstr[j] = bline ;
+               nput_char(n.colorframe, bline, line_len) ;
+               nput_char(n.colorframe, tline, 1) ;
                // j += col_width[disp_cols] + 1 ;
-               j += line_len + 1 ;
+               // j += line_len + 1 ;
             }
+            //  last, draw remaining lines
+            nput_char(n.colorframe, dline, line_len) ;
          }
-         nputs(n.colorframe, tempstr) ;
+         // nputs(n.colorframe, tempstr) ;
          ncrlf() ;
       }
 
@@ -446,6 +454,8 @@ static void list_files_vertically(void)
    //************************************************
    unsigned fcount = 0 ;
    lfn_get_columns() ;  //  set disp_cols, name_width
+   
+   // syslog(_T("filecount: %u\n"), filecount);
 
    rows = (unsigned) filecount / disp_cols ;
    partrows = (unsigned) filecount % disp_cols ;
@@ -484,7 +494,7 @@ static void list_files_vertically(void)
       //  if no files left to display, fill in row with spaces
       else {
          // nput_char(n.colorframe, ' ', col_width[disp_cols]) ;
-         nput_char(n.colorframe, ' ', line_len) ;
+         nput_char(n.colorframe, _T(' '), line_len) ;
       }   
 
       //  draw separator characters as required

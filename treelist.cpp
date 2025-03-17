@@ -228,56 +228,11 @@ syslog(_T("%s: FindFindFirst: %s\n"), dirpath, get_system_message (err));
                
                //  convert Unicode filenames to UTF8
                dtemp->mb_len = _tcslen(fdata.cFileName) ;
-               dtemp->name = (TCHAR *) malloc(dtemp->mb_len + 1);  //lint !e732
+               dtemp->name = (TCHAR *) malloc((dtemp->mb_len + 1) * sizeof(TCHAR));  //lint !e732
                if (dtemp->name == NULL) {
                   error_exit(OUT_OF_MEMORY, NULL);
                }
                _tcscpy (dtemp->name, (TCHAR *) fdata.cFileName);
-
-//                int bufferSize ;
-//                if (fdata.cFileName[0] > 255) {
-//                   SetConsoleOutputCP(CP_UTF8);
-//                   bufferSize = WideCharToMultiByte(CP_UTF8, 0, fdata.cFileName, -1, NULL, 0, NULL, NULL);
-//                   dtemp->name = (TCHAR *) malloc(bufferSize + 1); //lint !e732
-//                   if (dtemp->name == NULL) {
-//                      error_exit(OUT_OF_MEMORY, NULL);
-//                   }
-//                   WideCharToMultiByte(CP_UTF8, 0, fdata.cFileName, -1, dtemp->name, bufferSize, NULL, NULL);
-//                   dtemp->is_multi_byte = true ;
-//                }
-//                else 
-//                if (isUpperAscii((WCHAR *) fdata.cFileName, dtemp->mb_len)) {
-//                   // hex_dump((u8 *)fdata.cFileName, dtemp->mb_len) ;
-//                   // syslogW(L"%s has upper ASCII chars\n", fdata.cFileName);
-// #define USE_WIDE_CODE                  
-// #ifdef  USE_WIDE_CODE
-//                   SetConsoleOutputCP(CP_UTF8);
-//                   bufferSize = WideCharToMultiByte(CP_UTF8, 0, fdata.cFileName, -1, NULL, 0, NULL, NULL);
-//                   dtemp->name = (TCHAR *) malloc(2*(bufferSize + 1)); //lint !e732
-//                   if (dtemp->name == NULL) {
-//                      error_exit(OUT_OF_MEMORY, NULL);
-//                   }
-//                   WideCharToMultiByte(CP_UTF8, 0, fdata.cFileName, -1, dtemp->name, bufferSize, NULL, NULL);
-//                   // dtemp->is_multi_byte = true ;
-//                   SetConsoleOutputCP(CP_ACP);
-// #else                  
-//                   bufferSize = WideCharToMultiByte(CP_UTF8, 0, fdata.cFileName, -1, NULL, 0, NULL, NULL);
-//                   dtemp->name = (TCHAR *) malloc(bufferSize + 1);  //lint !e732
-//                   if (dtemp->name == NULL) {
-//                      error_exit(OUT_OF_MEMORY, NULL);
-//                   }
-//                   WideCharToMultiByte(CP_ACP, 0, fdata.cFileName, -1, dtemp->name, bufferSize, NULL, NULL);
-// #endif
-//                }
-//                else {
-//                   SetConsoleOutputCP(CP_ACP);
-//                   bufferSize = WideCharToMultiByte(CP_UTF8, 0, fdata.cFileName, -1, NULL, 0, NULL, NULL);
-//                   dtemp->name = (TCHAR *) malloc(bufferSize + 1);  //lint !e732
-//                   if (dtemp->name == NULL) {
-//                      error_exit(OUT_OF_MEMORY, NULL);
-//                   }
-//                   WideCharToMultiByte(CP_ACP, 0, fdata.cFileName, -1, dtemp->name, bufferSize, NULL, NULL);
-//                }
 
                dtemp->attrib = (uchar) fdata.dwFileAttributes;
                // dtail->directs++ ;
@@ -559,7 +514,7 @@ static int build_dir_tree (TCHAR *tpath)
 
    //  derive root path name
    if (_tcslen (base_path) == 3) {
-      top->name = (TCHAR *) malloc(8) ;
+      top->name = (TCHAR *) malloc(8 * sizeof(TCHAR)) ;
       if (top->name == 0)
          error_exit (OUT_OF_MEMORY, NULL);
       _tcscpy (top->name, _T("<root>"));
@@ -570,7 +525,7 @@ static int build_dir_tree (TCHAR *tpath)
       strptr = _tcsrchr (tempstr, _T('\\'));
       strptr++;                 //  skip past backslash, to filename
 
-      top->name = (TCHAR *) malloc(_tcslen (strptr) + 1);
+      top->name = (TCHAR *) malloc((_tcslen (strptr) + 1) * sizeof(TCHAR));
       if (top->name == 0)
          error_exit (OUT_OF_MEMORY, NULL);
       _tcscpy (top->name, strptr);

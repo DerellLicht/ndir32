@@ -101,7 +101,7 @@ unsigned base_len ;  //  length of base_path
 unsigned start, finish ;
 TCHAR leftstr[37], rightstr[37] ; //  used by batch mode
 TCHAR tempstr[MAXLINE] ;
-uchar tline, bline, vline, xline, dline ;
+TCHAR tline, bline, vline, dline ;
 unsigned filecount = 0 ;
 unsigned columns ;           //  number of display columns on screen
 

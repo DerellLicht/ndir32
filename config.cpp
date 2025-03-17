@@ -172,7 +172,7 @@ static int write_default_ini_file(TCHAR *ini_str)
    _ftprintf(ofile, _T("exec_only=%u ; show executables only (exe,com,bat,btm)\n"), n.exec_only) ;
    _ftprintf(ofile, _T("long_attr=%u ; show executables only (exe,com,bat,btm)\n"), n.long_attr) ;
    _ftprintf(ofile, _T("horz=%u      ; list files horizontally\n"), n.horz) ;
-   _ftprintf(ofile, _T("low_ascii=%u\n"), n.low_ascii) ;
+   // _ftprintf(ofile, _T("low_ascii=%u\n"), n.low_ascii) ;
    _ftprintf(ofile, _T("color=%u\n"), n.color) ;
    _ftprintf(ofile, _T("showSHRfiles=%u  ; use diff attrib for S/H/R files\n"), n.showSHRfiles) ;
    // _ftprintf(ofile, "ega_keep=%u  ; switch to 50-line mode\n", n.ega_keep) ;
@@ -238,7 +238,7 @@ static ini_entry const ndir_ini[] = {
 { _T("dir_first"),    &n.dir_first },
 { _T("exec_only"),    &n.exec_only },
 { _T("horz"),         &n.horz },
-{ _T("low_ascii"),    &n.low_ascii },
+// { _T("low_ascii"),    &n.low_ascii },
 { _T("color"),        &n.color },
 { _T("showSHRfiles"), &n.showSHRfiles },
 // { _T("ega_keep"),     &n.ega_keep },

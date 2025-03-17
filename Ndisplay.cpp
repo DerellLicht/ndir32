@@ -350,7 +350,7 @@ void lfn_print2 (ffdata * fptr)
          nputsw(fptr->color, fptr->filename, wlen, fptr->mb_len);
       }
    }
-   nput_char(n.colorframe, ' ', slen) ;
+   nput_char(n.colorframe, _T(' '), slen) ;
 }
 
 /*****************************************************************/
@@ -395,7 +395,7 @@ void lfn_print4 (ffdata * fptr)
          nputsw(fptr->color, fptr->filename, wlen, fptr->mb_len);
       }
    }
-   nput_char(n.colorframe, ' ', slen) ;
+   nput_char(n.colorframe, _T(' '), slen) ;
 }
 
 /*****************************************************************/
@@ -420,6 +420,6 @@ void lfn_print6 (ffdata * fptr)
          nputsw(fptr->color, fptr->filename, wlen, fptr->mb_len);
       }
    }
-   nput_char(n.colorframe, ' ', slen) ;
+   nput_char(n.colorframe, _T(' '), slen) ;
 }
 

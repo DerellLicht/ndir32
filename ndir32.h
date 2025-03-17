@@ -54,7 +54,7 @@ struct ndir_data {
    uchar help ;
    uchar info ;
    uchar horz ;
-   uchar low_ascii ;
+   uchar low_ascii ;    //  upper ascii no longer supported
    uchar batch ;
    uchar unused1 ;
    uchar color ;
@@ -86,16 +86,7 @@ extern unsigned tree_level_limit ;
 extern ULONGLONG diskbytes, diskfree, clbytes ;
 
 //************************************************************
-#define topchar       0xD1   /*  Ñ  */
-#define bottomchar    0xCF   /*  Ï  */
-#define vlinechar     0xB3   /*  ³  */
-#define xlinechar     0xD8   /*  Ø  */
-#define dvlinechar    0xCD   /*  Í  */
-#define crosschar     0x2B   /*  +  */
-#define altvlinechar  0x7C   /*  |  */
-#define altdvlchar    0x3D   /*  =  */
-
-extern uchar tline, bline, vline, xline, dline ;
+extern TCHAR tline, bline, vline, dline ;
 
 /************************************************************/
 struct ffdata {

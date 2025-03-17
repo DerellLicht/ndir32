@@ -567,7 +567,7 @@ void dputsiw(const TCHAR *outstr, int wlen, int clen)
    // WriteFile(hStdOut, outstr, wlen, &wrlen, 0) ;
    WriteConsole(hStdOut, outstr, clen, &wrlen, 0) ;
    sinfo.dwCursorPosition.X += clen ;
-}
+}  //lint !e715  wlen
 
 //**********************************************************
 void dputs(const TCHAR *outstr)

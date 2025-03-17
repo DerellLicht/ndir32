@@ -22,6 +22,15 @@ extern void insert_target_filespec (TCHAR *fstr);
 //  fileread.cpp
 extern void update_exclusion_list(TCHAR *extptr);
 
+// static TCHAR const topchar      = _T(0xD1) ;  /*  Ñ  */
+// static TCHAR const bottomchar   = _T(0xCF) ;  /*  Ï  */
+// static TCHAR const vlinechar    = _T(0xB3) ;  /*  ³  */
+// static TCHAR const xlinechar    = _T(0xD8) ;  /*  Ø  */
+// static TCHAR const dvlinechar   = _T(0xCD) ;  /*  Í  */
+static TCHAR const crosschar    = _T('+') ;  /*  +  */
+static TCHAR const altvlinechar = _T('|') ;  /*  |  */
+static TCHAR const altdvlchar   = _T('=') ;  /*  =  */
+
 //*************************************************************
 //  Convert command-line switches into flags
 //*************************************************************
@@ -69,7 +78,7 @@ static int update_switches (TCHAR *argstr)
             n.drive_summary = DSUMMARY_FREE;
          }         
          break;
-      case 'j':  n.low_ascii ^= 1;  break;
+      // case 'j':  n.low_ascii ^= 1;  break;
       case 'k':  n.color ^= 1;  break;     //  redirection flag
       //  V2.62, 01/08/24 - short-filename support removed
       // case 'l':  n.lfn_off ^= 1;  break;   //  toggle long_filename flag
@@ -318,18 +327,11 @@ void verify_flags (void)
 
    //*************************************
    //  Initialize line-drawing variables
+   //  03/17/25 - as part of Unicode conversion,
+   //  just use low ASCII in all cases
    //*************************************
-   if (n.low_ascii) {
-      tline = bline = xline = crosschar;
-      vline = altvlinechar;
-      dline = altdvlchar;
-   }
-   else {
-      tline = topchar;
-      bline = bottomchar;
-      vline = vlinechar;
-      xline = xlinechar;
-      dline = dvlinechar;
-   }
+   tline = bline = crosschar;
+   vline = altvlinechar;
+   dline = altdvlchar;
 }
 
