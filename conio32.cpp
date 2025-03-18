@@ -96,7 +96,12 @@ BOOL control_handler(DWORD dwCtrlType)
 //**********************************************************
 unsigned get_window_cols(void)
 {
-   return (unsigned) (int) (sinfo.srWindow.Right - sinfo.srWindow.Left + 1) ;
+   if (is_redirected()) {
+      return 80 ;
+   }
+   else {
+      return (unsigned) (int) (sinfo.srWindow.Right - sinfo.srWindow.Left + 1) ;
+   }
 }
 
 //**********************************************************

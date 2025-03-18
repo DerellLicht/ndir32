@@ -300,10 +300,6 @@ static void display_dir_tree (dirs * ktop)
 /*****************************************************************/
 static void printdirheader (void)
 {
-   // int slen, freelen, vnlen, blen;
-
-   if (!n.color) 
-      display_logo();
    nputs (n.colornhead, _T("Directory of ")); //  len = 13
    _stprintf (tempstr, _T("%s"), base_path);
    nputs (n.colorxhead, tempstr);

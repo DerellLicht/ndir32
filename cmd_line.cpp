@@ -236,10 +236,6 @@ void verify_flags (void)
       //  This bypasses the html-redirection operation,
       //  which doesn't work with Cygwin/Bash shells
       n.color = 0 ;
-      // redirected = 0 ;
-      // n.minimize = 0;
-      // n.pause = 0;
-      // n.low_ascii = 1;
    }
 
    //****************************************************
@@ -260,8 +256,9 @@ void verify_flags (void)
    /*  Test for, and correct, inconsistent flags.  */
 
    /************************************************/
-   if (n.tree == 1 || n.tree == 4 || n.tree == 5)
+   if (n.tree == 1 || n.tree == 4 || n.tree == 5) {
       n.exec_only = 0;
+   }
 
    //******************************************************
    //  at this point, if exec_only is set, stuff the       

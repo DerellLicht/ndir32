@@ -140,7 +140,7 @@ void nputsw(uchar attr, const TCHAR *outstr, int wlen, int clen)
       dputsiw(outstr, wlen, clen);
    }
    else {
-      dputsiw(outstr, wlen, clen);
+      _tprintf (_T("%s"), outstr);
    }
 }
 
@@ -152,8 +152,9 @@ void nput_char (uchar attr, TCHAR chr, int count)
       dputnchar (chr, attr, count);
    }
    else {
-      for (int j = 0; j < count; j++)
+      for (int j = 0; j < count; j++) {
          putchar (chr);
+      }
    }
 }
 
@@ -165,9 +166,11 @@ void nput_line (uchar attr, TCHAR chr)
       dputnchar (chr, attr, wincols);
    }
    else {
-      set_text_attr (attr);
-      for (j = 0; j < wincols; j++)
+      syslog(_T("nput_line: wincols: %u, color: %u\n"), wincols, n.color);
+      // set_text_attr (attr);
+      for (j = 0; j < wincols; j++) {
          putchar (chr);
+      }
    }
    ncrlf ();
 }
