@@ -123,32 +123,23 @@ void nputc (uchar attr, const uchar outchr)
 /******************************************************************/
 void nputs (uchar attr, const TCHAR *outstr)
 {
-   set_text_attr (attr);
    if (n.color) {
+      set_text_attr (attr);
       dputs (outstr);
    }
    else {
       _tprintf (_T("%s"), outstr);
-   }
-}
-
-/******************************************************************/
-void nputsw(uchar attr, const TCHAR *outstr, int wlen, int clen)
-{
-   if (n.color) {
-      set_text_attr (attr);
-      dputsiw(outstr, wlen, clen);
-   }
-   else {
-      _tprintf (_T("%s"), outstr);
+      // int wlen = _tcslen(outstr);
+      // syslog(_T("%s\n"), outstr);
+      // hex_dump((u8 *)outstr, wlen * sizeof(TCHAR));
    }
 }
 
 /******************************************************************/
 void nput_char (uchar attr, TCHAR chr, int count)
 {
-   set_text_attr (attr);
    if (n.color) {
+      set_text_attr (attr);
       dputnchar (chr, attr, count);
    }
    else {

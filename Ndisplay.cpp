@@ -56,6 +56,12 @@ static TCHAR const monthstr[12][4] = {
    _T("Jul"), _T("Aug"), _T("Sep"), _T("Oct"), _T("Nov"), _T("Dec")
 };
 
+/******************************************************************/
+static void nputsw(uchar attr, const TCHAR *outstr, int wlen, int clen)
+{
+   nputs(attr, outstr);
+}  //lint !e715
+
 /*****************************************************************/
 static void ngotoxy (int x, int y)
 {
@@ -201,16 +207,13 @@ void print1 (ffdata * fptr)
       nputs (n.colortime, tempstr);
          
       //  display filename in appropriate color...
-      //   _stprintf (tempstr, "[%s]", fptr->filename);
-      // if (SHRattr != 0 && n.showSHRfiles)
-      //    nputs (n.colorSHR | SHRattr, tempstr);
-      // else
-      //    nputs (n.colordir, tempstr);
       if (SHRattr != 0 && n.showSHRfiles) {
-         nputsw(n.colorSHR | SHRattr, fptr->filename, wlen, fptr->mb_len);
+         // nputsw(n.colorSHR | SHRattr, fptr->filename, wlen, fptr->mb_len);
+         nputs(n.colorSHR | SHRattr, fptr->filename);
       }
       else {
-         nputsw(n.colordir, fptr->filename, wlen, fptr->mb_len);
+         // nputsw(n.colordir,           fptr->filename, wlen, fptr->mb_len);
+         nputs(n.colordir,           fptr->filename);
       }
    }
 

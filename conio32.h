@@ -38,10 +38,3 @@ void dputnchar(TCHAR chr, TCHAR attr, uint count);
 void dputs(const TCHAR *outstr);
 void dprints(unsigned row, unsigned col, const TCHAR * outstr);
 BOOL control_handler(DWORD dwCtrlType);
-//**********************************************************************************
-//  This function will deal with printing multi-byte strings
-//  in an ASCII (i.e., non-Unicode) program.
-//  It passes both the byte-length of the string, for printing,
-//  and the multi-byte length for updating screen position.
-//**********************************************************************************
-void dputsiw(const TCHAR *outstr, int wlen, int clen);

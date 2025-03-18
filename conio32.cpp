@@ -560,20 +560,6 @@ static void dputsi(const TCHAR *outstr, int slen)
    sinfo.dwCursorPosition.X += slen ;
 }
 
-//**********************************************************************************
-//  This function will deal with printing multi-byte strings
-//  in an ASCII (i.e., non-Unicode) program.
-//  It passes both the byte-length of the string, for printing,
-//  and the multi-byte length for updating screen position.
-//**********************************************************************************
-void dputsiw(const TCHAR *outstr, int wlen, int clen)
-{
-   DWORD wrlen ;
-   // WriteFile(hStdOut, outstr, wlen, &wrlen, 0) ;
-   WriteConsole(hStdOut, outstr, clen, &wrlen, 0) ;
-   sinfo.dwCursorPosition.X += clen ;
-}  //lint !e715  wlen
-
 //**********************************************************
 void dputs(const TCHAR *outstr)
    {

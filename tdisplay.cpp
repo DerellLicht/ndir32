@@ -79,28 +79,16 @@ static void display_tree_filename (TCHAR *frmstr, dirs *ktemp)
    //  if name string overruns data spaces, skip to new line
    if (namelen >= name_end_col) {
       nputs (n.colorframe, frmstr);
-      nputsw(dtree_colors[level], ktemp->name, wlen, ktemp->mb_len);
-      
-      //  skip the vlines on name row
-      // splen = (center_col) - frmlen - slen ;
-      // splen = name_end_col - namelen ;
-      // if (splen > 0) {
-      //    nput_char(n.colorframe, ' ', splen) ;
-      // }
-      // else {
-      //    syslog("(s > nec), splen: %d, ccol: %u, flen: %u, slen: %u, nec: %u, rdiv: %u\n", 
-      //       splen, center_col, frmlen, slen, name_end_col, right_div);
-      // }
-      // nputc (n.colorframe, vline);
-      // nput_char(dtree_colors[level], ' ', name_end_col+1) ;
-      // nputc (n.colorframe, vline);
+      // nputsw(dtree_colors[level], ktemp->name, wlen, ktemp->mb_len);
+      nputs(dtree_colors[level], ktemp->name);
       ncrlf ();
       _stprintf (tempstr, _T("%-*s"), name_end_col+1, frmstr);
       nputs (dtree_colors[level], tempstr);  //  spaces
    }
    else {
       nputs (n.colorframe, frmstr);
-      nputsw(dtree_colors[level], ktemp->name, wlen, ktemp->mb_len);
+      // nputsw(dtree_colors[level], ktemp->name, wlen, ktemp->mb_len);
+      nputs(dtree_colors[level], ktemp->name);
       
       //  pad gap between end of folder name and data area, with spaces
       splen = (name_end_col + 1) - namelen ;

@@ -91,8 +91,8 @@ bool isUpperAscii(TCHAR *outstr, uint slen)
 int hex_dump(u8 *bfr, int bytes, unsigned addr)
 {
    int j, len ;
-   char tail[40] ;
-   char pstr[81] ;
+   TCHAR tail[40] ;
+   TCHAR pstr[81] ;
    static bool hex_dump_active = false ;
    if (hex_dump_active)
       return 0;
@@ -106,29 +106,29 @@ int hex_dump(u8 *bfr, int bytes, unsigned addr)
       if (leftovers > 16)
           leftovers = 16 ;
 
-      plen = wsprintfA(pstr, "%05X:  ", addr+idx) ;  //lint !e737
+      plen = _stprintf(pstr, _T("%05X:  "), addr+idx) ;  //lint !e737
       len = 0 ;
       for (j=0; j<leftovers; j++) {
          u8 chr = bfr[idx+j] ;
-         plen += wsprintfA(&pstr[plen], "%02X ", chr) ;
+         plen += _stprintf(&pstr[plen], _T("%02X "), chr) ;
          if (chr < 32) {
-            len += wsprintfA(tail+len, ".") ;
+            len += _stprintf(tail+len, _T(".")) ;
          } else if (chr < 127) {
-            len += wsprintfA(tail+len, "%c", chr) ;
+            len += _stprintf(tail+len, _T("%c"), chr) ;
          } else {
-            len += wsprintfA(tail+len, "?") ;
+            len += _stprintf(tail+len, _T("?")) ;
          }
       }
       //  last, print fill spaces
       for (; j<16; j++) {
-         plen += wsprintfA(&pstr[plen], "   ") ;
-         len += wsprintfA(tail+len, " ") ;
+         plen += _stprintf(&pstr[plen], _T("   ")) ;
+         len += _stprintf(tail+len, _T(" ")) ;
       }
 
       // printf(" | %s |\n", tail) ;
-      strcat(pstr, " | ") ;
-      strcat(pstr, tail) ;
-      strcat(pstr, " |") ;
+      _tcscat(pstr, _T(" | ")) ;
+      _tcscat(pstr, tail) ;
+      _tcscat(pstr, _T(" |")) ;
       // printf("%s\n", pstr) ;
       syslog(_T("%s\n"), pstr) ;
 

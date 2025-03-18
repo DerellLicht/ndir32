@@ -194,7 +194,6 @@ void nputc(uchar attr, const uchar outchr);
 void nputs(uchar attr, const TCHAR* outstr);
 void nput_char(uchar attr, TCHAR chr, int count);
 void nput_line(uchar attr, TCHAR chr);
-void nputsw(uchar attr, const TCHAR *outstr, int wlen, int clen);
 
 //  diskparm.cpp
 bool get_disk_info(TCHAR *dstr);
