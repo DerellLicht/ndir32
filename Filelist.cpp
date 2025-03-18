@@ -237,11 +237,9 @@ static void list_files_qwise(void)
       // slen = (n.lfn_off) ? 9 : (_tcslen(ftemp->name) + 2) ;
       slen = _tcslen(ftemp->name) + 2 ;
       if (col + slen > width) {
-         // if (!n.lfn_off) {
-            nputs((ftemp->dirflag) ? n.colordir : ftemp->color, _T(", ")) ;
-         // }
+         nputs((ftemp->dirflag) ? n.colordir : ftemp->color, _T(", ")) ;
          ncrlf() ;
-         _stprintf(tempstr, _T("%*s  "), maxext, " ") ;
+         _stprintf (tempstr, _T("%*s  "), maxext, _T(" ")) ;
          nputs(ftemp->color, tempstr) ;
          col = maxext+2 ;
          new_line = 1 ;

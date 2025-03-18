@@ -112,13 +112,8 @@ extern ffdata *ftail ;
 #define FILE_ATTRIBUTE_VOLID  0x00000008
 
 //**********************************************************
-// #ifdef UNICODE
 extern TCHAR* target[20] ;
 extern TCHAR volume_name[PATH_MAX] ;
-// #else
-// extern char* target[20] ;
-// extern char volume_name[PATH_MAX] ;
-// #endif
 
 //*********************************************************
 //                NSORT.CPP
@@ -145,16 +140,12 @@ enum error_values { DATA_OKAY = 0, OUT_OF_MEMORY, INV_DRIVE } ;
 void error_exit(int index, TCHAR* outstr);
 
 //************************************************************
-//  ndata.cpp
+//  ndir32.cpp
 //************************************************************
 //  name of drive+path without filenames
 extern TCHAR base_path[PATH_MAX] ;
 extern unsigned base_len ;  //  length of base_path
 extern TCHAR ininame[PATH_MAX] ;
-
-//************************************************************
-//  ndata.cpp
-//************************************************************
 
 extern TCHAR tempstr[MAXLINE] ;
 extern unsigned filecount ;             //  number of files found

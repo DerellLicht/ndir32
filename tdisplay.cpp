@@ -28,29 +28,23 @@ static TCHAR formstr[50];
 
 static uint wincols      = 80 ;
 static uint name_end_col = 25 ;
-// static uint center_col   = 37 ;
-// static uint left_div     = 49 ;
-// static uint right_div    = 64 ;
 
 //**********************************************************
 static void display_size(ULONGLONG dlen, unsigned slen, unsigned attr)
 {
    if (n.size_display == 2) {
       dlen /= 1000000 ;
-      // dsize.convert (dlen);
       _stprintf (tempstr, _T("%*s"), slen-1, convert_to_commas(dlen, NULL));
       nputs (attr, tempstr);
       nputc(attr ^ 0x08, _T('M')) ;
    } else 
    if (dlen > (ULONGLONG) 999999999  ||  n.size_display == 1) {
       dlen /= 1000 ;
-      // dsize.convert (dlen);
       _stprintf (tempstr, _T("%*s"), slen-1, convert_to_commas(dlen, NULL));
       nputs (attr, tempstr);
       nputc(attr ^ 0x08, _T('K')) ;
    } else 
    {
-      // dsize.convert (dlen);
       _stprintf (tempstr, _T("%*s"), slen, convert_to_commas(dlen, NULL));
       nputs (attr, tempstr);
    }
@@ -79,7 +73,6 @@ static void display_tree_filename (TCHAR *frmstr, dirs *ktemp)
    //  if name string overruns data spaces, skip to new line
    if (namelen >= name_end_col) {
       nputs (n.colorframe, frmstr);
-      // nputsw(dtree_colors[level], ktemp->name, wlen, ktemp->mb_len);
       nputs(dtree_colors[level], ktemp->name);
       ncrlf ();
       _stprintf (tempstr, _T("%-*s"), name_end_col+1, frmstr);
@@ -87,7 +80,6 @@ static void display_tree_filename (TCHAR *frmstr, dirs *ktemp)
    }
    else {
       nputs (n.colorframe, frmstr);
-      // nputsw(dtree_colors[level], ktemp->name, wlen, ktemp->mb_len);
       nputs(dtree_colors[level], ktemp->name);
       
       //  pad gap between end of folder name and data area, with spaces
@@ -498,12 +490,6 @@ void draw_dir_tree (void)
 
    if (wincols != 80) {
       name_end_col = wincols - (80-25) ;
-      // center_col   = wincols - (80-37) ;
-      // left_div     = wincols - (80-49) ;
-      // right_div    = wincols - (80-64) ;
-      // 135: 80, 92, 104, 119
-      // syslog("%u: %u, %u, %u, %u\n", wincols,
-      //    name_end_col, center_col, left_div, right_div);
    }
 
    // syslog("level before displaying: %u\n", level);
