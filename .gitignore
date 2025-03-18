@@ -21,4 +21,5 @@ lnk_files/
 .vs/
 test/
 outputi.txt
+output.txt
 redir.folder.error.txt

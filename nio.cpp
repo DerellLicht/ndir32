@@ -56,7 +56,7 @@ static void testpause (void)
          dclreol ();
       }
       else {
-         printf ("\n");
+         _tprintf (_T("\n"));
       }
       linecnt = 1;
    }
@@ -69,7 +69,7 @@ void ncrlf_raw(void)
       dnewline ();
    }
    else {
-      printf ("\n");
+      _tprintf (_T("\n"));
    }
    testpause ();
 }
@@ -81,7 +81,7 @@ void ncrlf (void)
       dnewline ();
    }
    else {
-      printf ("\n");
+      _tprintf (_T("\n"));
    }
    
    // testpause ();
@@ -153,7 +153,7 @@ void nput_char (uchar attr, TCHAR chr, int count)
    }
    else {
       for (int j = 0; j < count; j++) {
-         putchar (chr);
+         _puttchar (chr);
       }
    }
 }
@@ -166,10 +166,10 @@ void nput_line (uchar attr, TCHAR chr)
       dputnchar (chr, attr, wincols);
    }
    else {
-      syslog(_T("nput_line: wincols: %u, color: %u\n"), wincols, n.color);
+      // syslog(_T("nput_line: wincols: %u, color: %u\n"), wincols, n.color);
       // set_text_attr (attr);
       for (j = 0; j < wincols; j++) {
-         putchar (chr);
+         _puttchar (chr);
       }
    }
    ncrlf ();
