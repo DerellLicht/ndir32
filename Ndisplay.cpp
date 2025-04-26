@@ -56,12 +56,6 @@ static TCHAR const monthstr[12][4] = {
    _T("Jul"), _T("Aug"), _T("Sep"), _T("Oct"), _T("Nov"), _T("Dec")
 };
 
-/******************************************************************/
-static void nputsw(uchar attr, const TCHAR *outstr, int wlen, int clen)
-{
-   nputs(attr, outstr);
-}  //lint !e715
-
 /*****************************************************************/
 static void ngotoxy (int x, int y)
 {
@@ -167,7 +161,7 @@ void print1 (ffdata * fptr)
    int day   = sdt.wDay    ;
    int month = sdt.wMonth  ;
    long year = sdt.wYear   ;
-   int wlen = _tcslen(fptr->filename);
+   // int wlen = _tcslen(fptr->filename);
    // int slen = name_width - fptr->mb_len ;
 
    TCHAR attr[12];
@@ -253,10 +247,12 @@ void print1 (ffdata * fptr)
       // else
       //    nputs (fptr->color, tempstr);
       if (SHRattr != 0 && n.showSHRfiles) {
-         nputsw(n.colorSHR | SHRattr, fptr->filename, wlen, fptr->mb_len);
+         // nputsw(n.colorSHR | SHRattr, fptr->filename, wlen, fptr->mb_len);
+         nputs(n.colorSHR | SHRattr, fptr->filename);
       }
       else {
-         nputsw(fptr->color, fptr->filename, wlen, fptr->mb_len);
+         // nputsw(fptr->color, fptr->filename, wlen, fptr->mb_len);
+         nputs(fptr->color, fptr->filename);
       }
          
 #ifdef USE_64BIT
@@ -302,7 +298,7 @@ void lfn_print2 (ffdata * fptr)
    int day   = sdt.wDay    ;
    int month = sdt.wMonth  ;
    long year = sdt.wYear   ;
-   int wlen = _tcslen(fptr->filename);
+   //  length of spaces in column, after filename
    int slen = name_width - fptr->mb_len ;
 
    ULONGLONG fsize = fptr->fsize;
@@ -316,10 +312,10 @@ void lfn_print2 (ffdata * fptr)
       nputs (n.colortime, tempstr);
 
       if (SHRattr != 0 && n.showSHRfiles) {
-         nputsw(n.colorSHR | SHRattr, fptr->filename, wlen, fptr->mb_len);
+         nputs(n.colorSHR | SHRattr, fptr->filename);
       }
       else {
-         nputsw(n.colordir, fptr->filename, wlen, fptr->mb_len);
+         nputs(n.colordir, fptr->filename);
       }
    }
    else {
@@ -347,10 +343,10 @@ void lfn_print2 (ffdata * fptr)
 
       //  generate filename
       if (SHRattr != 0 && n.showSHRfiles) {
-         nputsw(n.colorSHR | SHRattr, fptr->filename, wlen, fptr->mb_len);
+         nputs(n.colorSHR | SHRattr, fptr->filename);
       }
       else {
-         nputsw(fptr->color, fptr->filename, wlen, fptr->mb_len);
+         nputs(fptr->color, fptr->filename);
       }
    }
    nput_char(n.colorframe, _T(' '), slen) ;
@@ -361,16 +357,18 @@ void lfn_print4 (ffdata * fptr)
 {
    ULONGLONG fsize = fptr->fsize;
    uchar SHRattr = fptr->attrib & 7;
-   int wlen = _tcslen(fptr->filename);
+   //  length of spaces in column, after filename
    int slen = name_width - fptr->mb_len ;
+   
+   // syslog(_T("%u, %u=%u-%u %s\n"), wlen, slen, name_width, fptr->mb_len, fptr->filename);
 
    if (fptr->dirflag) {
       nputs (n.colordir, _T(" [DIR] "));
       if (SHRattr != 0 && n.showSHRfiles) {
-         nputsw(n.colorSHR | SHRattr, fptr->filename, wlen, fptr->mb_len);
+         nputs(n.colorSHR | SHRattr, fptr->filename);
       }
       else {
-         nputsw(n.colordir, fptr->filename, wlen, fptr->mb_len);
+         nputs(n.colordir, fptr->filename);
       }
    }
    else {
@@ -392,10 +390,10 @@ void lfn_print4 (ffdata * fptr)
 
       //  generate filename
       if (SHRattr != 0 && n.showSHRfiles) {
-         nputsw(n.colorSHR | SHRattr, fptr->filename, wlen, fptr->mb_len);
+         nputs(n.colorSHR | SHRattr, fptr->filename);
       }
       else {
-         nputsw(fptr->color, fptr->filename, wlen, fptr->mb_len);
+         nputs(fptr->color, fptr->filename);
       }
    }
    nput_char(n.colorframe, _T(' '), slen) ;
@@ -404,23 +402,23 @@ void lfn_print4 (ffdata * fptr)
 /*****************************************************************/
 void lfn_print6 (ffdata * fptr)
 {
-   int wlen = _tcslen(fptr->filename);
+   //  length of spaces in column, after filename
    int slen = name_width - fptr->mb_len ;
    uchar SHRattr = fptr->attrib & 7;
    if (fptr->dirflag) {
       if (SHRattr != 0 && n.showSHRfiles) {
-         nputsw(n.colorSHR | SHRattr, fptr->filename, wlen, fptr->mb_len);
+         nputs(n.colorSHR | SHRattr, fptr->filename);
       }
       else {
-         nputsw(n.colordir, fptr->filename, wlen, fptr->mb_len);
+         nputs(n.colordir, fptr->filename);
       }
    }
    else {
       if (SHRattr != 0 && n.showSHRfiles) {
-         nputsw(n.colorSHR | SHRattr, fptr->filename, wlen, fptr->mb_len);
+         nputs(n.colorSHR | SHRattr, fptr->filename);
       }
       else {
-         nputsw(fptr->color, fptr->filename, wlen, fptr->mb_len);
+         nputs(fptr->color, fptr->filename);
       }
    }
    nput_char(n.colorframe, _T(' '), slen) ;

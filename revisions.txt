@@ -280,5 +280,8 @@ Version 2.64, 03/17/25
   > implement UNICODE support
   > Deprecate low_ascii (actually, remove high_ascii) due to Unicode requirements
   
+Version 2.65, 04/26/25
+  Fixed a bug in filename listing, when filename was exactly the same width as column
+
 
 

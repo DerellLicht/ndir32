@@ -1,5 +1,5 @@
 //*****************************************************************
-//  Copyright (c) 1995-2015  Daniel D Miller
+//  Copyright (c) 1995-2024  Daniel D Miller
 //  FILELIST.CPP - NDIR file-listing handlers                      
 //*****************************************************************
 
@@ -39,9 +39,12 @@ static void (*lfn_fprint[7])(ffdata *fptr) =
    lfn_print6,
 } ;
 
-//***************  function prototypes  ***************
-static void filehead(void);
-static void fileend(void);
+static unsigned disp_cols ;    //  calculated screen columns for listings
+static unsigned line_len ; //  width of column
+unsigned name_width = 0 ;
+
+static const int FILE_SIZE_LEN =  6 ;
+static const int DATE_TIME_LEN = 15 ;
 
 //*********************************************************
 static void display_batch_mode(void)
@@ -51,217 +54,6 @@ static void display_batch_mode(void)
       _tprintf(_T("%s%s%s\n"), leftstr, ftemp->filename, rightstr) ;
       ftemp = ftemp->next ;
    }
-}
-
-//*****************************************************************
-static unsigned disp_cols ;    //  calculated screen columns for listings
-static unsigned line_len ; //  width of column
-// char tempfmtstr[10] ; //  for forming strings of the form %-nns
-unsigned name_width = 0 ;
-
-static const int FILE_SIZE_LEN =  6 ;
-static const int DATE_TIME_LEN = 15 ;
-
-static void lfn_get_columns(void)
-{
-   ffdata *ftemp = ftop ;
-   unsigned wincols ;
-
-   //  find length of longest filename
-   unsigned max_name_len = 0 ;
-   while (ftemp != NULL) {
-      unsigned cur_name_len = ftemp->mb_len ;
-      if (cur_name_len > max_name_len) {
-         max_name_len = cur_name_len ;
-      }
-      ftemp = ftemp->next ;
-   }
-
-   wincols = get_window_cols() ;
-   //  this is necessary because if redirection is in place,
-   //  'console width' may not be valid`
-   if (is_redirected()) {
-      wincols = 80 ;
-   }
-   //  compute line length (don't forget space between items
-   switch (columns) {
-   case 1:
-      line_len = wincols-1 ;
-      break;
-
-   case 2:
-      // line_len = max_name_len + filesize_len + date_time_len ;
-      //  date_time_len = 8 + 1 + 5 = 14
-      line_len = max_name_len + 1 + FILE_SIZE_LEN + 1 + DATE_TIME_LEN ;
-      break;
-
-   case 4:
-      line_len = max_name_len + 1 + FILE_SIZE_LEN ;
-      break;
-
-   case 6:
-      line_len = max_name_len ;
-      break;
-
-   default: line_len = max_name_len ;  break ;  //  make lint happy
-   }
-   // [66188] win_cols: 135, max_name_len: 39, line_len: 61
-   // syslog("win_cols: %u, max_name_len: %u, line_len: %u\n", wincols, max_name_len, line_len);
-
-   //  compute line count:
-   //   (disp_cols * line_len) + (disp_cols-1)*1 < row_len
-   //   (disp_cols * line_len) + disp_cols - 1 < 79
-   //   disp_cols * (line_len + 1) < 80
-   //                    80
-   //   disp_cols = ------------
-   //               line_len + 1
-   disp_cols = wincols / (line_len + 1) ;
-
-   //  shortcut solution for very long filenames
-   if (disp_cols == 0)
-      disp_cols = 1 ;
-   //  shortcut solution for very short filenames
-   // else if (disp_cols > (unsigned) columns)
-   //    disp_cols = (unsigned) columns ;
-
-   //  now find max width of filename listing
-   // unsigned max_fcols = wincols / disp_cols ;
-   line_len = wincols / disp_cols ;
-   line_len-- ;   //  subtract out column separator
-   switch (columns) {
-   case 1:
-      name_width = line_len - 43 ;
-      break;
-
-   case 2:
-      name_width = line_len - (FILE_SIZE_LEN + 1 + DATE_TIME_LEN + 1) ;
-      break;
-
-   case 4:
-      name_width = line_len - (FILE_SIZE_LEN + 1) ;
-      break;
-
-   case 6:
-      name_width = line_len ;
-      break;
-
-   default: 
-      name_width = line_len ;
-      break ;
-   }
-   // [66900] win_cols: 135, max_name_len: 39, line_len: 66, name_width: 43
-   // syslog("win_cols: %u, line_len: %u, disp_cols: %u, max_name_len: %u, name_width: %u\n", 
-   //    wincols, line_len, disp_cols, max_name_len, name_width);
-   // _stprintf(tempfmtstr, "%c-%us", '%', name_width) ;
-}
-
-//*****************************************************************
-static void list_files_horizontally(void)
-{
-   unsigned j = 0 ;
-
-   ffdata *ftemp = ftop ;
-
-   //  see how many columns we can support with requested formats
-   lfn_get_columns() ;  //  set disp_cols, name_width
-
-   filehead() ;
-   //  then list the files
-   while (ftemp != NULL) {
-      lfn_fprint[columns](ftemp) ;  //  horizontal listing
-      if (++j == disp_cols) {
-         ncrlf() ;
-         j = 0 ;
-      } else {
-         nput_char(n.colorframe, vline, 1) ;
-      }
-
-      ftemp = ftemp->next ;
-   }
-
-   //  put in closing newline, if needed
-   if (j != 0)
-      ncrlf() ;
-   fileend() ;
-}
-
-//*****************************************************************
-//  XTDIR mode
-//*****************************************************************
-static void list_files_qwise(void)
-{
-   // int j = 0 ;
-   ffdata *ftemp ;
-   unsigned width, col = 0, slen ;
-   int first_line = 1, new_line ;
-   TCHAR prev_ext[10] ;
-   unsigned maxext ;
-
-   prev_ext[0] = 0 ; //  make lint happy
-
-   width = (is_redirected()) ? 80 : get_window_cols() ;
-   // width = get_window_cols() ;
-
-   //  first, find the longest extension in the current file list
-   ftemp = ftop ;
-   maxext = 0 ;
-   while (ftemp != NULL) {
-      slen = _tcslen(ftemp->ext) ;
-      if (maxext < slen)
-          maxext = slen ;
-      
-      //  get next filename
-      ftemp = ftemp->next ;
-   }
-   
-   //  then list the files
-   ftemp = ftop ;
-   filehead() ;
-   new_line = 1 ;
-   while (ftemp != NULL) {
-      //  see if file extention is changing
-      if (first_line  ||  _tcsicmp(prev_ext, ftemp->ext) != 0) {
-         if (first_line)
-            first_line = 0 ;
-         else 
-            ncrlf() ;
-         _stprintf(tempstr, _T("%-*s: "), maxext, ftemp->ext) ;
-         nputs(ftemp->color, tempstr) ;
-         col = maxext+2 ;
-         _tcscpy(prev_ext, ftemp->ext) ;
-         new_line = 1 ;
-      }
-
-      //  see if next filename is going to overrun line; 
-      //  if so, start next line...
-      // slen = (n.lfn_off) ? 9 : (_tcslen(ftemp->name) + 2) ;
-      slen = _tcslen(ftemp->name) + 2 ;
-      if (col + slen > width) {
-         nputs((ftemp->dirflag) ? n.colordir : ftemp->color, _T(", ")) ;
-         ncrlf() ;
-         _stprintf (tempstr, _T("%*s  "), maxext, _T(" ")) ;
-         nputs(ftemp->color, tempstr) ;
-         col = maxext+2 ;
-         new_line = 1 ;
-      } 
-      //  if not starting new line, add comma separator
-      if (new_line) {
-         new_line = 0 ;
-      // } else if (!n.lfn_off) {
-      } else {
-         nputs((ftemp->dirflag) ? n.colordir : ftemp->color, _T(", ")) ;
-      }
-      //  select appropriate color and print the filename
-      // _stprintf(tempstr, (n.lfn_off) ? "%-8s " : "%s", ftemp->name) ;
-      // nputs((ftemp->dirflag) ? n.colordir : ftemp->color, tempstr) ;
-      nputs((ftemp->dirflag) ? n.colordir : ftemp->color, ftemp->name) ;
-      col += slen ;
-      
-      //  get next filename
-      ftemp = ftemp->next ;
-   }
-   ncrlf() ;
-   fileend() ;
 }
 
 /*****************************************************************/
@@ -436,6 +228,209 @@ static void fileend(void)
 
       put_disk_summary() ;
    }
+}
+
+//*****************************************************************
+static void lfn_get_columns(void)
+{
+   ffdata *ftemp = ftop ;
+   unsigned wincols ;
+
+   //  find length of longest filename
+   unsigned max_name_len = 0 ;
+   while (ftemp != NULL) {
+      unsigned cur_name_len = ftemp->mb_len ;
+      if (cur_name_len > max_name_len) {
+         max_name_len = cur_name_len ;
+      }
+      ftemp = ftemp->next ;
+   }
+
+   wincols = get_window_cols() ;
+   //  this is necessary because if redirection is in place,
+   //  'console width' may not be valid`
+   if (is_redirected()) {
+      wincols = 80 ;
+   }
+   //  compute line length (don't forget space between items
+   switch (columns) {
+   case 1:
+      line_len = wincols-1 ;
+      break;
+
+   case 2:
+      // line_len = max_name_len + filesize_len + date_time_len ;
+      //  date_time_len = 8 + 1 + 5 = 14
+      line_len = max_name_len + 1 + FILE_SIZE_LEN + 1 + DATE_TIME_LEN ;
+      break;
+
+   case 4:
+      line_len = max_name_len + 1 + FILE_SIZE_LEN ;
+      break;
+
+   case 6:
+      line_len = max_name_len ;
+      break;
+
+   default: line_len = max_name_len ;  break ;  //  make lint happy
+   }
+   // [66188] win_cols: 135, max_name_len: 39, line_len: 61
+   // syslog("win_cols: %u, max_name_len: %u, line_len: %u\n", wincols, max_name_len, line_len);
+
+   //  compute line count:
+   //   (disp_cols * line_len) + (disp_cols-1)*1 < row_len
+   //   (disp_cols * line_len) + disp_cols - 1 < 79
+   //   disp_cols * (line_len + 1) < 80
+   //                    80
+   //   disp_cols = ------------
+   //               line_len + 1
+   disp_cols = wincols / (line_len + 1) ;
+
+   //  shortcut solution for very long filenames
+   if (disp_cols == 0)
+      disp_cols = 1 ;
+   //  shortcut solution for very short filenames
+   // else if (disp_cols > (unsigned) columns)
+   //    disp_cols = (unsigned) columns ;
+
+   //  now find max width of filename listing
+   // unsigned max_fcols = wincols / disp_cols ;
+   line_len = wincols / disp_cols ;
+   line_len-- ;   //  subtract out column separator
+   switch (columns) {
+   case 1:
+      name_width = line_len - 43 ;
+      break;
+
+   case 2:
+      name_width = line_len - (FILE_SIZE_LEN + 1 + DATE_TIME_LEN + 1) ;
+      break;
+
+   case 4:
+      name_width = line_len - (FILE_SIZE_LEN + 1) ;
+      break;
+
+   case 6:
+      name_width = line_len ;
+      break;
+
+   default: 
+      name_width = line_len ;
+      break ;
+   }
+   // [66900] win_cols: 135, max_name_len: 39, line_len: 66, name_width: 43
+   // syslog(_T("columns: %u, win_cols: %u, line_len: %u, disp_cols: %u, max_name_len: %u, name_width: %u\n"), 
+   //     columns, wincols, line_len, disp_cols, max_name_len, name_width);
+   // _stprintf(tempfmtstr, "%c-%us", '%', name_width) ;
+}
+
+//*****************************************************************
+static void list_files_horizontally(void)
+{
+   unsigned j = 0 ;
+
+   ffdata *ftemp = ftop ;
+
+   //  see how many columns we can support with requested formats
+   lfn_get_columns() ;  //  set disp_cols, name_width
+
+   filehead() ;
+   //  then list the files
+   while (ftemp != NULL) {
+      lfn_fprint[columns](ftemp) ;  //  horizontal listing
+      if (++j == disp_cols) {
+         ncrlf() ;
+         j = 0 ;
+      } else {
+         nput_char(n.colorframe, vline, 1) ;
+      }
+
+      ftemp = ftemp->next ;
+   }
+
+   //  put in closing newline, if needed
+   if (j != 0)
+      ncrlf() ;
+   fileend() ;
+}
+
+//*****************************************************************
+//  XTDIR mode
+//*****************************************************************
+static void list_files_qwise(void)
+{
+   // int j = 0 ;
+   ffdata *ftemp ;
+   unsigned width, col = 0, slen ;
+   int first_line = 1, new_line ;
+   TCHAR prev_ext[10] ;
+   unsigned maxext ;
+
+   prev_ext[0] = 0 ; //  make lint happy
+
+   width = (is_redirected()) ? 80 : get_window_cols() ;
+   // width = get_window_cols() ;
+
+   //  first, find the longest extension in the current file list
+   ftemp = ftop ;
+   maxext = 0 ;
+   while (ftemp != NULL) {
+      slen = _tcslen(ftemp->ext) ;
+      if (maxext < slen)
+          maxext = slen ;
+      
+      //  get next filename
+      ftemp = ftemp->next ;
+   }
+   
+   //  then list the files
+   ftemp = ftop ;
+   filehead() ;
+   new_line = 1 ;
+   while (ftemp != NULL) {
+      //  see if file extention is changing
+      if (first_line  ||  _tcsicmp(prev_ext, ftemp->ext) != 0) {
+         if (first_line)
+            first_line = 0 ;
+         else 
+            ncrlf() ;
+         _stprintf(tempstr, _T("%-*s: "), maxext, ftemp->ext) ;
+         nputs(ftemp->color, tempstr) ;
+         col = maxext+2 ;
+         _tcscpy(prev_ext, ftemp->ext) ;
+         new_line = 1 ;
+      }
+
+      //  see if next filename is going to overrun line; 
+      //  if so, start next line...
+      // slen = (n.lfn_off) ? 9 : (_tcslen(ftemp->name) + 2) ;
+      slen = _tcslen(ftemp->name) + 2 ;
+      if (col + slen > width) {
+         nputs((ftemp->dirflag) ? n.colordir : ftemp->color, _T(", ")) ;
+         ncrlf() ;
+         _stprintf (tempstr, _T("%*s  "), maxext, _T(" ")) ;
+         nputs(ftemp->color, tempstr) ;
+         col = maxext+2 ;
+         new_line = 1 ;
+      } 
+      //  if not starting new line, add comma separator
+      if (new_line) {
+         new_line = 0 ;
+      // } else if (!n.lfn_off) {
+      } else {
+         nputs((ftemp->dirflag) ? n.colordir : ftemp->color, _T(", ")) ;
+      }
+      //  select appropriate color and print the filename
+      // _stprintf(tempstr, (n.lfn_off) ? "%-8s " : "%s", ftemp->name) ;
+      // nputs((ftemp->dirflag) ? n.colordir : ftemp->color, tempstr) ;
+      nputs((ftemp->dirflag) ? n.colordir : ftemp->color, ftemp->name) ;
+      col += slen ;
+      
+      //  get next filename
+      ftemp = ftemp->next ;
+   }
+   ncrlf() ;
+   fileend() ;
 }
 
 //*****************************************************************

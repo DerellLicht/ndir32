@@ -138,6 +138,9 @@ void nputs (uchar attr, const TCHAR *outstr)
 /******************************************************************/
 void nput_char (uchar attr, TCHAR chr, int count)
 {
+   if (count <= 0) {
+      return ;
+   }
    if (n.color) {
       set_text_attr (attr);
       dputnchar (chr, attr, count);
