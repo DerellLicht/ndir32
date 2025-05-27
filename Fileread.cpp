@@ -160,7 +160,7 @@ static void read_long_files (int i)
 
          //  find and extract the file extension, if valid
          // ftemp->name[0] = 0 ; //  don't use name at all
-         uint fnlen = _tcslen (ftemp->filename);
+         uint fnlen = _tcslen (ftemp->filename);   // NOLINT
          ftemp->name = (TCHAR *) malloc((fnlen + 1) * sizeof(TCHAR)) ;
          if (ftemp->name == NULL) {
             error_exit (OUT_OF_MEMORY, NULL);
