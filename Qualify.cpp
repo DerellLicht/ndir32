@@ -41,23 +41,21 @@ static TCHAR path[PATH_MAX];
 unsigned qualify (TCHAR *argptr)
 {
    TCHAR *pathptr = &path[0];
-   TCHAR *strptr, *srchptr, tempchar;
+   TCHAR *strptr, *srchptr ;
    DWORD plen;
-   int drive, result ;
-   // int done ;
-   // HANDLE handle;
+   int result ;
    struct _stat my_stat ;
    unsigned len, qresult = 0;
-   // struct _find_t c_file;
 
    //******************************************************
    //  first, determine requested drive number,            
    //  in "A: = 1" format.                                 
    //******************************************************
+   //  if arg len == 0 or arg is "."
    if (_tcslen (argptr) == 0 || (_tcslen (argptr) == 1 && *argptr == '.')
       ) {                       /*  no arguments given  */
       // printf("args=none or dot\n") ;         
-      drive = _getdrive ();     //  1 = A:
+      int drive = _getdrive ();     //  1 = A:
       //  see if we have a UNC drive...
       if (drive == 0) {
          GetCurrentDirectory (250, pathptr);
@@ -65,15 +63,19 @@ unsigned qualify (TCHAR *argptr)
          goto exit_point;
       }
    }
-   else if (*(argptr + 1) == ':') { /*  a drive spec was provided  */
-      // printf("args=colon\n") ;      
-      tempchar = *argptr;
-      drive = tolower (tempchar) - '`';   //  char - ('a' - 1)
-   }
-   else {                       /*  a path with no drive spec was provided  */
-      // printf("args=no drive\n") ;      
-      drive = _getdrive ();     //  1 = A:
-   }
+   //  05/26/25  These were shown unused, by clang-tidy
+   //   else if arg == "x:"
+//    else if (*(argptr + 1) == ':') { /*  a drive spec was provided  */
+//       // printf("args=colon\n") ;      
+//       TCHAR tempchar;
+//       tempchar = *argptr;
+//       drive = tolower (tempchar) - '`';   //  char - ('a' - 1)
+//    }
+//    //  else anything else
+//    else {                       /*  a path with no drive spec was provided  */
+//       // printf("args=no drive\n") ;      
+//       drive = _getdrive ();     //  1 = A:
+//    }
 
    //******************************************************
    //  strings in quotes will also foil the DOS routines;

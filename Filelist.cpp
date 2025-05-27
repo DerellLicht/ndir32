@@ -481,7 +481,7 @@ static void list_files_vertically(void)
    j = 0 ;
    while (LOOP_FOREVER) {
       if (fcount < filecount) {
-         lfn_fprint[columns](ftemps[j]) ; //  vertical listing
+         lfn_fprint[columns](ftemps[j]) ; //  vertical listing  NOLINT
          ftemps[j] = ftemps[j]->next ;
       }
       //  if no files left to display, fill in row with spaces

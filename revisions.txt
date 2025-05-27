@@ -283,5 +283,6 @@ Version 2.64, 03/17/25
 Version 2.65, 04/26/25
   Fixed a bug in filename listing, when filename was exactly the same width as column
 
-
+Version 2.66, 05/26/25
+  Implemented support for clang-tidy static analyzer
 

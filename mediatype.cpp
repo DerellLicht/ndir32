@@ -14,7 +14,7 @@
 #include <ntdddisk.h>
 #include <ntddscsi.h>
 #else
-#include <ddk/cfgmgr32.h>   // for SetupDiXxx functions.
+#include <ddk/cfgmgr32.h>   // for SetupDiXxx functions
 #include <ddk/ntdddisk.h>
 #include <ddk/ntddscsi.h>
 #endif

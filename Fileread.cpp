@@ -45,7 +45,7 @@ void update_exclusion_list(TCHAR *extptr)
 //*********************************************************
 static void read_long_files (int i)
 {
-   int done, fn_okay ;  //, result;
+   bool fn_okay ;  //, result;
    HANDLE handle;
    TCHAR *strptr;
    ffdata *ftemp;
@@ -72,30 +72,30 @@ static void read_long_files (int i)
    }
 
    //  loop on find_next
-   done = 0;
+   bool done = false;
    while (!done) {
       if (n.show_all == 0) {
          if ((fdata.dwFileAttributes & 
             (FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_READONLY | FILE_ATTRIBUTE_SYSTEM)) != 0) {
-            fn_okay = 0 ;
+            // fn_okay = false ;
             goto search_next_file;
          }
       }
       //  filter out directories if not requested
       if ((fdata.dwFileAttributes & FILE_ATTRIBUTE_VOLID) != 0)
-         fn_okay = 0;
+         fn_okay = false;
       else if ((fdata.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != FILE_ATTRIBUTE_DIRECTORY)
-         fn_okay = 1;
+         fn_okay = true;
       //  everything past here is a folder   
       else if (n.tree == 2)     //  "files only" flag
-         fn_okay = 0;
+         fn_okay = false;
       //  skip '.' and '..', but NOT .ncftp (for example)
       else if (_tcscmp(fdata.cFileName, _T("."))  == 0  ||
                _tcscmp(fdata.cFileName, _T("..")) == 0) {
-         fn_okay = 0;
+         fn_okay = false;
       }
       else {
-         fn_okay = 1;
+         fn_okay = true;
       }
          
       if (fn_okay) {
@@ -143,7 +143,7 @@ static void read_long_files (int i)
             error_exit (OUT_OF_MEMORY, NULL);
             // return;             //  only to make lint happy
          }
-         _tcscpy (ftemp->filename, fdata.cFileName);
+         _tcscpy (ftemp->filename, fdata.cFileName);  // NOLINT
          
          //  If Steven Bensky's short filenames are requested,
          //  generate fully-qualified filenames so I can request the short name...
@@ -166,7 +166,7 @@ static void read_long_files (int i)
             error_exit (OUT_OF_MEMORY, NULL);
          }
 
-         _tcscpy (ftemp->name, ftemp->filename);
+         _tcscpy (ftemp->name, ftemp->filename);   // NOLINT
          strptr = _tcsrchr (ftemp->name, _T('.'));
          if (strptr != NULL && _tcslen (strptr) <= MAX_EXT_SIZE) {
             _tcscpy (ftemp->ext, strptr);

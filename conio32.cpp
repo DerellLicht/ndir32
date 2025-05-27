@@ -78,7 +78,7 @@ static void PERR(bool bSuccess, PCHAR szApiName)
 
 //**********************************************************
 //lint -esym(715,dwCtrlType)
-BOOL control_handler(DWORD dwCtrlType)
+static BOOL WINAPI control_handler(DWORD dwCtrlType)
    {
    BOOL bSuccess;
    DWORD dwMode;
@@ -384,28 +384,6 @@ void dreturn(void)
    sinfo.dwCursorPosition.X = 0 ;
    SetConsoleCursorPosition(hStdOut, sinfo.dwCursorPosition) ;
    }   
-
-//**********************************************************
-//  debug function
-//**********************************************************
-//lint -esym(714, dshow_row_info)
-//lint -esym(759, dshow_row_info)
-//lint -esym(765, dshow_row_info)
-void dshow_row_info(char *msg)
-{
-   char* default_msg = "x"; //lint !e1778 assignment is not const
-   if (msg == NULL) {
-      msg = default_msg ;
-   }
-   // syslog("%s: cursor: %ux%u, dwSize: %ux%u, where: %ux%u, win_cols: %u\n", msg,
-   //    sinfo.dwCursorPosition.X, 
-   //    sinfo.dwCursorPosition.Y, 
-   //    sinfo.dwSize.X, 
-   //    sinfo.dwSize.Y, 
-   //    _where_x(), _where_y(),
-   //    get_window_cols()
-   //    ) ;
-}  //lint !e438  msg
 
 //**********************************************************
 void dprintc(unsigned row, unsigned col, const TCHAR outchr)

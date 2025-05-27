@@ -29,6 +29,8 @@ CFLAGS += -DUNICODE -D_UNICODE
 LFLAGS += -dUNICODE -d_UNICODE -municode
 endif
 
+CHFLAGS = -header-filter=.*
+
 LIBS=-lmpr -lshlwapi -lole32 -luuid
 
 #***************************************************************
@@ -72,6 +74,9 @@ all: $(BIN)
 
 clean:
 	rm -f *.o ndir*.exe *~ *.zip
+
+check:
+	cmd /C "d:\clang\bin\clang-tidy.exe $(CHFLAGS) $(CPPSRC) -- -DUSE_64BIT"
 
 dist:
 	rm -f ndir.zip

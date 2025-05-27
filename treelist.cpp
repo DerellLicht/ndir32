@@ -74,7 +74,7 @@ static dirs *new_dir_node (void)
    }
    //     179200 ->     72704   40.57%    win64/pe     ndir64.exe
    // dirs *dtemp = new dirs ;
-   ZeroMemory(dtemp, sizeof (struct dirs));  //lint !e668
+   ZeroMemory(dtemp, sizeof (struct dirs));  //lint !e668 NOLINT
    // memset ((char *) dtemp, 0, sizeof (struct dirs));  //lint !e668
    dtemp->dirsecsize = clbytes;
    dtemp->subdirsecsize = clbytes;
@@ -221,7 +221,7 @@ syslog(_T("%s: FindFindFirst: %s\n"), dirpath, get_system_message (err));
                if (cur_node->sons == NULL)
                   cur_node->sons = dtemp;
                else
-                  dtail->brothers = dtemp;   //lint !e613
+                  dtail->brothers = dtemp;   //lint !e613  NOLINT
                dtail = dtemp;
                // if (!n.ucase) 
                //    strlwr(ff.name) ;
@@ -232,7 +232,7 @@ syslog(_T("%s: FindFindFirst: %s\n"), dirpath, get_system_message (err));
                if (dtemp->name == NULL) {
                   error_exit(OUT_OF_MEMORY, NULL);
                }
-               _tcscpy (dtemp->name, (TCHAR *) fdata.cFileName);
+               _tcscpy (dtemp->name, (TCHAR *) fdata.cFileName);  //  NOLINT
 
                dtemp->attrib = (uchar) fdata.dwFileAttributes;
                // dtail->directs++ ;
