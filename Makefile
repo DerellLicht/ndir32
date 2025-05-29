@@ -26,7 +26,7 @@ endif
 
 ifeq ($(USE_UNICODE),YES)
 CFLAGS += -DUNICODE -D_UNICODE
-LFLAGS += -dUNICODE -d_UNICODE -municode
+LFLAGS += -dUNICODE -d_UNICODE
 endif
 
 #  clang-tidy options
