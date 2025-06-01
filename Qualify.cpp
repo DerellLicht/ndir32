@@ -15,9 +15,6 @@
 /*                                                                */
 /******************************************************************/
 
-// #ifdef _WIN32_IE >= 0x0600
-// c:\mingw\include\shlwapi.h  72  Error 87: expression too complicated for #ifdef or #ifndef
-//lint -e87   expression too complicated for #ifdef or #ifndef  (rejecting >= )
 
 #include <windows.h>
 #include <stdio.h>
@@ -27,7 +24,7 @@
 //  lint says I don't need this header, and in fact for MSVC6.0
 //  I *don't* need it, but for gcc I do...
 #include <ctype.h>              //  tolower()
-#include <shlwapi.h>
+#include <shlwapi.h>    // PathIsUNC(), etc
 #include <limits.h>
 #include <tchar.h>
 
