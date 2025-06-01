@@ -58,7 +58,7 @@ unsigned qualify (TCHAR *argptr)
       int drive = _getdrive ();     //  1 = A:
       //  see if we have a UNC drive...
       if (drive == 0) {
-         GetCurrentDirectory (250, pathptr);
+         GetCurrentDirectory (250, pathptr); //lint !e534
          _tcscat (pathptr, _T("\\*"));
          goto exit_point;
       }
