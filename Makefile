@@ -32,6 +32,7 @@ endif
 #  clang-tidy options
 CHFLAGS = -header-filter=.*
 CHTAIL = -- 
+CHTAIL += -Ider_libs
 ifeq ($(USE_64BIT),YES)
 CHTAIL += -DUSE_64BIT
 endif
@@ -41,6 +42,8 @@ endif
 
 LIBS=-lmpr -lshlwapi -lole32 -luuid
 
+LiFLAGS += -Ider_libs
+CFLAGS += -Ider_libs
 #***************************************************************
 #  After upgrading from g++ 4.3.3 to g++ 4.4.1,
 #  I can now get longlong to printf correctly.
@@ -62,15 +65,15 @@ LIBS=-lmpr -lshlwapi -lole32 -luuid
 #***************************************************************
 
 CPPSRC=Ndir32.cpp cmd_line.cpp config.cpp conio32.cpp Diskparm.cpp err_exit.cpp Filelist.cpp Fileread.cpp \
-	common.cpp Ndisplay.cpp nio.cpp Qualify.cpp \
-	nsort.cpp treelist.cpp tdisplay.cpp mediatype.cpp read_link.cpp
-#    mp3.parser.cpp file_fmts.cpp 
+	Ndisplay.cpp nio.cpp nsort.cpp treelist.cpp tdisplay.cpp mediatype.cpp read_link.cpp \
+	der_libs\common_funcs.cpp \
+	der_libs\qualify.cpp 
 
-OBJS = $(CSRC:.c=.o) $(CPPSRC:.cpp=.o)
+OBJS = $(CPPSRC:.cpp=.o)
 
 #*************************************************************************
 %.o: %.cpp
-	$(TOOLS)\g++ $(CFLAGS) $<
+	$(TOOLS)\g++ $(CFLAGS) -c $< -o $@
 
 ifeq ($(USE_64BIT),NO)
 BIN = ndir32.exe
@@ -97,7 +100,7 @@ lint:
 	cmd /C "c:\lint9\lint-nt +v -width(160,4) $(LiFLAGS) -ic:\lint9 mingw.lnt -os(_lint.tmp) lintdefs.cpp $(CPPSRC)"
 
 depend: 
-	makedepend $(CSRC) $(CPPSRC)
+	makedepend $(CPPSRC)
 
 $(BIN): $(OBJS)
 	$(TOOLS)\g++ $(OBJS) $(LFLAGS) -o $(BIN) $(LIBS) 
@@ -113,20 +116,18 @@ endif
 
 # DO NOT DELETE
 
-Ndir32.o: common.h ndir32.h conio32.h qualify.h
-cmd_line.o: common.h ndir32.h conio32.h
-config.o: common.h ndir32.h
-conio32.o: common.h ndir32.h conio32.h
-Diskparm.o: common.h ndir32.h
-err_exit.o: common.h ndir32.h conio32.h
-Filelist.o: common.h ndir32.h conio32.h
-Fileread.o: common.h ndir32.h
-common.o: common.h ndir32.h
-Ndisplay.o: common.h ndir32.h conio32.h
-nio.o: common.h ndir32.h conio32.h
-Qualify.o: qualify.h
-nsort.o: common.h ndir32.h
-treelist.o: common.h ndir32.h conio32.h treelist.h
-tdisplay.o: common.h ndir32.h conio32.h treelist.h
+Ndir32.o: ndir32.h conio32.h
+cmd_line.o: ndir32.h conio32.h
+config.o: ndir32.h
+conio32.o: ndir32.h conio32.h
+Diskparm.o: ndir32.h
+err_exit.o: ndir32.h conio32.h
+Filelist.o: ndir32.h conio32.h
+Fileread.o: ndir32.h
+Ndisplay.o: ndir32.h conio32.h
+nio.o: ndir32.h conio32.h
+nsort.o: ndir32.h
+treelist.o: ndir32.h conio32.h treelist.h
+tdisplay.o: ndir32.h conio32.h treelist.h
 mediatype.o: scsi_defs.h
-read_link.o: common.h ndir32.h
+read_link.o: ndir32.h

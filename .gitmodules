@@ -1,0 +1,3 @@
+[submodule "der_libs"]
+	path = der_libs
+	url = https://github.com/DerellLicht/der_libs

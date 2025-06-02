@@ -1,16 +1,16 @@
 //************************************************************
-//  Copyright (c) 1998-2023 Daniel D. Miller                  
+//  Copyright (c) 1998-2025 Daniel D. Miller                  
 //  ndir32.h - Header file for NDIR directory lister.         
 //                                                            
 //  Written by:  Daniel D. Miller                             
 //************************************************************
 
 #include <limits.h>
-// #include <tchar.h>
 
 //*********************************************************
 
-#define  MAX_EXT_SIZE   8
+#define  MAX_EXT_SIZE      8
+#define  MAXLINE           1024
 
 #define  MAX_DIR_ENTRY     20
 extern uchar dtree_colors[MAX_DIR_ENTRY] ;
@@ -108,9 +108,6 @@ struct ffdata {
 extern ffdata *ftop ;
 extern ffdata *ftail ;
 
-//  this definition was excluded by WINNT.H
-#define FILE_ATTRIBUTE_VOLID  0x00000008
-
 //**********************************************************
 extern TCHAR* target[20] ;
 extern TCHAR volume_name[PATH_MAX] ;
@@ -155,6 +152,9 @@ extern unsigned columns ;           //  number of display columns on screen
 
 extern unsigned start, finish ;
 //*****************  function prototypes**********************
+
+//  ndir32.cpp
+int strcmpiwc(const TCHAR *onestr, const TCHAR *twostr);
 
 //  cmd_line.cpp
 void parse_command_string(TCHAR *cmdstr) ;

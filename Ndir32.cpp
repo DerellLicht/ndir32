@@ -175,6 +175,45 @@ _T("NOTE: items with a * after the flag are TOGGLES"),
 _T(" "),
 NULL } ;
 
+//**************************************************************
+//  string compare routine, case-insensitive, 
+//  wildcards are handled in the DOS fashion.
+//**************************************************************
+int strcmpiwc(const TCHAR *onestr, const TCHAR *twostr)
+{
+   char onechar, twochar ;
+   int k = 0 ;
+
+   while (LOOP_FOREVER) {
+      onechar = *(onestr+k) ;
+      twochar = *(twostr+k) ;
+
+      //  if both are at end of string and no differences
+      //  have been found, the strings are equal.
+      if (onechar == 0  &&  twochar == 0) 
+         return 1;
+
+      //  if one string is at end and the other is not,
+      //  there is NOT a match.
+      if (onechar == 0  ||  twochar == 0)
+         return 0;
+
+      //  at this point, neither char is NULL
+
+      //  if either char is a 'match all' wildcard, the strings are equal
+      if (onechar == '*'  ||  twochar == '*') 
+         return 1 ;
+
+      if (onechar == '?'  ||  twochar == '?') ; //  match continues
+
+
+      else if (tolower(onechar) != tolower(twochar)) 
+         return 0;
+
+      k++ ;
+   }
+}
+
 //***********************************************************
 //  DEBUG function: insert filespecs in display list
 //***********************************************************
