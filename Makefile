@@ -2,10 +2,13 @@ SHELL=cmd.exe
 USE_DEBUG = NO
 USE_64BIT = YES
 USE_UNICODE = YES
-USE_UPX = NO
 
+# notes on 64-bit toolchains
+# d:\tdm64\bin      is gcc v5.1.0;  NDIR64 built with this is 106KB
+# c:\tdm-gcc-64\bin is gcc v10.3.0; NDIR64 built with this is 178KB
 ifeq ($(USE_64BIT),YES)
 TOOLS=d:\tdm64\bin
+#TOOLS=c:\tdm-gcc-64\bin
 else
 #TOOLS=c:\mingw\bin
 TOOLS=c:\tdm32\bin
@@ -44,6 +47,7 @@ LIBS=-lmpr -lshlwapi -lole32 -luuid
 
 LiFLAGS += -Ider_libs
 CFLAGS += -Ider_libs
+IFLAGS += -Ider_libs
 #***************************************************************
 #  After upgrading from g++ 4.3.3 to g++ 4.4.1,
 #  I can now get longlong to printf correctly.
@@ -100,34 +104,27 @@ lint:
 	cmd /C "c:\lint9\lint-nt +v -width(160,4) $(LiFLAGS) -ic:\lint9 mingw.lnt -os(_lint.tmp) lintdefs.cpp $(CPPSRC)"
 
 depend: 
-	makedepend $(CPPSRC)
+	makedepend $(IFLAGS) $(CPPSRC) $(CXXSRC)
 
 $(BIN): $(OBJS)
 	$(TOOLS)\g++ $(OBJS) $(LFLAGS) -o $(BIN) $(LIBS) 
-ifeq ($(USE_UPX),YES)
-ifeq ($(USE_DEBUG),NO)
-ifeq ($(USE_64BIT),NO)
-	upx -9 $(BIN)
-else
-	upx64 -9 $(BIN)
-endif
-endif
-endif
 
 # DO NOT DELETE
 
-Ndir32.o: ndir32.h conio32.h
-cmd_line.o: ndir32.h conio32.h
-config.o: ndir32.h
-conio32.o: ndir32.h conio32.h
-Diskparm.o: ndir32.h
-err_exit.o: ndir32.h conio32.h
-Filelist.o: ndir32.h conio32.h
-Fileread.o: ndir32.h
-Ndisplay.o: ndir32.h conio32.h
-nio.o: ndir32.h conio32.h
-nsort.o: ndir32.h
-treelist.o: ndir32.h conio32.h treelist.h
-tdisplay.o: ndir32.h conio32.h treelist.h
+Ndir32.o: der_libs/common.h ndir32.h conio32.h der_libs/qualify.h
+cmd_line.o: der_libs/common.h ndir32.h conio32.h
+config.o: der_libs/common.h ndir32.h
+conio32.o: der_libs/common.h ndir32.h conio32.h
+Diskparm.o: der_libs/common.h ndir32.h
+err_exit.o: der_libs/common.h ndir32.h conio32.h
+Filelist.o: der_libs/common.h ndir32.h conio32.h
+Fileread.o: der_libs/common.h ndir32.h
+Ndisplay.o: der_libs/common.h ndir32.h conio32.h
+nio.o: der_libs/common.h ndir32.h conio32.h
+nsort.o: der_libs/common.h ndir32.h
+treelist.o: der_libs/common.h ndir32.h conio32.h treelist.h
+tdisplay.o: der_libs/common.h ndir32.h conio32.h treelist.h
 mediatype.o: scsi_defs.h
-read_link.o: ndir32.h
+read_link.o: der_libs/common.h ndir32.h
+der_libs\common_funcs.o: der_libs/common.h
+der_libs\qualify.o: der_libs/qualify.h
