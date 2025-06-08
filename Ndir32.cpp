@@ -23,7 +23,7 @@
 #include "conio32.h"
 #include "qualify.h"
 
-#define  VER_NUMBER "2.66"
+#define  VER_NUMBER "2.67"
 
 //lint -esym(843, Version, ShortVersion) could be declared as const
 TCHAR *Version = _T(" NDIR.EXE, Version " VER_NUMBER " ") ;
@@ -219,11 +219,11 @@ int strcmpiwc(const TCHAR *onestr, const TCHAR *twostr)
 //***********************************************************
 void insert_target_filespec(TCHAR *fstr)
 {
-   // target[tcount] = new char[PATH_MAX] ;
-   target[tcount] = (TCHAR *) malloc(PATH_MAX * sizeof(TCHAR)) ;
-   if (target[tcount] == NULL) {
-      error_exit(OUT_OF_MEMORY, NULL) ;
-   }
+   target[tcount] = new TCHAR[PATH_MAX+1] ;
+   // target[tcount] = (TCHAR *) malloc(PATH_MAX * sizeof(TCHAR)) ;
+   // if (target[tcount] == NULL) {
+   //    error_exit(OUT_OF_MEMORY, NULL) ;
+   // }
    _tcscpy(target[tcount], fstr) ;
 
    unsigned result = qualify(target[tcount]) ;
@@ -291,7 +291,8 @@ static void process_filespecs(void)
             {
             fkill = ftemp ;
             ftemp = ftemp->next ;
-            free(fkill) ;
+            // free(fkill) ;
+            delete fkill ;
             }
          ftop = NULL ;
          }
@@ -393,7 +394,8 @@ static void process_filespecs(void)
                   tcount-- ;
                   finish-- ;
                   j-- ;
-                  free(strptr) ; // release allocated struct.
+               // free(strptr) ; // release allocated struct.
+                  delete strptr ; // release allocated struct.
                }
             }
          }  //lint !e850 for loop index variable 'j' whose type category is 'integral' is modified in body of the for loop that began at 'line 206'
@@ -409,7 +411,8 @@ static void process_filespecs(void)
                {
                fkill = ftemp ;
                ftemp = ftemp->next ;
-               free(fkill) ;
+               // free(fkill) ;
+               delete fkill ;
                }
             ftop = NULL ;
          }

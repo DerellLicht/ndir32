@@ -49,8 +49,7 @@
      
                 - Added -l switch to force old DOS 8.3 filenames.
 
-                - Added -w switch to give different colors to 
-                  S/H/R files.
+                - Added -w switch to give different colors to S/H/R files.
 
                 - Directory tree can be sorted by filename or 
                   directory size (ascending or descending).
@@ -72,9 +71,8 @@
 1.86  12-02-97  - Fix bug in handling filenames beginning with '.'
                 - Fix "year 2000" bugs
 
-2.00  03/01/99  - volume_name[] needs to be _MAX_PATH in size,
-                  for Win32 support; RedHat Linux CD was over-
-                  running our buffer.
+2.00  03/01/99  - volume_name[] needs to be _MAX_PATH in size, for Win32 support; 
+                  RedHat Linux CD was over-running our buffer.
 
 2.01  07/05/00  - Converted get_cluster_size() to use the undocumented
                   WinNT function from the ntfsinfo utility,  
@@ -286,3 +284,6 @@ Version 2.65, 04/26/25
 Version 2.66, 05/26/25
   Implemented support for clang-tidy static analyzer
 
+Version 2.67, 06/08/25
+  - Converting all malloc() to new ; adds 110KB to file size, but enables non-static data init.
+  - Upgrade to V10.3.0 of tdm64

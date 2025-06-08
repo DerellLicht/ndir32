@@ -5,9 +5,12 @@ USE_UNICODE = YES
 # notes on 64-bit toolchains
 # d:\tdm64\bin      is gcc v5.1.0;  NDIR64 built with this is 106KB
 # c:\tdm-gcc-64\bin is gcc v10.3.0; NDIR64 built with this is 178KB
+# after converting malloc/free to new/delete
+# d:\tdm64\bin      is gcc v5.1.0;  NDIR64 built with this is 214KB
+# c:\tdm-gcc-64\bin is gcc v10.3.0; NDIR64 built with this is 257KB
 ifeq ($(USE_64BIT),YES)
-TOOLS=d:\tdm64\bin
-#TOOLS=c:\tdm-gcc-64\bin
+#TOOLS=d:\tdm64\bin
+TOOLS=c:\tdm-gcc-64\bin
 else
 #TOOLS=c:\mingw\bin
 TOOLS=c:\tdm32\bin
@@ -25,6 +28,7 @@ CFLAGS += -Wno-write-strings
 ifeq ($(USE_64BIT),YES)
 CFLAGS += -DUSE_64BIT
 endif
+#CFLAGS += -std=c++11
 
 ifeq ($(USE_UNICODE),YES)
 CFLAGS += -DUNICODE -D_UNICODE

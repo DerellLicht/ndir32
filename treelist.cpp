@@ -9,9 +9,9 @@
 #include <windows.h>
 #include <stdio.h>
 #include <conio.h>   //  kbhit()
-#ifdef _lint
-#include <malloc.h>
-#endif
+// #ifdef _lint
+// #include <malloc.h>
+// #endif
 #include <tchar.h>
 
 #include "common.h"
@@ -41,8 +41,8 @@ extern void draw_dir_tree (void);
 //     <0 if a < b
 //  
 //************************************************************
-static struct dirs *z = NULL;
-static int (*tree_sort_fcn) (struct dirs * a, struct dirs * b);
+static dirs *z = NULL;
+static int (*tree_sort_fcn) (dirs * a, dirs * b);
 static int tree_init_sort (void);
 
 dirs *top = NULL;
@@ -68,14 +68,14 @@ static dirs *new_dir_node (void)
    //  switching this statement from malloc() to new()
    //  changes total exe size from 70,144 to 179,200 !!!
    //   70144 ->     32256   45.99%    win64/pe     ndir64.exe
-   dirs *dtemp = (dirs *) malloc(sizeof(dirs)) ;
-   if (dtemp == NULL) {
-      error_exit (OUT_OF_MEMORY, NULL);
-   }
+   // dirs *dtemp = (dirs *) malloc(sizeof(dirs)) ;
+   // if (dtemp == NULL) {
+   //    error_exit (OUT_OF_MEMORY, NULL);
+   // }
    //     179200 ->     72704   40.57%    win64/pe     ndir64.exe
-   // dirs *dtemp = new dirs ;
-   ZeroMemory(dtemp, sizeof (struct dirs));  //lint !e668 NOLINT
-   // memset ((char *) dtemp, 0, sizeof (struct dirs));  //lint !e668
+   dirs *dtemp = new dirs ;
+   // ZeroMemory(dtemp, sizeof (dirs));  //lint !e668 NOLINT
+   // memset ((char *) dtemp, 0, sizeof (dirs));  //lint !e668
    dtemp->dirsecsize = clbytes;
    dtemp->subdirsecsize = clbytes;
    return dtemp;
@@ -228,10 +228,11 @@ syslog(_T("%s: FindFindFirst: %s\n"), dirpath, get_system_message (err));
                
                //  convert Unicode filenames to UTF8
                dtemp->mb_len = _tcslen(fdata.cFileName) ;
-               dtemp->name = (TCHAR *) malloc((dtemp->mb_len + 1) * sizeof(TCHAR));  //lint !e732
-               if (dtemp->name == NULL) {
-                  error_exit(OUT_OF_MEMORY, NULL);
-               }
+               dtemp->name = (TCHAR *) new TCHAR[dtemp->mb_len + 1] ;
+               // dtemp->name = (TCHAR *) malloc((dtemp->mb_len + 1) * sizeof(TCHAR));  //lint !e732
+               // if (dtemp->name == NULL) {
+               //    error_exit(OUT_OF_MEMORY, NULL);
+               // }
                _tcscpy (dtemp->name, (TCHAR *) fdata.cFileName);  //  NOLINT
 
                dtemp->attrib = (uchar) fdata.dwFileAttributes;
@@ -329,11 +330,11 @@ static int tree_init_sort (void)
    //  switching this statement from malloc() to new()
    //  changes total exe size from 70,144 to 179,200 !!!
    //   70144 ->     32256   45.99%    win64/pe     ndir64.exe
-   z = (dirs *) malloc(sizeof(dirs)) ;
-   if (z == NULL)
-      error_exit (OUT_OF_MEMORY, NULL);
+   // z = (dirs *) malloc(sizeof(dirs)) ;
+   // if (z == NULL)
+   //    error_exit (OUT_OF_MEMORY, NULL);
    //     179200 ->     72704   40.57%    win64/pe     ndir64.exe
-   // z = (dirs *) new dirs ;
+   z = (dirs *) new dirs ;
    z->sons = NULL;
    z->brothers = NULL;
    return DATA_OKAY;
@@ -346,19 +347,19 @@ static int tree_init_sort (void)
 //    }
 
 //*********************************************************
-static int tree_sort_name (struct dirs *a, struct dirs *b)
+static int tree_sort_name (dirs *a, dirs *b)
 {
    return (_tcsicmp (a->name, b->name));
 }
 
 //*********************************************************
-static int tree_sort_name_rev (struct dirs *a, struct dirs *b)
+static int tree_sort_name_rev (dirs *a, dirs *b)
 {
    return (_tcsicmp (b->name, a->name));
 }
 
 //*********************************************************
-static int tree_sort_size (struct dirs *a, struct dirs *b)
+static int tree_sort_size (dirs *a, dirs *b)
 {
    if (a->subdirsecsize > b->subdirsecsize)
       return (1);
@@ -369,7 +370,7 @@ static int tree_sort_size (struct dirs *a, struct dirs *b)
 }
 
 //*********************************************************
-static int tree_sort_size_rev (struct dirs *a, struct dirs *b)
+static int tree_sort_size_rev (dirs *a, dirs *b)
 {
    if (b->subdirsecsize > a->subdirsecsize)
       return (1);
@@ -382,9 +383,9 @@ static int tree_sort_size_rev (struct dirs *a, struct dirs *b)
 //*********************************************************
 //  This routine merges two sorted linked lists.
 //*********************************************************
-static struct dirs *tree_merge (struct dirs *a, struct dirs *b)
+static dirs *tree_merge (dirs *a, dirs *b)
 {
-   struct dirs *c;
+   dirs *c;
    c = z;
 
    do {
@@ -414,9 +415,9 @@ static struct dirs *tree_merge (struct dirs *a, struct dirs *b)
 //  into two parts, passing the divided lists to
 //  merge() to merge the two sorted lists.
 //*********************************************************
-static struct dirs *tree_merge_sort (struct dirs *c)
+static dirs *tree_merge_sort (dirs *c)
 {
-   struct dirs *a, *b, *prev;
+   dirs *a, *b, *prev;
    int pcount = 0;
    int j = 0;
 
@@ -444,9 +445,9 @@ static struct dirs *tree_merge_sort (struct dirs *c)
 //*********************************************************
 //  recursive routine that sorts the sons of each brother
 //*********************************************************
-static struct dirs *tree_sort_walk (struct dirs *t)
+static dirs *tree_sort_walk (dirs *t)
 {
-   struct dirs *dptr = t;
+   dirs *dptr = t;
    while (dptr != 0) {
       dptr->sons = tree_sort_walk (dptr->sons);
       dptr = dptr->brothers;
@@ -514,9 +515,10 @@ static int build_dir_tree (TCHAR *tpath)
 
    //  derive root path name
    if (_tcslen (base_path) == 3) {
-      top->name = (TCHAR *) malloc(8 * sizeof(TCHAR)) ;
-      if (top->name == 0)
-         error_exit (OUT_OF_MEMORY, NULL);
+      top->name = (TCHAR *) new TCHAR[8] ;
+      // top->name = (TCHAR *) malloc(8 * sizeof(TCHAR)) ;
+      // if (top->name == 0)
+      //    error_exit (OUT_OF_MEMORY, NULL);
       _tcscpy (top->name, _T("<root>"));
    }
    else {
@@ -525,9 +527,10 @@ static int build_dir_tree (TCHAR *tpath)
       strptr = _tcsrchr (tempstr, _T('\\'));
       strptr++;                 //  skip past backslash, to filename
 
-      top->name = (TCHAR *) malloc((_tcslen (strptr) + 1) * sizeof(TCHAR));
-      if (top->name == 0)
-         error_exit (OUT_OF_MEMORY, NULL);
+      top->name = (TCHAR *) new TCHAR[_tcslen (strptr) + 1];
+      // top->name = (TCHAR *) malloc((_tcslen (strptr) + 1) * sizeof(TCHAR));
+      // if (top->name == 0)
+      //    error_exit (OUT_OF_MEMORY, NULL);
       _tcscpy (top->name, strptr);
    }
 

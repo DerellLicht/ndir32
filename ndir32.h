@@ -90,21 +90,19 @@ extern TCHAR tline, bline, vline, dline ;
 
 /************************************************************/
 struct ffdata {
-   u16            attrib ; //  expand this to allow for extended file attributes
-   // unsigned       ftime ;
-   // unsigned       fdate ;
-   FILETIME       ft ;
-   ULONGLONG      fsize ;
-   TCHAR          *filename ;
-   TCHAR          *name ;
-   TCHAR          ext[MAX_EXT_SIZE+1] ;
-   uchar          color ;
-   bool           dirflag ;
-   bool           is_link_file ;
-   bool           is_multi_byte ;
-   uint           mb_len ;
-   struct ffdata  *next ;
-   } ;
+   u16            attrib {}; //  expand this to allow for extended file attributes
+   FILETIME       ft {};
+   ULONGLONG      fsize {};
+   TCHAR          *filename {nullptr};
+   TCHAR          *name {nullptr};
+   TCHAR          ext[MAX_EXT_SIZE+1] {};
+   uchar          color {};
+   bool           dirflag {};
+   bool           is_link_file {};
+   bool           is_multi_byte {};
+   uint           mb_len {};
+   struct ffdata  *next {nullptr};
+} ;
 extern ffdata *ftop ;
 extern ffdata *ftail ;
 

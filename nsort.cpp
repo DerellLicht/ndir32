@@ -9,9 +9,9 @@
 // #undef __STRICT_ANSI__
 #include <windows.h>
 // #include <string.h>
-#ifdef _lint
-#include <malloc.h>
-#endif
+// #ifdef _lint
+// #include <malloc.h>
+// #endif
 #include <tchar.h>
 
 #include "common.h"
@@ -22,18 +22,18 @@
 //lint -e63    Expected an lvalue
 
 //***************  function prototypes  ***************
-static int sort_lfn_name(struct ffdata *a, struct ffdata *b);
-static int sort_ext(struct ffdata *a, struct ffdata *b);
-static int sort_size(struct ffdata *a, struct ffdata *b);
-// static int sort_date(struct ffdata *a, struct ffdata *b);
-// static int sort_time(struct ffdata *a, struct ffdata *b);
-static int sort_lfn_name_rev(struct ffdata *a, struct ffdata *b);
-static int sort_ext_rev(struct ffdata *a, struct ffdata *b);
-static int sort_size_rev(struct ffdata *a, struct ffdata *b);
-// static int sort_date_rev(struct ffdata *a, struct ffdata *b);
-// static int sort_time_rev(struct ffdata *a, struct ffdata *b);
-static struct ffdata *merge_sort(struct ffdata *c);
-static struct ffdata *merge(struct ffdata *a, struct ffdata *b);
+static int sort_lfn_name(ffdata *a, ffdata *b);
+static int sort_ext(ffdata *a, ffdata *b);
+static int sort_size(ffdata *a, ffdata *b);
+// static int sort_date(ffdata *a, ffdata *b);
+// static int sort_time(ffdata *a, ffdata *b);
+static int sort_lfn_name_rev(ffdata *a, ffdata *b);
+static int sort_ext_rev(ffdata *a, ffdata *b);
+static int sort_size_rev(ffdata *a, ffdata *b);
+// static int sort_date_rev(ffdata *a, ffdata *b);
+// static int sort_time_rev(ffdata *a, ffdata *b);
+static ffdata *merge_sort(ffdata *c);
+static ffdata *merge(ffdata *a, ffdata *b);
 
 //************************************************************
 //  the following object is a dummy point structure
@@ -50,18 +50,18 @@ static struct ffdata *merge(struct ffdata *a, struct ffdata *b);
 //     <0 if a < b
 //  
 //************************************************************
-static struct ffdata *z = NULL ;
-static int (*sort_fcn) (struct ffdata *a, struct ffdata *b) ;
+static ffdata *z = NULL ;
+static int (*sort_fcn) (ffdata *a, ffdata *b) ;
 
 //****************************************************
 //  allocate a dummy structure for merge_sort()
 //****************************************************
 static int init_sort(void) 
 {
-   // z = new ffdata ;
-   z = (struct ffdata *) malloc(sizeof(ffdata)) ;
-   if (z == NULL)
-      error_exit(OUT_OF_MEMORY, NULL) ;
+   z = new ffdata ;
+   // z = (ffdata *) malloc(sizeof(ffdata)) ;
+   // if (z == NULL)
+   //    error_exit(OUT_OF_MEMORY, NULL) ;
    z->next = NULL ;
    return DATA_OKAY ;
 }
@@ -73,19 +73,19 @@ static int init_sort(void)
 //    }
 
 //*********************************************************
-static int sort_lfn_name(struct ffdata *a, struct ffdata *b)
+static int sort_lfn_name(ffdata *a, ffdata *b)
    {
    return(_tcsicmp(a->filename, b->filename)) ;
    }
 
 //*********************************************************
-static int sort_ext(struct ffdata *a, struct ffdata *b)
+static int sort_ext(ffdata *a, ffdata *b)
    {
    return(_tcsicmp(a->ext, b->ext)) ;
    }
 
 //*********************************************************
-static int sort_size(struct ffdata *a, struct ffdata *b)
+static int sort_size(ffdata *a, ffdata *b)
    {
    if (a->fsize > b->fsize)  return(1) ;
    else if (b->fsize > a->fsize)  return(-1) ;
@@ -93,7 +93,7 @@ static int sort_size(struct ffdata *a, struct ffdata *b)
    }
 
 //*********************************************************
-// static int sort_date(struct ffdata *a, struct ffdata *b)
+// static int sort_date(ffdata *a, ffdata *b)
 //    {
 //    if (a->ft > b->ft)  return(1) ;
 //    else if (b->ft > a->ft)  return(-1) ;
@@ -102,7 +102,7 @@ static int sort_size(struct ffdata *a, struct ffdata *b)
 //    }
 
 //*********************************************************
-static int sort_date_time(struct ffdata *a, struct ffdata *b)
+static int sort_date_time(ffdata *a, ffdata *b)
    {
    LARGE_INTEGER a64, b64 ;
    a64.LowPart  = a->ft.dwLowDateTime ;
@@ -116,19 +116,19 @@ static int sort_date_time(struct ffdata *a, struct ffdata *b)
    }  //lint !e550
 
 //*********************************************************
-static int sort_lfn_name_rev(struct ffdata *a, struct ffdata *b)
+static int sort_lfn_name_rev(ffdata *a, ffdata *b)
    {
    return(_tcsicmp(b->filename, a->filename)) ;
    }
 
 //*********************************************************
-static int sort_ext_rev(struct ffdata *a, struct ffdata *b)
+static int sort_ext_rev(ffdata *a, ffdata *b)
    {
    return(_tcsicmp(b->ext, a->ext)) ;
    }
 
 //*********************************************************
-static int sort_size_rev(struct ffdata *a, struct ffdata *b)
+static int sort_size_rev(ffdata *a, ffdata *b)
    {
    if (b->fsize > a->fsize)  return(1) ;
    else if (a->fsize > b->fsize)  return(-1) ;
@@ -136,7 +136,7 @@ static int sort_size_rev(struct ffdata *a, struct ffdata *b)
    }
 
 //*********************************************************
-// static int sort_date_rev(struct ffdata *a, struct ffdata *b)
+// static int sort_date_rev(ffdata *a, ffdata *b)
 //    {
 //    if (b->ft > a->ft)  return(1) ;
 //    else if (a->ft > b->ft)  return(-1) ;
@@ -145,7 +145,7 @@ static int sort_size_rev(struct ffdata *a, struct ffdata *b)
 //    }
 
 //*********************************************************
-static int sort_date_time_rev(struct ffdata *a, struct ffdata *b)
+static int sort_date_time_rev(ffdata *a, ffdata *b)
    {
    // if (b->ft > a->ft)  return(1) ;
    // else if (a->ft > b->ft)  return(-1) ;
@@ -168,7 +168,7 @@ static int sort_date_time_rev(struct ffdata *a, struct ffdata *b)
 //       >0 if (b) is DIR and (a) is not
 //      ==0 if (a) and (b) are same type (DIR or not)
 //*********************************************************
-static int sort_dir(struct ffdata *a, struct ffdata *b)
+static int sort_dir(ffdata *a, ffdata *b)
    {
    if (a->dirflag && !(b->dirflag))  return(-1) ;
    else if (b->dirflag && !(a->dirflag))  return(1) ;
@@ -180,9 +180,9 @@ static int sort_dir(struct ffdata *a, struct ffdata *b)
 //  into two parts, passing the divided lists to
 //  merge() to merge the two sorted lists.
 //*********************************************************
-static struct ffdata *merge_sort(struct ffdata *c)
+static ffdata *merge_sort(ffdata *c)
    {
-   struct ffdata *a, *b, *prev ;
+   ffdata *a, *b, *prev ;
    int pcount = 0 ;
    int j = 0 ;
 
@@ -213,9 +213,9 @@ static struct ffdata *merge_sort(struct ffdata *c)
 //*********************************************************
 //  This routine merges two sorted linked lists.
 //*********************************************************
-static struct ffdata *merge(struct ffdata *a, struct ffdata *b)
+static ffdata *merge(ffdata *a, ffdata *b)
    {
-   struct ffdata *c ;
+   ffdata *c ;
    c = z ;
 
    do
@@ -249,7 +249,7 @@ static struct ffdata *merge(struct ffdata *a, struct ffdata *b)
 //  comparison-function pointer and passes the global
 //  list pointer to merge_sort().
 //*********************************************************
-static void sort_files(int (*current_sort)(struct ffdata *a, struct ffdata *b))
+static void sort_files(int (*current_sort)(ffdata *a, ffdata *b))
 {
    sort_fcn = current_sort ;
    ftop = merge_sort(ftop) ;

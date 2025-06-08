@@ -8,7 +8,7 @@
 // #define  _WIN32_WINNT   0x0400
 #include <windows.h>
 #include <stdio.h>
-#include <malloc.h>
+// #include <malloc.h>
 #include <tchar.h>
 
 #include "common.h"
@@ -104,12 +104,13 @@ static void read_long_files (int i)
          //****************************************************
          //  allocate and initialize the structure
          //****************************************************
-         ftemp = (struct ffdata *) malloc(sizeof(ffdata)) ;
-         if (ftemp == NULL) {
-            error_exit (OUT_OF_MEMORY, NULL);
-            return;             //  only to make lint happy
-         }
-         ZeroMemory((char *) ftemp, sizeof(ffdata));
+         ftemp = (ffdata *) new ffdata ;
+         // ftemp = (struct ffdata *) malloc(sizeof(ffdata)) ;
+         // if (ftemp == NULL) {
+         //    error_exit (OUT_OF_MEMORY, NULL);
+         //    return;             //  only to make lint happy
+         // }
+         // ZeroMemory((char *) ftemp, sizeof(ffdata));
 
          //  convert filename to lower case if appropriate
          // if (!n.ucase)
@@ -138,11 +139,12 @@ static void read_long_files (int i)
 
          //  convert Unicode filenames to UTF8
          ftemp->mb_len = _tcslen(fdata.cFileName) ;
-         ftemp->filename = (TCHAR *) malloc((ftemp->mb_len + 1) * sizeof(TCHAR));  //lint !e732
-         if (ftemp->filename == NULL) {
-            error_exit (OUT_OF_MEMORY, NULL);
-            // return;             //  only to make lint happy
-         }
+         ftemp->filename = (TCHAR *) new TCHAR[ftemp->mb_len + 1];  //lint !e732
+         // ftemp->filename = (TCHAR *) malloc((ftemp->mb_len + 1) * sizeof(TCHAR));  //lint !e732
+         // if (ftemp->filename == NULL) {
+         //    error_exit (OUT_OF_MEMORY, NULL);
+         //    // return;             //  only to make lint happy
+         // }
          _tcscpy (ftemp->filename, fdata.cFileName);  // NOLINT
          
          //  If Steven Bensky's short filenames are requested,
@@ -161,10 +163,11 @@ static void read_long_files (int i)
          //  find and extract the file extension, if valid
          // ftemp->name[0] = 0 ; //  don't use name at all
          uint fnlen = _tcslen (ftemp->filename);   // NOLINT
-         ftemp->name = (TCHAR *) malloc((fnlen + 1) * sizeof(TCHAR)) ;
-         if (ftemp->name == NULL) {
-            error_exit (OUT_OF_MEMORY, NULL);
-         }
+         ftemp->name = (TCHAR *) new TCHAR[fnlen + 1] ;
+         // ftemp->name = (TCHAR *) malloc((fnlen + 1) * sizeof(TCHAR)) ;
+         // if (ftemp->name == NULL) {
+         //    error_exit (OUT_OF_MEMORY, NULL);
+         // }
 
          _tcscpy (ftemp->name, ftemp->filename);   // NOLINT
          strptr = _tcsrchr (ftemp->name, _T('.'));
@@ -222,12 +225,14 @@ static void process_exclusions (void)
          if (strcmpiwc (ftemp->ext, excl[i]) != 0) {
             if (fprev == NULL) {
                ftop = ftop->next;
-               free(ftemp);
+               // free(ftemp);
+               delete ftemp ;
                ftemp = ftop;
             }
             else {
                fprev->next = ftemp->next;
-               free(ftemp);
+               // free(ftemp);
+               delete ftemp ;
                ftemp = fprev->next;
             }
             filecount--;
