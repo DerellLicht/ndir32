@@ -184,7 +184,7 @@ static void read_long_files (int i)
          //  look up color in table
          if (n.color)
             getcolor (ftemp);
-         ftemp->dirflag = ftemp->attrib & FILE_ATTRIBUTE_DIRECTORY;
+         ftemp->dirflag = ((ftemp->attrib & FILE_ATTRIBUTE_DIRECTORY) != 0) ? true : false ;
          ftemp->next = NULL;
 
          //****************************************************

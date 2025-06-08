@@ -20,8 +20,8 @@
                 - Fix low-ascii option, which apparently hasn't
                   worked for a LONG time!!
 
-1.78  09/10/92  - Convert NDIR to linked-list method of handling
-                  file data.  ***  NEVER RELEASED  ***
+1.78  09/10/92  - Convert NDIR to linked-list method of handling file data.  
+                  ***  NEVER RELEASED  ***
 
 1.79  10/05/92  - Miscellaneous code optimization.
                   ***  NEVER RELEASED  ***

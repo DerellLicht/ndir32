@@ -99,7 +99,7 @@ struct ffdata {
    TCHAR          *name ;
    TCHAR          ext[MAX_EXT_SIZE+1] ;
    uchar          color ;
-   uchar          dirflag ;
+   bool           dirflag ;
    bool           is_link_file ;
    bool           is_multi_byte ;
    uint           mb_len ;
