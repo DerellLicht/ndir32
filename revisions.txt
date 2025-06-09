@@ -161,28 +161,28 @@
 1.98/2.30/1.04      08/15/06 
   Add options to size display, to show as KB/MB
 
-Version 2.31, 08/18/06 20:21
+Version 2.31, 08/18/06 
   = Fix handling of volume label in directory tree with color disabled
   - Fix a but in the size-display option from version 2.30,
     which caused -1 display to show all sizes as 0.
 
-Version 2.32, 12/22/06 10:06
+Version 2.32, 12/22/06 
   - Add total playing time for Wave files in /mm display
   - Add mp3 support to /mm option
   - Add total playing time for mp3 files in /mm display
 
-Version 2.33, 06/17/07 17:17
+Version 2.33, 06/17/07 
   - Update disk-params report to recognize more drives
 
-Version 2.34, 10/10/07 00:28
+Version 2.34, 10/10/07 
   - fix computation of MFT size.  On large drives, the MFT info
     documented by Sysinternals' ntfsinfo does not give meaningful
     results, so I'm forced to skip my free-disk correction.
 
-Version 2.35, 01/04/09 15:27
+Version 2.35, 01/04/09 
   Re-implement redirection flag, so output files are useable.
 
-Version 2.36, 06/17/09 17:17
+Version 2.36, 06/17/09 
   - /mm, added support for .ico and .cur files
   - linted the code
 
@@ -284,5 +284,4 @@ Version 2.66, 05/26/25
   Implemented support for clang-tidy static analyzer
 
 Version 2.67, 06/08/25
-  - Converting all malloc() to new ; adds 110KB to file size, but enables non-static data init.
-  - Upgrade to V10.3.0 of tdm64
+  Converting all malloc() to new ; adds 110KB to file size, but enables non-static data init.
