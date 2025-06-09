@@ -78,12 +78,11 @@
                   WinNT function from the ntfsinfo utility,  
                   Copyright (C) 1997 Mark Russinovich
 
-1.90/2.03       - Mainly, converting to INI files for configuration,
-                  instead of NDIRMOD.
+1.90/2.03       - Mainly, converting to INI files for configuration, instead of NDIRMOD.
                 - A variety of minor bug fixes that I never documented
 
-1.91/2.04       - Expand -o to support all three file date/time
-                  options.  -o now has an optional following number.
+1.91/2.04       - Expand -o to support all three file date/time options.  
+                  -o now has an optional following number.
 
 1.91/2.05/2.05  - Add the NDIRH html lister
                 - Fix a variety of minor display bugs
