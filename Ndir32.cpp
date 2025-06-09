@@ -11,8 +11,7 @@
 //*************************************************************************
 
 #include <windows.h>
-#define __STDC_FORMAT_MACROS
-#include <inttypes.h>
+// #include <.h>
 #include <stdio.h>
 #include <stdlib.h>     //  getenv(), exit()
 #include <ctype.h>
