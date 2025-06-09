@@ -53,25 +53,6 @@ LIBS=-lmpr -lshlwapi -lole32 -luuid
 LiFLAGS += -Ider_libs
 CFLAGS += -Ider_libs
 IFLAGS += -Ider_libs
-#***************************************************************
-#  After upgrading from g++ 4.3.3 to g++ 4.4.1,
-#  I can now get longlong to printf correctly.
-#  %llu doesn't work, but %I64u does, and file size is MUCH smaller
-#  once I can remove -std=c++98 (Well, not on 64-bit build...)
-#    80896 ->     33280   41.14%    win32/pe     ndir32.exe  
-#  g++ options
-#  Without c++98: (but %llu doesn't work)
-#    76288 ->     33280   43.62%    win32/pe     ndir32.exe
-#  With c++98: %llu works (no, it doesn't)
-#    96768 ->     44544   46.03%    win32/pe     ndir32.exe
-#CFLAGS += -std=c++98
-#LFLAGS += -std=c++98
-#  Interesting... if I undefine this here, it appears to circumvent -std=c++98,
-#  and thus printf("%llu") remains broken.
-#  However, if I include it in each of the files which call functions
-#  from string.h, then everything works fine... 
-#CFLAGS += -U__STRICT_ANSI__
-#***************************************************************
 
 CPPSRC=Ndir32.cpp cmd_line.cpp config.cpp conio32.cpp Diskparm.cpp err_exit.cpp Filelist.cpp Fileread.cpp \
 	Ndisplay.cpp nio.cpp nsort.cpp treelist.cpp tdisplay.cpp mediatype.cpp read_link.cpp \
