@@ -284,19 +284,17 @@ static void process_filespecs(void)
       //  initialize file pointer and filecount,
       //  in case of multiple filespecs.
       //**************************************************
-      if (ftop != NULL)
-         {
+      if (ftop != NULL) {
          ffdata *ftemp = ftop ;
          ffdata *fkill ;
-         while (ftemp != NULL)
-            {
+         while (ftemp != NULL) {
             fkill = ftemp ;
             ftemp = ftemp->next ;
             // free(fkill) ;
             delete fkill ;
-            }
-         ftop = NULL ;
          }
+         ftop = NULL ;
+      }
       filecount = 0 ;
 
       //**************************************************
@@ -304,7 +302,7 @@ static void process_filespecs(void)
       //  as specified by flags.
       //**************************************************
       file_listing() ;
-      }
+   }
    else {
       int temp_columns = columns ;
 

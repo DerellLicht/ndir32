@@ -395,8 +395,11 @@ static void printdirheader (void)
    //  Heading line 5
    //**************************************
    // nputs (n.colornhead, "Subdirectory names       ");
-   _stprintf(tempstr,_T("%-*s"), name_end_col, _T("Subdirectory names"));
+   _stprintf(tempstr, _T("%-*s"), name_end_col, _T("Subdirectory names"));
    // syslog(L"[%u] %u: %s\n", n.tree, name_end_col, tempstr);
+   // hex_dump((u8 *)tempstr, 80);
+   //  53 00 20 00 20 00 20 00 20 00 20 00 20 00 20 00  | S. . . . . . . . |
+   //  wsprintf() just is not working in tdm64 V10.3.0
    nputs (n.colornhead, tempstr);
       
    nputc (n.colorframe, vline);
