@@ -1,6 +1,7 @@
 USE_DEBUG = NO
 USE_64BIT = YES
 USE_UNICODE = YES
+USE_CLANG = NO
 
 # notes on 64-bit toolchains
 # d:\tdm64\bin      is gcc v5.1.0;  NDIR64 built with this is 106KB
@@ -11,18 +12,28 @@ USE_UNICODE = YES
 ifeq ($(USE_64BIT),YES)
 #  interesting... the modern tdm64 is not handling Unicode as expected for tree list,
 #  while the much older tdm64 works fine...
+ifeq ($(USE_CLANG),YES)
+TOOLS=d:\clang\bin
+else
 TOOLS=d:\tdm64\bin
 #TOOLS=c:\tdm-gcc-64\bin
+endif
 else
-#TOOLS=c:\mingw\bin
 TOOLS=c:\tdm32\bin
 endif
+
+#  clang++ note: you don't need two separate toolchain installations to build for 32 and 64 bit; 
+#  it's enough with one of them, and you can call e.g. 
+#  x86_64-w64-mingw32-clang++ to build for 64 bit and 
+#  i686-w64-mingw32-clang++ to build for 32 bit. 
+#  The prefixless clang++ builds for the architecture that is the default 
+#     for the toolchain you're using.
 
 ifeq ($(USE_DEBUG),YES)
 CFLAGS = -Wall -g -c
 LFLAGS = -g
 else
-CFLAGS = -Wall -s -O3 -c
+CFLAGS = -Wall -O3 -c
 LFLAGS = -s -O3
 endif
 CFLAGS += -Weffc++
@@ -50,6 +61,10 @@ endif
 
 LIBS=-lmpr -lshlwapi -lole32 -luuid
 
+ifeq ($(USE_CLANG),YES)
+LFLAGS += -static
+endif
+
 LiFLAGS += -Ider_libs
 CFLAGS += -Ider_libs
 IFLAGS += -Ider_libs
@@ -57,7 +72,7 @@ IFLAGS += -Ider_libs
 CPPSRC=Ndir32.cpp cmd_line.cpp config.cpp conio32.cpp Diskparm.cpp err_exit.cpp Filelist.cpp Fileread.cpp \
 	Ndisplay.cpp nio.cpp nsort.cpp treelist.cpp tdisplay.cpp mediatype.cpp read_link.cpp \
 	der_libs\common_funcs.cpp \
-	der_libs\qualify.cpp 
+	der_libs\qualify.cpp
 
 OBJS = $(CPPSRC:.cpp=.o)
 
@@ -74,7 +89,7 @@ endif
 all: $(BIN)
 
 clean:
-	rm -f *.o ndir*.exe *~ *.zip
+	rm -f $(OBJS) ndir*.exe *~ *.zip
 
 check:
 	cmd /C "d:\clang\bin\clang-tidy.exe $(CHFLAGS) $(CPPSRC) $(CHTAIL)"
