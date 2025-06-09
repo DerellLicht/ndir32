@@ -170,7 +170,7 @@ static void read_long_files (int i)
          // }
 
          _tcscpy (ftemp->name, ftemp->filename);   // NOLINT
-         strptr = _tcsrchr (ftemp->name, _T('.'));
+         strptr = _tcsrchr (ftemp->name, _T('.')); //lint !e64
          if (strptr != NULL && _tcslen (strptr) <= MAX_EXT_SIZE) {
             _tcscpy (ftemp->ext, strptr);
             *strptr = 0;        //  NULL-term name field
@@ -220,7 +220,7 @@ static void process_exclusions (void)
       ffdata *ftemp = ftop;
       ffdata *fprev = NULL;
 
-      while (ftemp != NULL) {
+      while (ftemp != NULL) { //lint !e449
          //  if we have a match, delete the second argument
          if (strcmpiwc (ftemp->ext, excl[i]) != 0) {
             if (fprev == NULL) {

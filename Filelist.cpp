@@ -11,6 +11,8 @@
 #endif
 #include <tchar.h>
 
+//lint -esym(530, fsize)  Symbol not initialized (yes, it is)
+
 #include "common.h"
 #include "ndir32.h"
 #include "conio32.h"  //  _where_x()
@@ -51,7 +53,7 @@ static void display_batch_mode(void)
 {
    ffdata *ftemp = ftop ;
    while (ftemp != NULL) {
-      _tprintf(_T("%s%s%s\n"), leftstr, ftemp->filename, rightstr) ;
+      _tprintf(_T("%s%s%s\n"), leftstr, ftemp->filename, rightstr) ; //lint !e560 argument no. 3 should be a pointer (and it is)
       ftemp = ftemp->next ;
    }
 }
@@ -150,8 +152,10 @@ static void fileend(void)
    ftemp = ftop ;
    while (ftemp != NULL) {
       dbytes += ftemp->fsize ;
-      clusters = ftemp->fsize / clbytes ;
-      if ((ftemp->fsize % clbytes) > 0)  clusters++ ; //lint !e79 bad type for % operator
+      clusters = ftemp->fsize / clbytes ; //lint !e573  Signed-unsigned mix with divide
+      if ((ftemp->fsize % clbytes) > 0) { //lint !e573  Signed-unsigned mix with divide
+         clusters++ ; //lint !e79 !e530
+      }
 
       // dirsecbytes = (clusters * (__int64) clbytes) ;
       dirsecbytes = (clusters * (u64) clbytes) ;
@@ -394,7 +398,7 @@ static void list_files_qwise(void)
             first_line = 0 ;
          else 
             ncrlf() ;
-         _stprintf(tempstr, _T("%-*s: "), maxext, ftemp->ext) ;
+         _stprintf(tempstr, _T("%-*s: "), maxext, ftemp->ext) ;   
          nputs(ftemp->color, tempstr) ;
          col = maxext+2 ;
          _tcscpy(prev_ext, ftemp->ext) ;

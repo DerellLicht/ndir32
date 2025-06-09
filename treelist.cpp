@@ -319,7 +319,7 @@ debug_dump(ktemp->name, "call read_dir_tree") ;
 
    //  restore the level number
    level--;
-   return 0;
+   return 0;   //lint !e438
 }
 
 //****************************************************

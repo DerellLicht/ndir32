@@ -15,7 +15,7 @@
 // #ifdef UNICODE
 //    _T("+-----------+-----------+--------------+--------------");
 // #else   
-//    _T("ÃÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄ");
+//    _T("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
 // #endif   
 
 static TCHAR const * const dhdrl =
@@ -112,12 +112,12 @@ static void display_dir_tree (dirs * ktop)
       }
       else {
          if (ktemp->brothers == (struct dirs *) NULL) {
-            // formstr[level - 1] = (TCHAR) (n.low_ascii) ? '\\' : 'À';   //lint !e743 
+            // formstr[level - 1] = (TCHAR) (n.low_ascii) ? '\\' : 'ï¿½';   //lint !e743 
             formstr[level - 1] = (TCHAR) '\\' ;   //lint !e743 
             formstr[level] = (TCHAR) 0;
          }
          else {
-            // formstr[level - 1] = (TCHAR) (n.low_ascii) ? '+' : 'Ã';   //lint !e743 
+            // formstr[level - 1] = (TCHAR) (n.low_ascii) ? '+' : 'ï¿½';   //lint !e743 
             formstr[level - 1] = (TCHAR) '+' ;   //lint !e743 
             formstr[level] = (TCHAR) 0;
          }
@@ -261,7 +261,7 @@ static void display_dir_tree (dirs * ktop)
          if (ktemp->brothers == NULL)
             formstr[level - 1] = ' ';
          else
-            // formstr[level - 1] = (n.low_ascii) ? '|' : '³'; //lint !e743 
+            // formstr[level - 1] = (n.low_ascii) ? '|' : 'ï¿½'; //lint !e743 
             formstr[level - 1] = '|' ; //lint !e743 
       }                         //  if level > 1
 
@@ -281,6 +281,7 @@ static void display_dir_tree (dirs * ktop)
 static void printdirheader (void)
 {
    nputs (n.colornhead, _T("Directory of ")); //  len = 13
+   
    _stprintf (tempstr, _T("%s"), base_path);
    nputs (n.colorxhead, tempstr);
 
@@ -395,6 +396,7 @@ static void printdirheader (void)
    //**************************************
    // nputs (n.colornhead, "Subdirectory names       ");
    _stprintf(tempstr,_T("%-*s"), name_end_col, _T("Subdirectory names"));
+   // syslog(L"[%u] %u: %s\n", n.tree, name_end_col, tempstr);
    nputs (n.colornhead, tempstr);
       
    nputc (n.colorframe, vline);

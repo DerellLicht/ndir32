@@ -12,6 +12,8 @@
 #include "ndir32.h"
 #include "conio32.h"
 
+//lint -esym(769, error_values::OUT_OF_MEMORY)   global enumeration constant not referenced
+
 static TCHAR const * const error_text[4] = {
    _T("Type 'NDIR /?' for help"), //  not actually used in this program
    _T("Out of memory"),

@@ -89,7 +89,9 @@ unsigned tree_level_limit = 0 ;
 ULONGLONG diskbytes, diskfree, clbytes ;
 
 //*****************************************************************
-ffdata *ftop = NULL, *ftail ;
+//lint -esym(552, ftail)   Symbol not accessed
+ffdata *ftop = NULL ;
+ffdata *ftail = NULL ;
 
 TCHAR* target[20] ;
 TCHAR volume_name[PATH_MAX] ;

@@ -31,6 +31,7 @@
 //  What the heck is this??
 //lint -e10    Expecting '}'  ???
 
+//lint -e438   Last value assigned to variable not used
 //lint -e525   Negative indentation from line ...
 //lint -e539   Did not expect positive indentation from line ...
 //lint -e725   Expected positive indentation from line ... 
@@ -46,4 +47,13 @@
 //lint -e768   global struct member not referenced
 //lint -e778   Constant expression evaluates to 0 in operation '*'
 
+//  pclint errors related to not supporting C++11 etc
+//lint -e40    Undeclared identifier 'next'
+//lint -e52    Expected an lvalue
+//lint -e63    Expected an lvalue
+//lint -e550   Symbol not accessed (ummm... yes, it was)
+//lint -e737   Loss of sign in promotion from int to unsigned long long
+//lint -e1013  Symbol 'next' not a member of class 'ffdata'
+//lint -e1712  default constructor not defined for class 'ffdata'
+//lint -e560   argument no. n should be a pointer (and it is)
 
