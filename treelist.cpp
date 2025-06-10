@@ -168,13 +168,6 @@ static int read_dir_tree (dirs * cur_node)
 debug_dump(dirpath, "entry") ;
 #endif
    err = 0;
-   // TCHAR wfilespec[MAX_PATH+1];
-   // result = MultiByteToWideChar(CP_ACP, 0, dirpath, -1, wfilespec, (int) _tcslen(dirpath)+1);
-   // if (result == 0) {
-   //    syslog("%s: a2u failed: %u\n", dirpath, (unsigned) GetLastError());
-   //    return -1;
-   // }
-   
    handle = FindFirstFile(dirpath, &fdata);
    if (handle == INVALID_HANDLE_VALUE) {
       err = GetLastError ();

@@ -270,7 +270,7 @@ void print1 (ffdata * fptr)
       }
 #endif      
       if (fptr->is_link_file) {
-         TCHAR szFilePath[MAX_PATH];
+         TCHAR szFilePath[MAX_PATH_LEN];
          if (read_shortcut_file(fptr, szFilePath)) {
             ncrlf() ;
             nputs (n.colorsize, _T("               "));

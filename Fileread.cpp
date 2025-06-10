@@ -1,14 +1,12 @@
 //*****************************************************************
-//  Copyright (c) 1998-2023 Daniel D. Miller                       
+//  Copyright (c) 1998-2025 Daniel D. Miller                       
 //  FILEREAD.CPP - NDIR file-reading routines
 //                                                                 
 //  Written by:  Daniel D. Miller
 //*****************************************************************
 
-// #define  _WIN32_WINNT   0x0400
 #include <windows.h>
 #include <stdio.h>
-// #include <malloc.h>
 #include <tchar.h>
 
 #include "common.h"
@@ -52,13 +50,6 @@ static void read_long_files (int i)
    // WIN32_FIND_DATA fdata ; //  long-filename file struct
    WIN32_FIND_DATA fdata ; //  long-filename file struct
 
-   // WCHAR wfilespec[MAX_PATH+1];
-   // int result = MultiByteToWideChar(CP_ACP, 0, target[i], -1, wfilespec, (int) _tcslen(target[i])+1);
-   // if (result == 0) {
-   //    syslog("%s: a2u failed: %u\n", target[i], (unsigned) GetLastError());
-   //    return ;
-   // }
-   
    // syslog("%s\n", target[i]);
    handle = FindFirstFile (target[i], &fdata);
    // handle = FindFirstFileW(wfilespec, &fdata);
