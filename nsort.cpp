@@ -6,12 +6,7 @@
 //                                                                 
 //*****************************************************************
 
-// #undef __STRICT_ANSI__
 #include <windows.h>
-// #include <string.h>
-// #ifdef _lint
-// #include <malloc.h>
-// #endif
 #include <tchar.h>
 
 #include "common.h"

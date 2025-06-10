@@ -1,13 +1,9 @@
 //*****************************************************************
-//  Copyright (c) 1998-2023 Daniel D. Miller                       
+//  Copyright (c) 1998-2025 Daniel D. Miller                       
 //  nio.cpp - Console I/O functions, interface to conio32.cpp
 //  This file mostly manages color settings
 //*****************************************************************
 
-#undef __STRICT_ANSI__
-#ifdef USE_64BIT
-#define  _WIN32_WINNT    0x0600
-#endif
 #include <windows.h>
 #include <stdio.h>
 #ifdef _lint

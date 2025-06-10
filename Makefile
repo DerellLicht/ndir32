@@ -4,6 +4,8 @@ USE_UNICODE = YES
 #  tdm64 V5.1.1    ndir: 215KB
 #  clang64 v20.1.6 ndir: 375KB
 USE_CLANG = NO
+# use -static for clang and cygwin/mingw
+USE_STATIC = YES
 
 #  clang++ note: you don't need two separate toolchain installations to build for 32 and 64 bit; 
 #  it's enough with one of them, and you can call e.g. 
@@ -11,6 +13,12 @@ USE_CLANG = NO
 #  i686-w64-mingw32-clang++   to build for 32 bit. 
 #  The prefixless clang++ builds for the architecture that is the default 
 #     for the toolchain you're using.
+
+# cygwin mingw paths
+# C:\cygwin64/bin/i686-w64-mingw32-g++.exe
+# C:\cygwin64/bin/x86_64-w64-mingw32-g++.exe
+# x86_64-w64-mingw32-g++ (GCC) 12.4.0
+# Your compiler is using C++17 (idx: 3, language standard code 201703)
 
 ifeq ($(USE_64BIT),YES)
 #  interesting... the modern tdm64 is not handling Unicode as expected for tree list,
@@ -20,7 +28,8 @@ ifeq ($(USE_64BIT),YES)
 ifeq ($(USE_CLANG),YES)
 TOOLS=d:\clang\bin
 else
-TOOLS=d:\tdm64\bin
+#TOOLS=d:\tdm64\bin
+TOOLS=C:\cygwin64\bin
 #TOOLS=c:\tdm-gcc-64\bin
 endif
 else
@@ -39,11 +48,30 @@ CFLAGS += -Wno-write-strings
 ifeq ($(USE_64BIT),YES)
 CFLAGS += -DUSE_64BIT
 endif
-CFLAGS += -std=c++11
+# this was only needed for old tdm64 V5.1.1
+#CFLAGS += -std=c++11
 
 ifeq ($(USE_UNICODE),YES)
 CFLAGS += -DUNICODE -D_UNICODE
 LFLAGS += -dUNICODE -d_UNICODE
+endif
+
+ifeq ($(USE_STATIC),YES)
+LFLAGS += -static
+endif
+
+# /usr/lib/gcc/x86_64-w64-mingw32/12/include/c++/x86_64-w64-mingw32/bits/c++config.h:649:2: 
+# warning: #warning "__STRICT_ANSI__ seems to have been undefined; this is not supported" [-Wcpp]
+
+ifeq ($(USE_64BIT),YES)
+ifeq ($(USE_CLANG),YES)
+GNAME=x86_64-w64-mingw32-clang++
+else
+#GNAME=g++
+GNAME=x86_64-w64-mingw32-g++
+endif
+else
+GNAME=g++
 endif
 
 #  clang-tidy options
@@ -60,23 +88,9 @@ endif
 # uuid.lib, ole32.lib : used in read_link.cpp
 LIBS=-lmpr -lshlwapi -luuid -lole32 
 
-ifeq ($(USE_CLANG),YES)
-LFLAGS += -static
-endif
-
 LiFLAGS += -Ider_libs
 CFLAGS += -Ider_libs
 IFLAGS += -Ider_libs
-
-ifeq ($(USE_64BIT),YES)
-ifeq ($(USE_CLANG),YES)
-GNAME=x86_64-w64-mingw32-clang++
-else
-GNAME=g++
-endif
-else
-GNAME=g++
-endif
 
 CPPSRC=Ndir32.cpp cmd_line.cpp config.cpp conio32.cpp Diskparm.cpp err_exit.cpp Filelist.cpp Fileread.cpp \
 	Ndisplay.cpp nio.cpp nsort.cpp treelist.cpp tdisplay.cpp mediatype.cpp read_link.cpp \

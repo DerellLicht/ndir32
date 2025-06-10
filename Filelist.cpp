@@ -3,7 +3,6 @@
 //  FILELIST.CPP - NDIR file-listing handlers                      
 //*****************************************************************
 
-// #undef __STRICT_ANSI__
 #include <windows.h>
 #include <stdio.h>
 #ifdef _lint
