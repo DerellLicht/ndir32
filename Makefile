@@ -5,6 +5,12 @@ USE_UNICODE = YES
 #  clang64 v20.1.6 ndir: 375KB
 USE_CLANG = NO
 # use -static for clang and cygwin/mingw
+# most MinGW toolchains link to a .dll file (typically libg++.dll) that needs to be present 
+# for the program to work.  This can be an unpleasant surprise for a user who obtains the 
+# program but doesn't have the library present.
+# This obstacle can be avoided by using the -static linker flag, which links in all
+# required library functions; this eliminates the need for the .dll file, 
+# at the cost of a (sometimes significantly) larger executable file.
 USE_STATIC = YES
 
 #  clang++ note: you don't need two separate toolchain installations to build for 32 and 64 bit; 
