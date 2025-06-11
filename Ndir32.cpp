@@ -511,6 +511,10 @@ int main(int argc, char **argv)
    //  get program filename
    int startIdx = 1 ;
    TCHAR exename[PATH_MAX] ;
+   
+   // [clang] _WIN32_WINNT: 0x0601
+   // [cygwin] _WIN32_WINNT: 0x0A00
+   // syslog(_T("_WIN32_WINNT: 0x%04X\n"), _WIN32_WINNT);
 
    //  interesting lessons from WinNT 4.0:
    //  If the OS is WinNT 4.0, and;

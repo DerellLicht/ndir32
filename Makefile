@@ -3,7 +3,7 @@ USE_64BIT = YES
 USE_UNICODE = YES
 #  tdm64 V5.1.1    ndir: 215KB
 #  clang64 v20.1.6 ndir: 375KB
-USE_CLANG = NO
+USE_CLANG = YES
 # use -static for clang and cygwin/mingw
 # most MinGW toolchains link to a .dll file (typically libg++.dll) that needs to be present 
 # for the program to work.  This can be an unpleasant surprise for a user who obtains the 
@@ -27,8 +27,6 @@ USE_STATIC = YES
 # Your compiler is using C++17 (idx: 3, language standard code 201703)
 
 ifeq ($(USE_64BIT),YES)
-#  interesting... the modern tdm64 is not handling Unicode as expected for tree list,
-#  while the much older tdm64 works fine...
 #  _stprintf(), aka wsprintf(), are not working properly at all,
 #  in TDM64 V10.3.0 with UNICODE enabled
 ifeq ($(USE_CLANG),YES)
@@ -40,6 +38,17 @@ TOOLS=C:\cygwin64\bin
 endif
 else
 TOOLS=c:\tdm32\bin
+endif
+
+ifeq ($(USE_64BIT),YES)
+ifeq ($(USE_CLANG),YES)
+GNAME=x86_64-w64-mingw32-clang++
+else
+#GNAME=g++
+GNAME=x86_64-w64-mingw32-g++
+endif
+else
+GNAME=g++
 endif
 
 ifeq ($(USE_DEBUG),YES)
@@ -64,20 +73,6 @@ endif
 
 ifeq ($(USE_STATIC),YES)
 LFLAGS += -static
-endif
-
-# /usr/lib/gcc/x86_64-w64-mingw32/12/include/c++/x86_64-w64-mingw32/bits/c++config.h:649:2: 
-# warning: #warning "__STRICT_ANSI__ seems to have been undefined; this is not supported" [-Wcpp]
-
-ifeq ($(USE_64BIT),YES)
-ifeq ($(USE_CLANG),YES)
-GNAME=x86_64-w64-mingw32-clang++
-else
-#GNAME=g++
-GNAME=x86_64-w64-mingw32-g++
-endif
-else
-GNAME=g++
 endif
 
 #  clang-tidy options
