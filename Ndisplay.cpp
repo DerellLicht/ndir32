@@ -88,11 +88,11 @@ void display_logo (void)
       TCHAR vtemp[30];
       _stprintf(vtemp, _T("%s/%u "), ShortVersion, get_build_size());
       ngotoxy (0, _where_y ());
-      // nputs (n.colorlogo, ShortVersion);
       nputs (n.colorlogo, vtemp);
    }
    else {
-      ngotoxy ((80 - _tcslen (Version)) / 2, _where_y ());
+      // ngotoxy ((80 - _tcslen (Version)) / 2, _where_y ());
+      ngotoxy (0, _where_y ());
       nputs (n.colorlogo, Version);
       ncrlf ();
    }
