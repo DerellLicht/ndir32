@@ -490,28 +490,17 @@ static int build_dir_tree (TCHAR *tpath)
    //  and strip off filename
    _tcscpy (base_path, tpath);
    strptr = _tcsrchr (base_path, _T('\\'));
-   if (strptr != 0)
+   if (strptr != NULL)
       *(++strptr) = 0;          //  strip off filename
-
+   base_len = _tcslen (base_path);
    get_disk_info (base_path);
 
    //  allocate struct for dir listing
    top = new_dir_node ();
 
-   //  Extract base path from first filespec,
-   //  and strip off filename
-   _tcscpy (base_path, tpath);
-   strptr = _tcsrchr (base_path, _T('\\'));
-   strptr++;                    //  skip past backslash, to filename
-   *strptr = 0;                 //  strip off filename
-   base_len = _tcslen (base_path);
-
    //  derive root path name
    if (_tcslen (base_path) == 3) {
       top->name = (TCHAR *) new TCHAR[8] ;
-      // top->name = (TCHAR *) malloc(8 * sizeof(TCHAR)) ;
-      // if (top->name == 0)
-      //    error_exit (OUT_OF_MEMORY, NULL);
       _tcscpy (top->name, _T("<root>"));
    }
    else {
@@ -521,9 +510,6 @@ static int build_dir_tree (TCHAR *tpath)
       strptr++;                 //  skip past backslash, to filename
 
       top->name = (TCHAR *) new TCHAR[_tcslen (strptr) + 1];
-      // top->name = (TCHAR *) malloc((_tcslen (strptr) + 1) * sizeof(TCHAR));
-      // if (top->name == 0)
-      //    error_exit (OUT_OF_MEMORY, NULL);
       _tcscpy (top->name, strptr);
    }
 
