@@ -16,7 +16,6 @@ struct dirs
    unsigned directs {};
    unsigned subfiles {};
    unsigned subdirects {};
-   bool     is_multi_byte  {};
    uint     mb_len  {};
 };
 

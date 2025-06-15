@@ -99,7 +99,6 @@ struct ffdata {
    uchar          color {};
    bool           dirflag {};
    bool           is_link_file {};
-   bool           is_multi_byte {};
    uint           mb_len {};
    struct ffdata  *next {nullptr};
 } ;
