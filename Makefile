@@ -12,6 +12,10 @@ USE_CLANG = YES
 # required library functions; this eliminates the need for the .dll file, 
 # at the cost of a (sometimes significantly) larger executable file.
 USE_STATIC = YES
+# For now, I'm using legacy version of qualify(),
+# because the target filespecs are an array,
+# and used in a variety of contexts...
+# so I don't want to battle with this complication yet.
 USE_LEGACY = YES
 
 #  clang++ note: you don't need two separate toolchain installations to build for 32 and 64 bit; 
@@ -76,16 +80,26 @@ ifeq ($(USE_STATIC),YES)
 LFLAGS += -static
 endif
 
+ifeq ($(USE_LEGACY),YES)
 CFLAGS += -DLEGACY_QUALIFY
+endif
 
 LiFLAGS += -Ider_libs
 CFLAGS += -Ider_libs
 IFLAGS += -Ider_libs
 
+# This is required for *some* versions of makedepend
+IFLAGS += -DNOMAKEDEPEND
+
 CPPSRC=Ndir32.cpp cmd_line.cpp config.cpp conio32.cpp Diskparm.cpp err_exit.cpp Filelist.cpp \
 Fileread.cpp Ndisplay.cpp nio.cpp nsort.cpp treelist.cpp tdisplay.cpp mediatype.cpp read_link.cpp \
-der_libs\common_funcs.cpp \
-der_libs\qualify_orig.cpp
+der_libs\common_funcs.cpp 
+
+ifeq ($(USE_LEGACY),YES)
+CPPSRC+=der_libs\qualify_orig.cpp 
+else
+CPPSRC+=der_libs\qualify.cpp 
+endif
 
 OBJS = $(CPPSRC:.cpp=.o)
 
@@ -155,4 +169,4 @@ tdisplay.o: der_libs/common.h ndir32.h conio32.h treelist.h
 mediatype.o: scsi_defs.h
 read_link.o: der_libs/common.h ndir32.h
 der_libs\common_funcs.o: der_libs/common.h
-der_libs\qualify_orig.o: der_libs/qualify.h
+der_libs\qualify_orig.o: der_libs/common.h der_libs/qualify.h
