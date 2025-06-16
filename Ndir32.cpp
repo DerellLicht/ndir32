@@ -11,10 +11,10 @@
 //*************************************************************************
 
 #include <windows.h>
-// #include <.h>
 #include <stdio.h>
 #include <stdlib.h>     //  getenv(), exit()
 #include <ctype.h>
+#include <string>
 #include <tchar.h>
 
 #include "common.h"
@@ -594,10 +594,3 @@ int main(int argc, char **argv)
    error_exit(DATA_OKAY, NULL) ;
    return 0 ;
 }
-
-// #ifdef UNICODE
-// int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
-// {
-//   return wmain(_argc, _argv);
-// }
-// #endif

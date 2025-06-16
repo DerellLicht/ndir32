@@ -93,10 +93,12 @@ LiFLAGS += -Ider_libs
 CFLAGS += -Ider_libs
 IFLAGS += -Ider_libs
 
-CPPSRC=Ndir32.cpp cmd_line.cpp config.cpp conio32.cpp Diskparm.cpp err_exit.cpp Filelist.cpp Fileread.cpp \
-	Ndisplay.cpp nio.cpp nsort.cpp treelist.cpp tdisplay.cpp mediatype.cpp read_link.cpp \
-	der_libs\common_funcs.cpp \
-	der_libs\qualify.cpp
+CFLAGS += -DLEGACY_QUALIFY
+
+CPPSRC=Ndir32.cpp cmd_line.cpp config.cpp conio32.cpp Diskparm.cpp err_exit.cpp Filelist.cpp \
+Fileread.cpp Ndisplay.cpp nio.cpp nsort.cpp treelist.cpp tdisplay.cpp mediatype.cpp read_link.cpp \
+der_libs\common_funcs.cpp \
+der_libs\qualify_orig.cpp
 
 OBJS = $(CPPSRC:.cpp=.o)
 
@@ -152,4 +154,4 @@ tdisplay.o: der_libs/common.h ndir32.h conio32.h treelist.h
 mediatype.o: scsi_defs.h
 read_link.o: der_libs/common.h ndir32.h
 der_libs\common_funcs.o: der_libs/common.h
-der_libs\qualify.o: der_libs/qualify.h
+der_libs\qualify_orig.o: der_libs/qualify.h

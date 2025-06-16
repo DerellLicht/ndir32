@@ -23,6 +23,7 @@
 //lint -e1776  Converting a string literal to char * is not const safe (arg. no. 1)
 
 //lint -e835   A zero has been given as right argument to operator '|'
+//lint -e737  Loss of sign in promotion from int to unsigned long long
 
 // Error 96: Unmatched left brace for linkage specification on line 8, file c:\mingw\include\rpcdce.h
 // Error 96: Unmatched left brace for linkage specification on line 12, file c:\mingw\include\rpc.h
@@ -47,13 +48,63 @@
 //lint -e768   global struct member not referenced
 //lint -e778   Constant expression evaluates to 0 in operation '*'
 
-//  pclint errors related to not supporting C++11 etc
-//lint -e40    Undeclared identifier 'next'
+//lint -esym(401, __created)   Symbol not referenced
+//lint -esym(528, __created)   Symbol not referenced
+//lint -esym(843, __created)   Variable could be declared as const
+
+//  warnings/errors caused by PcLint not supporting STL, or C++11 standard
+//lint -e2     Unclosed Quote
+//lint -e18    Symbol redeclared (basic) 
+//lint -e19    Useless Declaration
+//lint -e26    Expected an expression, found ')'
+//lint -e30    Expected an integer constant
+//lint -e32    Field size (member 'std::_Vector_base<int,int>::_Vector_impl::_Tp_alloc_type')
+//lint -e36    redefining the storage class of symbol 
+//lint -e38    Offset of symbol 'std::_Vector_base<int,int>::_Vector_impl_data::pointer'
+//lint -e40    Undeclared identifier 'make_unique'
+//lint -e46    field type should be an integral or enumeration type
+//lint -e48    Bad type
 //lint -e52    Expected an lvalue
+//lint -e53    Expected a scalar
+//lint -e55    Bad type
+//lint -e58    Bad type
+//lint -e61    Bad type
 //lint -e63    Expected an lvalue
-//lint -e550   Symbol not accessed (ummm... yes, it was)
-//lint -e737   Loss of sign in promotion from int to unsigned long long
-//lint -e1013  Symbol 'next' not a member of class 'ffdata'
+//lint -e64    Type mismatch (initialization) (struct ffdata * = int)
+//lint -e78    Symbol ... typedef'ed at line ... used in expression
+//lint -e110   Attempt to assign to void
+//lint -e151   Token 'flist' inconsistent with abstract type
+//lint -e155   Ignoring { }'ed sequence within an expression, 0 assumed
+//lint -e503   Boolean argument to relational
+//lint -e515   Symbol has arg. count conflict 
+//lint -e516   Symbol has arg. type conflict 
+//lint -e521   Highest operation, a 'constant', lacks side-effects
+//lint -e522   Highest operation, operator '!=', lacks side-effects
+//lint -e526   Symbol not defined
+//lint -e530   Symbol not initialized
+//lint -e550   Symbol not accessed
+//lint -e560   argument no. 4 should be a pointer
+//lint -e559   Size of argument no. 2 inconsistent with format
+//lint -e628   no argument information provided for function
+//lint -e681   Loop is not entered
+//lint -e746   call to function not made in the presence of a prototype
+//lint -e808   No explicit type given symbol 'file', int assumed
+//lint -e1013  Symbol not a member of class ''
+//lint -e1015  Symbol '_M_allocate' not found in class
+//lint -e1039  Symbol is not a member of
+//lint -e1040  Symbol is not a legal
+//lint -e1054  template variable declaration expects a type, int assumed
+//lint -e1055  Symbol undeclared, assumed to return int
+//lint -e1057  Member '__gnu_cxx::__is_integer_nonstrict<<1>>::__value' cannot be used
+//lint -e1062  template must be either a class or a function
+//lint -e1070  No scope in which to find symbol 'pointer'
+//lint -e1072  Reference variable 'file' must be initialized
+//lint -e1077  Could not evaluate default template parameter '=typename _Alloc::value_type'
+//lint -e1087  Previous declaration of '__gnu_cxx::__is_signed' (line 88) is incompatible
+//lint -e1098  Function template specialization does not match any function template
+//lint -e1514  Creating temporary to copy 'int' to 'struct ffdata &' (context: arg. no. 1)
 //lint -e1712  default constructor not defined for class 'ffdata'
-//lint -e560   argument no. n should be a pointer (and it is)
+//lint -e1025  No function matches invocation 
+//lint -e1066  Symbol declared as "C" conflicts ...
+//lint -e1776  Converting a string literal is not const safe (initialization)
 
