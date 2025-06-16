@@ -12,6 +12,7 @@ USE_CLANG = YES
 # required library functions; this eliminates the need for the .dll file, 
 # at the cost of a (sometimes significantly) larger executable file.
 USE_STATIC = YES
+USE_LEGACY = YES
 
 #  clang++ note: you don't need two separate toolchain installations to build for 32 and 64 bit; 
 #  it's enough with one of them, and you can call e.g. 
@@ -75,6 +76,22 @@ ifeq ($(USE_STATIC),YES)
 LFLAGS += -static
 endif
 
+CFLAGS += -DLEGACY_QUALIFY
+
+LiFLAGS += -Ider_libs
+CFLAGS += -Ider_libs
+IFLAGS += -Ider_libs
+
+CPPSRC=Ndir32.cpp cmd_line.cpp config.cpp conio32.cpp Diskparm.cpp err_exit.cpp Filelist.cpp \
+Fileread.cpp Ndisplay.cpp nio.cpp nsort.cpp treelist.cpp tdisplay.cpp mediatype.cpp read_link.cpp \
+der_libs\common_funcs.cpp \
+der_libs\qualify_orig.cpp
+
+OBJS = $(CPPSRC:.cpp=.o)
+
+# uuid.lib, ole32.lib : used in read_link.cpp
+LIBS=-lmpr -lshlwapi -luuid -lole32 
+
 #  clang-tidy options
 CHFLAGS = -header-filter=.*
 CHTAIL = -- 
@@ -85,22 +102,6 @@ endif
 ifeq ($(USE_UNICODE),YES)
 CHTAIL += -DUNICODE -D_UNICODE
 endif
-
-# uuid.lib, ole32.lib : used in read_link.cpp
-LIBS=-lmpr -lshlwapi -luuid -lole32 
-
-LiFLAGS += -Ider_libs
-CFLAGS += -Ider_libs
-IFLAGS += -Ider_libs
-
-CFLAGS += -DLEGACY_QUALIFY
-
-CPPSRC=Ndir32.cpp cmd_line.cpp config.cpp conio32.cpp Diskparm.cpp err_exit.cpp Filelist.cpp \
-Fileread.cpp Ndisplay.cpp nio.cpp nsort.cpp treelist.cpp tdisplay.cpp mediatype.cpp read_link.cpp \
-der_libs\common_funcs.cpp \
-der_libs\qualify_orig.cpp
-
-OBJS = $(CPPSRC:.cpp=.o)
 
 #*************************************************************************
 %.o: %.cpp
