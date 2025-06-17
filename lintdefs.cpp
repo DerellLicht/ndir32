@@ -62,6 +62,7 @@
 //lint -e36    redefining the storage class of symbol 
 //lint -e38    Offset of symbol 'std::_Vector_base<int,int>::_Vector_impl_data::pointer'
 //lint -e40    Undeclared identifier 'make_unique'
+//lint -e42    Expected a statement (TCHAR)
 //lint -e46    field type should be an integral or enumeration type
 //lint -e48    Bad type
 //lint -e52    Expected an lvalue

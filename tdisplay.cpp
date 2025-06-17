@@ -55,7 +55,7 @@ static void display_size(ULONGLONG dlen, unsigned slen, unsigned attr)
 //**********************************************************
 static void display_tree_filename (TCHAR *frmstr, dirs *ktemp)
 {
-   // TCHAR levelstr[PATH_MAX];
+   // TCHAR levelstr[MAX_PATH_LEN];
    // _stprintf (levelstr, "%s%s", frmstr, ktemp->name);
    int wlen = _tcslen(ktemp->name);
    //  why is mb_len == 0 on base folder??

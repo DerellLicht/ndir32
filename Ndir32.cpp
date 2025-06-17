@@ -22,13 +22,15 @@
 #include "vector_res.h"
 #include "qualify.h" //  must be *after* vector_res.h
 
-#define  VER_NUMBER "2.67"
+//lint -esym(864, target)  Expression involving variable possibly depends on order of evaluation
+
+#define  VER_NUMBER "2.68"
 
 //lint -esym(843, Version, ShortVersion) could be declared as const
 TCHAR *Version = _T(" NDIR.EXE, Version " VER_NUMBER " ") ;
 TCHAR *ShortVersion = _T(" NDIR " VER_NUMBER " ") ;
 
-TCHAR ininame[PATH_MAX] = _T("");
+TCHAR ininame[MAX_PATH_LEN] = _T("");
 
 //  per Jason Hood, this turns off MinGW's command-line expansion, 
 //  so we can handle wildcards like we want to.                    
@@ -95,10 +97,10 @@ ffdata *ftail = NULL ;
 // TCHAR* target[20] ;
 std::vector<std::wstring> target {};
 
-TCHAR volume_name[PATH_MAX] ;
+TCHAR volume_name[MAX_PATH_LEN] ;
 
 //  name of drive+path without filenames
-TCHAR base_path[PATH_MAX] ;
+TCHAR base_path[MAX_PATH_LEN] ;
 unsigned base_len ;  //  length of base_path
 
 unsigned start, finish ;
@@ -178,6 +180,23 @@ _T("NOTE: items with a * after the flag are TOGGLES"),
 _T(" "),
 NULL } ;
 
+//**************************************************
+#ifdef USE_WSTRING
+//lint -esym(714, dump_target)
+//lint -esym(759, dump_target)
+//lint -esym(765, dump_target)
+void dump_target(TCHAR *msg)
+{
+   if (msg != NULL) {
+      syslog(_T("%s"), msg);
+   }
+   for(auto &tgt : target) {
+      auto telement = tgt ;
+      syslog(L"%s\n", telement.c_str());
+   }
+}  //lint !e529
+#endif
+
 //**************************************************************
 //  string compare routine, case-insensitive, 
 //  wildcards are handled in the DOS fashion.
@@ -222,24 +241,34 @@ int strcmpiwc(const TCHAR *onestr, const TCHAR *twostr)
 //***********************************************************
 void insert_target_filespec(TCHAR *fstr)
 {
-   // target[tcount] = new TCHAR[PATH_MAX+1] ;
+   // target[tcount] = new TCHAR[MAX_PATH_LEN+1] ;
    // _tcscpy(target[tcount], fstr) ;
-   target[tcount] = fstr ;
+   target.emplace_back(fstr);
 
    //  for now, ndir is still using the legacy qualify(),
    //  which handles a TCHAR pointer... 
    //  Let's see if we can turn off LEGACY mode and use the new function...
    unsigned result = qualify(target[tcount]) ;
-   if ((result & QUAL_INV_DRIVE) != 0) {
+   if ((result & (QUAL_INV_DRIVE | QUAL_NO_PATH)) != 0) {
+      syslog(_T("qualify failed: %s\n"), target[tcount].c_str());
       error_exit(INV_DRIVE, (TCHAR *)target[tcount].c_str()) ;
    }
 
    tcount++ ;
 }
 
+//**************************************************
+#ifdef USE_WSTRING
+bool const comp(std::wstring a, std::wstring b)
+{
+   return (a.compare(b) < 0) ;
+}
+#endif
+
 /**********************************************************************/
 /**                     File listing routines                        **/        
 /**********************************************************************/
+//lint -esym(745, process_filespecs)   function has no explicit type or class, int assumed
 static void process_filespecs(void)
 {
    TCHAR * strptr ;
@@ -362,10 +391,37 @@ static void process_filespecs(void)
          //  usually only has a couple of items in it.
          //********************************************************
 //  this will need to be completely re-written for wstring class         
-#if 0 
+#ifdef USE_WSTRING
          {  //  begin local context
-         TCHAR fi_name[PATH_MAX], fi_ext[PATH_MAX] ;
-         TCHAR fj_name[PATH_MAX], fj_ext[PATH_MAX] ;
+         unsigned i ; //, k ;
+         // dump_target(_T("sorted element(s)\n"));
+         // for (i=start ; i< finish ; i++) {
+         for (i=0 ; i< (tcount - 1) ; i++) {
+            for (j=i+1   ; j < tcount ; j++) {
+try_next_j:
+
+               //  Scan file name and extension for equality.
+               //  If both filename and extension are equal, delete one.
+               // if (strcmpiwc(fi_name, fj_name)  &&  strcmpiwc(fi_ext, fj_ext)) {
+               if (target[i].compare(target[j]) == 0) {
+               // if (strcmpiwc(target[i].c_str(), target[j].c_str()) == 0) {
+                  target[j].erase() ;  //  this did not update target.size() ...
+                  tcount-- ;
+                  // finish-- ;
+                  //  we don't want to increment j in this case
+                  if (j < tcount) {
+                     goto try_next_j ;
+                  }
+               }
+            }
+         }  //lint !e850 for loop index variable 'j' whose type category is 'integral' is modified in body of the for loop that began at 'line 206'
+         // dump_target(_T("erased element(s)\n"));
+         // syslog(_T("target size: %u elements\n"), target.size());
+         }  //  end local context
+#else
+         {  //  begin local context
+         TCHAR fi_name[MAX_PATH_LEN], fi_ext[MAX_PATH_LEN] ;
+         TCHAR fj_name[MAX_PATH_LEN], fj_ext[MAX_PATH_LEN] ;
 
          unsigned i, k ;
          for (i=start ; i< finish ; i++) {
@@ -442,7 +498,8 @@ static void process_filespecs(void)
          columns = temp_columns ;
       }  //  while not done
    }  //  if multiple filespecs are present
-}
+}  //lint !e533
+
 
 //**************************************************
 //  Sort filespecs alphabetically,
@@ -451,7 +508,11 @@ static void process_filespecs(void)
 static void sort_target_paths(void)
 {
 //  this will need to be completely re-written for wstring class         
-#if 0   
+#ifdef USE_WSTRING
+   std::sort(target.begin(), target.end(), comp);
+   
+   // dump_target(_T("sorted list\n"));
+#else
    TCHAR* strptr ;
    unsigned i, j ;
 
@@ -520,7 +581,7 @@ int main(int argc, char **argv)
 
    //  get program filename
    int startIdx = 1 ;
-   TCHAR exename[PATH_MAX] ;
+   TCHAR exename[MAX_PATH_LEN] ;
    
    // [clang] _WIN32_WINNT: 0x0601
    // [cygwin] _WIN32_WINNT: 0x0A00
@@ -539,7 +600,7 @@ int main(int argc, char **argv)
    TCHAR* strptr = _tcsrchr(argv[0], _T('\\')) ;
    //  no path present
    if (strptr == 0) {
-      SearchPath(NULL, argv[0], _T(".exe"), PATH_MAX, ininame, NULL) ;
+      SearchPath(NULL, argv[0], _T(".exe"), MAX_PATH_LEN, ininame, NULL) ;
       strptr = _tcsrchr(ininame, _T('\\')) ;
       if (strptr != 0) 
          _tcscpy(strptr, _T("\\ndir.ini")) ;
@@ -594,8 +655,10 @@ int main(int argc, char **argv)
       display_drive_summary() ;
    else {
       //  If no filespec was given, insert current path with *.*
-      if (tcount==0)
+      if (tcount==0) {
          insert_target_filespec(_T(".")) ;
+      }
+      // syslog(_T("tcount: %u/%u\n"), tcount, target.size());
 
       sort_target_paths() ;      //  LFN: okay
       process_filespecs() ;

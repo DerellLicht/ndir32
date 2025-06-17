@@ -286,7 +286,7 @@ static int read_ini_file(TCHAR const * ini_str)
    FILE *ofile ;
    int slen ;
    TCHAR *strptr ;
-   static TCHAR line[PATH_MAX] ;
+   static TCHAR line[MAX_PATH_LEN] ;
 
 // printf("reading %s\n", ini_str) ;
    ofile = _tfopen(ini_str, _T("rt")) ;
@@ -346,7 +346,7 @@ static int read_ini_file(TCHAR const * ini_str)
 
 //*********************************************************************
 static TCHAR const local_ini_name[] = _T(".\\ndir.ini") ;
-static TCHAR ini_path[PATH_MAX] ;
+static TCHAR ini_path[MAX_PATH_LEN] ;
 
 void read_config_file(void)
 {

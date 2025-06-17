@@ -18,7 +18,7 @@
 #include "vector_res.h"
 
 //************************************************************
-static TCHAR dirpath[PATH_MAX];
+static TCHAR dirpath[MAX_PATH_LEN];
 unsigned level;
 
 //************************************************************

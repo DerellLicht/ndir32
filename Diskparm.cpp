@@ -20,16 +20,16 @@
 
 TCHAR dpath[4] = _T("d:\\");
 
-static TCHAR fsnbfr[PATH_MAX];
+static TCHAR fsnbfr[MAX_PATH_LEN];
 
 //  mediatype.cpp
 extern TCHAR *get_cd_device_desc(TCHAR drv);
 
-// static char UNCname[PATH_MAX] ;
+// static char UNCname[MAX_PATH_LEN] ;
 struct UNC
 {
    TCHAR *uptr;
-   TCHAR ustr[PATH_MAX];
+   TCHAR ustr[MAX_PATH_LEN];
 };
 
 static TCHAR fsn_bfr[32] ;      //  buffer for name of lfn file system
@@ -112,12 +112,12 @@ bool get_disk_info(TCHAR *dstr)
    //    with a backslash.  No wildcards are supported.
    if (!GetVolumeInformation( dirptr,                 // LPCSTR lpRootPathName,
                               (TCHAR *)volume_name,    // LPSTR lpVolumeNameBuffer,
-                              PATH_MAX,               // DWORD nVolumeNameSize,
+                              MAX_PATH_LEN,               // DWORD nVolumeNameSize,
                               &vsernbr,               // LPDWORD lpVolumeSerialNumber,
                               &mclen,                 // LPDWORD lpMaximumComponentLength,
                               &fsflags,               // LPDWORD lpFileSystemFlags,
                               (TCHAR *)fsn_bfr,        // LPSTR lpFileSystemNameBuffer,
-                              PATH_MAX                // DWORD nFileSystemNameSize
+                              MAX_PATH_LEN                // DWORD nFileSystemNameSize
                             )) {
       // syslog("cannot read volume info from %s:\n", dirptr) ;
       volume_name[0] = 0 ; //  try to keep going...
@@ -245,7 +245,7 @@ void display_drive_summary (void)
       if (dtype == DRIVE_REMOTE) {
          UNC UNCpaths;
          UNCpaths.uptr = UNCpaths.ustr;
-         bufsize = PATH_MAX;
+         bufsize = MAX_PATH_LEN;
 
          _stprintf(tempstr, _T("%c: %-9s %18s  %18s  "), dchar, fsnbfr, disktotal, diskavail);
 // syslog(_T("%c: %-9s %18s  %18s  "), dchar, fsnbfr, disktotal, diskavail);

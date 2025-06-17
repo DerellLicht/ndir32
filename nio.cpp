@@ -7,7 +7,7 @@
 #include <windows.h>
 #include <stdio.h>
 #ifdef _lint
-#include <stdlib.h>  //  PATH_MAX
+#include <stdlib.h>  //  MAX_PATH_LEN
 #endif
 #ifdef USE_64BIT
 #include <fileapi.h>

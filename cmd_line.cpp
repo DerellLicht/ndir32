@@ -22,11 +22,11 @@ extern void insert_target_filespec (TCHAR *fstr);
 //  fileread.cpp
 extern void update_exclusion_list(TCHAR *extptr);
 
-// static TCHAR const topchar      = _T(0xD1) ;  /*  Ñ  */
-// static TCHAR const bottomchar   = _T(0xCF) ;  /*  Ï  */
-// static TCHAR const vlinechar    = _T(0xB3) ;  /*  ³  */
-// static TCHAR const xlinechar    = _T(0xD8) ;  /*  Ø  */
-// static TCHAR const dvlinechar   = _T(0xCD) ;  /*  Í  */
+// static TCHAR const topchar      = _T(0xD1) ;  /*  ï¿½  */
+// static TCHAR const bottomchar   = _T(0xCF) ;  /*  ï¿½  */
+// static TCHAR const vlinechar    = _T(0xB3) ;  /*  ï¿½  */
+// static TCHAR const xlinechar    = _T(0xD8) ;  /*  ï¿½  */
+// static TCHAR const dvlinechar   = _T(0xCD) ;  /*  ï¿½  */
 static TCHAR const crosschar    = _T('+') ;  /*  +  */
 static TCHAR const altvlinechar = _T('|') ;  /*  |  */
 static TCHAR const altdvlchar   = _T('=') ;  /*  =  */
@@ -216,13 +216,13 @@ void parse_command_args (int startIdx, int argc, TCHAR **argv)
 
    //  deal with normal command-line arguments
    for (int j = startIdx; j < argc; j++) {
-      argvptr = argv[j];
+      // argvptr = argv[j];
       //  fix an obscure bug under win32 and 4DOS7;
       //  for some reason, "/?" is getting changed to "/~" ...
-      if (_tcscmp(argvptr, _T("/~")) == 0) {
-         *(argvptr+1) = _T('/') ;
-      }
-      parse_command_string (argvptr);
+      // if (_tcscmp(argvptr, _T("/~")) == 0) {
+      //    *(argvptr+1) = _T('/') ;
+      // }
+      parse_command_string (argv[j]);
    }
 }
 
