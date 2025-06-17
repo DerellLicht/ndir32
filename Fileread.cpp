@@ -11,6 +11,7 @@
 
 #include "common.h"
 #include "ndir32.h"
+#include "vector_res.h"
 
 //  from nsort.cpp
 extern void sort_filelist (void);
@@ -51,7 +52,7 @@ static void read_long_files (int i)
    WIN32_FIND_DATA fdata ; //  long-filename file struct
 
    // syslog("%s\n", target[i]);
-   handle = FindFirstFile (target[i], &fdata);
+   handle = FindFirstFile (target[i].c_str(), &fdata);
    // handle = FindFirstFileW(wfilespec, &fdata);
    //  according to MSDN, Jan 1999, the following is equivalent to the preceding... 
    //  unfortunately, under Win98SE, it's not...
@@ -155,13 +156,9 @@ static void read_long_files (int i)
          // ftemp->name[0] = 0 ; //  don't use name at all
          uint fnlen = _tcslen (ftemp->filename);   // NOLINT
          ftemp->name = (TCHAR *) new TCHAR[fnlen + 1] ;
-         // ftemp->name = (TCHAR *) malloc((fnlen + 1) * sizeof(TCHAR)) ;
-         // if (ftemp->name == NULL) {
-         //    error_exit (OUT_OF_MEMORY, NULL);
-         // }
 
          _tcscpy (ftemp->name, ftemp->filename);   // NOLINT
-         strptr = _tcsrchr (ftemp->name, _T('.')); //lint !e64
+         strptr = _tcsrchr (ftemp->name, _T('.')); //lint !e64 !e1703
          if (strptr != NULL && _tcslen (strptr) <= MAX_EXT_SIZE) {
             _tcscpy (ftemp->ext, strptr);
             *strptr = 0;        //  NULL-term name field

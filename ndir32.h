@@ -101,10 +101,6 @@ struct ffdata {
 extern ffdata *ftop ;
 extern ffdata *ftail ;
 
-//**********************************************************
-extern TCHAR* target[20] ;
-extern TCHAR volume_name[PATH_MAX] ;
-
 //*********************************************************
 //                NSORT.CPP
 //*********************************************************
@@ -133,6 +129,7 @@ void error_exit(int index, TCHAR* outstr);
 //  ndir32.cpp
 //************************************************************
 //  name of drive+path without filenames
+extern TCHAR volume_name[PATH_MAX] ;
 extern TCHAR base_path[PATH_MAX] ;
 extern unsigned base_len ;  //  length of base_path
 extern TCHAR ininame[PATH_MAX] ;

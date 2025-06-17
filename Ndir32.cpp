@@ -14,13 +14,13 @@
 #include <stdio.h>
 #include <stdlib.h>     //  getenv(), exit()
 #include <ctype.h>
-#include <string>
 #include <tchar.h>
 
 #include "common.h"
 #include "ndir32.h"
 #include "conio32.h"
-#include "qualify.h"
+#include "vector_res.h"
+#include "qualify.h" //  must be *after* vector_res.h
 
 #define  VER_NUMBER "2.67"
 
@@ -92,7 +92,9 @@ ULONGLONG diskbytes, diskfree, clbytes ;
 ffdata *ftop = NULL ;
 ffdata *ftail = NULL ;
 
-TCHAR* target[20] ;
+// TCHAR* target[20] ;
+std::vector<std::wstring> target {};
+
 TCHAR volume_name[PATH_MAX] ;
 
 //  name of drive+path without filenames
@@ -220,16 +222,16 @@ int strcmpiwc(const TCHAR *onestr, const TCHAR *twostr)
 //***********************************************************
 void insert_target_filespec(TCHAR *fstr)
 {
-   target[tcount] = new TCHAR[PATH_MAX+1] ;
-   // target[tcount] = (TCHAR *) malloc(PATH_MAX * sizeof(TCHAR)) ;
-   // if (target[tcount] == NULL) {
-   //    error_exit(OUT_OF_MEMORY, NULL) ;
-   // }
-   _tcscpy(target[tcount], fstr) ;
+   // target[tcount] = new TCHAR[PATH_MAX+1] ;
+   // _tcscpy(target[tcount], fstr) ;
+   target[tcount] = fstr ;
 
+   //  for now, ndir is still using the legacy qualify(),
+   //  which handles a TCHAR pointer... 
+   //  Let's see if we can turn off LEGACY mode and use the new function...
    unsigned result = qualify(target[tcount]) ;
    if ((result & QUAL_INV_DRIVE) != 0) {
-      error_exit(INV_DRIVE, target[tcount]) ;
+      error_exit(INV_DRIVE, (TCHAR *)target[tcount].c_str()) ;
    }
 
    tcount++ ;
@@ -238,13 +240,10 @@ void insert_target_filespec(TCHAR *fstr)
 /**********************************************************************/
 /**                     File listing routines                        **/        
 /**********************************************************************/
-static TCHAR fi_name[PATH_MAX], fi_ext[PATH_MAX] ;
-static TCHAR fj_name[PATH_MAX], fj_ext[PATH_MAX] ;
-
 static void process_filespecs(void)
 {
    TCHAR * strptr ;
-   unsigned i, j, k ;
+   unsigned j ;
 
    /***********************************************************************/
    /*************************  loop on filespecs  *************************/
@@ -269,7 +268,7 @@ static void process_filespecs(void)
 
       //  Extract base path from first filespec,
       //  and strip off filename
-      _tcscpy(base_path, target[start]) ;
+      _tcscpy(base_path, target[start].c_str()) ;
       strptr = _tcsrchr(base_path, '\\') ;
       if (strptr != 0) {
           strptr++ ;  //lint !e613  skip past backslash, to filename
@@ -319,7 +318,7 @@ static void process_filespecs(void)
 
          //  Extract base path from first filespec,
          //  and strip off filename
-         _tcscpy(base_path, target[start]) ;
+         _tcscpy(base_path, target[start].c_str()) ;
          //lint -esym(613,strptr) 
          strptr = _tcsrchr(base_path, '\\') ;
          if (strptr != 0) {
@@ -340,7 +339,7 @@ static void process_filespecs(void)
             }
             else {
                //  strip filename from next argument
-               _tcscpy(tempstr, target[j]) ;
+               _tcscpy(tempstr, target[j].c_str()) ;
                strptr = _tcsrchr(tempstr, '\\') ;   //lint !e613
                strptr++ ;
                *strptr = 0 ;
@@ -362,6 +361,13 @@ static void process_filespecs(void)
          //  This routine uses selection sort, because the list
          //  usually only has a couple of items in it.
          //********************************************************
+//  this will need to be completely re-written for wstring class         
+#if 0 
+         {  //  begin local context
+         TCHAR fi_name[PATH_MAX], fi_ext[PATH_MAX] ;
+         TCHAR fj_name[PATH_MAX], fj_ext[PATH_MAX] ;
+
+         unsigned i, k ;
          for (i=start ; i< finish ; i++) {
             for (j=i+1   ; j<=finish ; j++) {
                //  extract filename and extension file target string
@@ -398,6 +404,8 @@ static void process_filespecs(void)
                }
             }
          }  //lint !e850 for loop index variable 'j' whose type category is 'integral' is modified in body of the for loop that began at 'line 206'
+         }  //  end local context
+#endif         
 
          //**************************************************
          //  initialize file pointer and filecount,
@@ -441,19 +449,21 @@ static void process_filespecs(void)
 //  to group those in one directory.
 //**************************************************
 static void sort_target_paths(void)
-   {
+{
+//  this will need to be completely re-written for wstring class         
+#if 0   
    TCHAR* strptr ;
    unsigned i, j ;
 
    for (j=0   ; j<tcount-1 ; j++)
    for (i=j+1 ; i<tcount ; i++)
-   if (_tcscmp(target[j],target[i]) >  0)
-      {
+   if (_tcscmp(target[j],target[i]) >  0) {
       strptr    = target[i] ;
       target[i] = target[j] ;
       target[j] = strptr ;
-      }
    }
+#endif   
+}
 
 //********************************************************************************
 //  this solution is from:

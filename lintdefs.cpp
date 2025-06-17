@@ -52,7 +52,7 @@
 //lint -esym(528, __created)   Symbol not referenced
 //lint -esym(843, __created)   Variable could be declared as const
 
-//  warnings/errors caused by PcLint not supporting STL, or C++11 standard
+//  warnings/errors caused by PcLint not supporting STL, C++11 standard, TCHAR
 //lint -e2     Unclosed Quote
 //lint -e18    Symbol redeclared (basic) 
 //lint -e19    Useless Declaration
@@ -83,10 +83,13 @@
 //lint -e526   Symbol not defined
 //lint -e530   Symbol not initialized
 //lint -e550   Symbol not accessed
-//lint -e560   argument no. 4 should be a pointer
 //lint -e559   Size of argument no. 2 inconsistent with format
+//lint -e560   argument no. 4 should be a pointer
+//lint -e592   Non-literal format specifier used without arguments
 //lint -e628   no argument information provided for function
 //lint -e681   Loop is not entered
+//lint -e707   Mixing narrow and wide string literals in concatenation
+//lint -e719   Too many arguments for format (1 too many)
 //lint -e746   call to function not made in the presence of a prototype
 //lint -e808   No explicit type given symbol 'file', int assumed
 //lint -e1013  Symbol not a member of class ''

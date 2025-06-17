@@ -9,15 +9,13 @@
 #include <windows.h>
 #include <stdio.h>
 #include <conio.h>   //  kbhit()
-// #ifdef _lint
-// #include <malloc.h>
-// #endif
 #include <tchar.h>
 
 #include "common.h"
 #include "ndir32.h"
 #include "conio32.h"
 #include "treelist.h"
+#include "vector_res.h"
 
 //************************************************************
 static TCHAR dirpath[PATH_MAX];
@@ -534,12 +532,13 @@ debug_dump("exit", "returned from read_dir_tree") ;
 //*****************************************************************
 void tree_listing (unsigned total_filespec_count)
 {
-   if (z == 0)
+   if (z == 0) {
       tree_init_sort ();
+   }
 
    for (unsigned l = 0; l < total_filespec_count; l++) {
       //  read and build the dir tree
-      build_dir_tree (target[l]) ;
+      build_dir_tree ((TCHAR *) target[l].c_str()) ;
 
       //  sort the tree list
       sort_trees ();

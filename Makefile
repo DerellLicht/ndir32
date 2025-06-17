@@ -16,7 +16,7 @@ USE_STATIC = YES
 # because the target filespecs are an array,
 # and used in a variety of contexts...
 # so I don't want to battle with this complication yet.
-USE_LEGACY = YES
+USE_LEGACY = NO
 
 #  clang++ note: you don't need two separate toolchain installations to build for 32 and 64 bit; 
 #  it's enough with one of them, and you can call e.g. 
@@ -73,6 +73,7 @@ endif
 
 ifeq ($(USE_UNICODE),YES)
 CFLAGS += -DUNICODE -D_UNICODE
+LiFLAGS += -dUNICODE -d_UNICODE
 LFLAGS += -dUNICODE -d_UNICODE
 endif
 
@@ -154,19 +155,20 @@ $(BIN): $(OBJS)
 # DO NOT DELETE
 
 Ndir32.o: der_libs/common.h ndir32.h conio32.h der_libs/qualify.h
+Ndir32.o: vector_res.h
 cmd_line.o: der_libs/common.h ndir32.h conio32.h
 config.o: der_libs/common.h ndir32.h
 conio32.o: der_libs/common.h ndir32.h conio32.h
 Diskparm.o: der_libs/common.h ndir32.h
 err_exit.o: der_libs/common.h ndir32.h conio32.h
 Filelist.o: der_libs/common.h ndir32.h conio32.h
-Fileread.o: der_libs/common.h ndir32.h
+Fileread.o: der_libs/common.h ndir32.h vector_res.h
 Ndisplay.o: der_libs/common.h ndir32.h conio32.h
 nio.o: der_libs/common.h ndir32.h conio32.h
 nsort.o: der_libs/common.h ndir32.h
-treelist.o: der_libs/common.h ndir32.h conio32.h treelist.h
+treelist.o: der_libs/common.h ndir32.h conio32.h treelist.h vector_res.h
 tdisplay.o: der_libs/common.h ndir32.h conio32.h treelist.h
 mediatype.o: scsi_defs.h
 read_link.o: der_libs/common.h ndir32.h
 der_libs\common_funcs.o: der_libs/common.h
-der_libs\qualify_orig.o: der_libs/common.h der_libs/qualify.h
+der_libs\qualify.o: der_libs/common.h der_libs/conio_min.h der_libs/qualify.h
