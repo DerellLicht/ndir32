@@ -154,20 +154,20 @@ $(BIN): $(OBJS)
 
 # DO NOT DELETE
 
-Ndir32.o: der_libs/common.h ndir32.h conio32.h der_libs/qualify.h
-Ndir32.o: vector_res.h
+Ndir32.o: der_libs/common.h ndir32.h conio32.h vector_res.h
+Ndir32.o: der_libs/qualify.h
 cmd_line.o: der_libs/common.h ndir32.h conio32.h
 config.o: der_libs/common.h ndir32.h
 conio32.o: der_libs/common.h ndir32.h conio32.h
-Diskparm.o: der_libs/common.h ndir32.h
+Diskparm.o: der_libs/common.h ndir32.h vector_res.h
 err_exit.o: der_libs/common.h ndir32.h conio32.h
-Filelist.o: der_libs/common.h ndir32.h conio32.h
+Filelist.o: der_libs/common.h ndir32.h conio32.h vector_res.h
 Fileread.o: der_libs/common.h ndir32.h vector_res.h
 Ndisplay.o: der_libs/common.h ndir32.h conio32.h
 nio.o: der_libs/common.h ndir32.h conio32.h
 nsort.o: der_libs/common.h ndir32.h
 treelist.o: der_libs/common.h ndir32.h conio32.h treelist.h vector_res.h
-tdisplay.o: der_libs/common.h ndir32.h conio32.h treelist.h
+tdisplay.o: der_libs/common.h ndir32.h conio32.h treelist.h vector_res.h
 mediatype.o: scsi_defs.h
 read_link.o: der_libs/common.h ndir32.h
 der_libs\common_funcs.o: der_libs/common.h

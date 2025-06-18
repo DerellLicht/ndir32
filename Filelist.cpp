@@ -15,6 +15,7 @@
 #include "common.h"
 #include "ndir32.h"
 #include "conio32.h"  //  _where_x()
+#include "vector_res.h"
 
 //*****************************************************************
 static unsigned list_count = 0 ;
@@ -79,7 +80,7 @@ static void filehead(void)
 
       if (_where_x() < (wincols - 28)) {
          nputs(n.colornhead, _T("Volume label is ")) ;
-         nputs(n.colorxhead, volume_name) ;
+         nputs(n.colorxhead, volume_name.c_str()) ;
       }
       ncrlf() ;
 
@@ -97,7 +98,7 @@ static void filehead(void)
          ncrlf() ;
 
       nputs(n.colornhead, _T("Volume label is ")) ;
-      nputs(n.colorxhead, volume_name) ;
+      nputs(n.colorxhead, volume_name.c_str()) ;
       ncrlf() ;
 
       if (ftop == NULL) {

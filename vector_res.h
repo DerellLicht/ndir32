@@ -7,3 +7,4 @@
 
 // extern TCHAR* target[20] ;
 extern std::vector<std::wstring> target ;
+extern std::wstring volume_name ;

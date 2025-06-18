@@ -10,13 +10,7 @@
 #include "ndir32.h"
 #include "conio32.h"
 #include "treelist.h"
-
-// static TCHAR const * const dhdr =
-// #ifdef UNICODE
-//    _T("+-----------+-----------+--------------+--------------");
-// #else   
-//    _T("������������������������������������������������������");
-// #endif   
+#include "vector_res.h"
 
 static TCHAR const * const dhdrl =
    _T("+-----------+-----------+--------------+--------------");
@@ -285,14 +279,15 @@ static void printdirheader (void)
    _stprintf (tempstr, _T("%s"), base_path);
    nputs (n.colorxhead, tempstr);
 
-   uint vnlen = 16 + _tcslen(volume_name) ; //  16 is length of 'Volume label is '
+   // uint vnlen = 16 + _tcslen(volume_name) ; //  16 is length of 'Volume label is '
+   uint vnlen = 16 + volume_name.length() ; //  16 is length of 'Volume label is '
    uint blen  = 13 + _tcslen(base_path) ;   //  13 is length of 'Directory of '
    if ((blen + vnlen) >= wincols) 
       ncrlf ();
    else
       nput_char (n.colornhead, _T(' '), (wincols - blen - vnlen - 1));
    nputs (n.colornhead, _T("Volume label is ")); //  len = 16
-   nputs (n.colorxhead, volume_name);
+   nputs (n.colorxhead, volume_name.c_str());
    ncrlf ();
 
    //**************************************

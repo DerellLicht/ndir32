@@ -129,7 +129,7 @@ void error_exit(int index, TCHAR* outstr);
 //  ndir32.cpp
 //************************************************************
 //  name of drive+path without filenames
-extern TCHAR volume_name[MAX_PATH_LEN] ;
+// extern TCHAR volume_name[MAX_PATH_LEN] ;
 extern TCHAR base_path[MAX_PATH_LEN] ;
 extern unsigned base_len ;  //  length of base_path
 extern TCHAR ininame[MAX_PATH_LEN] ;

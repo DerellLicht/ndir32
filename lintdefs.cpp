@@ -74,6 +74,7 @@
 //lint -e64    Type mismatch (initialization) (struct ffdata * = int)
 //lint -e78    Symbol ... typedef'ed at line ... used in expression
 //lint -e110   Attempt to assign to void
+//lint -e129   declaration expected, identifier ignored
 //lint -e151   Token 'flist' inconsistent with abstract type
 //lint -e155   Ignoring { }'ed sequence within an expression, 0 assumed
 //lint -e503   Boolean argument to relational

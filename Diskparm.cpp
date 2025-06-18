@@ -17,6 +17,7 @@
 
 #include "common.h"
 #include "ndir32.h"
+#include "vector_res.h"
 
 TCHAR dpath[4] = _T("d:\\");
 
@@ -98,6 +99,7 @@ bool get_disk_info(TCHAR *dstr)
    // UINT dtype ;
    TCHAR *dirptr ;
    bool gvi_valid = true ;
+   TCHAR volume_name_local[MAX_PATH_LEN] = _T("");
 
    dpath[0] = *dstr ;
    if (*(dstr+1) == ':')
@@ -111,7 +113,7 @@ bool get_disk_info(TCHAR *dstr)
    //  NOTE:  GetVolumeInformation() requires a filename ending
    //    with a backslash.  No wildcards are supported.
    if (!GetVolumeInformation( dirptr,                 // LPCSTR lpRootPathName,
-                              (TCHAR *)volume_name,    // LPSTR lpVolumeNameBuffer,
+                              (TCHAR *)volume_name_local,    // LPSTR lpVolumeNameBuffer,
                               MAX_PATH_LEN,               // DWORD nVolumeNameSize,
                               &vsernbr,               // LPDWORD lpVolumeSerialNumber,
                               &mclen,                 // LPDWORD lpMaximumComponentLength,
@@ -120,13 +122,14 @@ bool get_disk_info(TCHAR *dstr)
                               MAX_PATH_LEN                // DWORD nFileSystemNameSize
                             )) {
       // syslog("cannot read volume info from %s:\n", dirptr) ;
-      volume_name[0] = 0 ; //  try to keep going...
+      // volume_name[0] = 0 ; //  try to keep going...
       gvi_valid = false ;
    }
 
-   if (_tcslen(volume_name) == 0) {
-      _tcscpy(volume_name, _T("undefined")) ;
+   if (_tcslen(volume_name_local) == 0) {
+      _tcscpy(volume_name_local, _T("undefined")) ;
    }
+   volume_name = volume_name_local ;
    // dtype = GetDriveType(dpath) ;
 
    clbytes = get_cluster_size(dpath[0]) ;   //  assume dpath[] is valid
@@ -265,7 +268,7 @@ void display_drive_summary (void)
       else {
       // else if (dtype == DRIVE_FIXED) {
          _stprintf(tempstr, _T("%c: %-9s %18s  %18s  [%6u] %s\n"), 
-            dchar, fsn_bfr, disktotal, diskavail, (unsigned) clbytes, volume_name);
+            dchar, fsn_bfr, disktotal, diskavail, (unsigned) clbytes, volume_name.c_str());
          nputs (n.colordefalt, tempstr);
 // syslog(_T("%s\n"), tempstr) ;
 

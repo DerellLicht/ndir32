@@ -97,7 +97,8 @@ ffdata *ftail = NULL ;
 // TCHAR* target[20] ;
 std::vector<std::wstring> target {};
 
-TCHAR volume_name[MAX_PATH_LEN] ;
+// TCHAR volume_name[MAX_PATH_LEN] ;
+std::wstring volume_name {};
 
 //  name of drive+path without filenames
 TCHAR base_path[MAX_PATH_LEN] ;
@@ -117,7 +118,7 @@ static TCHAR *idtxt[] = {
    _T(" "),
    _T("Copyright 1990, 1993-2025 by:"),
    _T(" "),
-   _T("   Daniel D. Miller"),
+   _T("   Derell Licht"),
    _T("   Email:    derelict@comcast.net"),
    _T("   Website:  https://derelllicht.42web.io/index.htm"),
    _T(" "),
@@ -393,21 +394,25 @@ static void process_filespecs(void)
 //  this will need to be completely re-written for wstring class         
 #ifdef USE_WSTRING
          {  //  begin local context
-         unsigned i ; //, k ;
+         unsigned idxHead, idxTail ;
          // dump_target(_T("sorted element(s)\n"));
-         // for (i=start ; i< finish ; i++) {
-         for (i=0 ; i< (tcount - 1) ; i++) {
-            for (j=i+1   ; j < tcount ; j++) {
-try_next_j:
-
+         //  head index should iterate over all elements *except* the last one,
+         //  since the last element in list would not have any others to compare against.
+         for (idxHead=0 ; idxHead< (tcount - 1) ; idxHead++) {
+            //  tail index should iterate over all elements after 
+            //  the current head index.
+            //  Note that the number of elements in the list may vary
+            //  as items are deleted by this operation.
+            for (idxTail=idxHead+1   ; idxTail < tcount ; idxTail++) {
+try_next_tail:
                //  Scan file name and extension for equality.
                //  If both filename and extension are equal, delete one.
-               if (target[i].compare(target[j]) == 0) {
-                  target.erase(target.begin()+j) ;
+               if (target[idxHead].compare(target[idxTail]) == 0) {
+                  target.erase(target.begin()+idxTail) ;
                   tcount-- ;
                   //  we don't want to increment j if we're at end of list
-                  if (j < tcount) {
-                     goto try_next_j ;
+                  if (idxTail < tcount) {
+                     goto try_next_tail ;
                   }
                }
             }
