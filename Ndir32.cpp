@@ -373,7 +373,7 @@ static void process_filespecs(void)
          get_disk_info(base_path) ;
 
          //  seek out all other filespecs with same path
-         //  05/18/25 - do I even *need* this block?
+         //  This block sets variable 'finish'
          j = start ;
          j++ ;
          while (LOOP_FOREVER) {
@@ -496,6 +496,7 @@ try_next_tail:
          else
             file_listing() ;
 
+         //  this block set variable 'start'
          start = finish + 1 ;
          if (start >= target.size()) 
             break;
