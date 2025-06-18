@@ -110,5 +110,6 @@
 //lint -e1712  default constructor not defined for class 'ffdata'
 //lint -e1025  No function matches invocation 
 //lint -e1066  Symbol declared as "C" conflicts ...
+//lint -e1702  operator 'operator+' is both an ordinary function and something else??
 //lint -e1776  Converting a string literal is not const safe (initialization)
 

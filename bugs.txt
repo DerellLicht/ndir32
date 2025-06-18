@@ -1,5 +1,8 @@
 > once wstring-based qualify() is implemented, replace all the 
   tcount references to target.size()
+  
+> I should also check output file list for duplicates
+  n ndir* *.exe  
 
 > unicode filenames are not working in redirected mode...
   WriteConsole(), which is used Unicode console output, does not work with redirection.

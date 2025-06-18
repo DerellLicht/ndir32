@@ -402,13 +402,10 @@ try_next_j:
 
                //  Scan file name and extension for equality.
                //  If both filename and extension are equal, delete one.
-               // if (strcmpiwc(fi_name, fj_name)  &&  strcmpiwc(fi_ext, fj_ext)) {
                if (target[i].compare(target[j]) == 0) {
-               // if (strcmpiwc(target[i].c_str(), target[j].c_str()) == 0) {
-                  target[j].erase() ;  //  this did not update target.size() ...
+                  target.erase(target.begin()+j) ;
                   tcount-- ;
-                  // finish-- ;
-                  //  we don't want to increment j in this case
+                  //  we don't want to increment j if we're at end of list
                   if (j < tcount) {
                      goto try_next_j ;
                   }
