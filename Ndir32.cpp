@@ -258,6 +258,40 @@ void insert_target_filespec(TCHAR *fstr)
    tcount++ ;
 }
 
+//*********************************************************************
+//lint -esym(759, add_element_to_file_list)  header declaration for symbol could be moved from header to module
+void add_element_to_file_list(ffdata *ftemp)
+{
+   if (ftop == NULL)
+      ftop = ftemp;
+   else
+      ftail->next = ftemp;
+   ftail = ftemp;
+}
+
+//*********************************************************************
+//  delete contents of existing file list
+//  If tcount == 1, there *cannot* be multiple filespecs, can there??
+//*********************************************************************
+//lint -esym(714, clear_existing_file_list)
+//lint -esym(759, clear_existing_file_list)
+//lint -esym(765, clear_existing_file_list)
+void clear_existing_file_list(void)
+{
+   if (ftop != NULL) {
+      ffdata *ftemp = ftop ;
+      ffdata *fkill ;
+      while (ftemp != NULL) {
+         fkill = ftemp ;
+         ftemp = ftemp->next ;
+         // free(fkill) ;
+         delete fkill ;
+      }
+      ftop = NULL ;
+   }
+   filecount = 0 ;
+}
+
 //**************************************************
 #ifdef USE_WSTRING
 bool const comp(std::wstring a, std::wstring b)
@@ -286,7 +320,10 @@ static void process_filespecs(void)
    //  If such anomalies are presented, unpredictable results will occur.
    //***********************************************************************
    if (n.tree == 1  ||  n.tree == 4  ||  n.tree == 5) {
-      tree_listing(tcount) ;
+      // if (tcount != target.size()) {
+      //    syslog(_T("target count error: %u vs %u\n"), tcount, target.size());
+      // }
+      tree_listing(target.size()) ;
    }
    else if (tcount == 1  &&  !n.exec_only) {
       start = finish = 0 ;
@@ -309,22 +346,7 @@ static void process_filespecs(void)
       //**************************************************
       get_disk_info(base_path) ;
 
-      //**************************************************
-      //  initialize file pointer and filecount,
-      //  in case of multiple filespecs.
-      //**************************************************
-      if (ftop != NULL) {
-         ffdata *ftemp = ftop ;
-         ffdata *fkill ;
-         while (ftemp != NULL) {
-            fkill = ftemp ;
-            ftemp = ftemp->next ;
-            // free(fkill) ;
-            delete fkill ;
-         }
-         ftop = NULL ;
-      }
-      filecount = 0 ;
+      // clear_existing_file_list();
 
       //**************************************************
       //  Call directory_tree or file_listing routines,
@@ -339,7 +361,6 @@ static void process_filespecs(void)
       while (LOOP_FOREVER) {
          //  Extract base path from first filespec,
          //  and strip off filename
-         j = start ;
 
          //  in lfn format, convert /3 to /4
          if (columns == 3) {
@@ -361,6 +382,8 @@ static void process_filespecs(void)
          get_disk_info(base_path) ;
 
          //  seek out all other filespecs with same path
+         //  05/18/25 - do I even *need* this block?
+         j = start ;
          j++ ;
          while (LOOP_FOREVER) {
             if (j >= tcount) {
@@ -657,12 +680,11 @@ int main(int argc, char **argv)
       display_drive_summary() ;
    else {
       //  If no filespec was given, insert current path with *.*
-      if (tcount==0) {
+      if (target.size() == 0) {
          insert_target_filespec(_T(".")) ;
       }
-      // syslog(_T("tcount: %u/%u\n"), tcount, target.size());
 
-      sort_target_paths() ;      //  LFN: okay
+      sort_target_paths() ;
       process_filespecs() ;
    }
 

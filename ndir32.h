@@ -145,6 +145,7 @@ extern unsigned start, finish ;
 
 //  ndir32.cpp
 int strcmpiwc(const TCHAR *onestr, const TCHAR *twostr);
+void add_element_to_file_list(ffdata *ftemp);
 
 //  cmd_line.cpp
 void parse_command_string(TCHAR *cmdstr) ;
@@ -154,6 +155,9 @@ void verify_flags(void);
 //  config.cpp
 void getcolor (ffdata * fnew);
 void read_config_file(void);
+
+//  from nsort.cpp
+extern void sort_filelist (void);
 
 //  filelist.cpp
 void display_files(void);

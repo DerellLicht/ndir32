@@ -13,12 +13,10 @@
 #include "ndir32.h"
 #include "vector_res.h"
 
-//  from nsort.cpp
-extern void sort_filelist (void);
+//lint -esym(759, getcolor) header declaration for symbol could be moved from header to module
 
-//*****************  function prototypes  *****************
-static void process_exclusions (void);
-static void read_long_files (int i);
+//lint -esym(745, process_exclusions)  function has no explicit type or class, int assumed
+//lint -esym(533, process_exclusions)  function should return a value (see line 200)
 
 //*************************************************************
 #define  MAX_EXCL_COUNT    20
@@ -42,7 +40,7 @@ void update_exclusion_list(TCHAR *extptr)
 //  This differs from read_files() in that it uses
 //  the MSDOS 7.00 long-filename functions
 //*********************************************************
-static void read_long_files (int i)
+static void const read_long_files (std::wstring& target_path)
 {
    bool fn_okay ;  //, result;
    HANDLE handle;
@@ -52,7 +50,7 @@ static void read_long_files (int i)
    WIN32_FIND_DATA fdata ; //  long-filename file struct
 
    // syslog("%s\n", target[i]);
-   handle = FindFirstFile (target[i].c_str(), &fdata);
+   handle = FindFirstFile (target_path.c_str(), &fdata);
    // handle = FindFirstFileW(wfilespec, &fdata);
    //  according to MSDN, Jan 1999, the following is equivalent to the preceding... 
    //  unfortunately, under Win98SE, it's not...
@@ -181,11 +179,7 @@ static void read_long_files (int i)
          //****************************************************
          //  add the structure to the file list
          //****************************************************
-         if (ftop == NULL)
-            ftop = ftemp;
-         else
-            ftail->next = ftemp;
-         ftail = ftemp;
+         add_element_to_file_list(ftemp);
       }  //  if file is parseable...
 
 search_next_file:
@@ -204,8 +198,9 @@ search_next_file:
 //*************************************************************
 static void process_exclusions (void)
 {
+   ffdata *ftemp ;
    for (int i = 0; i < exclcount; i++) {
-      ffdata *ftemp = ftop;
+      ftemp = ftop;
       ffdata *fprev = NULL;
 
       while (ftemp != NULL) { //lint !e449
@@ -233,6 +228,13 @@ static void process_exclusions (void)
          }
       }
    }
+   
+   //  now update ftail to new end of list
+   ftemp = ftop;
+   while (ftemp != NULL) {
+      ftail = ftemp ;
+      ftemp = ftemp->next ;
+   }
 }
 
 //*********************************************************
@@ -241,13 +243,27 @@ static void process_exclusions (void)
 void file_listing (void)
 {
    unsigned i;
-   // merge_sort<struct ffdata> ms ;
 
    //***********************************************
    //  read all files matching one filespec
    //***********************************************
+   // syslog(_T("start/finish: %u:%u, %u\n"), start, finish, target.size());
+   //  n
+   // [55896] start/finish: 0:0, 1
+   //  n . ..
+   // [76988] start/finish: 0:0, 2
+   // [76988] start/finish: 1:1, 2
+   //  n *.cpp *.h ..
+   // [81152] start/finish: 0:0, 3
+   // [81152] start/finish: 1:2, 3
+   //   n *.cpp *.h .. c:\home   
+   // [78752] start/finish: 0:0, 4
+   // [78752] start/finish: 1:2, 4
+   // [78752] start/finish: 3:3, 4
+   
+   //  this is called once for each folder in command list
    for (i = start; i <= finish; i++) {
-      read_long_files (i);
+      read_long_files (target[i]);
    }
 
    //***********************************************
