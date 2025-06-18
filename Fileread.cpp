@@ -242,8 +242,6 @@ static void process_exclusions (void)
 //*********************************************************
 void file_listing (void)
 {
-   unsigned i;
-
    //***********************************************
    //  read all files matching one filespec
    //***********************************************
@@ -262,7 +260,7 @@ void file_listing (void)
    // [78752] start/finish: 3:3, 4
    
    //  this is called once for each folder in command list
-   for (i = start; i <= finish; i++) {
+   for (unsigned i = start; i <= finish; i++) {
       read_long_files (target[i]);
    }
 

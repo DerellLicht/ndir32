@@ -24,44 +24,44 @@ extern uchar dtree_colors[MAX_DIR_ENTRY] ;
 //
 //*****************************************************************
 struct ndir_data {
-   uchar colorlogo   ;
-   uchar colornhead  ;
-   uchar colorxhead  ;
-   uchar colorframe  ;
-   uchar colorattr   ;
-   uchar colorsize   ;
-   uchar colordate   ;
-   uchar colortime   ;
-   uchar colordir    ;
-   uchar colorSHR ;
-   uchar colordefalt ;
+   uchar colorlogo   {0x13};
+   uchar colornhead  {0x02};
+   uchar colorxhead  {0x0A};
+   uchar colorframe  {0x08};
+   uchar colorattr   {0x01};
+   uchar colorsize   {0x05};
+   uchar colordate   {0x0C};
+   uchar colortime   {0x04};
+   uchar colordir    {0x09};
+   uchar colorSHR    {0x18};
+   uchar colordefalt {0x06};
 
-   uchar ucase ;
-   uchar sort ;        //  0=ext, 1=name, 2=size, 3=date/time, 4=none,
-   uchar reverse ;     //  reverse normal sort order
-   uchar clear ;
-   uchar pause ;
-   uchar format ;      //  0=1col, 1=2col, 2=4col, 3=6col, 4=dirtree, 5=3col
-   uchar minimize ;
-   uchar tree ;        //  0=all, 1=dir tree, 2=files only, 3=unused
-   uchar show_all ;
-   uchar dir_first ;
-   uchar exec_only ;
-   uchar help ;
-   uchar info ;
-   uchar horz ;
-   uchar low_ascii ;    //  upper ascii no longer supported
-   uchar batch ;
-   uchar unused1 ;
-   uchar color ;
-   uchar showSHRfiles ;
-   uchar ega_keep_unused ;     // deprecated on 01.17.23
-   uchar drive_summary ;//  0 = no, 1 = show free space, 2 = show used space
-   uchar fdate_option ; //  0 = LAST_MODIFY, 1 = FILE_CREATE (MSDOS 7.00+ only)
+   uchar ucase {};                                                                              
+   uchar sort {1};        //  0=ext, 1=name, 2=size, 3=date/time, 4=none
+   uchar reverse {};      //  reverse normal sort order
+   uchar clear {1};                                                                              
+   uchar pause {1};                                                                              
+   uchar format {2};      //  0=1col, 1=2col, 2=4col, 3=6col, 4=dirtree, 5=3col
+   uchar minimize {};                                                                           
+   uchar tree {};         //  0=all, 1=dir tree, 2=files only, 3=unused
+   uchar show_all {1};                                                                           
+   uchar dir_first {1};                                                                          
+   uchar exec_only {};                                                                          
+   uchar help {};                                                                               
+   uchar info {};                                                                               
+   uchar horz {};                                                                               
+   uchar low_ascii {};    //  upper ascii no longer supported
+   uchar batch {};                                                                              
+   uchar unused1 {};                                                                            
+   uchar color {1};                                                                              
+   uchar showSHRfiles {};                                                                       
+   uchar ega_keep_unused {};     // deprecated on 01.17.23
+   uchar drive_summary {DSUMMARY_NONE};//  0 = no, 1 = show free space, 2 = show used space
+   uchar fdate_option {};  //  0 = LAST_MODIFY, 1 = FILE_CREATE (MSDOS 7.00+ only)
    // uchar lfn_off ;      //  0 = force DOS 8.3 filenames (removed in V2.62)
-   uchar tree_short ;   //  0=normal tree, 1=show limited level of children
-   uchar long_attr ;
-   uchar size_display ; //  0=bytes/normal, 1=KB, 2=MB
+   uchar tree_short {};    //  0=normal tree, 1=show limited level of children
+   uchar long_attr {};                                                                          
+   uchar size_display {};  //  0=bytes/normal, 1=KB, 2=MB
 };
 extern ndir_data n ;
 
@@ -136,7 +136,6 @@ extern TCHAR ininame[MAX_PATH_LEN] ;
 
 extern TCHAR tempstr[MAXLINE] ;
 extern unsigned filecount ;             //  number of files found
-extern TCHAR leftstr[37], rightstr[37] ; //  used by batch mode
 
 extern unsigned columns ;           //  number of display columns on screen
 
@@ -146,6 +145,7 @@ extern unsigned start, finish ;
 //  ndir32.cpp
 int strcmpiwc(const TCHAR *onestr, const TCHAR *twostr);
 void add_element_to_file_list(ffdata *ftemp);
+void insert_target_filespec(TCHAR *fstr);
 
 //  cmd_line.cpp
 void parse_command_string(TCHAR *cmdstr) ;
@@ -157,13 +157,16 @@ void getcolor (ffdata * fnew);
 void read_config_file(void);
 
 //  from nsort.cpp
-extern void sort_filelist (void);
+void sort_filelist (void);
 
 //  filelist.cpp
 void display_files(void);
 void put_disk_summary(void);
+void batch_set_left_str(TCHAR *instr);
+void batch_set_right_str(TCHAR *instr);
 
 //  fileread.cpp
+void update_exclusion_list(TCHAR *extptr);
 void file_listing(void);
 
 //  treelist.cpp

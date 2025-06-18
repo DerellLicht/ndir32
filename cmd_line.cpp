@@ -16,12 +16,6 @@
 #include "ndir32.h"
 #include "conio32.h" //  is_redirected()
 
-//  from NDIR32.CPP 
-extern void insert_target_filespec (TCHAR *fstr);
-
-//  fileread.cpp
-extern void update_exclusion_list(TCHAR *extptr);
-
 // static TCHAR const topchar      = _T(0xD1) ;  /*  �  */
 // static TCHAR const bottomchar   = _T(0xCF) ;  /*  �  */
 // static TCHAR const vlinechar    = _T(0xB3) ;  /*  �  */
@@ -137,6 +131,16 @@ static int update_switches (TCHAR *argstr)
          n.help = 1;
          break;
 
+      case '[':   //  accept this with or without preceding '-'
+         batch_set_left_str(argstr);
+         slen = 0 ;  //  tell argument-parsing function to skip rest of this argument
+         break;
+
+      case ']':   //  accept this with or without preceding '-'
+         batch_set_right_str(argstr);
+         slen = 0 ;  //  tell argument-parsing function to skip rest of this argument
+         break;
+
       default:
          break;                 //  make lint happy
    }                            /* end SWITCH      */
@@ -158,20 +162,26 @@ void parse_command_string (TCHAR *cmdstr)
                break;
 
             slen = update_switches (cmdstr);
+            if (slen == 0) {
+               break ;
+            }
             cmdstr += slen;
          }
          break;
 
-      case '[':
-         _tcscpy (leftstr, ++cmdstr);
+      case '[':   //  accept this with or without preceding '-'
+         cmdstr++;              //  skip the switch char
+         batch_set_left_str(cmdstr);
          break;
 
-      case ']':
-         _tcscpy (rightstr, ++cmdstr);
+      case ']':   //  accept this with or without preceding '-'
+         cmdstr++;              //  skip the switch char
+         batch_set_right_str(cmdstr);
          break;
 
       case '!':
-         _tcscpy (tempstr, ++cmdstr);
+         cmdstr++;              //  skip the switch char
+         _tcscpy (tempstr, cmdstr);
 
          //  process exclusion extentions...
          extptr = _tcschr (tempstr, '.');
@@ -185,7 +195,6 @@ void parse_command_string (TCHAR *cmdstr)
 
       default:
          _tcscpy (tempstr, cmdstr);
-         // cmdstr = copy_tempstr(cmdstr, tempstr) ;
          insert_target_filespec (tempstr);
          break;
    }                            //  switch (*cmdstr)
@@ -216,9 +225,9 @@ void parse_command_args (int startIdx, int argc, TCHAR **argv)
 
    //  deal with normal command-line arguments
    for (int j = startIdx; j < argc; j++) {
-      // argvptr = argv[j];
       //  fix an obscure bug under win32 and 4DOS7;
       //  for some reason, "/?" is getting changed to "/~" ...
+      // argvptr = argv[j];
       // if (_tcscmp(argvptr, _T("/~")) == 0) {
       //    *(argvptr+1) = _T('/') ;
       // }
@@ -226,34 +235,15 @@ void parse_command_args (int startIdx, int argc, TCHAR **argv)
    }
 }
 
-/**********************************************************************/
 //************************************************************
-//  Spontaneous Assembly library video types
+//  Test for, and correct, inconsistent flags
 //************************************************************
 void verify_flags (void)
 {
    if (is_redirected ()) {
-      //  This bypasses the html-redirection operation,
-      //  which doesn't work with Cygwin/Bash shells
       n.color = 0 ;
    }
 
-   //****************************************************
-   //  For batch mode, standard ASCII, or help/identify
-   //  requests, force "no color" mode.
-   //****************************************************
-   // if (
-   //     n.low_ascii 
-   //     || n.batch 
-   //     || n.help 
-   //     || n.info
-   //     )
-   //    {
-   //    n.color = 0 ;
-   //    }
-
-   /************************************************/
-   /*  Test for, and correct, inconsistent flags.  */
 
    /************************************************/
    if (n.tree == 1 || n.tree == 4 || n.tree == 5) {
@@ -322,11 +312,11 @@ void verify_flags (void)
       }
    }
 
-   //*************************************
+   //******************************************************
    //  Initialize line-drawing variables
    //  03/17/25 - as part of Unicode conversion,
    //  just use low ASCII in all cases
-   //*************************************
+   //******************************************************
    tline = bline = crosschar;
    vline = altvlinechar;
    dline = altdvlchar;

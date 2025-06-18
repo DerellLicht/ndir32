@@ -41,41 +41,7 @@ int _CRT_glob = 0 ;
 //*****************************************************************
 //                  CONFIGURATION VARIABLES (new style)
 //*****************************************************************
-ndir_data n =
-{
-   //  default colors
-   0x13, 0x02, 0x0A, 0x08, 0x01, 0x05, 0x0C, 0x04, 0x09, 0x18, 0x06,
-
-   //*********************************************************
-   //                program state flags                      
-   //*********************************************************
-   0, //  uppercase = false
-   1, //  sort by filename
-   0, //  no reverse
-   1, //  clearscreen = true
-   1, //  pause on fullscreen = true
-   2, //  display format = 4column
-   0, //  Minimize display (make abbreviated header/footer)
-   0, //  display normal files, not tree
-   1, //  show all files = true
-   1, //  list directories first = true
-   0, //  show executables only = false
-   0, //  display help screen = false
-   0, //  display information screen = false
-   0, //  list files horizontally = false
-   0, //  use low-ASCII characters = false
-   0, //  display in batch mode = false
-   0, //  unused1
-   1, //  display files in color = true
-   0, //  showSHRfiles
-   0, //  switch to EGA43/VGA50 line mode (deprecated 01.17.23)
-   0, //  display disk_drive summary
-   0, //  file-date option (MSDOS 7.00+ only)
-   // 0, //  1 = force old DOS 8.3 filenames in MSDOS 7.00+ (removed in V2.62)
-   0, //  0=normal tree, 1=show limited level of children
-   0, //  uchar long_attr: show full attribute as hex data
-   0  //  0=bytes/normal, 1=KB, 2=MB
-};
+ndir_data n ;
 
 uchar dtree_colors[MAX_DIR_ENTRY] ;
 
@@ -103,7 +69,6 @@ TCHAR base_path[MAX_PATH_LEN] ;
 unsigned base_len ;  //  length of base_path
 
 unsigned start, finish ;
-TCHAR leftstr[37], rightstr[37] ; //  used by batch mode
 TCHAR tempstr[MAXLINE] ;
 TCHAR tline, bline, vline, dline ;
 unsigned filecount = 0 ;
@@ -658,8 +623,9 @@ int main(int argc, char **argv)
       info(helptxt) ;
    else if (n.info)
       info(idtxt) ;
-   else if (n.drive_summary > DSUMMARY_NONE)
+   else if (n.drive_summary > DSUMMARY_NONE) {
       display_drive_summary() ;
+   }
    else {
       //  If no filespec was given, insert current path with *.*
       if (target.size() == 0) {

@@ -25,26 +25,14 @@ extern unsigned name_width ;
 //  this array is 64 elements, not 32 (== 2^5) 
 //  because the volume_label bit (0x80) is not displayed.  
 //  There are actually six bits in the field.
-//  NOTE: This struct is not used any more, as we now support file attributes
+//  NOTE: This data array is not used any more, as we now support file attributes
 //        which are not part of the conventional DOS set.
 // static char attrstr[64][6] = {
-//   "_____", "____r", "___h_", "___hr", /*  00,01,02,03  */
 //   "__s__", "__s_r", "__sh_", "__shr", /*  04,05,06,07  */
-//   "_____", "____r", "___h_", "___hr", /*  08,09,0A,0B  */
-//   "__s__", "__s_r", "__sh_", "__shr", /*  0C,0D,0E,0F  */
-//   "_d___", "_d__r", "_d_h_", "_d_hr", /*  10,11,12,13  */
-//   "_ds__", "_ds_r", "_dsh_", "_dshr", /*  14,15,16,17  */
-//   "_d___", "_d__r", "_d_h_", "_d_hr", /*  18,19,1A,1B  */
-//   "__s__", "_ds_r", "_dsh_", "_dshr", /*  1C,1D,1E,1F  */
-//   "a____", "a___r", "a__h_", "a__hr", /*  20,21,22,23  */
-//   "a_s__", "a_s_r", "a_sh_", "a_shr", /*  24,25,26,27  */
-//   "a____", "a___r", "a__h_", "a__hr", /*  28,29,2A,2B  */
-//   "a_s__", "a_s_r", "a_sh_", "a_shr", /*  2C,2D,2E,2F  */
-//   "ad___", "ad__r", "ad_h_", "ad_hr", /*  30,31,32,33  */
-//   "ads__", "ads_r", "adsh_", "adshr", /*  34,35,36,37  */
-//   "ad___", "ad__r", "ad_h_", "ad_hr", /*  38,39,3A,3B  */
-//   "ads__", "ads_r", "adsh_", "adshr"  /*  3C,3D,3E,3F  */
+//   ...
 // };
+//lint -esym(728, attrclr)  Symbol not explicitly initialized
+//lint -esym(843, attrclr)  Variable could be declared as const
 static uchar attrclr;
 
 static TCHAR const monthstr[12][4] = { 
@@ -104,13 +92,11 @@ void display_logo (void)
 //  return final filename from symlink
 //  this will only work with a 64-bit build
 //************************************************************************
-//  found in kernel32.dll
 #ifdef USE_64BIT
 
-#define  MAX_FILE_LENGTH   1024
 static TCHAR *GetLinkTarget(TCHAR const * const symlink_name) 
 {
-   static TCHAR final_file[MAX_FILE_LENGTH+1] = _T("");
+   static TCHAR final_file[MAX_FILE_LEN+1] = _T("");
    // Define smart pointer type for automatic HANDLE cleanup.
    // typedef std::unique_ptr<std::remove_pointer<HANDLE>::type,
    //                         decltype( &::CloseHandle )> FileHandle;
@@ -135,7 +121,7 @@ static TCHAR *GetLinkTarget(TCHAR const * const symlink_name)
       else {
       // std::vector<wchar_t> buffer( requiredSize );
       GetFinalPathNameByHandle( hdl, final_file,
-                                MAX_FILE_LENGTH,
+                                MAX_FILE_LEN,
                                 FILE_NAME_NORMALIZED );
       }
 
@@ -164,16 +150,6 @@ void print1 (ffdata * fptr)
    // int slen = name_width - fptr->mb_len ;
 
    TCHAR attr[12];
-   //  detect non-standard file attributes and display specially.
-   // if ((fptr->attrib) > 0x3F) {
-   //   _stprintf (attr, " 0x%2X ", fptr->attrib);
-   //   attrclr = 0x0C;
-   // }
-   // else {
-   //   _stprintf (attr, "%5s ", attrstr[fptr->attrib]);
-   //   attrclr = n.colorattr;
-   // }
-   // char attrstr[] = "-adshr";
    if (n.long_attr) {
       _stprintf(attr, _T("%08X "), fptr->attrib) ;
    } else {

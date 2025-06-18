@@ -49,11 +49,32 @@ static const int FILE_SIZE_LEN =  6 ;
 static const int DATE_TIME_LEN = 15 ;
 
 //*********************************************************
+//  strings used with batch mode
+//lint -esym(728, std::wstring)  Symbol not explicitly initialized
+//lint -esym(551, std::wstring)  Symbol not accessed
+// static TCHAR leftstr[37] = _T("");
+// static TCHAR rightstr[37] = _T("");
+static std::wstring leftstr {};
+static std::wstring rightstr {};
+
+//*********************************************************
+void batch_set_left_str(TCHAR *instr)
+{
+   leftstr = instr ;
+}
+
+//*********************************************************
+void batch_set_right_str(TCHAR *instr)
+{
+   rightstr = instr ;
+}
+
+//*********************************************************
 static void display_batch_mode(void)
 {
    ffdata *ftemp = ftop ;
    while (ftemp != NULL) {
-      _tprintf(_T("%s%s%s\n"), leftstr, ftemp->filename, rightstr) ; //lint !e560 argument no. 3 should be a pointer (and it is)
+      _tprintf(_T("%s%s%s\n"), leftstr.c_str(), ftemp->filename, rightstr.c_str()) ;
       ftemp = ftemp->next ;
    }
 }
