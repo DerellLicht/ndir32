@@ -95,17 +95,6 @@ static void const read_long_files (std::wstring& target_path)
          //  allocate and initialize the structure
          //****************************************************
          ftemp = (ffdata *) new ffdata ;
-         // ftemp = (struct ffdata *) malloc(sizeof(ffdata)) ;
-         // if (ftemp == NULL) {
-         //    error_exit (OUT_OF_MEMORY, NULL);
-         //    return;             //  only to make lint happy
-         // }
-         // ZeroMemory((char *) ftemp, sizeof(ffdata));
-
-         //  convert filename to lower case if appropriate
-         // if (!n.ucase)
-         //    strlwr(fblk.name) ;
-
          ftemp->attrib = (u16) fdata.dwFileAttributes;
 
          //  convert file time
@@ -130,25 +119,11 @@ static void const read_long_files (std::wstring& target_path)
          //  convert Unicode filenames to UTF8
          ftemp->mb_len = _tcslen(fdata.cFileName) ;
          ftemp->filename = (TCHAR *) new TCHAR[ftemp->mb_len + 1];  //lint !e732
-         // ftemp->filename = (TCHAR *) malloc((ftemp->mb_len + 1) * sizeof(TCHAR));  //lint !e732
-         // if (ftemp->filename == NULL) {
-         //    error_exit (OUT_OF_MEMORY, NULL);
-         //    // return;             //  only to make lint happy
-         // }
          _tcscpy (ftemp->filename, fdata.cFileName);  // NOLINT
          
          //  If Steven Bensky's short filenames are requested,
          //  generate fully-qualified filenames so I can request the short name...
-         // if (n.lfn_off) {
-         //    ftemp->filename = (char *) malloc(15) ;
-         // 
-         //    strptr = sfn_convert_filename((char *) fdata.cFileName);
-         //    _tcscpy (ftemp->filename, strptr);
-         // }
-         // else {
-         //    ftemp->filename = (char *) malloc(_tcslen ((char *) fdata.cFileName) + 1);
-         //    _tcscpy (ftemp->filename, (char *) fdata.cFileName);
-         // }
+         //  V2.62, 01/08/24 - short-filename support removed
 
          //  find and extract the file extension, if valid
          // ftemp->name[0] = 0 ; //  don't use name at all
