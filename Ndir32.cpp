@@ -276,7 +276,6 @@ void clear_existing_file_list(void)
       while (ftemp != NULL) {
          fkill = ftemp ;
          ftemp = ftemp->next ;
-         // free(fkill) ;
          delete fkill ;
       }
       ftop = NULL ;

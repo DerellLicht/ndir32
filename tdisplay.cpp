@@ -264,7 +264,7 @@ static void display_dir_tree (dirs * ktop)
       if (!n.tree_short || level <= tree_level_limit) {
          display_dir_tree (ktemp->sons);
       }
-      formstr[--level] = (TCHAR) NULL;
+      formstr[--level] = (TCHAR) 0; // NOLINT
 
       //  goto next brother
       ktemp = ktemp->brothers;
