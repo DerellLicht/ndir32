@@ -38,8 +38,6 @@ TCHAR ininame[MAX_PATH_LEN] = _T("");
 //lint -e714  Symbol '_CRT_glob' (line 134, file Ndir32.cpp) not referenced
 int _CRT_glob = 0 ;
 
-static unsigned tcount = 0 ;   //  number of target filespecs
-
 //*****************************************************************
 //                  CONFIGURATION VARIABLES (new style)
 //*****************************************************************
@@ -242,20 +240,14 @@ int strcmpiwc(const TCHAR *onestr, const TCHAR *twostr)
 //***********************************************************
 void insert_target_filespec(TCHAR *fstr)
 {
-   // target[tcount] = new TCHAR[MAX_PATH_LEN+1] ;
-   // _tcscpy(target[tcount], fstr) ;
    target.emplace_back(fstr);
+   uint idx = target.size() - 1 ;
 
-   //  for now, ndir is still using the legacy qualify(),
-   //  which handles a TCHAR pointer... 
-   //  Let's see if we can turn off LEGACY mode and use the new function...
-   unsigned result = qualify(target[tcount]) ;
+   unsigned result = qualify(target[idx]) ;
    if ((result & (QUAL_INV_DRIVE | QUAL_NO_PATH)) != 0) {
-      syslog(_T("qualify failed: %s\n"), target[tcount].c_str());
-      error_exit(INV_DRIVE, (TCHAR *)target[tcount].c_str()) ;
+      syslog(_T("qualify failed: %s\n"), target[idx].c_str());
+      error_exit(INV_DRIVE, (TCHAR *)target[idx].c_str()) ;
    }
-
-   tcount++ ;
 }
 
 //*********************************************************************
@@ -325,7 +317,7 @@ static void process_filespecs(void)
       // }
       tree_listing(target.size()) ;
    }
-   else if (tcount == 1  &&  !n.exec_only) {
+   else if (target.size() == 1  &&  !n.exec_only) {
       start = finish = 0 ;
 
       //  in lfn format, convert /3 to /4
@@ -386,7 +378,8 @@ static void process_filespecs(void)
          j = start ;
          j++ ;
          while (LOOP_FOREVER) {
-            if (j >= tcount) {
+            // if (j >= tcount) {
+            if (j >= target.size()) {
                finish = j-1 ;
                break;
             }
@@ -418,23 +411,24 @@ static void process_filespecs(void)
 #ifdef USE_WSTRING
          {  //  begin local context
          unsigned idxHead, idxTail ;
+         unsigned ltcount = target.size() ;
          // dump_target(_T("sorted element(s)\n"));
          //  head index should iterate over all elements *except* the last one,
          //  since the last element in list would not have any others to compare against.
-         for (idxHead=0 ; idxHead< (tcount - 1) ; idxHead++) {
+         for (idxHead=0 ; idxHead< (ltcount - 1) ; idxHead++) {
             //  tail index should iterate over all elements after 
             //  the current head index.
             //  Note that the number of elements in the list may vary
             //  as items are deleted by this operation.
-            for (idxTail=idxHead+1   ; idxTail < tcount ; idxTail++) {
+            for (idxTail=idxHead+1   ; idxTail < ltcount ; idxTail++) {
 try_next_tail:
                //  Scan file name and extension for equality.
                //  If both filename and extension are equal, delete one.
                if (target[idxHead].compare(target[idxTail]) == 0) {
                   target.erase(target.begin()+idxTail) ;
-                  tcount-- ;
-                  //  we don't want to increment j if we're at end of list
-                  if (idxTail < tcount) {
+                  ltcount-- ;
+                  //  we don't want to increment j after deleting element
+                  if (idxTail < ltcount) {
                      goto try_next_tail ;
                   }
                }
@@ -511,12 +505,13 @@ try_next_tail:
          //  as specified by flags.
          //**************************************************
          if (n.tree == 1)
-            tree_listing(tcount) ;
+            // tree_listing(tcount) ;
+            tree_listing(target.size()) ;
          else
             file_listing() ;
 
          start = finish + 1 ;
-         if (start >= tcount) 
+         if (start >= target.size()) 
             break;
          ncrlf() ;
 

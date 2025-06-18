@@ -10,7 +10,6 @@
 //  Second, it requires MPR.LIB to be linked into the application
 //*****************************************************************************
 
-// #include <stdlib.h>             //  ultoa()
 #include <windows.h>
 #include <stdio.h>
 #include <tchar.h>
