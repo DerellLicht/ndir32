@@ -426,7 +426,8 @@ try_next_tail:
                if (target[idxHead].compare(target[idxTail]) == 0) {
                   target.erase(target.begin()+idxTail) ;
                   ltcount-- ;
-                  //  we don't want to increment j after deleting element
+                  //  we don't want to increment idxTail after deleting element;
+                  //  it is now pointing to the next element in array
                   if (idxTail < ltcount) {
                      goto try_next_tail ;
                   }
@@ -473,7 +474,6 @@ try_next_tail:
                   tcount-- ;
                   finish-- ;
                   j-- ;
-               // free(strptr) ; // release allocated struct.
                   delete strptr ; // release allocated struct.
                }
             }
@@ -482,22 +482,9 @@ try_next_tail:
 #endif         
 
          //**************************************************
-         //  initialize file pointer and filecount,
-         //  in case of multiple filespecs.
+         //  delete contents of existing file list
          //**************************************************
-         if (ftop != NULL) {
-            ffdata *ftemp = ftop ;
-            ffdata *fkill ;
-            while (ftemp != NULL)
-               {
-               fkill = ftemp ;
-               ftemp = ftemp->next ;
-               // free(fkill) ;
-               delete fkill ;
-               }
-            ftop = NULL ;
-         }
-         filecount = 0 ;
+         clear_existing_file_list();
 
          //**************************************************
          //  Call directory_tree or file_listing routines,
