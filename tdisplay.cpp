@@ -51,7 +51,8 @@ static void display_tree_filename (TCHAR *frmstr, dirs *ktemp)
 {
    // TCHAR levelstr[MAX_PATH_LEN];
    // _stprintf (levelstr, "%s%s", frmstr, ktemp->name);
-   int wlen = _tcslen(ktemp->name);
+   // int wlen = _tcslen(ktemp->name);
+   int wlen = ktemp->name.length();
    //  why is mb_len == 0 on base folder??
    if (ktemp->mb_len == 0) {
       //  this won't work for Unicode targets
@@ -67,14 +68,14 @@ static void display_tree_filename (TCHAR *frmstr, dirs *ktemp)
    //  if name string overruns data spaces, skip to new line
    if (namelen >= name_end_col) {
       nputs (n.colorframe, frmstr);
-      nputs(dtree_colors[level], ktemp->name);
+      nputs(dtree_colors[level], ktemp->name.c_str());
       ncrlf ();
       _stprintf (tempstr, _T("%-*s"), name_end_col+1, frmstr);
       nputs (dtree_colors[level], tempstr);  //  spaces
    }
    else {
       nputs (n.colorframe, frmstr);
-      nputs(dtree_colors[level], ktemp->name);
+      nputs(dtree_colors[level], ktemp->name.c_str());
       
       //  pad gap between end of folder name and data area, with spaces
       splen = (name_end_col + 1) - namelen ;

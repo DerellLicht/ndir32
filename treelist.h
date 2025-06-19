@@ -6,7 +6,8 @@ struct dirs
 {
    dirs *brothers {nullptr};
    dirs *sons {nullptr};
-   TCHAR *name {nullptr};
+   // TCHAR *name {nullptr};
+   std::wstring   name {};
    uchar attrib {};
    ULONGLONG dirsize {};
    ULONGLONG dirsecsize {};

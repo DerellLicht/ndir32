@@ -152,7 +152,7 @@ static int read_dir_tree (dirs * cur_node)
       strptr++;
       *strptr = 0;
       slen = _tcslen (dirpath);
-      _tcscat (dirpath, cur_node->name);
+      _tcscat (dirpath, cur_node->name.c_str());
       _tcscat (dirpath, _T("\\*"));
    }
    else {
@@ -214,17 +214,12 @@ syslog(_T("%s: FindFindFirst: %s\n"), dirpath, get_system_message (err));
                else
                   dtail->brothers = dtemp;   //lint !e613  NOLINT
                dtail = dtemp;
-               // if (!n.ucase) 
-               //    strlwr(ff.name) ;
-               
+                                                           
                //  convert Unicode filenames to UTF8
                dtemp->mb_len = _tcslen(fdata.cFileName) ;
-               dtemp->name = (TCHAR *) new TCHAR[dtemp->mb_len + 1] ;
-               // dtemp->name = (TCHAR *) malloc((dtemp->mb_len + 1) * sizeof(TCHAR));  //lint !e732
-               // if (dtemp->name == NULL) {
-               //    error_exit(OUT_OF_MEMORY, NULL);
-               // }
-               _tcscpy (dtemp->name, (TCHAR *) fdata.cFileName);  //  NOLINT
+               // dtemp->name = (TCHAR *) new TCHAR[dtemp->mb_len + 1] ;
+               // _tcscpy (dtemp->name, (TCHAR *) fdata.cFileName);  
+               dtemp->name = fdata.cFileName ;
 
                dtemp->attrib = (uchar) fdata.dwFileAttributes;
                // dtail->directs++ ;
@@ -294,7 +289,7 @@ debug_dump(dirpath, "close") ;
    dirs *ktemp = cur_node->sons;
    while (ktemp != NULL) {
 #ifdef  DESPERATE
-debug_dump(ktemp->name, "call read_dir_tree") ;
+debug_dump(ktemp->name.c_str(), "call read_dir_tree") ;
 #endif
       read_dir_tree (ktemp);
       cur_node->subdirsize += ktemp->subdirsize;
@@ -340,13 +335,13 @@ static int tree_init_sort (void)
 //*********************************************************
 static int tree_sort_name (dirs *a, dirs *b)
 {
-   return (_tcsicmp (a->name, b->name));
+   return (_tcsicmp (a->name.c_str(), b->name.c_str()));
 }
 
 //*********************************************************
 static int tree_sort_name_rev (dirs *a, dirs *b)
 {
-   return (_tcsicmp (b->name, a->name));
+   return (_tcsicmp (b->name.c_str(), a->name.c_str()));
 }
 
 //*********************************************************
@@ -498,8 +493,9 @@ static int build_dir_tree (TCHAR *tpath)
 
    //  derive root path name
    if (_tcslen (base_path) == 3) {
-      top->name = (TCHAR *) new TCHAR[8] ;
-      _tcscpy (top->name, _T("<root>"));
+      // top->name = (TCHAR *) new TCHAR[8] ;
+      // _tcscpy (top->name, _T("<root>"));
+      top->name = L"<root>" ;
    }
    else {
       _tcscpy (tempstr, base_path);
@@ -507,14 +503,15 @@ static int build_dir_tree (TCHAR *tpath)
       strptr = _tcsrchr (tempstr, _T('\\'));
       strptr++;                 //  skip past backslash, to filename
 
-      top->name = (TCHAR *) new TCHAR[_tcslen (strptr) + 1];
-      _tcscpy (top->name, strptr);
+      // top->name = (TCHAR *) new TCHAR[_tcslen (strptr) + 1];
+      // _tcscpy (top->name, strptr);
+      top->name = strptr ;
    }
 
    // top->attrib = 0 ;   //  top-level dir is always displayed
 
-   if (n.ucase)
-      _tcsupr (top->name);
+   // if (n.ucase)
+   //    _tcsupr (top->name);
 
    _tcscpy (dirpath, tpath);
 
