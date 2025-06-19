@@ -42,7 +42,7 @@ TOOLS=C:\cygwin64\bin
 #TOOLS=c:\tdm-gcc-64\bin
 endif
 else
-TOOLS=c:\tdm32\bin
+TOOLS=d:\tdm32\bin
 endif
 
 ifeq ($(USE_64BIT),YES)
