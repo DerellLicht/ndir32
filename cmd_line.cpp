@@ -1,8 +1,5 @@
 //*****************************************************************
 //  CMD_LINE.CPP - NDIR command_line parsing                       
-//                                                                 
-//  Written by:   Daniel D. Miller  (the Derelict)                 
-//                                                                 
 //*****************************************************************
 
 #include <windows.h>

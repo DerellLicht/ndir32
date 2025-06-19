@@ -44,7 +44,7 @@ static void const read_long_files (std::wstring& target_path)
 {
    bool fn_okay ;  //, result;
    HANDLE handle;
-   TCHAR *strptr;
+   // TCHAR *strptr;
    ffdata *ftemp;
    // WIN32_FIND_DATA fdata ; //  long-filename file struct
    WIN32_FIND_DATA fdata ; //  long-filename file struct
@@ -116,39 +116,65 @@ static void const read_long_files (std::wstring& target_path)
          iconv.u[1] = fdata.nFileSizeHigh;
          ftemp->fsize = iconv.i;
 
+         ftemp->dirflag = ((ftemp->attrib & FILE_ATTRIBUTE_DIRECTORY) != 0) ? true : false ;
+         
          //  convert Unicode filenames to UTF8
          ftemp->mb_len = _tcslen(fdata.cFileName) ;
-         ftemp->filename = (TCHAR *) new TCHAR[ftemp->mb_len + 1];  //lint !e732
-         _tcscpy (ftemp->filename, fdata.cFileName);  // NOLINT
+         // ftemp->filename = (TCHAR *) new TCHAR[ftemp->mb_len + 1];  //lint !e732
+         // _tcscpy (ftemp->filename, fdata.cFileName);  // NOLINT
+         ftemp->filename = fdata.cFileName ;
          
          //  If Steven Bensky's short filenames are requested,
          //  generate fully-qualified filenames so I can request the short name...
          //  V2.62, 01/08/24 - short-filename support removed
 
          //  find and extract the file extension, if valid
-         // ftemp->name[0] = 0 ; //  don't use name at all
-         uint fnlen = _tcslen (ftemp->filename);   // NOLINT
-         ftemp->name = (TCHAR *) new TCHAR[fnlen + 1] ;
-
-         _tcscpy (ftemp->name, ftemp->filename);   // NOLINT
-         strptr = _tcsrchr (ftemp->name, _T('.')); //lint !e64 !e1703
-         if (strptr != NULL && _tcslen (strptr) <= MAX_EXT_SIZE) {
-            _tcscpy (ftemp->ext, strptr);
-            *strptr = 0;        //  NULL-term name field
-            
-            //  12/12/23  Add handling for .lnk files
-            if (_tcsicmp(ftemp->ext, _T(".lnk")) == 0) {
-               ftemp->is_link_file = true ;
-            }
+         // uint fnlen = _tcslen (ftemp->filename.c_str());   
+         // uint fnlen = ftemp->filename.length();
+         // syslog(_T("%s\n"), ftemp->filename.c_str());
+         size_t ext_length = ftemp->filename.length() ;
+         size_t ext_dot = ftemp->filename.find_last_of(L".");
+         if (ext_dot > 0) {
+            ext_length = ext_length - ext_dot ;
          }
          else {
-            ftemp->ext[0] = 0;  //  no extension found
+            ext_length = 0 ;
          }
+         //  if ext_dot == npos (i.e. -1), then no extension is present
+         //  if ext_dot == 0, then dot is at start of string, treat as no extension
+         //  if extension length > MAX_EXT_SIZE, treat as no extension
+         // syslog(_T("%d/%u: %s\n"), ext_dot, ext_length, ftemp->filename.c_str());
+         if (ext_dot == 0  ||  ext_dot == std::wstring::npos  ||  ext_length > MAX_EXT_SIZE) {
+            ftemp->name = ftemp->filename;
+            ftemp->ext = L"";
+         }
+         else {
+            ftemp->name = ftemp->filename.substr(0, ext_dot);
+            ftemp->ext  = ftemp->filename.substr(ext_dot);
+         }
+         // syslog(_T("%d/%d/%d: %s: [%s].[%s]\n"), 
+         //    ext_dot, ext_length, ext_length-ext_dot, ftemp->filename.c_str(), ftemp->name.c_str(), ftemp->ext.c_str());
+         
+         // ftemp->name = (TCHAR *) new TCHAR[fnlen + 1] ;
+         // _tcscpy (ftemp->name, ftemp->filename.c_str());   // NOLINT
+         // strptr = _tcsrchr (ftemp->name, _T('.')); //lint !e64 !e1703
+         // if (strptr != NULL && _tcslen (strptr) <= MAX_EXT_SIZE) {
+         //    _tcscpy (ftemp->ext, strptr);
+         //    *strptr = 0;        //  NULL-term name field
+         //    
+         //    //  12/12/23  Add handling for .lnk files
+         //    if (_tcsicmp(ftemp->ext, _T(".lnk")) == 0) {
+         //       ftemp->is_link_file = true ;
+         //    }
+         // }
+         // else {
+         //    ftemp->ext[0] = 0;  //  no extension found
+         // }
 
          //  look up color in table
-         if (n.color)
+         if (n.color) {
             getcolor (ftemp);
-         ftemp->dirflag = ((ftemp->attrib & FILE_ATTRIBUTE_DIRECTORY) != 0) ? true : false ;
+         }
          ftemp->next = NULL;
 
          //****************************************************
@@ -180,7 +206,7 @@ static void process_exclusions (void)
 
       while (ftemp != NULL) { //lint !e449
          //  if we have a match, delete the second argument
-         if (strcmpiwc (ftemp->ext, excl[i]) != 0) {
+         if (strcmpiwc (ftemp->ext.c_str(), excl[i]) != 0) {
             if (fprev == NULL) {
                ftop = ftop->next;
                // free(ftemp);

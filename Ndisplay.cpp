@@ -146,7 +146,7 @@ void print1 (ffdata * fptr)
    int day   = sdt.wDay    ;
    int month = sdt.wMonth  ;
    long year = sdt.wYear   ;
-   // int wlen = _tcslen(fptr->filename);
+   // int wlen = _tcslen(fptr->filename.c_str());
    // int slen = name_width - fptr->mb_len ;
 
    TCHAR attr[12];
@@ -177,12 +177,12 @@ void print1 (ffdata * fptr)
          
       //  display filename in appropriate color...
       if (SHRattr != 0 && n.showSHRfiles) {
-         // nputsw(n.colorSHR | SHRattr, fptr->filename, wlen, fptr->mb_len);
-         nputs(n.colorSHR | SHRattr, fptr->filename);
+         // nputsw(n.colorSHR | SHRattr, fptr->filename.c_str(), wlen, fptr->mb_len);
+         nputs(n.colorSHR | SHRattr, fptr->filename.c_str());
       }
       else {
-         // nputsw(n.colordir,           fptr->filename, wlen, fptr->mb_len);
-         nputs(n.colordir,           fptr->filename);
+         // nputsw(n.colordir,           fptr->filename.c_str(), wlen, fptr->mb_len);
+         nputs(n.colordir,           fptr->filename.c_str());
       }
    }
 
@@ -223,11 +223,11 @@ void print1 (ffdata * fptr)
       //    nputs (fptr->color, tempstr);
       if (SHRattr != 0 && n.showSHRfiles) {
          // nputsw(n.colorSHR | SHRattr, fptr->filename, wlen, fptr->mb_len);
-         nputs(n.colorSHR | SHRattr, fptr->filename);
+         nputs(n.colorSHR | SHRattr, fptr->filename.c_str());
       }
       else {
          // nputsw(fptr->color, fptr->filename, wlen, fptr->mb_len);
-         nputs(fptr->color, fptr->filename);
+         nputs(fptr->color, fptr->filename.c_str());
       }
          
 #ifdef USE_64BIT
@@ -236,7 +236,7 @@ void print1 (ffdata * fptr)
          ncrlf() ;
          nputs (n.colorsize, _T("               "));
          nputs (attrclr, _T("=====> "));
-         TCHAR *lptr = GetLinkTarget(fptr->filename) ;
+         TCHAR *lptr = GetLinkTarget(fptr->filename.c_str()) ;
          _stprintf (tempstr, _T("%s "), lptr);
          nputs (fptr->color, tempstr);
       }
@@ -287,10 +287,10 @@ void lfn_print2 (ffdata * fptr)
       nputs (n.colortime, tempstr);
 
       if (SHRattr != 0 && n.showSHRfiles) {
-         nputs(n.colorSHR | SHRattr, fptr->filename);
+         nputs(n.colorSHR | SHRattr, fptr->filename.c_str());
       }
       else {
-         nputs(n.colordir, fptr->filename);
+         nputs(n.colordir, fptr->filename.c_str());
       }
    }
    else {
@@ -318,10 +318,10 @@ void lfn_print2 (ffdata * fptr)
 
       //  generate filename
       if (SHRattr != 0 && n.showSHRfiles) {
-         nputs(n.colorSHR | SHRattr, fptr->filename);
+         nputs(n.colorSHR | SHRattr, fptr->filename.c_str());
       }
       else {
-         nputs(fptr->color, fptr->filename);
+         nputs(fptr->color, fptr->filename.c_str());
       }
    }
    nput_char(n.colorframe, _T(' '), slen) ;
@@ -340,10 +340,10 @@ void lfn_print4 (ffdata * fptr)
    if (fptr->dirflag) {
       nputs (n.colordir, _T(" [DIR] "));
       if (SHRattr != 0 && n.showSHRfiles) {
-         nputs(n.colorSHR | SHRattr, fptr->filename);
+         nputs(n.colorSHR | SHRattr, fptr->filename.c_str());
       }
       else {
-         nputs(n.colordir, fptr->filename);
+         nputs(n.colordir, fptr->filename.c_str());
       }
    }
    else {
@@ -365,10 +365,10 @@ void lfn_print4 (ffdata * fptr)
 
       //  generate filename
       if (SHRattr != 0 && n.showSHRfiles) {
-         nputs(n.colorSHR | SHRattr, fptr->filename);
+         nputs(n.colorSHR | SHRattr, fptr->filename.c_str());
       }
       else {
-         nputs(fptr->color, fptr->filename);
+         nputs(fptr->color, fptr->filename.c_str());
       }
    }
    nput_char(n.colorframe, _T(' '), slen) ;
@@ -382,18 +382,18 @@ void lfn_print6 (ffdata * fptr)
    uchar SHRattr = fptr->attrib & 7;
    if (fptr->dirflag) {
       if (SHRattr != 0 && n.showSHRfiles) {
-         nputs(n.colorSHR | SHRattr, fptr->filename);
+         nputs(n.colorSHR | SHRattr, fptr->filename.c_str());
       }
       else {
-         nputs(n.colordir, fptr->filename);
+         nputs(n.colordir, fptr->filename.c_str());
       }
    }
    else {
       if (SHRattr != 0 && n.showSHRfiles) {
-         nputs(n.colorSHR | SHRattr, fptr->filename);
+         nputs(n.colorSHR | SHRattr, fptr->filename.c_str());
       }
       else {
-         nputs(fptr->color, fptr->filename);
+         nputs(fptr->color, fptr->filename.c_str());
       }
    }
    nput_char(n.colorframe, _T(' '), slen) ;

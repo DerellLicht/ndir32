@@ -5,6 +5,9 @@
 //  Written by:  Daniel D. Miller                             
 //************************************************************
 
+//lint -e537   Repeated include file 'd:\tdm32\lib\gcc\mingw32\10.3.0\include\c++\string'
+#include <string>
+
 #define  MAX_EXT_SIZE      8
 #define  MAXLINE           1024
 
@@ -89,9 +92,12 @@ struct ffdata {
    u16            attrib {}; //  expand this to allow for extended file attributes
    FILETIME       ft {};
    ULONGLONG      fsize {};
-   TCHAR          *filename {nullptr};
-   TCHAR          *name {nullptr};
-   TCHAR          ext[MAX_EXT_SIZE+1] {};
+   // TCHAR          *filename {nullptr};
+   std::wstring   filename {};
+   // TCHAR          *name {nullptr};
+   std::wstring   name {};
+   // TCHAR          ext[MAX_EXT_SIZE+1] {};
+   std::wstring   ext {};
    uchar          color {};
    bool           dirflag {};
    bool           is_link_file {};

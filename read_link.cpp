@@ -7,6 +7,7 @@
 #include <windows.h>
 #include <stdio.h>
 #include <shlobj.h>   /* For IShellLink */
+#include <string>
 #include <tchar.h>
 
 //lint -e10  Expecting '}'
@@ -282,7 +283,7 @@ bool read_shortcut_file(ffdata * fptr, TCHAR *shortcut_path)
    
    //  we need to build a full path+filename string here
    TCHAR szFullSrcPath[MAX_PATH];
-   _stprintf(szFullSrcPath, _T("%s\\%s"), base_path, fptr->filename);   //lint !e560: argument no. 4 should be a pointer (and it is...)
+   _stprintf(szFullSrcPath, _T("%s\\%s"), base_path, fptr->filename.c_str());   //lint !e560: argument no. 4 should be a pointer (and it is...)
    syslog(_T("[%s]\n"), szFullSrcPath);
 
    CoInitialize(NULL);  //lint !e534

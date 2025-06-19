@@ -69,13 +69,13 @@ static int init_sort(void)
 //*********************************************************
 static int sort_lfn_name(ffdata *a, ffdata *b)
    {
-   return(_tcsicmp(a->filename, b->filename)) ;
+   return(_tcsicmp(a->filename.c_str(), b->filename.c_str())) ;
    }
 
 //*********************************************************
 static int sort_ext(ffdata *a, ffdata *b)
    {
-   return(_tcsicmp(a->ext, b->ext)) ;
+   return(_tcsicmp(a->ext.c_str(), b->ext.c_str())) ;
    }
 
 //*********************************************************
@@ -112,13 +112,13 @@ static int sort_date_time(ffdata *a, ffdata *b)
 //*********************************************************
 static int sort_lfn_name_rev(ffdata *a, ffdata *b)
    {
-   return(_tcsicmp(b->filename, a->filename)) ;
+   return(_tcsicmp(b->filename.c_str(), a->filename.c_str())) ;
    }
 
 //*********************************************************
 static int sort_ext_rev(ffdata *a, ffdata *b)
    {
-   return(_tcsicmp(b->ext, a->ext)) ;
+   return(_tcsicmp(b->ext.c_str(), a->ext.c_str())) ;
    }
 
 //*********************************************************

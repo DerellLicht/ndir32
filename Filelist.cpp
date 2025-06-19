@@ -1,5 +1,5 @@
 //*****************************************************************
-//  Copyright (c) 1995-2024  Daniel D Miller
+//  Copyright (c) 1995-2025  Daniel D Miller
 //  FILELIST.CPP - NDIR file-listing handlers                      
 //*****************************************************************
 
@@ -13,9 +13,9 @@
 //lint -esym(530, fsize)  Symbol not initialized (yes, it is)
 
 #include "common.h"
+#include "vector_res.h"
 #include "ndir32.h"
 #include "conio32.h"  //  _where_x()
-#include "vector_res.h"
 
 //*****************************************************************
 static unsigned list_count = 0 ;
@@ -74,7 +74,7 @@ static void display_batch_mode(void)
 {
    ffdata *ftemp = ftop ;
    while (ftemp != NULL) {
-      _tprintf(_T("%s%s%s\n"), leftstr.c_str(), ftemp->filename, rightstr.c_str()) ;
+      _tprintf(_T("%s%s%s\n"), leftstr.c_str(), ftemp->filename.c_str(), rightstr.c_str()) ;
       ftemp = ftemp->next ;
    }
 }
@@ -388,7 +388,7 @@ static void list_files_qwise(void)
    ffdata *ftemp ;
    unsigned width, col = 0, slen ;
    int first_line = 1, new_line ;
-   TCHAR prev_ext[10] ;
+   TCHAR prev_ext[MAX_EXT_SIZE+1] ;
    unsigned maxext ;
 
    prev_ext[0] = 0 ; //  make lint happy
@@ -400,7 +400,8 @@ static void list_files_qwise(void)
    ftemp = ftop ;
    maxext = 0 ;
    while (ftemp != NULL) {
-      slen = _tcslen(ftemp->ext) ;
+      // slen = _tcslen(ftemp->ext) ;
+      slen = ftemp->ext.length() ;
       if (maxext < slen)
           maxext = slen ;
       
@@ -414,22 +415,23 @@ static void list_files_qwise(void)
    new_line = 1 ;
    while (ftemp != NULL) {
       //  see if file extention is changing
-      if (first_line  ||  _tcsicmp(prev_ext, ftemp->ext) != 0) {
+      if (first_line  ||  _tcsicmp(prev_ext, ftemp->ext.c_str()) != 0) {
          if (first_line)
             first_line = 0 ;
          else 
             ncrlf() ;
-         _stprintf(tempstr, _T("%-*s: "), maxext, ftemp->ext) ;   
+         _stprintf(tempstr, _T("%-*s: "), maxext, ftemp->ext.c_str()) ;   
          nputs(ftemp->color, tempstr) ;
          col = maxext+2 ;
-         _tcscpy(prev_ext, ftemp->ext) ;
+         _tcscpy(prev_ext, ftemp->ext.c_str()) ;
          new_line = 1 ;
       }
 
       //  see if next filename is going to overrun line; 
       //  if so, start next line...
       // slen = (n.lfn_off) ? 9 : (_tcslen(ftemp->name) + 2) ;
-      slen = _tcslen(ftemp->name) + 2 ;
+      // slen = _tcslen(ftemp->name.c_str()) + 2 ;
+      slen = ftemp->name.length() + 2 ;
       if (col + slen > width) {
          nputs((ftemp->dirflag) ? n.colordir : ftemp->color, _T(", ")) ;
          ncrlf() ;
@@ -448,7 +450,7 @@ static void list_files_qwise(void)
       //  select appropriate color and print the filename
       // _stprintf(tempstr, (n.lfn_off) ? "%-8s " : "%s", ftemp->name) ;
       // nputs((ftemp->dirflag) ? n.colordir : ftemp->color, tempstr) ;
-      nputs((ftemp->dirflag) ? n.colordir : ftemp->color, ftemp->name) ;
+      nputs((ftemp->dirflag) ? n.colordir : ftemp->color, ftemp->name.c_str()) ;
       col += slen ;
       
       //  get next filename

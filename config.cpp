@@ -10,7 +10,7 @@
 #ifdef _lint
 #include <stdlib.h>
 #endif
-#include <ctype.h>
+#include <string>
 #include <tchar.h>
 
 #include "common.h"
@@ -54,7 +54,7 @@ void getcolor(ffdata *fnew)
 
    for (j = 0; j < attrib_count; j++) {
       aptr = &attr_table[j];
-      if (strcmpiwc (fnew->ext, aptr->ext) != 0) {
+      if (strcmpiwc (fnew->ext.c_str(), aptr->ext) != 0) {
          fnew->color = aptr->attr;
          return;
       }
