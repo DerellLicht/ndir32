@@ -58,7 +58,7 @@ struct ndir_data {
    uchar unused1 {};                                                                            
    uchar color {1};                                                                              
    uchar showSHRfiles {};                                                                       
-   uchar ega_keep_unused {};     // deprecated on 01.17.23
+   // uchar ega_keep_unused {};     // deprecated on 01.17.23
    uchar drive_summary {DSUMMARY_NONE};//  0 = no, 1 = show free space, 2 = show used space
    uchar fdate_option {};  //  0 = LAST_MODIFY, 1 = FILE_CREATE (MSDOS 7.00+ only)
    // uchar lfn_off ;      //  0 = force DOS 8.3 filenames (removed in V2.62)
