@@ -28,7 +28,6 @@ static int sort_size_rev(ffdata *a, ffdata *b);
 // static int sort_date_rev(ffdata *a, ffdata *b);
 // static int sort_time_rev(ffdata *a, ffdata *b);
 static ffdata *merge_sort(ffdata *c);
-static ffdata *merge(ffdata *a, ffdata *b);
 
 //************************************************************
 //  the following object is a dummy point structure
@@ -171,6 +170,37 @@ static int sort_dir(ffdata *a, ffdata *b)
    }
 
 //*********************************************************
+//  This routine merges two sorted linked lists.
+//*********************************************************
+static ffdata *merge(ffdata *a, ffdata *b)
+   {
+   ffdata *c ;
+   c = z ;
+
+   do
+      {
+      int x = sort_fcn(a, b) ;
+      if (x <= 0)
+         {
+         c->next = a ;
+         c = a ;
+         a = a->next ;
+         }
+      else
+         {
+         c->next = b ;
+         c = b ;
+         b = b->next ;  //lint !e613
+         }
+      }
+   while ((a != NULL) && (b != NULL));
+
+   if (a == NULL)  c->next = b ;  //lint !e613
+             else  c->next = a ;  //lint !e613
+   return z->next ;
+   }
+
+//*********************************************************
 //  This routine recursively splits linked lists
 //  into two parts, passing the divided lists to
 //  merge() to merge the two sorted lists.
@@ -203,37 +233,6 @@ static ffdata *merge_sort(ffdata *c)
       return merge(merge_sort(a), merge_sort(b)) ;
       }
    return c ;
-   }
-
-//*********************************************************
-//  This routine merges two sorted linked lists.
-//*********************************************************
-static ffdata *merge(ffdata *a, ffdata *b)
-   {
-   ffdata *c ;
-   c = z ;
-
-   do
-      {
-      int x = sort_fcn(a, b) ;
-      if (x <= 0)
-         {
-         c->next = a ;
-         c = a ;
-         a = a->next ;
-         }
-      else
-         {
-         c->next = b ;
-         c = b ;
-         b = b->next ;  //lint !e613
-         }
-      }
-   while ((a != NULL) && (b != NULL));
-
-   if (a == NULL)  c->next = b ;  //lint !e613
-             else  c->next = a ;  //lint !e613
-   return z->next ;
    }
 
 //*********************************************************
