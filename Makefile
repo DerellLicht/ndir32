@@ -11,11 +11,11 @@ USE_CLANG = YES
 # This obstacle can be avoided by using the -static linker flag, which links in all
 # required library functions; this eliminates the need for the .dll file, 
 # at the cost of a (sometimes significantly) larger executable file.
+# 
+# clang: with -static: 435KB, without -static: 163KB
 USE_STATIC = YES
-# For now, I'm using legacy version of qualify(),
-# because the target filespecs are an array,
-# and used in a variety of contexts...
-# so I don't want to battle with this complication yet.
+
+# the legacy version of qualify.cpp, does not depend upon c++ string class
 USE_LEGACY = NO
 
 #  clang++ note: you don't need two separate toolchain installations to build for 32 and 64 bit; 
@@ -38,6 +38,8 @@ ifeq ($(USE_CLANG),YES)
 TOOLS=d:\clang\bin
 else
 #TOOLS=d:\tdm64\bin
+#  the cygwin 64-bit toolchain apparently does not support vector::sort()
+#  how useful...
 TOOLS=C:\cygwin64\bin
 #TOOLS=c:\tdm-gcc-64\bin
 endif
@@ -155,14 +157,14 @@ $(BIN): $(OBJS)
 
 # DO NOT DELETE
 
-Ndir32.o: der_libs/common.h ndir32.h conio32.h vector_res.h
+Ndir32.o: der_libs/common.h ndir32.h vector_res.h conio32.h
 Ndir32.o: der_libs/qualify.h
 cmd_line.o: der_libs/common.h ndir32.h conio32.h
 config.o: der_libs/common.h ndir32.h
 conio32.o: der_libs/common.h ndir32.h conio32.h
 Diskparm.o: der_libs/common.h ndir32.h vector_res.h
 err_exit.o: der_libs/common.h ndir32.h conio32.h
-Filelist.o: der_libs/common.h ndir32.h conio32.h vector_res.h
+Filelist.o: der_libs/common.h vector_res.h ndir32.h conio32.h
 Fileread.o: der_libs/common.h ndir32.h vector_res.h
 Ndisplay.o: der_libs/common.h ndir32.h conio32.h
 nio.o: der_libs/common.h ndir32.h conio32.h

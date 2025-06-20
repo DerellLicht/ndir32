@@ -504,8 +504,10 @@ static void sort_target_paths(void)
 //********************************************************************************
 #if defined(__GNUC__) && defined(_UNICODE)
 
+#ifndef NOMAKEDEPEND
 #ifndef __MSVCRT__
 #error Unicode main function requires linking to MSVCRT
+#endif
 #endif
 
 #include <wchar.h>
