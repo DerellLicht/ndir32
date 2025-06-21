@@ -53,11 +53,6 @@ unsigned tree_level_limit = 0 ;
 
 ULONGLONG diskbytes, diskfree, clbytes ;
 
-//*****************************************************************
-//lint -esym(552, ftail)   Symbol not accessed
-ffdata *ftop = NULL ;
-ffdata *ftail = NULL ;
-
 // TCHAR* target[20] ;
 std::vector<std::wstring> target {};
 
@@ -213,17 +208,6 @@ void insert_target_filespec(TCHAR *fstr)
       syslog(_T("qualify failed: %s\n"), target[idx].c_str());
       error_exit(INV_DRIVE, (TCHAR *)target[idx].c_str()) ;
    }
-}
-
-//*********************************************************************
-//lint -esym(759, add_element_to_file_list)  header declaration for symbol could be moved from header to module
-void add_element_to_file_list(ffdata *ftemp)
-{
-   if (ftop == NULL)
-      ftop = ftemp;
-   else
-      ftail->next = ftemp;
-   ftail = ftemp;
 }
 
 //*********************************************************************

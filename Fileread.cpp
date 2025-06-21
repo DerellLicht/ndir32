@@ -33,6 +33,23 @@ void update_exclusion_list(TCHAR *extptr)
    }
 }
 
+//*****************************************************************
+//lint -esym(552, ftail)   Symbol not accessed
+//lint -esym(759, ftail)   header declaration for symbol could be moved from header to module
+ffdata *ftop = NULL ;
+ffdata *ftail = NULL ;
+
+//*********************************************************************
+//lint -esym(759, add_element_to_file_list)  header declaration for symbol could be moved from header to module
+void add_element_to_file_list(ffdata *ftemp)
+{
+   if (ftop == NULL)
+      ftop = ftemp;
+   else
+      ftail->next = ftemp;
+   ftail = ftemp;
+}
+
 //*********************************************************
 //  This loops thru all files in one subdirectory,
 //  calling update_filelist() to add files to the

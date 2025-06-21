@@ -461,55 +461,77 @@ static void list_files_qwise(void)
 }
 
 //*****************************************************************
+//  DDM  06/20/25
+//  Maybe we can do this more cleanly, and also make it more amenable
+//  to conversion to vector class, by storing pointer to top of column
+//  and number of elements in each column, in a struct.
+//  then the pointer could be changed to a vector index later.
+//  
+//  On my full-screen console (474 columns x 82 rows)
+//  (on 3840 x 1600 monitor)
+//  we indeed got an error here, with MAX_COLUMNS: 10
+//  disp_cols is too large (24 vs 10)
+//*****************************************************************
+struct vcolumn_elements_s {
+   ffdata *ftemp {nullptr};
+   uint rows {};
+};
+#define  MAX_COLUMNS    25
+static vcolumn_elements_s vcolumns[MAX_COLUMNS] ;
+
 static void list_files_vertically(void)
 {
    unsigned rows, partrows, j, k ;
-   //  these arrays must have enough entries for
-   //  the maximum number of columns on the screen
-   unsigned pcols[20] ;
-   ffdata *ftemps[20] ;
-
    //************************************************
    //  now, start displaying files
    //************************************************
    unsigned fcount = 0 ;
    lfn_get_columns() ;  //  set disp_cols, name_width
    
+   if (disp_cols > MAX_COLUMNS) {
+      _stprintf(tempstr, L"disp_cols is too large (%u vs %u)\n", disp_cols, MAX_COLUMNS);
+      nputs(0x65, tempstr);
+      syslog(L"disp_cols is too large (%u vs %u)\n", disp_cols, MAX_COLUMNS);
+      return ;
+   }
+   
    // syslog(_T("filecount: %u\n"), filecount);
-
    rows = (unsigned) filecount / disp_cols ;
    partrows = (unsigned) filecount % disp_cols ;
 
-   for (j=0; j< disp_cols ; j++)  pcols[j] = rows ;
-   for (j=0; j<partrows; j++)  pcols[j]++ ;  //lint !e771
+   for (j=0; j< disp_cols ; j++) {
+      vcolumns[j].rows = rows ;
+   }
+   for (j=0; j<partrows; j++) {
+      vcolumns[j].rows++ ;
+   }
 
-   if (partrows > 0)
+   //  after partrows causes rows to be incremented for some columns,
+   //  then actual overall value of rows needs to be incremented to reflect this.
+   //  If there were no partrows, then rows is already correct.
+   if (partrows > 0) {
       rows++ ;
-
+   }
+      
    //************************************************
-   //  split the  file list into (columns) lists.
-   //  However, remember to re-combine the lists
-   //  before ftemps[] goes out of scope, or
-   //  we won't be able to free them later!!
-   //************************************************
-   // ffdata *fprev ;
-   ftemps[0] = ftop ;
-   ftemps[1] = ftop ;
+   vcolumns[0].ftemp = ftop ;
+   vcolumns[1].ftemp = ftop ;
    for (j=1; j< disp_cols; j++) {
       //  find end of current list
-      for (k=0; k<pcols[j-1]; k++)  //lint !e771
-         ftemps[j] = ftemps[j]->next ;
+      for (k=0; k<vcolumns[j-1].rows; k++) { //lint !e771
+         vcolumns[j].ftemp = vcolumns[j].ftemp->next ;
+      } 
 
       //  now, break the list
-      ftemps[j+1] = ftemps[j] ;
+      vcolumns[j+1].ftemp = vcolumns[j].ftemp ;
    }
 
    filehead() ;   //  uses rows, columns
    j = 0 ;
    while (LOOP_FOREVER) {
       if (fcount < filecount) {
-         lfn_fprint[columns](ftemps[j]) ; //  vertical listing  NOLINT
-         ftemps[j] = ftemps[j]->next ;
+         lfn_fprint[columns](vcolumns[j].ftemp) ; //  vertical listing  NOLINT
+         vcolumns[j].ftemp = vcolumns[j].ftemp->next ;
       }
       //  if no files left to display, fill in row with spaces
       else {
