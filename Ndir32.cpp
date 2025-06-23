@@ -139,17 +139,26 @@ _T(" "),
 NULL } ;
 
 //**************************************************
+// #define  USE_SYSLOG
 //lint -esym(714, dump_target)
 //lint -esym(759, dump_target)
 //lint -esym(765, dump_target)
 void dump_target(TCHAR *msg)
 {
    if (msg != NULL) {
+#ifdef  USE_SYSLOG   
       syslog(_T("%s"), msg);
+#else
+      dputsf(_T("%s\n"), msg);
+#endif      
    }
    for(auto &tgt : target) {
       auto telement = tgt ;
+#ifdef  USE_SYSLOG   
       syslog(L"%s\n", telement.c_str());
+#else      
+      dputsf(L"%s\n", telement.c_str());
+#endif      
    }
 }  //lint !e529
 
@@ -157,7 +166,7 @@ void dump_target(TCHAR *msg)
 //  string compare routine, case-insensitive, 
 //  wildcards are handled in the DOS fashion.
 //**************************************************************
-int strcmpiwc(const TCHAR *onestr, const TCHAR *twostr)
+bool strcmpiwc(const TCHAR *onestr, const TCHAR *twostr)
 {
    char onechar, twochar ;
    int k = 0 ;
@@ -169,24 +178,24 @@ int strcmpiwc(const TCHAR *onestr, const TCHAR *twostr)
       //  if both are at end of string and no differences
       //  have been found, the strings are equal.
       if (onechar == 0  &&  twochar == 0) 
-         return 1;
+         return true;
 
       //  if one string is at end and the other is not,
       //  there is NOT a match.
       if (onechar == 0  ||  twochar == 0)
-         return 0;
+         return false;
 
       //  at this point, neither char is NULL
 
       //  if either char is a 'match all' wildcard, the strings are equal
       if (onechar == '*'  ||  twochar == '*') 
-         return 1 ;
+         return true ;
 
       if (onechar == '?'  ||  twochar == '?') ; //  match continues
 
 
       else if (tolower(onechar) != tolower(twochar)) 
-         return 0;
+         return false;
 
       k++ ;
    }

@@ -150,7 +150,8 @@ extern unsigned start, finish ;
 //*****************  function prototypes**********************
 
 //  ndir32.cpp
-int strcmpiwc(const TCHAR *onestr, const TCHAR *twostr);
+bool strcmpiwc(const TCHAR *onestr, const TCHAR *twostr);
+void dump_target(TCHAR *msg);
 void insert_target_filespec(TCHAR *fstr);
 
 //  cmd_line.cpp

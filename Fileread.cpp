@@ -188,17 +188,17 @@ search_next_file:
 //*************************************************************
 static void process_exclusions (void)
 {
+   // dump_target(_T("sorted element(s)\n"));
    for (int idxExcl = 0; idxExcl < exclcount; idxExcl++) {
       
       unsigned idxHead ;
       unsigned ltcount = target.size() ;
-      // dump_target(_T("sorted element(s)\n"));
       //  head index should iterate over all elements *except* the last one,
       //  since the last element in list would not have any others to compare against.
       for (idxHead=0 ; idxHead< ltcount ; idxHead++) {
          // ftemp = flist[idxHead];
 try_next_element:
-         if (strcmpiwc (flist[idxHead].ext.c_str(), excl[idxExcl]) != 0) {
+         if (strcmpiwc (flist[idxHead].ext.c_str(), excl[idxExcl])) {
             //  Scan file name and extension for equality.
             //  If both filename and extension are equal, delete one.
             flist.erase(flist.begin()+idxHead) ;
@@ -210,9 +210,9 @@ try_next_element:
             }
          }
       }  //lint !e850 
-      // dump_target(_T("erased element(s)\n"));
       // syslog(_T("target size: %u elements\n"), target.size());
    }
+   // dump_target(_T("erased element(s)\n"));
 }
 
 //*********************************************************
