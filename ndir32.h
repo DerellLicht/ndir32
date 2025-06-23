@@ -7,6 +7,7 @@
 
 //lint -e537   Repeated include file 'd:\tdm32\lib\gcc\mingw32\10.3.0\include\c++\string'
 #include <string>
+#include <vector>
 
 #define  MAX_EXT_SIZE      8
 #define  MAXLINE           1024
@@ -87,25 +88,25 @@ extern ULONGLONG diskbytes, diskfree, clbytes ;
 //************************************************************
 extern TCHAR tline, bline, vline, dline ;
 
+// extern TCHAR* target[20] ;
+extern std::vector<std::wstring> target ;
+extern std::wstring volume_name ;
+
 /************************************************************/
 struct ffdata {
    u16            attrib {}; //  expand this to allow for extended file attributes
    FILETIME       ft {};
    ULONGLONG      fsize {};
-   // TCHAR          *filename {nullptr};
    std::wstring   filename {};
-   // TCHAR          *name {nullptr};
    std::wstring   name {};
-   // TCHAR          ext[MAX_EXT_SIZE+1] {};
    std::wstring   ext {};
    uchar          color {};
    bool           dirflag {};
    bool           is_link_file {};
    uint           mb_len {};
-   struct ffdata  *next {nullptr};
 } ;
-extern ffdata *ftop ;
-extern ffdata *ftail ;
+
+extern std::vector<ffdata> flist ;
 
 //*********************************************************
 //                NSORT.CPP
@@ -150,7 +151,6 @@ extern unsigned start, finish ;
 
 //  ndir32.cpp
 int strcmpiwc(const TCHAR *onestr, const TCHAR *twostr);
-void add_element_to_file_list(ffdata *ftemp);
 void insert_target_filespec(TCHAR *fstr);
 
 //  cmd_line.cpp
@@ -172,6 +172,8 @@ void batch_set_left_str(TCHAR *instr);
 void batch_set_right_str(TCHAR *instr);
 
 //  fileread.cpp
+void clear_existing_file_list(void);
+//lint -esym(532, update_exclusion_list)  Return mode of function inconsistent with line 28, file Fileread.cpp
 void update_exclusion_list(TCHAR *extptr);
 void file_listing(void);
 

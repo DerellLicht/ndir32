@@ -636,3 +636,30 @@ void dprints(unsigned row, unsigned col, const TCHAR* outstr)
    dgotoxy(col, row) ;
    dputs(outstr) ;
 }   
+
+//********************************************************************
+//  Interesting note: 
+//  If I call dputsf() with L"", then newline is not recognized,
+//  and dnewline() must be called separately.
+//  If I call dputsf() with _T(""), then newline is recognized,
+//  but passing in wstring::c_str() doesn't work properly...
+//  it probably needs to be cast to TCHAR *
+//********************************************************************
+//lint -esym(714, dputsf)
+//lint -esym(759, dputsf)
+//lint -esym(765, dputsf)
+int dputsf(const TCHAR *fmt, ...)
+{
+   TCHAR consoleBuffer[3000] ;
+   va_list al; //lint !e522
+
+//lint -esym(526, __builtin_va_start)
+//lint -esym(628, __builtin_va_start)
+   va_start(al, fmt);   //lint !e1055 !e530
+   _vstprintf(consoleBuffer, fmt, al);   //lint !e64
+   // OutputDebugString(consoleBuffer) ;
+   dputs(consoleBuffer) ;
+   va_end(al);
+   return 1;
+}
+

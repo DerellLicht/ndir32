@@ -1,9 +1,5 @@
 //*****************************************************************
-//                                                                 
 //  NSORT.CPP -   NDIR data-sorting routines                       
-//                                                                 
-//  Written by:   Daniel D. Miller  (the Derelict)                 
-//                                                                 
 //*****************************************************************
 
 #include <windows.h>
@@ -11,266 +7,51 @@
 
 #include "common.h"
 #include "ndir32.h"
+#include "conio32.h"
 
-//lint -e1013  Symbol 'LowPart' not a member of class '_LARGE_INTEGER'
-//lint -e40    Undeclared identifier 'LowPart'
-//lint -e63    Expected an lvalue
-
-//***************  function prototypes  ***************
-static int sort_lfn_name(ffdata *a, ffdata *b);
-static int sort_ext(ffdata *a, ffdata *b);
-static int sort_size(ffdata *a, ffdata *b);
-// static int sort_date(ffdata *a, ffdata *b);
-// static int sort_time(ffdata *a, ffdata *b);
-static int sort_lfn_name_rev(ffdata *a, ffdata *b);
-static int sort_ext_rev(ffdata *a, ffdata *b);
-static int sort_size_rev(ffdata *a, ffdata *b);
-// static int sort_date_rev(ffdata *a, ffdata *b);
-// static int sort_time_rev(ffdata *a, ffdata *b);
-static ffdata *merge_sort(ffdata *c);
-
-//************************************************************
-//  the following object is a dummy point structure
-//  which is used by merge_sort.  The main code must
-//  allocate a strucure for this to point to.
-//  
-//  A global function pointer is also required by the
-//  sort routine.  This will point to a function which
-//  accepts two structure pointers as arguments, and
-//  returns:
-//  
-//     >0 if a > b
-//    ==0 if a == b
-//     <0 if a < b
-//  
-//************************************************************
-static ffdata *z = NULL ;
-static int (*sort_fcn) (ffdata *a, ffdata *b) ;
-
-//****************************************************
-//  allocate a dummy structure for merge_sort()
-//****************************************************
-static int init_sort(void) 
-{
-   z = new ffdata ;
-   // z = (ffdata *) malloc(sizeof(ffdata)) ;
-   // if (z == NULL)
-   //    error_exit(OUT_OF_MEMORY, NULL) ;
-   z->next = NULL ;
-   return DATA_OKAY ;
-}
-
-//****************************************************
-// void free_file_structs(void)
-//    {
-//    if (z != NULL)  delete z ;
-//    }
-
-//*********************************************************
-static int sort_lfn_name(ffdata *a, ffdata *b)
-   {
-   return(_tcsicmp(a->filename.c_str(), b->filename.c_str())) ;
-   }
-
-//*********************************************************
-static int sort_ext(ffdata *a, ffdata *b)
-   {
-   return(_tcsicmp(a->ext.c_str(), b->ext.c_str())) ;
-   }
-
-//*********************************************************
-static int sort_size(ffdata *a, ffdata *b)
-   {
-   if (a->fsize > b->fsize)  return(1) ;
-   else if (b->fsize > a->fsize)  return(-1) ;
-   else return(0) ;
-   }
-
-//*********************************************************
-// static int sort_date(ffdata *a, ffdata *b)
-//    {
-//    if (a->ft > b->ft)  return(1) ;
-//    else if (b->ft > a->ft)  return(-1) ;
-//    else 
-//       return(0) ;
-//    }
-
-//*********************************************************
-static int sort_date_time(ffdata *a, ffdata *b)
-   {
-   LARGE_INTEGER a64, b64 ;
-   a64.LowPart  = a->ft.dwLowDateTime ;
-   a64.HighPart = a->ft.dwHighDateTime ;
-   b64.LowPart  = b->ft.dwLowDateTime ;
-   b64.HighPart = b->ft.dwHighDateTime ;
-   if (a64.QuadPart > b64.QuadPart)  return(1) ;   //lint !e530
-   else if (a64.QuadPart < b64.QuadPart)  return(-1) ;   //lint !e530
-   else 
-      return(0) ;
-   }  //lint !e550
-
-//*********************************************************
-static int sort_lfn_name_rev(ffdata *a, ffdata *b)
-   {
-   return(_tcsicmp(b->filename.c_str(), a->filename.c_str())) ;
-   }
-
-//*********************************************************
-static int sort_ext_rev(ffdata *a, ffdata *b)
-   {
-   return(_tcsicmp(b->ext.c_str(), a->ext.c_str())) ;
-   }
-
-//*********************************************************
-static int sort_size_rev(ffdata *a, ffdata *b)
-   {
-   if (b->fsize > a->fsize)  return(1) ;
-   else if (a->fsize > b->fsize)  return(-1) ;
-   else return(0) ;
-   }
-
-//*********************************************************
-// static int sort_date_rev(ffdata *a, ffdata *b)
-//    {
-//    if (b->ft > a->ft)  return(1) ;
-//    else if (a->ft > b->ft)  return(-1) ;
-//    else 
-//       return(0) ;
-//    }
-
-//*********************************************************
-static int sort_date_time_rev(ffdata *a, ffdata *b)
-   {
-   // if (b->ft > a->ft)  return(1) ;
-   // else if (a->ft > b->ft)  return(-1) ;
-   // else 
-   //    return(0) ;
-   LARGE_INTEGER a64, b64 ;
-   a64.LowPart  = a->ft.dwLowDateTime ;
-   a64.HighPart = a->ft.dwHighDateTime ;
-   b64.LowPart  = b->ft.dwLowDateTime ;
-   b64.HighPart = b->ft.dwHighDateTime ;
-   if (a64.QuadPart < b64.QuadPart)  return(1) ;   //lint !e530
-   else if (a64.QuadPart > b64.QuadPart)  return(-1) ;   //lint !e530
-   else 
-      return(0) ;
-   }  //lint !e550
-
-//*********************************************************
-//  this function returns
-//       <0 if (a) is DIR and (b) is not
-//       >0 if (b) is DIR and (a) is not
-//      ==0 if (a) and (b) are same type (DIR or not)
-//*********************************************************
-static int sort_dir(ffdata *a, ffdata *b)
-   {
-   if (a->dirflag && !(b->dirflag))  return(-1) ;
-   else if (b->dirflag && !(a->dirflag))  return(1) ;
-   else return(0) ;
-   }
-
-//*********************************************************
-//  This routine merges two sorted linked lists.
-//*********************************************************
-static ffdata *merge(ffdata *a, ffdata *b)
-   {
-   ffdata *c ;
-   c = z ;
-
-   do
-      {
-      int x = sort_fcn(a, b) ;
-      if (x <= 0)
-         {
-         c->next = a ;
-         c = a ;
-         a = a->next ;
-         }
-      else
-         {
-         c->next = b ;
-         c = b ;
-         b = b->next ;  //lint !e613
-         }
-      }
-   while ((a != NULL) && (b != NULL));
-
-   if (a == NULL)  c->next = b ;  //lint !e613
-             else  c->next = a ;  //lint !e613
-   return z->next ;
-   }
-
-//*********************************************************
-//  This routine recursively splits linked lists
-//  into two parts, passing the divided lists to
-//  merge() to merge the two sorted lists.
-//*********************************************************
-static ffdata *merge_sort(ffdata *c)
-   {
-   ffdata *a, *b, *prev ;
-   int pcount = 0 ;
-   int j = 0 ;
-
-   if ((c != NULL) && (c->next != NULL))
-      {
-      a = c ;
-      while (a != NULL)
-         {
-         pcount++ ;
-         a = a->next  ;
-         }
-      a = c ;
-      b = c ;
-      prev = b ;
-      while (j <  pcount/2)
-         {
-         j++ ;
-         prev = b ;
-         b = b->next ;
-         }
-      prev->next = NULL ;  //lint !e771
-
-      return merge(merge_sort(a), merge_sort(b)) ;
-      }
-   return c ;
-   }
-
-//*********************************************************
-//  This intermediate function is used because I want
-//  merge_sort() to accept a passed parameter,
-//  but in this particular application the initial
-//  list is global.  This function sets up the global
-//  comparison-function pointer and passes the global
-//  list pointer to merge_sort().
-//*********************************************************
-static void sort_files(int (*current_sort)(ffdata *a, ffdata *b))
-{
-   sort_fcn = current_sort ;
-   ftop = merge_sort(ftop) ;
-}
+//lint -esym(762, stable_sort)  Redundantly declared symbol 'stable_sort()' previously declared at line 26
+//lint -esym(864, flist)  Expression involving variable 'flist' possibly depends on order of evaluation
 
 //*****************************************************************
 void sort_filelist(void)
 {
-   if (z == 0)
-      init_sort() ;
-   
    //  reverse sort
    if (n.reverse) {
       switch (n.sort) {
       case SORT_EXT:
-         sort_files(sort_lfn_name_rev) ;
-         sort_files(sort_ext_rev) ;
+         // sort_files(sort_lfn_name_rev) ;
+         std::stable_sort(flist.begin(), flist.end(), [](const ffdata& a, const ffdata& b) { 
+            return (_tcsicmp(b.name.c_str(), a.name.c_str()) < 0) ;
+            } ) ;
+         // sort_files(sort_ext_rev) ;
+         std::stable_sort(flist.begin(), flist.end(), [](const ffdata& a, const ffdata& b) { 
+            return (_tcsicmp(b.ext.c_str(), a.ext.c_str()) < 0) ;
+            } ) ;
          break;
       case SORT_NAME:
-         sort_files(sort_ext_rev) ;
-         sort_files(sort_lfn_name_rev) ;
+         // sort_files(sort_ext_rev) ;
+         // sort_files(sort_lfn_name_rev) ;
+         // sort_files(sort_filename_rev) ;
+         std::stable_sort(flist.begin(), flist.end(), [](const ffdata& a, const ffdata& b) { 
+            return (_tcsicmp(b.filename.c_str(), a.filename.c_str()) < 0) ;
+            } ) ;
          break;
       case SORT_SIZE:
-         sort_files(sort_size_rev) ;
+         // sort_files(sort_size_rev) ;
+         std::stable_sort(flist.begin(), flist.end(), [](const ffdata& a, const ffdata& b) { 
+            return (b.fsize < a.fsize) ;
+            } ) ;
          break;
       case SORT_DATE:
-         sort_files(sort_date_time_rev) ;
+         // sort_files(sort_date_time_rev) ;
+         std::stable_sort(flist.begin(), flist.end(), [](const ffdata& a, const ffdata& b) { 
+            LARGE_INTEGER a64, b64 ;
+            a64.LowPart  = a.ft.dwLowDateTime ;
+            a64.HighPart = a.ft.dwHighDateTime ;
+            b64.LowPart  = b.ft.dwLowDateTime ;
+            b64.HighPart = b.ft.dwHighDateTime ;
+            return (b64.QuadPart < a64.QuadPart) ;
+            } ) ;
          break;
       default:  break ; // make lint happy
       }
@@ -280,24 +61,50 @@ void sort_filelist(void)
    else {
       switch (n.sort) {
       case SORT_EXT:
-         sort_files(sort_lfn_name) ;
-         sort_files(sort_ext) ;
+         // sort_files(sort_lfn_name) ;
+         std::stable_sort(flist.begin(), flist.end(), [](const ffdata& a, const ffdata& b) { 
+            return (_tcsicmp(a.name.c_str(), b.name.c_str()) < 0) ;
+            } ) ;
+         // sort_files(sort_ext) ;
+         std::stable_sort(flist.begin(), flist.end(), [](const ffdata& a, const ffdata& b) { 
+            return (_tcsicmp(a.ext.c_str(), b.ext.c_str()) < 0) ;
+            } ) ;
          break;
       case SORT_NAME:
-         sort_files(sort_ext) ;
-         sort_files(sort_lfn_name) ;
+         // sort_files(sort_ext) ;
+         // sort_files(sort_lfn_name) ;
+         // sort_files(sort_filename) ;
+         std::stable_sort(flist.begin(), flist.end(), [](const ffdata& a, const ffdata& b) { 
+            return (_tcsicmp(a.filename.c_str(), b.filename.c_str()) < 0) ;
+            } ) ;
          break;
       case SORT_SIZE:
-         sort_files(sort_size) ;
+         // sort_files(sort_size) ;
+         std::stable_sort(flist.begin(), flist.end(), [](const ffdata& a, const ffdata& b) { 
+            return (a.fsize < b.fsize) ;
+            } ) ;
          break;
       case SORT_DATE:
-         sort_files(sort_date_time) ;
+         // sort_files(sort_date_time) ;
+         std::stable_sort(flist.begin(), flist.end(), [](const ffdata& a, const ffdata& b) { 
+            LARGE_INTEGER a64, b64 ;
+            a64.LowPart  = a.ft.dwLowDateTime ;
+            a64.HighPart = a.ft.dwHighDateTime ;
+            b64.LowPart  = b.ft.dwLowDateTime ;
+            b64.HighPart = b.ft.dwHighDateTime ;
+            return (a64.QuadPart < b64.QuadPart) ;
+            // return (a.fsize < b.fsize) ;
+            } ) ;
          break;
       default:  break ; // make lint happy
       }
    }
 
-   if (n.dir_first)
-      sort_files(sort_dir) ;
+   if (n.dir_first) {
+      // sort_files(sort_dir) ;
+      std::stable_sort(flist.begin(), flist.end(), [](const ffdata& a, const ffdata& b) { 
+         return (a.dirflag && !(b.dirflag)); 
+         } ) ;
+   }
 }
 

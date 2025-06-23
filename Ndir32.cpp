@@ -18,7 +18,6 @@
 
 #include "common.h"
 #include "ndir32.h"
-#include "vector_res.h"
 #include "conio32.h"
 #include "qualify.h" //  must be *after* vector_res.h
 
@@ -140,7 +139,6 @@ _T(" "),
 NULL } ;
 
 //**************************************************
-#ifdef USE_WSTRING
 //lint -esym(714, dump_target)
 //lint -esym(759, dump_target)
 //lint -esym(765, dump_target)
@@ -154,7 +152,6 @@ void dump_target(TCHAR *msg)
       syslog(L"%s\n", telement.c_str());
    }
 }  //lint !e529
-#endif
 
 //**************************************************************
 //  string compare routine, case-insensitive, 
@@ -209,36 +206,6 @@ void insert_target_filespec(TCHAR *fstr)
       error_exit(INV_DRIVE, (TCHAR *)target[idx].c_str()) ;
    }
 }
-
-//*********************************************************************
-//  delete contents of existing file list
-//  If tcount == 1, there *cannot* be multiple filespecs, can there??
-//*********************************************************************
-//lint -esym(714, clear_existing_file_list)
-//lint -esym(759, clear_existing_file_list)
-//lint -esym(765, clear_existing_file_list)
-void clear_existing_file_list(void)
-{
-   if (ftop != NULL) {
-      ffdata *ftemp = ftop ;
-      ffdata *fkill ;
-      while (ftemp != NULL) {
-         fkill = ftemp ;
-         ftemp = ftemp->next ;
-         delete fkill ;
-      }
-      ftop = NULL ;
-   }
-   filecount = 0 ;
-}
-
-//**************************************************
-#ifdef USE_WSTRING
-bool const comp(std::wstring a, std::wstring b)
-{
-   return (a.compare(b) < 0) ;
-}
-#endif
 
 /**********************************************************************/
 /**                     File listing routines                        **/        
@@ -355,8 +322,6 @@ static void process_filespecs(void)
          //  This routine uses selection sort, because the list
          //  usually only has a couple of items in it.
          //********************************************************
-//  this will need to be completely re-written for wstring class         
-#ifdef USE_WSTRING
          {  //  begin local context
          unsigned idxHead, idxTail ;
          unsigned ltcount = target.size() ;
@@ -386,49 +351,6 @@ try_next_tail:
          // dump_target(_T("erased element(s)\n"));
          // syslog(_T("target size: %u elements\n"), target.size());
          }  //  end local context
-#else
-         {  //  begin local context
-         TCHAR fi_name[MAX_PATH_LEN], fi_ext[MAX_PATH_LEN] ;
-         TCHAR fj_name[MAX_PATH_LEN], fj_ext[MAX_PATH_LEN] ;
-
-         unsigned i, k ;
-         for (i=start ; i< finish ; i++) {
-            for (j=i+1   ; j<=finish ; j++) {
-               //  extract filename and extension file target string
-               //  to compare for duplicate filespecs.
-               _tcscpy(fi_name, &target[i][base_len]) ;
-               strptr = _tcsrchr(fi_name, '.') ; //lint !e613
-               if (strptr != 0) {
-                  *strptr++ = 0 ;   //lint !e613
-                  _tcscpy(fi_ext, strptr) ;
-               } else {
-                  fi_ext[0] = 0 ;
-               }
-
-               _tcscpy(fj_name, &target[j][base_len]) ;
-               strptr = _tcsrchr(fj_name, '.') ; //lint !e613
-               if (strptr != 0) {
-                  *strptr++ = 0 ;   //lint !e613
-                  _tcscpy(fj_ext, strptr) ;
-               } else {
-                  fj_ext[0] = 0 ;
-               }
-
-               //  Scan file name and extension for equality.
-               //  If both filename and extension are equal, delete one.
-               if (strcmpiwc(fi_name, fj_name)  &&  strcmpiwc(fi_ext, fj_ext)) {
-                  strptr = target[j] ;
-                  for (k=j+1; k<tcount; k++)
-                      target[k] = target[k+1] ;
-                  tcount-- ;
-                  finish-- ;
-                  j-- ;
-                  delete strptr ; // release allocated struct.
-               }
-            }
-         }  //lint !e850 for loop index variable 'j' whose type category is 'integral' is modified in body of the for loop that began at 'line 206'
-         }  //  end local context
-#endif         
 
          //**************************************************
          //  delete contents of existing file list
@@ -458,28 +380,21 @@ try_next_tail:
 
 
 //**************************************************
+bool const comp(std::wstring a, std::wstring b)
+{
+   return (a.compare(b) < 0) ;
+}
+
+//**************************************************
 //  Sort filespecs alphabetically,
 //  to group those in one directory.
 //**************************************************
+//lint -esym(745, sort_target_paths)  function has no explicit type or class, int assumed
+//lint -esym(533, sort_target_paths)  function should return a value
 static void sort_target_paths(void)
 {
-//  this will need to be completely re-written for wstring class         
-#ifdef USE_WSTRING
    std::sort(target.begin(), target.end(), comp);
-   
    // dump_target(_T("sorted list\n"));
-#else
-   TCHAR* strptr ;
-   unsigned i, j ;
-
-   for (j=0   ; j<tcount-1 ; j++)
-   for (i=j+1 ; i<tcount ; i++)
-   if (_tcscmp(target[j],target[i]) >  0) {
-      strptr    = target[i] ;
-      target[i] = target[j] ;
-      target[j] = strptr ;
-   }
-#endif   
 }
 
 //********************************************************************************
@@ -603,13 +518,16 @@ int main(int argc, char **argv)
    //***********************************************************
    //  Execute the requested command
    //***********************************************************
-   display_logo() ;
-
-   if (n.help)
+   if (n.help) {
+      display_logo() ;
       info(helptxt) ;
-   else if (n.info)
+   }
+   else if (n.info) {
+      display_logo() ;
       info(idtxt) ;
+   }
    else if (n.drive_summary > DSUMMARY_NONE) {
+      display_logo() ;
       display_drive_summary() ;
    }
    else {
@@ -619,6 +537,7 @@ int main(int argc, char **argv)
       }
 
       sort_target_paths() ;
+      display_logo() ;
       process_filespecs() ;
    }
 

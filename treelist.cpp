@@ -15,7 +15,6 @@
 #include "ndir32.h"
 #include "conio32.h"
 #include "treelist.h"
-#include "vector_res.h"
 
 //************************************************************
 static TCHAR dirpath[MAX_PATH_LEN];

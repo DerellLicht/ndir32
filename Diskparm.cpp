@@ -16,7 +16,6 @@
 
 #include "common.h"
 #include "ndir32.h"
-#include "vector_res.h"
 
 TCHAR dpath[4] = _T("d:\\");
 

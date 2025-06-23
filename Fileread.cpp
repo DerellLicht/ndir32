@@ -11,7 +11,7 @@
 
 #include "common.h"
 #include "ndir32.h"
-#include "vector_res.h"
+#include "conio32.h"
 
 //lint -esym(759, getcolor) header declaration for symbol could be moved from header to module
 
@@ -23,7 +23,10 @@
 static TCHAR excl[MAX_EXCL_COUNT][MAX_EXT_SIZE+1] ; //  allocate dynamically??
 static int  exclcount = 0 ;     //  number of exclusion filespecs
 
+std::vector<ffdata> flist {};
 //*************************************************************
+//lint -esym(533, update_exclusion_list)
+//lint -esym(745, update_exclusion_list)
 void update_exclusion_list(TCHAR *extptr)
 {
    if (exclcount < MAX_EXCL_COUNT) {
@@ -33,21 +36,20 @@ void update_exclusion_list(TCHAR *extptr)
    }
 }
 
-//*****************************************************************
-//lint -esym(552, ftail)   Symbol not accessed
-//lint -esym(759, ftail)   header declaration for symbol could be moved from header to module
-ffdata *ftop = NULL ;
-ffdata *ftail = NULL ;
-
 //*********************************************************************
-//lint -esym(759, add_element_to_file_list)  header declaration for symbol could be moved from header to module
-void add_element_to_file_list(ffdata *ftemp)
+//  delete contents of existing file list
+//  If tcount == 1, there *cannot* be multiple filespecs, can there??
+//*********************************************************************
+//lint -esym(532, clear_existing_file_list)
+//lint -esym(533, clear_existing_file_list)
+//lint -esym(714, clear_existing_file_list)
+//lint -esym(745, clear_existing_file_list)
+//lint -esym(759, clear_existing_file_list)
+//lint -esym(765, clear_existing_file_list)
+void clear_existing_file_list(void)
 {
-   if (ftop == NULL)
-      ftop = ftemp;
-   else
-      ftail->next = ftemp;
-   ftail = ftemp;
+   flist.clear() ;
+   filecount = 0 ;
 }
 
 //*********************************************************
@@ -106,20 +108,18 @@ static void const read_long_files (std::wstring& target_path)
       }
          
       if (fn_okay) {
-         filecount++;
 
          //****************************************************
          //  allocate and initialize the structure
          //****************************************************
-         ftemp = (ffdata *) new ffdata ;
+         flist.emplace_back();
+         uint idx = flist.size() - 1 ;
+         ftemp = &flist[idx] ;
+         filecount++;
+         
          ftemp->attrib = (u16) fdata.dwFileAttributes;
 
          //  convert file time
-         //luconv.l = IFF (n.fdate_option == 0)
-         // ftemp->ft = IFF (n.fdate_option == 0)
-         //       THENN fdata.ftLastAccessTime
-         //       ELSSE fdata.ftCreationTime ;
-         // ftemp->ft = fdata.ftLastWriteTime ;
          if (n.fdate_option == FDATE_LAST_ACCESS)
             ftemp->ft = fdata.ftLastAccessTime;
          else if (n.fdate_option == FDATE_CREATE_TIME)
@@ -170,12 +170,6 @@ static void const read_long_files (std::wstring& target_path)
          if (n.color) {
             getcolor (ftemp);
          }
-         ftemp->next = NULL;
-
-         //****************************************************
-         //  add the structure to the file list
-         //****************************************************
-         add_element_to_file_list(ftemp);
       }  //  if file is parseable...
 
 search_next_file:
@@ -194,42 +188,30 @@ search_next_file:
 //*************************************************************
 static void process_exclusions (void)
 {
-   ffdata *ftemp ;
-   for (int i = 0; i < exclcount; i++) {
-      ftemp = ftop;
-      ffdata *fprev = NULL;
-
-      while (ftemp != NULL) { //lint !e449
-         //  if we have a match, delete the second argument
-         if (strcmpiwc (ftemp->ext.c_str(), excl[i]) != 0) {
-            if (fprev == NULL) {
-               ftop = ftop->next;
-               // free(ftemp);
-               delete ftemp ;
-               ftemp = ftop;
+   for (int idxExcl = 0; idxExcl < exclcount; idxExcl++) {
+      
+      unsigned idxHead ;
+      unsigned ltcount = target.size() ;
+      // dump_target(_T("sorted element(s)\n"));
+      //  head index should iterate over all elements *except* the last one,
+      //  since the last element in list would not have any others to compare against.
+      for (idxHead=0 ; idxHead< ltcount ; idxHead++) {
+         // ftemp = flist[idxHead];
+try_next_element:
+         if (strcmpiwc (flist[idxHead].ext.c_str(), excl[idxExcl]) != 0) {
+            //  Scan file name and extension for equality.
+            //  If both filename and extension are equal, delete one.
+            flist.erase(flist.begin()+idxHead) ;
+            ltcount-- ;
+            //  we don't want to increment idxHead after deleting element;
+            //  it is now pointing to the next element in array
+            if (idxHead < ltcount) {
+               goto try_next_element ;
             }
-            else {
-               fprev->next = ftemp->next;
-               // free(ftemp);
-               delete ftemp ;
-               ftemp = fprev->next;
-            }
-            filecount--;
          }
-
-         //  otherwise, just move to the next file
-         else {
-            fprev = ftemp;
-            ftemp = ftemp->next;
-         }
-      }
-   }
-   
-   //  now update ftail to new end of list
-   ftemp = ftop;
-   while (ftemp != NULL) {
-      ftail = ftemp ;
-      ftemp = ftemp->next ;
+      }  //lint !e850 
+      // dump_target(_T("erased element(s)\n"));
+      // syslog(_T("target size: %u elements\n"), target.size());
    }
 }
 
@@ -268,10 +250,6 @@ void file_listing (void)
    //***********************************************
    if (filecount > 0) {
       sort_filelist ();
-
-      // if (n.dir_first)
-      //    // sort_elements(sort_dir) ;
-      //    ftop = sort_elements(sort_dir, ftop) ;
    }
 
    //  now do the file-listing...

@@ -13,7 +13,6 @@
 //lint -esym(530, fsize)  Symbol not initialized (yes, it is)
 
 #include "common.h"
-#include "vector_res.h"
 #include "ndir32.h"
 #include "conio32.h"  //  _where_x()
 
@@ -72,10 +71,8 @@ void batch_set_right_str(TCHAR *instr)
 //*********************************************************
 static void display_batch_mode(void)
 {
-   ffdata *ftemp = ftop ;
-   while (ftemp != NULL) {
-      _tprintf(_T("%s%s%s\n"), leftstr.c_str(), ftemp->filename.c_str(), rightstr.c_str()) ;
-      ftemp = ftemp->next ;
+   for(auto &file : flist) {
+      _tprintf(_T("%s%s%s\n"), leftstr.c_str(), file.filename.c_str(), rightstr.c_str()) ;
    }
 }
 
@@ -122,7 +119,7 @@ static void filehead(void)
       nputs(n.colorxhead, volume_name.c_str()) ;
       ncrlf() ;
 
-      if (ftop == NULL) {
+      if (flist.empty()) {
          nput_line(n.colorframe, dline) ;
       } else {
          // memset(&tempstr[0], dline, wincols) ;
@@ -170,8 +167,8 @@ static void fileend(void)
    //  get directory info
    dbytes = 0 ;
    dsbytes = 0 ;
-   ftemp = ftop ;
-   while (ftemp != NULL) {
+   for(auto &file : flist) {
+      ftemp = &file ;
       dbytes += ftemp->fsize ;
       clusters = ftemp->fsize / clbytes ; //lint !e573  Signed-unsigned mix with divide
       if ((ftemp->fsize % clbytes) > 0) { //lint !e573  Signed-unsigned mix with divide
@@ -181,8 +178,6 @@ static void fileend(void)
       // dirsecbytes = (clusters * (__int64) clbytes) ;
       dirsecbytes = (clusters * (u64) clbytes) ;
       dsbytes += dirsecbytes ;
-
-      ftemp = ftemp->next ;
    }
 
    //**************************************************************
@@ -216,7 +211,7 @@ static void fileend(void)
    //**************************************************************
    else {
       //  draw the bottom framing line
-      if (ftop == NULL) {
+      if (flist.empty()) {
          nput_line(n.colorframe, dline) ;
       } else {
          memset(&tempstr[0], dline, wincols) ;
@@ -258,20 +253,18 @@ static void fileend(void)
 //*****************************************************************
 static void lfn_get_columns(void)
 {
-   ffdata *ftemp = ftop ;
-   unsigned wincols ;
-
    //  find length of longest filename
    unsigned max_name_len = 0 ;
-   while (ftemp != NULL) {
+   ffdata *ftemp ;
+   for(auto &file : flist) {
+      ftemp = &file ;
       unsigned cur_name_len = ftemp->mb_len ;
-      if (cur_name_len > max_name_len) {
-         max_name_len = cur_name_len ;
+      if (max_name_len < cur_name_len) {
+          max_name_len = cur_name_len ;
       }
-      ftemp = ftemp->next ;
    }
 
-   wincols = get_window_cols() ;
+   unsigned wincols = get_window_cols() ;
    //  this is necessary because if redirection is in place,
    //  'console width' may not be valid`
    if (is_redirected()) {
@@ -309,7 +302,7 @@ static void lfn_get_columns(void)
    //                    80
    //   disp_cols = ------------
    //               line_len + 1
-   disp_cols = wincols / (line_len + 1) ;
+   disp_cols = wincols / (line_len + 1) ;  //lint !e573
 
    //  shortcut solution for very long filenames
    if (disp_cols == 0)
@@ -320,7 +313,7 @@ static void lfn_get_columns(void)
 
    //  now find max width of filename listing
    // unsigned max_fcols = wincols / disp_cols ;
-   line_len = wincols / disp_cols ;
+   line_len = wincols / disp_cols ;  //lint !e573
    line_len-- ;   //  subtract out column separator
    switch (columns) {
    case 1:
@@ -354,14 +347,13 @@ static void list_files_horizontally(void)
 {
    unsigned j = 0 ;
 
-   ffdata *ftemp = ftop ;
-
    //  see how many columns we can support with requested formats
    lfn_get_columns() ;  //  set disp_cols, name_width
 
    filehead() ;
    //  then list the files
-   while (ftemp != NULL) {
+   for(auto &file : flist) {
+      ffdata *ftemp = &file ;
       lfn_fprint[columns](ftemp) ;  //  horizontal listing
       if (++j == disp_cols) {
          ncrlf() ;
@@ -369,8 +361,6 @@ static void list_files_horizontally(void)
       } else {
          nput_char(n.colorframe, vline, 1) ;
       }
-
-      ftemp = ftemp->next ;
    }
 
    //  put in closing newline, if needed
@@ -387,9 +377,8 @@ static void list_files_qwise(void)
    // int j = 0 ;
    ffdata *ftemp ;
    unsigned width, col = 0, slen ;
-   int first_line = 1, new_line ;
+   int first_line = 1 ;
    TCHAR prev_ext[MAX_EXT_SIZE+1] ;
-   unsigned maxext ;
 
    prev_ext[0] = 0 ; //  make lint happy
 
@@ -397,34 +386,30 @@ static void list_files_qwise(void)
    // width = get_window_cols() ;
 
    //  first, find the longest extension in the current file list
-   ftemp = ftop ;
-   maxext = 0 ;
-   while (ftemp != NULL) {
-      // slen = _tcslen(ftemp->ext) ;
-      slen = ftemp->ext.length() ;
+   unsigned maxext = 0 ;
+   for(auto &file : flist) {
+      // ftemp = &file ;
+      slen = file.ext.length() ;
       if (maxext < slen)
           maxext = slen ;
-      
-      //  get next filename
-      ftemp = ftemp->next ;
    }
    
    //  then list the files
-   ftemp = ftop ;
    filehead() ;
-   new_line = 1 ;
-   while (ftemp != NULL) {
+   bool new_line = true ;
+   for(auto &file : flist) {
+      ftemp = &file ;
       //  see if file extention is changing
       if (first_line  ||  _tcsicmp(prev_ext, ftemp->ext.c_str()) != 0) {
          if (first_line)
-            first_line = 0 ;
+            first_line = false ;
          else 
             ncrlf() ;
          _stprintf(tempstr, _T("%-*s: "), maxext, ftemp->ext.c_str()) ;   
          nputs(ftemp->color, tempstr) ;
          col = maxext+2 ;
          _tcscpy(prev_ext, ftemp->ext.c_str()) ;
-         new_line = 1 ;
+         new_line = true ;
       }
 
       //  see if next filename is going to overrun line; 
@@ -438,12 +423,12 @@ static void list_files_qwise(void)
          _stprintf (tempstr, _T("%*s  "), maxext, _T(" ")) ;
          nputs(ftemp->color, tempstr) ;
          col = maxext+2 ;
-         new_line = 1 ;
+         new_line = true ;
       } 
+      
       //  if not starting new line, add comma separator
       if (new_line) {
-         new_line = 0 ;
-      // } else if (!n.lfn_off) {
+         new_line = false ;
       } else {
          nputs((ftemp->dirflag) ? n.colordir : ftemp->color, _T(", ")) ;
       }
@@ -453,8 +438,6 @@ static void list_files_qwise(void)
       nputs((ftemp->dirflag) ? n.colordir : ftemp->color, ftemp->name.c_str()) ;
       col += slen ;
       
-      //  get next filename
-      ftemp = ftemp->next ;
    }
    ncrlf() ;
    fileend() ;
@@ -475,17 +458,18 @@ static void list_files_qwise(void)
 struct vcolumn_elements_s {
    ffdata *ftemp {nullptr};
    uint rows {};
+   uint top_col_idx {};
 };
 #define  MAX_COLUMNS    25
+//lint -esym(551, vcolumns)  Symbol not accessed
 static vcolumn_elements_s vcolumns[MAX_COLUMNS] ;
 
 static void list_files_vertically(void)
 {
-   unsigned rows, partrows, j, k ;
+   unsigned rows, partrows, j ;
    //************************************************
    //  now, start displaying files
    //************************************************
-   unsigned fcount = 0 ;
    lfn_get_columns() ;  //  set disp_cols, name_width
    
    if (disp_cols > MAX_COLUMNS) {
@@ -512,26 +496,40 @@ static void list_files_vertically(void)
    if (partrows > 0) {
       rows++ ;
    }
-      
-   //************************************************
-   vcolumns[0].ftemp = ftop ;
-   vcolumns[1].ftemp = ftop ;
-   for (j=1; j< disp_cols; j++) {
-      //  find end of current list
-      for (k=0; k<vcolumns[j-1].rows; k++) { //lint !e771
-         vcolumns[j].ftemp = vcolumns[j].ftemp->next ;
-      } 
-
-      //  now, break the list
-      vcolumns[j+1].ftemp = vcolumns[j].ftemp ;
+   
+   //  new method: store top-of-column index
+   vcolumns[0].top_col_idx = 0 ;
+   for (j=1; j< disp_cols ; j++) {
+      vcolumns[j].top_col_idx = vcolumns[j-1].top_col_idx + vcolumns[j-1].rows;
    }
 
+   //************************************************
+   // row 0:  0  10  20  30  39  48
+   // row 1:  1  11  21  31  40  49
+   // row 2:  2  12  22  32  41  50
+   // row 3:  3  13  23  33  42  51
+   // row 4:  4  14  24  34  43  52
+   // row 5:  5  15  25  35  44  53
+   // row 6:  6  16  26  36  45  54
+   // row 7:  7  17  27  37  46  55
+   // row 8:  8  18  28  38  47  56
+   // row 9:  9  19  29
+
+   vcolumns[0].ftemp = &flist[0] ;
+   vcolumns[1].ftemp = &flist[0] ;
    filehead() ;   //  uses rows, columns
    j = 0 ;
+   ffdata *ftemp ;
+   uint idxFile ;
+   unsigned fcount = 0 ;
+   unsigned row_num = 0 ;
+   // console->dputsf(L"\nrow %u  ", row_num);
    while (LOOP_FOREVER) {
       if (fcount < filecount) {
-         lfn_fprint[columns](vcolumns[j].ftemp) ; //  vertical listing  NOLINT
-         vcolumns[j].ftemp = vcolumns[j].ftemp->next ;
+         idxFile = vcolumns[j].top_col_idx + row_num ;
+         // console->dputsf(L"%u  ", idxFile);
+         ftemp = &flist[idxFile] ;
+         lfn_fprint[columns](ftemp) ; //  vertical listing  NOLINT
       }
       //  if no files left to display, fill in row with spaces
       else {
@@ -542,10 +540,15 @@ static void list_files_vertically(void)
       //  draw separator characters as required
       fcount++ ;
       if (++j == disp_cols) {
-         ncrlf() ;
-         j = 0 ;
-         if (--rows == 0)
+         if (--rows == 0) {
+            ncrlf() ;
             break;
+         }
+         j = 0 ;
+         row_num++ ;
+         // console->dputsf(L"\nrow %u  ", row_num);
+         ncrlf() ;
+            
       } else {
          nputc(n.colorframe, vline) ;
       }
@@ -566,7 +569,7 @@ void display_files(void)
    //****************************************************
    //  normal display mode
    //****************************************************
-   if (ftop == NULL) {
+   if (flist.empty()) {
       filehead() ;
       nputs(n.colordefalt, _T("No matching files found.\n\r")) ;
       fileend() ;

@@ -10,7 +10,6 @@
 #include "ndir32.h"
 #include "conio32.h"
 #include "treelist.h"
-#include "vector_res.h"
 
 static TCHAR const * const dhdrl =
    _T("+-----------+-----------+--------------+--------------");
