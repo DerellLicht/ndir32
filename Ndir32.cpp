@@ -216,6 +216,44 @@ void insert_target_filespec(TCHAR *fstr)
    }
 }
 
+//********************************************************
+//  DELETE DUPLICATE FILESPECS from target array.
+//  Delete record if no differences found.   
+//  Compare file and ext separately.         
+//  This routine uses selection sort, because the list
+//  usually only has a couple of items in it.
+//********************************************************
+static void check_for_duplicate_targets(void)
+{  
+   unsigned idxHead, idxTail ;
+   unsigned ltcount = target.size() ;
+   // dump_target(_T("target(s) input\n"));
+   //  head index should iterate over all elements *except* the last one,
+   //  since the last element in list would not have any others to compare against.
+   for (idxHead=0 ; idxHead< (ltcount - 1) ; idxHead++) {
+      //  tail index should iterate over all elements after 
+      //  the current head index.
+      //  Note that the number of elements in the list may vary
+      //  as items are deleted by this operation.
+      for (idxTail=idxHead+1   ; idxTail < ltcount ; idxTail++) {
+try_next_tail:
+         //  Scan file name and extension for equality.
+         //  If both filename and extension are equal, delete one.
+         if (target[idxHead].compare(target[idxTail]) == 0) {
+            target.erase(target.begin()+idxTail) ;
+            ltcount-- ;
+            //  we don't want to increment idxTail after deleting element;
+            //  it is now pointing to the next element in array
+            if (idxTail < ltcount) {
+               goto try_next_tail ;
+            }
+         }
+      }
+   }  //lint !e850 for loop index variable 'j' whose type category is 'integral' is modified in body of the for loop that began at 'line 206'
+   // dump_target(_T("targets(s) filtered\n"));
+   // syslog(_T("target size: %u elements\n"), target.size());
+}  
+         
 /**********************************************************************/
 /**                     File listing routines                        **/        
 /**********************************************************************/
@@ -324,42 +362,7 @@ static void process_filespecs(void)
             }
          }
 
-         //********************************************************
-         //  DELETE DUPLICATE FILESPECS from target array.
-         //  Delete record if no differences found.   
-         //  Compare file and ext separately.         
-         //  This routine uses selection sort, because the list
-         //  usually only has a couple of items in it.
-         //********************************************************
-         {  //  begin local context
-         unsigned idxHead, idxTail ;
-         unsigned ltcount = target.size() ;
-         // dump_target(_T("sorted element(s)\n"));
-         //  head index should iterate over all elements *except* the last one,
-         //  since the last element in list would not have any others to compare against.
-         for (idxHead=0 ; idxHead< (ltcount - 1) ; idxHead++) {
-            //  tail index should iterate over all elements after 
-            //  the current head index.
-            //  Note that the number of elements in the list may vary
-            //  as items are deleted by this operation.
-            for (idxTail=idxHead+1   ; idxTail < ltcount ; idxTail++) {
-try_next_tail:
-               //  Scan file name and extension for equality.
-               //  If both filename and extension are equal, delete one.
-               if (target[idxHead].compare(target[idxTail]) == 0) {
-                  target.erase(target.begin()+idxTail) ;
-                  ltcount-- ;
-                  //  we don't want to increment idxTail after deleting element;
-                  //  it is now pointing to the next element in array
-                  if (idxTail < ltcount) {
-                     goto try_next_tail ;
-                  }
-               }
-            }
-         }  //lint !e850 for loop index variable 'j' whose type category is 'integral' is modified in body of the for loop that began at 'line 206'
-         // dump_target(_T("erased element(s)\n"));
-         // syslog(_T("target size: %u elements\n"), target.size());
-         }  //  end local context
+         check_for_duplicate_targets();
 
          //**************************************************
          //  delete contents of existing file list

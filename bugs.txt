@@ -1,13 +1,4 @@
-> I should also check output file list for duplicates
-  n ndir* *.exe  
-
 > unicode filenames are not working in redirected mode...
   WriteConsole(), which is used Unicode console output, does not work with redirection.
   _tprintf(), which works with redirection, does not work with Unicode...
-  
-> with full-screen console (474 columns x 82 rows)
-  dirtree is not displayed correctly
-  Actually, that is because console did not initially maximize correctly!!
-  Doing Minimize, then un-Minimize, corrected this issue.
-
   

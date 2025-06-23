@@ -289,4 +289,5 @@ Version 2.67, 06/08/25
 Version 2.68, 06/23/25
   - Converting various strings to vector and wstring classes
   - Fix bugs in handling batch left/right string command-line arguments
+  - Check for duplicate filenames in final file list
 

@@ -556,6 +556,42 @@ static void list_files_vertically(void)
    fileend() ;
 }
 
+//********************************************************
+//  DELETE DUPLICATE FILES from file list array.
+//  Delete record if no differences found.   
+//********************************************************
+static void check_for_duplicate_files(void)
+{  
+   unsigned idxHead, idxTail ;
+   unsigned ltcount = flist.size() ;
+   // dump_target(_T("target(s) input\n"));
+   //  head index should iterate over all elements *except* the last one,
+   //  since the last element in list would not have any others to compare against.
+   for (idxHead=0 ; idxHead< (ltcount - 1) ; idxHead++) {
+      //  tail index should iterate over all elements after 
+      //  the current head index.
+      //  Note that the number of elements in the list may vary
+      //  as items are deleted by this operation.
+      for (idxTail=idxHead+1   ; idxTail < ltcount ; idxTail++) {
+try_next_tail:
+         //  Scan file name and extension for equality.
+         //  If both filename and extension are equal, delete one.
+         if (flist[idxHead].filename.compare(flist[idxTail].filename) == 0) {
+            flist.erase(flist.begin()+idxTail) ;
+            ltcount-- ;
+            //  we don't want to increment idxTail after deleting element;
+            //  it is now pointing to the next element in array
+            if (idxTail < ltcount) {
+               goto try_next_tail ;
+            }
+         }
+      }
+   }  //lint !e850 
+   filecount = flist.size() ;
+   // dump_target(_T("targets(s) filtered\n"));
+   // syslog(_T("target size: %u elements\n"), target.size());
+}  
+         
 /****************************************************************/
 /*  Display directory data in "files" mode.                     */
 /****************************************************************/
@@ -575,6 +611,9 @@ void display_files(void)
       fileend() ;
       return ;
    }
+   
+   // check for duplicate filenames 
+   check_for_duplicate_files();
 
    //************************************************
    //  present normal file listings
