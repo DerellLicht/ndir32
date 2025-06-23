@@ -637,6 +637,30 @@ void dprints(unsigned row, unsigned col, const TCHAR* outstr)
    dputs(outstr) ;
 }   
 
+//******************************************************************************
+//  these two functions, dputx() and dputsf(), are raw-output functions,
+//  mostly used for debug output and other outputs that do not need
+//  screen positioning, color, etc.
+//******************************************************************************
+//lint -esym(759, dputx)  header declaration for symbol could be moved from header to module
+void dputx(const TCHAR *outstr)
+{
+   DWORD wrlen ;
+
+   //  watch out for trouble conditions
+   if (outstr == NULL  ||  *outstr == 0)
+      return ;
+
+   if (is_redirected()) {
+      _tprintf(_T("%s"), outstr);
+   }
+   else {
+      WORD slen = (WORD) _tcslen(outstr) ;
+      WriteConsole(hStdOut, outstr, slen, &wrlen, 0) ;
+      sinfo.dwCursorPosition.X += slen ;  //lint !e734
+   }
+}
+
 //********************************************************************
 //  Interesting note: 
 //  If I call dputsf() with L"", then newline is not recognized,
@@ -658,7 +682,7 @@ int dputsf(const TCHAR *fmt, ...)
    va_start(al, fmt);   //lint !e1055 !e530
    _vstprintf(consoleBuffer, fmt, al);   //lint !e64
    // OutputDebugString(consoleBuffer) ;
-   dputs(consoleBuffer) ;
+   dputx(consoleBuffer) ;
    va_end(al);
    return 1;
 }

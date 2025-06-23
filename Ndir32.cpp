@@ -139,6 +139,16 @@ _T(" "),
 NULL } ;
 
 //**************************************************
+static void info (TCHAR *data[])
+{
+   unsigned j = 0;
+
+   while (data[j] != NULL) {
+      dputsf(L"%s\n", data[j++]);
+   }
+}
+
+//**************************************************
 // #define  USE_SYSLOG
 //lint -esym(714, dump_target)
 //lint -esym(759, dump_target)

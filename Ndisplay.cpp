@@ -31,9 +31,6 @@ extern unsigned name_width ;
 //   "__s__", "__s_r", "__sh_", "__shr", /*  04,05,06,07  */
 //   ...
 // };
-//lint -esym(728, attrclr)  Symbol not explicitly initialized
-//lint -esym(843, attrclr)  Variable could be declared as const
-static uchar attrclr;
 
 static TCHAR const monthstr[12][4] = { 
    _T("Jan"), _T("Feb"), _T("Mar"), _T("Apr"), _T("May"), _T("Jun"),
@@ -45,17 +42,6 @@ static void ngotoxy (int x, int y)
 {
    if (n.color) {
       dgotoxy (x, y);
-   }
-}
-
-//**************************************************
-void info (TCHAR *data[])
-{
-   unsigned j = 0;
-
-   while (data[j] != NULL) {
-      nputs (n.colordefalt, data[j++]);
-      ncrlf ();
    }
 }
 
@@ -162,7 +148,7 @@ void print1 (ffdata * fptr)
       attr[6] = ' ';
       attr[7] = '\0';
    }
-   attrclr = n.colorattr;
+   uchar attrclr = n.colorattr;
 
    //  display directory entry
    if (fptr->dirflag) {

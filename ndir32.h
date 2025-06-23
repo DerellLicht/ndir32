@@ -182,7 +182,6 @@ void file_listing(void);
 void tree_listing (unsigned total_filespec_count);
 
 //  ndisplay.cpp
-void info(TCHAR *data[]);
 void display_logo(void);
 void print1(ffdata *fptr);
 void nclrscr(void);
