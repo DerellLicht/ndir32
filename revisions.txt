@@ -286,7 +286,7 @@ Version 2.66, 05/26/25
 Version 2.67, 06/08/25
   Converting all malloc() to new ; adds 110KB to file size, but enables non-static data init.
 
-Version 2.68, 06/18/25
-  - Converting various strings to wstring class
+Version 2.68, 06/23/25
+  - Converting various strings to vector and wstring classes
   - Fix bugs in handling batch left/right string command-line arguments
 

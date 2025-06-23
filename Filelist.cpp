@@ -72,7 +72,7 @@ void batch_set_right_str(TCHAR *instr)
 static void display_batch_mode(void)
 {
    for(auto &file : flist) {
-      _tprintf(_T("%s%s%s\n"), leftstr.c_str(), file.filename.c_str(), rightstr.c_str()) ;
+      dputsf(_T("%s%s%s\n"), leftstr.c_str(), file.filename.c_str(), rightstr.c_str()) ;
    }
 }
 
