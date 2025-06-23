@@ -580,7 +580,7 @@ try_next_tail:
             flist.erase(flist.begin()+idxTail) ;
             ltcount-- ;
             //  we don't want to increment idxTail after deleting element;
-            //  it is now pointing to the next element in array
+            //  tail index is now pointing to the next element in array
             if (idxTail < ltcount) {
                goto try_next_tail ;
             }
