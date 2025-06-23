@@ -1,5 +1,5 @@
 //*****************************************************************
-//  Copyright (c) 1998-2025 Daniel D. Miller                       
+//  Copyright (c) 1998-2025 Derell Licht                       
 //  nio.cpp - Console I/O functions, interface to conio32.cpp
 //  This file mostly manages color settings
 //*****************************************************************

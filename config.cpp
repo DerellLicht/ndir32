@@ -1,8 +1,5 @@
 //*****************************************************************
 //  config.cpp - NDIR config file handling                       
-//                                                                 
-//  Written by:   Daniel D. Miller  (the Derelict)                 
-//                                                                 
 //*****************************************************************
 
 #include <windows.h>

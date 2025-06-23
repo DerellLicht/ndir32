@@ -1,8 +1,6 @@
 //************************************************************
-//  Copyright (c) 1998-2025 Daniel D. Miller                  
+//  Copyright (c) 1998-2025 Derell Licht                  
 //  ndir32.h - Header file for NDIR directory lister.         
-//                                                            
-//  Written by:  Daniel D. Miller                             
 //************************************************************
 
 //lint -e537   Repeated include file 'd:\tdm32\lib\gcc\mingw32\10.3.0\include\c++\string'

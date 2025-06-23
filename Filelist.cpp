@@ -612,7 +612,7 @@ void display_files(void)
       return ;
    }
    
-   // check for duplicate filenames 
+   //************************************************
    check_for_duplicate_files();
 
    //************************************************

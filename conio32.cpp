@@ -1,10 +1,6 @@
 //***************************************************************************
-//  Copyright (c) 1995-2023  Daniel D Miller
+//  Copyright (c) 1995-2025  Derell Licht
 //  CONIO32.CPP: Template for 32-bit console programs                        
-//                                                                           
-//  Written by:   Daniel D. Miller                                           
-//                                                                           
-//  Last Update:  11/07/01 14:44                                             
 //***************************************************************************
 //  Windows console data structures
 //  
@@ -32,8 +28,6 @@
 #include <windows.h>
 #include <stdio.h>
 #include <conio.h>   // _getch(), _kbhit()
-// #include <io.h>
-// #include <fcntl.h>
 #include <tchar.h>
 
 //lint -esym(1055, exit)   // Symbol 'exit(int)' undeclared, assumed to return int
@@ -576,57 +570,52 @@ void dputs(const TCHAR *outstr)
 
    //  if string has newlines in it, or if it does not
    //  fit on the current line, handle the line in parts.
-   else
-      {
+   else {
       hdptr = tlptr = outstr ;
       ccount = 0 ;
       done = 0 ;
-      while (!done)
-         {
-         switch (*tlptr)
-            {
-            case  0: //  NULL; end of string
-               done = 1 ;
-               break;
+      while (!done) {
+         switch (*tlptr) {
+         case  0: //  NULL; end of string
+            done = 1 ;
+            break;
 
-            case 10: //  LF
-               dputsi(hdptr, ccount) ;
+         case 10: //  LF
+            dputsi(hdptr, ccount) ;
+            dnewline() ;
+            hdptr = ++tlptr ; //  this doesn't address compound CR/LF
+            ccount = 0 ;
+            Xi = 0 ;
+            break;
+
+         case 13: //  CR
+            dputsi(hdptr, ccount) ;
+            dreturn() ;
+            hdptr = ++tlptr ; //  this doesn't address compound CR/LF
+            ccount = 0 ;
+            Xi = 0 ;
+            break;
+
+         default:
+            if (++Xi == sinfo.dwSize.X) {
+               dputsi(hdptr, ++ccount) ;
                dnewline() ;
-               hdptr = ++tlptr ; //  this doesn't address compound CR/LF
+               hdptr = ++tlptr ;
                ccount = 0 ;
                Xi = 0 ;
-               break;
+            }
+            else {
+               ccount++ ;
+               tlptr++ ;
+            }   
+            break;
 
-            case 13: //  CR
-               dputsi(hdptr, ccount) ;
-               dreturn() ;
-               hdptr = ++tlptr ; //  this doesn't address compound CR/LF
-               ccount = 0 ;
-               Xi = 0 ;
-               break;
-
-            default:
-               if (++Xi == sinfo.dwSize.X)
-                  {
-                  dputsi(hdptr, ++ccount) ;
-                  dnewline() ;
-                  hdptr = ++tlptr ;
-                  ccount = 0 ;
-                  Xi = 0 ;
-                  }
-               else
-                  {
-                  ccount++ ;
-                  tlptr++ ;
-                  }   
-               break;
-
-            }  //  end switch
-         }  // end while
-      //  print last line fragment
-      dputsi(hdptr, ccount) ;
-      }   
-   }
+         }  //  end switch
+      }  // end while
+   //  print last line fragment
+   dputsi(hdptr, ccount) ;
+   }   
+}
 
 //**********************************************************
 //  only used by treelist.cpp
@@ -681,7 +670,6 @@ int dputsf(const TCHAR *fmt, ...)
 //lint -esym(628, __builtin_va_start)
    va_start(al, fmt);   //lint !e1055 !e530
    _vstprintf(consoleBuffer, fmt, al);   //lint !e64
-   // OutputDebugString(consoleBuffer) ;
    dputx(consoleBuffer) ;
    va_end(al);
    return 1;

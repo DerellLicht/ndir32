@@ -1,7 +1,7 @@
 //*********************************************************
 //  ERR_EXIT.CPP -  A standard error-handler.              
 //                                                         
-//  Written By:   Daniel D. Miller                         
+//  Written By:   Derell Licht                         
 //                                                         
 //*********************************************************
 #include <windows.h>

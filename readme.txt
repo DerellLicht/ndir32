@@ -117,11 +117,10 @@ that trick.
 ***************************************************************************
                 Handling System/Hidden/Readonly files
 
-NDIR can now display S/H/R files with a background color selected by
-the user.  The foreground color is determined by the file attribute,
-with the BRIGHT bit set, and a background color which is specified
-by the user.  The following table lists the foreground colors for various 
-file attributes:
+NDIR can now display S/H/R files with a background color selected by the user.  
+The foreground color is determined by the file attribute, with the BRIGHT bit set, 
+and a background color which is specified by the user.  
+The following table lists the foreground colors for various file attributes:
 
         S  H  R         foreground color
       =================================================
@@ -209,47 +208,50 @@ This is a list of the command-line switches supported by NDIR.
 This list can also be obtained by typing 'NDIR /?'
 
 USAGE:  NDIR <filespecs> -options or /options !<exclusions>
- 
+
  OPTIONS                      FUNCTIONS
    -a *     List ALL files (hidden, system, read-only, etc.).
+   -a1      List attributes in HEX format.
    -c *     Clear screen before listing.
    -p *     Pause on full screen.
    -m *     Minimize size of header and footer.
    -w *     Use special colors for system/hidden/readonly files.
-   -d *     Display directory TREE (work with -s, -n (default), -r).
+   -d       dir TREE: normal size display (work with -s, -n (default), -r).
+   -d2      dir TREE: file/directory counts
+   -d3      dir TREE: mixed size and file/directory counts
    -e       Sort by extension.
    -n        "   by name.
    -s        "   by file size, smallest first.
    -t        "   by Date, oldest first.
    -z        "   by DOS order (no sort).
+   -S0      Show sizes in mixed bytes/KB
+   -S1      Show sizes in Kilobytes
+   -S2      Show sizes in Megabytes
    -r *     Reverse normal sort order.
-   -1       Display one column,  with name/size/date/attr.
-   -2          "    two   "   , with name/size/date.
-   -3          "    three "     (short-filename form only)
-   -4          "    four  "   , with name/size.
-   -6          "    six   "   , with name only.
+   -1       Display one column,   with name/size/date/attr.
+   -2          "    two   "   ,   with name/size/date.
+   -4          "    four  "   ,   with name/size.
+   -6          "    six   "   ,   with name only.
    -i       Display drive summary for all drives in system.
-   -?       Display HELP screen.
-   -x *     List executables only (.EXE,.COM,.BAT).
-   -l *     Toggle long-filename enable flag (MSDOS 7.00+ only)
-   -k *     Toggle color mode. (non-color mode is redirectable)
-   -j *     Use standard ASCII (for redirection). (forces -k)
-   -5 *     Switch to EGA 43-line/VGA 50-line mode.
-   -o *     Display LAST_MODIFY (default) or FILE_CREATE date/time.
-   -oN      Date/Time display: 0=LastWrite (default), 
-                               1=LastAccess, 
-                               2=FileCreated
+   -ii      Display drive summary for all drives in system, with used vs free space.
+   -k *     Toggle color mode.
    -u *     List filenames in UPPERCASE.
-   -v       Display distribution status and author information.
+   -oN      Date/Time display: 0=Last Write, 1=Last Access, 2=File Created
+   -x *     List executables only (.EXE,.COM,.BAT).
+   -v       Display registration/update information.
+   -?       Display HELP screen.
    -g *     List directories FIRST.
    -h *     List files horizontally.
    -f *     List files only (No directories).
- 
+   -q *     XTDIR mode - list files by extension.
+   -, *     Dir Tree: show only L level of subdirectories.
+               L is incremented for each additional comma
+
    -b       Batch mode;  files listed in one column.
             (This format can be redirected to a batch file)
    ["string"  specifies a string BEFORE each filename (Batch mode)
    ]"string"  specifies a string AFTER  each filename (Batch mode)
- 
+
 NOTE: items with a * after the flag are TOGGLES
  
 ***************************************************************************

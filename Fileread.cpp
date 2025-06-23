@@ -1,8 +1,8 @@
 //*****************************************************************
-//  Copyright (c) 1998-2025 Daniel D. Miller                       
+//  Copyright (c) 1998-2025 Derell Licht                       
 //  FILEREAD.CPP - NDIR file-reading routines
 //                                                                 
-//  Written by:  Daniel D. Miller
+//  Written by:  Derell Licht
 //*****************************************************************
 
 #include <windows.h>

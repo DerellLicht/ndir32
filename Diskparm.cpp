@@ -2,7 +2,7 @@
 //  Copyright (c) 1995-2025  Daniel D Miller
 //  DISKPARM.CPP - Display partition information about disk drive.     
 //                                                                     
-//  Written by:   Daniel D. Miller                                     
+//  Written by:   Derell Licht                                     
 //*****************************************************************************
 //  Note on DISKPARM build:  
 //  The function WNetGetUniversalName() brings several problems with it.  

@@ -1,7 +1,7 @@
 //*********************************************************
 //  KEYCODES.H - BIOS scan codes for keyboard              
 //                                                         
-//  Compiled by:  Daniel D. Miller                         
+//  Compiled by:  Derell Licht                         
 //  Last Update:  August 23, 1994                          
 //                                                         
 //*********************************************************

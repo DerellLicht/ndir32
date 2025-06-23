@@ -1,10 +1,6 @@
 //***************************************************************************
-//  Copyright (c) 1995-2025  Daniel D Miller
+//  Copyright (c) 1995-2025  Derell Licht
 //  CONIO32.HPP: Template for 32-bit console programs                        
-//                                                                           
-//  Written by:   Daniel D. Miller                                           
-//                                                                           
-//  Last Update:  02/25/25
 //***************************************************************************
 
 #define  MAX_CHAR_COLS     1024

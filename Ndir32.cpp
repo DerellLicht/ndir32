@@ -1,11 +1,6 @@
 //*************************************************************************
-//  Copyright (c) 1998-2025 Daniel D. Miller                       
+//  Copyright (c) 1998-2025 Derell Licht                       
 //  NDIR32.CPP - The Ultimate directory program (32-bit).          
-//                                                                 
-//  Written by:   Daniel D. Miller  (the derelict)                 
-//                                                                 
-//  compile with  makefile                                         
-//                                                                 
 //*************************************************************************
 //  DAN:  Please update revisions.txt with each change.            
 //*************************************************************************
