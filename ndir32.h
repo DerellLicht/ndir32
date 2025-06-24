@@ -176,9 +176,6 @@ void clear_existing_file_list(void);
 void update_exclusion_list(TCHAR *extptr);
 void file_listing(void);
 
-//  treelist.cpp
-void tree_listing (unsigned total_filespec_count);
-
 //  ndisplay.cpp
 void display_logo(void);
 void print1(ffdata *fptr);

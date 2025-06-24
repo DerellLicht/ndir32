@@ -13,15 +13,18 @@ struct dirs
    ULONGLONG dirsecsize {};
    ULONGLONG subdirsize {};
    ULONGLONG subdirsecsize {};
-   unsigned files {};
-   unsigned directs {};
-   unsigned subfiles {};
-   unsigned subdirects {};
-   uint     mb_len  {};
+   uint files {};
+   uint directs {};
+   uint subfiles {};
+   uint subdirects {};
+   uint mb_len {};
 };
 
 extern dirs *top ;
 
 extern unsigned level;
+
+//  treelist.cpp
+void tree_listing (unsigned total_filespec_count);
 
 

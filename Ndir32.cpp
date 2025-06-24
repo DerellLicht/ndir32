@@ -15,6 +15,7 @@
 #include "ndir32.h"
 #include "conio32.h"
 #include "qualify.h" //  must be *after* vector_res.h
+#include "treelist.h"
 
 //lint -esym(864, target)  Expression involving variable possibly depends on order of evaluation
 
