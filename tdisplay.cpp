@@ -94,12 +94,17 @@ static void display_tree_filename (TCHAR *frmstr, dirs *ktemp)
 //**********************************************************
 static void display_dir_tree (dirs * ktop)
 {
-   dirs *ktemp = ktop;
    if (ktop == NULL)
-      return;
+      return ;
 
    //  next, build tree lists for subsequent levels (recursive)
+#ifdef  USE_VECTOR
+   for(auto &folder : dlist)
+      dirs *ktemp = &folder;
+#else
+   dirs *ktemp = ktop;
    while (ktemp != NULL) {
+#endif   
       //  first, build tree list for current level
       if (level == 0) {
          formstr[0] = (TCHAR) 0;
@@ -266,8 +271,10 @@ static void display_dir_tree (dirs * ktop)
       }
       formstr[--level] = (TCHAR) 0; // NOLINT
 
+#ifndef  USE_VECTOR
       //  goto next brother
       ktemp = ktemp->brothers;
+#endif      
    }                            //  while not done listing directories
 }
 
