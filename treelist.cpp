@@ -42,7 +42,11 @@ static dirs *z = NULL;
 static int (*tree_sort_fcn) (dirs * a, dirs * b);
 static int tree_init_sort (void);
 
+#ifdef  USE_VECTOR
+std::vector<dirs> dlist {};
+#else
 dirs *top = NULL;
+#endif
 
 //*****************************************************************
 //  this was used for debugging directory-tree read and build
@@ -60,23 +64,20 @@ void debug_dump(TCHAR *fname, TCHAR *msg)
 //  NOTE:  It is assumed that the caller will               
 //         initialize the name[], ext[], attrib fields!!    
 //**********************************************************
-static dirs *new_dir_node (void)
-{
-   //  switching this statement from malloc() to new()
-   //  changes total exe size from 70,144 to 179,200 !!!
-   //   70144 ->     32256   45.99%    win64/pe     ndir64.exe
-   // dirs *dtemp = (dirs *) malloc(sizeof(dirs)) ;
-   // if (dtemp == NULL) {
-   //    error_exit (OUT_OF_MEMORY, NULL);
-   // }
-   //     179200 ->     72704   40.57%    win64/pe     ndir64.exe
-   dirs *dtemp = new dirs ;
-   // ZeroMemory(dtemp, sizeof (dirs));  //lint !e668 NOLINT
-   // memset ((char *) dtemp, 0, sizeof (dirs));  //lint !e668
-   dtemp->dirsecsize = clbytes;
-   dtemp->subdirsecsize = clbytes;
-   return dtemp;
-}
+// static dirs *new_dir_node (void)
+// {
+// #ifdef  USE_VECTOR
+//    dlist.emplace_back();
+//    uint idx = dlist.size() - 1 ;
+//    dirs *dtemp = &dlist[idx] ;
+// #else
+//    dirs *dtemp = new dirs ;
+// #endif   
+//    
+//    dtemp->dirsecsize = clbytes;
+//    dtemp->subdirsecsize = clbytes;
+//    return dtemp;
+// }
 
 //*********************************************************
 //  "waiting" pattern generator
@@ -207,7 +208,18 @@ syslog(_T("%s: FindFindFirst: %s\n"), dirpath, get_system_message (err));
                cur_node->directs++;
                cur_node->subdirects++;
 
-               dirs *dtemp = new_dir_node ();
+               // dirs *dtemp = new_dir_node ();
+               
+#ifdef  USE_VECTOR
+               dlist.emplace_back();
+               uint idx = dlist.size() - 1 ;
+               dirs *dtemp = &dlist[idx] ;
+#else
+               dirs *dtemp = new dirs ;
+#endif   
+               dtemp->dirsecsize = clbytes;
+               dtemp->subdirsecsize = clbytes;
+               
                if (cur_node->sons == NULL)
                   cur_node->sons = dtemp;
                else
@@ -488,7 +500,17 @@ static int build_dir_tree (TCHAR *tpath)
    get_disk_info (base_path);
 
    //  allocate struct for dir listing
-   top = new_dir_node ();
+   // top = new_dir_node ();
+#ifdef  USE_VECTOR
+   dlist.emplace_back();
+   uint idx = dlist.size() - 1 ;
+   dirs *dtemp = &dlist[idx] ;
+#else
+   dirs *dtemp = new dirs ;
+#endif   
+   dtemp->dirsecsize = clbytes;
+   dtemp->subdirsecsize = clbytes;
+   top = dtemp ;
 
    //  derive root path name
    if (_tcslen (base_path) == 3) {
@@ -523,8 +545,6 @@ debug_dump("exit", "returned from read_dir_tree") ;
    return result ;
 }
 
-//*****************************************************************
-//  no filename may be specified here...
 //*****************************************************************
 void tree_listing (unsigned total_filespec_count)
 {
