@@ -1,0 +1,7 @@
+Okay, this was part-way through the process of doing the treelist conversion to <vector>,
+but handling the recursion in display_dir_tree() is very complex,
+so I'm going to drop the conversion for now...
+
+This project is saved in ndir32.re-tree folder
+
+Maybe try implementing on read_tree project first.
