@@ -48,20 +48,11 @@ static void display_size(ULONGLONG dlen, unsigned slen, unsigned attr)
 //**********************************************************
 static void display_tree_filename (TCHAR *frmstr, dirs *ktemp)
 {
-   // TCHAR levelstr[MAX_PATH_LEN];
-   // _stprintf (levelstr, "%s%s", frmstr, ktemp->name);
-   // int wlen = _tcslen(ktemp->name);
    int wlen = ktemp->name.length();
-   //  why is mb_len == 0 on base folder??
-   if (ktemp->mb_len == 0) {
-      //  this won't work for Unicode targets
-      ktemp->mb_len = wlen ;
-   }
-   // uint slen = ktemp->mb_len;
    
    //  calculate required padding spaces
    int frmlen = _tcslen(frmstr);
-   uint namelen = ktemp->mb_len + (uint) frmlen ;
+   uint namelen = wlen + (uint) frmlen ;
    int splen = 0 ;
    
    //  if name string overruns data spaces, skip to new line
@@ -83,7 +74,7 @@ static void display_tree_filename (TCHAR *frmstr, dirs *ktemp)
       }
       else {
          syslog(_T("(other), splen: %d, nec: %u, flen: %u, slen: %u\n"), 
-            splen,  name_end_col, frmlen, ktemp->mb_len);
+            splen,  name_end_col, frmlen, wlen);
       }
    }
 }  //  slen

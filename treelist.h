@@ -22,7 +22,6 @@ struct dirs
    uint directs {};
    uint subfiles {};
    uint subdirects {};
-   uint mb_len {};
 };
 
 #ifdef  USE_VECTOR

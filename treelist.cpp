@@ -227,7 +227,7 @@ syslog(_T("%s: FindFindFirst: %s\n"), dirpath, get_system_message (err));
                dtail = dtemp;
                                                            
                //  convert Unicode filenames to UTF8
-               dtemp->mb_len = _tcslen(fdata.cFileName) ;
+               // dtemp->mb_len = _tcslen(fdata.cFileName) ;
                // dtemp->name = (TCHAR *) new TCHAR[dtemp->mb_len + 1] ;
                // _tcscpy (dtemp->name, (TCHAR *) fdata.cFileName);  
                dtemp->name = fdata.cFileName ;
