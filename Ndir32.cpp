@@ -280,9 +280,6 @@ static void process_filespecs(void)
    //  If such anomalies are presented, unpredictable results will occur.
    //***********************************************************************
    if (n.tree == 1  ||  n.tree == 4  ||  n.tree == 5) {
-      // if (tcount != target.size()) {
-      //    syslog(_T("target count error: %u vs %u\n"), tcount, target.size());
-      // }
       tree_listing(target.size()) ;
    }
    else if (target.size() == 1  &&  !n.exec_only) {
@@ -305,8 +302,6 @@ static void process_filespecs(void)
 
       //**************************************************
       get_disk_info(base_path) ;
-
-      // clear_existing_file_list();
 
       //**************************************************
       //  Call directory_tree or file_listing routines,
@@ -376,14 +371,7 @@ static void process_filespecs(void)
          clear_existing_file_list();
 
          //**************************************************
-         //  Call directory_tree or file_listing routines,
-         //  as specified by flags.
-         //**************************************************
-         if (n.tree == 1)
-            // tree_listing(tcount) ;
-            tree_listing(target.size()) ;
-         else
-            file_listing() ;
+         file_listing() ;
 
          //  this block set variable 'start'
          start = finish + 1 ;
