@@ -1,4 +1,5 @@
 // #define  USE_VECTOR
+#undef  USE_VECTOR
 
 //**********************************************************
 //  directory structure for directory_tree routines
