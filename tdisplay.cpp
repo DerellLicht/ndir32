@@ -44,8 +44,6 @@ static void display_size(ULONGLONG dlen, unsigned slen, unsigned attr)
 }
 
 //**********************************************************
-//  Note: lstr contains form string plus filename
-//**********************************************************
 static void display_tree_filename (TCHAR *frmstr, dirs *ktemp)
 {
    int wlen = ktemp->name.length();
@@ -66,6 +64,7 @@ static void display_tree_filename (TCHAR *frmstr, dirs *ktemp)
    else {
       nputs (n.colorframe, frmstr);
       nputs(dtree_colors[level], ktemp->name.c_str());
+      syslog(L"[%u] %s%s\n", level, frmstr, ktemp->name.c_str());
       
       //  pad gap between end of folder name and data area, with spaces
       splen = (name_end_col + 1) - namelen ;

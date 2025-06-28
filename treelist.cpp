@@ -322,12 +322,13 @@ debug_dump(dirpath, "close") ;
 debug_dump(ktemp->name.c_str(), "call read_dir_tree") ;
 #endif
       read_dir_tree (ktemp);
-      cur_node->subdirsize += ktemp->subdirsize;
+      cur_node->subdirsize    += ktemp->subdirsize;
       cur_node->subdirsecsize += ktemp->subdirsecsize;
-
-      cur_node->subfiles += ktemp->subfiles;
-      cur_node->subdirects += ktemp->subdirects;
+      cur_node->subfiles      += ktemp->subfiles;
+      cur_node->subdirects    += ktemp->subdirects;
+#ifndef  USE_VECTOR
       ktemp = ktemp->brothers;
+#endif
    }
 
    //  when done, strip name from path and restore '\*.*'
@@ -632,16 +633,18 @@ static int build_dir_tree (TCHAR *tpath)
    //  allocate struct for dir listing
    // top = new_dir_node ();
 #ifdef  USE_VECTOR
-   dlist.emplace_back();
-   uint idx = dlist.size() - 1 ;
-   dirs *dtemp = &dlist[idx] ;
+   // dlist.emplace_back();
+   // // uint idx = dlist.size() - 1 ;
+   // dirs *dtemp = &dlist[0] ;
+   dlist.brothers.emplace_back();
+   dirs *temp = &dlist.brothers[0] ;
 #else
    dirs *dtemp = new dirs ;
 #endif   
    dtemp->dirsecsize = clbytes;
    dtemp->subdirsecsize = clbytes;
 #ifdef  USE_VECTOR
-   dirs *top = dtemp ;
+//    dirs *top = dtemp ;
 #else
    top = dtemp ;
 #endif
@@ -650,7 +653,7 @@ static int build_dir_tree (TCHAR *tpath)
    if (_tcslen (base_path) == 3) {
       // top->name = (TCHAR *) new TCHAR[8] ;
       // _tcscpy (top->name, _T("<root>"));
-      top->name = L"<root>" ;
+      dtemp->name = L"<root>" ;
    }
    else {
       _tcscpy (tempstr, base_path);
@@ -660,8 +663,9 @@ static int build_dir_tree (TCHAR *tpath)
 
       // top->name = (TCHAR *) new TCHAR[_tcslen (strptr) + 1];
       // _tcscpy (top->name, strptr);
-      top->name = strptr ;
+      dtemp->name = strptr ;
    }
+   syslog(L"top: %s\n", dtemp->name.c_str());
 
    // top->attrib = 0 ;   //  top-level dir is always displayed
 
@@ -671,7 +675,7 @@ static int build_dir_tree (TCHAR *tpath)
    _tcscpy (dirpath, tpath);
 
    pattern_init(_T("wait; reading directory ")) ;
-   result = read_dir_tree (top);
+   result = read_dir_tree (dtemp);
 #ifdef  DESPERATE
 syslog(_T("read_dir_tree exit\n")) ;
 #endif

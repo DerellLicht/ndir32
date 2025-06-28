@@ -3,6 +3,7 @@ _lint.tmp
 *.o
 *.bak
 *.zip
+*.out
 ndir32.exe
 ndir64.exe
 lnk_files/
