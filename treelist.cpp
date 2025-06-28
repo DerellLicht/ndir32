@@ -38,9 +38,11 @@ extern void draw_dir_tree (void);
 //     <0 if a < b
 //  
 //************************************************************
+#ifndef  USE_VECTOR
 static dirs *z = NULL;
 static int (*tree_sort_fcn) (dirs * a, dirs * b);
 static int tree_init_sort (void);
+#endif
 
 #ifdef  USE_VECTOR
 std::vector<dirs> dlist {};
@@ -120,7 +122,11 @@ static int early_abort = 0 ;
 
 static int read_dir_tree (dirs * cur_node)
 {
+#ifdef  USE_VECTOR
+   uint idx ;
+#else
    dirs *dtail = 0;
+#endif   
    TCHAR *strptr;
    HANDLE handle;
    int slen, done, result;
@@ -141,6 +147,10 @@ static int read_dir_tree (dirs * cur_node)
    //  but without reading anything further...
    if (early_abort) 
       return 0;
+
+#ifdef  DESPERATE
+   dputsf(L"%s: %s\n", cur_node->name.c_str(), L"call read_dir_tree") ;
+#endif
 
    pattern_update() ;
    //  Insert next subtree level.
@@ -171,13 +181,13 @@ debug_dump(dirpath, "entry") ;
       err = GetLastError ();
       if (err == ERROR_ACCESS_DENIED) {
 #ifdef  DESPERATE
-debug_dump(dirpath, "FindFirstFile denied") ;
+         dputsf(L"FindFirstFile access denied\n") ;
 #endif
          ;                     //  continue reading
       }
       else {
 #ifdef  DESPERATE
-syslog(_T("%s: FindFindFirst: %s\n"), dirpath, get_system_message (err));
+         dputsf(_T("%s: FindFindFirst: %s\n"), dirpath, get_system_message (err));
 #endif
          // _stprintf (tempstr, "path [%s]\n", dirpath);
          // nputs (0xA, tempstr);
@@ -211,20 +221,24 @@ syslog(_T("%s: FindFindFirst: %s\n"), dirpath, get_system_message (err));
                // dirs *dtemp = new_dir_node ();
                
 #ifdef  USE_VECTOR
-               dlist.emplace_back();
-               uint idx = dlist.size() - 1 ;
-               dirs *dtemp = &dlist[idx] ;
+               cur_node->brothers.emplace_back();
+               // cur_node->son[0].brothers.emplace_back();
+               idx = cur_node->brothers.size() - 1 ;
+               dirs *dtemp = &cur_node->brothers[idx] ;
 #else
                dirs *dtemp = new dirs ;
 #endif   
                dtemp->dirsecsize = clbytes;
                dtemp->subdirsecsize = clbytes;
                
+#ifndef  USE_VECTOR
+               
                if (cur_node->sons == NULL)
                   cur_node->sons = dtemp;
                else
                   dtail->brothers = dtemp;   //lint !e613  NOLINT
                dtail = dtemp;
+#endif               
                                                            
                //  convert Unicode filenames to UTF8
                // dtemp->mb_len = _tcslen(fdata.cFileName) ;
@@ -268,14 +282,14 @@ syslog(_T("%s: FindFindFirst: %s\n"), dirpath, get_system_message (err));
          err = GetLastError ();
          if (err == ERROR_ACCESS_DENIED) {
 #ifdef  DESPERATE
-debug_dump(fdata.cFileName, L"denied") ;
+syslog(_T("%s: FindNextFile: access denied\n"), dirpath);
 #else
             ;                     //  continue reading
 #endif
          }
          else if (err == ERROR_NO_MORE_FILES) {
 #ifdef  DESPERATE
-syslog(_T("FindNextFileW: no more files\n")) ;
+syslog(_T("FindNextFile: no more files\n")) ;
 #endif
             done = 1 ;
          }
@@ -297,8 +311,13 @@ debug_dump(dirpath, "close") ;
    FindClose (handle);
 
    //  next, build tree lists for subsequent levels (recursive)
+#ifdef  USE_VECTOR
+   for(auto &file : cur_node->brothers) {
+      dirs *ktemp = &file;
+#else
    dirs *ktemp = cur_node->sons;
    while (ktemp != NULL) {
+#endif
 #ifdef  DESPERATE
 debug_dump(ktemp->name.c_str(), "call read_dir_tree") ;
 #endif
@@ -318,6 +337,32 @@ debug_dump(ktemp->name.c_str(), "call read_dir_tree") ;
    level--;
    return 0;   //lint !e438
 }
+#ifdef  USE_VECTOR
+//*********************************************************
+static bool const tree_sort_name (dirs a, dirs b)
+{
+   return (_tcsicmp (a.name.c_str(), b.name.c_str()) < 0) ;
+}
+
+//*********************************************************
+static bool const tree_sort_name_rev (dirs a, dirs b)
+{
+   return (_tcsicmp (b.name.c_str(), a.name.c_str()) < 0);
+}
+
+//*********************************************************
+static bool const tree_sort_size (dirs a, dirs b)
+{
+   return (a.subdirsecsize < b.subdirsecsize) ;
+}
+
+//*********************************************************
+static bool const tree_sort_size_rev (dirs a, dirs b)
+{
+   return (b.subdirsecsize < a.subdirsecsize) ;
+}
+
+#else 
 
 //****************************************************
 //  allocate a dummy structure for merge_sort()
@@ -482,6 +527,91 @@ static void sort_trees (void)
    //  now, sort the data
    top = tree_sort_walk (top);
 }
+#endif
+
+//***********************************************************************************
+//  recursive routine to traverse all branches of folder tree.
+//  
+//  vector mode:
+//  Each brother passed to this function, will print his name and info, 
+//  Then iterate over each of his children(brother->brothers),
+//  and let them repeat the story.
+//  
+//  Thus, each folder listing will be followed by all lower folder listings...
+//  AKA, depth-first traversal
+//***********************************************************************************
+//          std::stable_sort(dlist.begin(), dlist.end(), [](const dirs& a, const dirs& b) { 
+//             // return (b.fsize < a.fsize) ;
+//             return (a->subdirsecsize > b->subdirsecsize)
+//             } ) ;
+            
+#ifdef  USE_VECTOR
+static void sort_trees (std::vector<dirs> brothers, TCHAR *parent_name)
+{
+   if (brothers.empty()) {
+      return;
+}
+
+   // uint num_folders = brothers.size() ;
+   // console->dputsf(L"found branch with %u brothers, under %s\n", num_folders, parent_name) ;
+   // std::sort(brothers.begin(), brothers.end(), comp);
+   if (n.reverse) {
+      if (n.sort == SORT_SIZE) {
+         // tree_sort_fcn = tree_sort_size_rev;
+         std::sort(brothers.begin(), brothers.end(), tree_sort_size_rev);
+         // std::stable_sort(brothers.begin(), brothers.end(), [](const dirs& a, const dirs& b) { 
+         //    // return (a.fsize < b.fsize) ;
+         //    return (a.subdirsecsize > b.subdirsecsize) ;
+         //    } ) ;
+      }
+      else {
+         // tree_sort_fcn = tree_sort_name_rev;
+         std::sort(brothers.begin(), brothers.end(), tree_sort_name_rev);
+         // std::stable_sort(brothers.begin(), brothers.end(), [](const dirs& a, const dirs& b) { 
+         //    // return (_tcsicmp(a.filename.c_str(), b.filename.c_str()) < 0) ;
+         //    return (_tcsicmp (b.name.c_str(), a.name.c_str()) < 0);
+         //    // return a.filename.compare(b.filename);
+         //    } ) ;
+      }
+   }
+
+   //  normal sort
+   else {
+      if (n.sort == SORT_SIZE) {
+         // tree_sort_fcn = tree_sort_size;
+         std::sort(brothers.begin(), brothers.end(), tree_sort_size);
+         // std::stable_sort(brothers.begin(), brothers.end(), [](const dirs& a, const dirs& b) { 
+         //    // return (a.fsize < b.fsize) ;
+         //    return (a.subdirsecsize < b.subdirsecsize) ;
+         //    } ) ;
+      }
+      else {
+         // tree_sort_fcn = tree_sort_name;
+         std::sort(brothers.begin(), brothers.end(), tree_sort_name);
+         // std::stable_sort(brothers.begin(), brothers.end(), [](const dirs& a, const dirs& b) { 
+         //    // return (_tcsicmp(a.filename.c_str(), b.filename.c_str()) < 0) ;
+         //    return (_tcsicmp (a.name.c_str(), b.name.c_str()) < 0);
+         //    // return a.filename.compare(b.filename);
+         //    } ) ;
+      }
+   }
+   
+   // uint fcount = 0 ;
+   for(auto &file : brothers) {
+      dirs *ktemp = &file;
+      // fcount++ ;
+
+      //*****************************************************************
+      //                display data for this branch                      
+      //*****************************************************************
+      // console->dputsf(L"%s %s\n", formstr, ktemp->name.c_str()) ;
+
+      level++;
+      sort_trees(ktemp->brothers, (TCHAR *) ktemp->name.c_str());
+      level-- ;
+   }  //  while not done traversing brothers
+}
+#endif
 
 //**********************************************************
 static int build_dir_tree (TCHAR *tpath)
@@ -510,7 +640,11 @@ static int build_dir_tree (TCHAR *tpath)
 #endif   
    dtemp->dirsecsize = clbytes;
    dtemp->subdirsecsize = clbytes;
+#ifdef  USE_VECTOR
+   dirs *top = dtemp ;
+#else
    top = dtemp ;
+#endif
 
    //  derive root path name
    if (_tcslen (base_path) == 3) {
@@ -539,7 +673,7 @@ static int build_dir_tree (TCHAR *tpath)
    pattern_init(_T("wait; reading directory ")) ;
    result = read_dir_tree (top);
 #ifdef  DESPERATE
-debug_dump("exit", "returned from read_dir_tree") ;
+syslog(_T("read_dir_tree exit\n")) ;
 #endif
    pattern_reset() ;
    return result ;
@@ -548,16 +682,24 @@ debug_dump("exit", "returned from read_dir_tree") ;
 //*****************************************************************
 void tree_listing (unsigned total_filespec_count)
 {
+#ifndef  USE_VECTOR
    if (z == 0) {
       tree_init_sort ();
    }
+#endif   
 
    for (unsigned l = 0; l < total_filespec_count; l++) {
       //  read and build the dir tree
       build_dir_tree ((TCHAR *) target[l].c_str()) ;
 
       //  sort the tree list
+#ifdef  USE_VECTOR
+      //  show the tree that we read
+      dirs *temp = &dlist[0] ;
+      sort_trees(temp->brothers, (TCHAR *) temp->name.c_str());
+#else
       sort_trees ();
+#endif      
 
       //  now display the resulting directory tree
       draw_dir_tree ();

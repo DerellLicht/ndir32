@@ -8,6 +8,7 @@ ndir64.exe
 lnk_files/
 .vs/
 test/
+vector/
 outputi.txt
 output.txt
 long.ext.filenames

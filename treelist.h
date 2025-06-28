@@ -8,7 +8,7 @@ struct dirs
 {
 #ifdef  USE_VECTOR
    std::vector<dirs> brothers {};
-   std::vector<dirs> sons {};
+   // std::vector<dirs> sons {};
 #else   
    dirs *brothers {nullptr};
    dirs *sons {nullptr};

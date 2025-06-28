@@ -34,6 +34,7 @@ void sort_filelist(void)
          // sort_files(sort_filename_rev) ;
          std::stable_sort(flist.begin(), flist.end(), [](const ffdata& a, const ffdata& b) { 
             return (_tcsicmp(b.filename.c_str(), a.filename.c_str()) < 0) ;
+            // return b.filename.compare(a.filename);
             } ) ;
          break;
       case SORT_SIZE:
@@ -76,6 +77,7 @@ void sort_filelist(void)
          // sort_files(sort_filename) ;
          std::stable_sort(flist.begin(), flist.end(), [](const ffdata& a, const ffdata& b) { 
             return (_tcsicmp(a.filename.c_str(), b.filename.c_str()) < 0) ;
+            // return a.filename.compare(b.filename);
             } ) ;
          break;
       case SORT_SIZE:
