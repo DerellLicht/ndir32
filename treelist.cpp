@@ -45,7 +45,8 @@ static int tree_init_sort (void);
 #endif
 
 #ifdef  USE_VECTOR
-std::vector<dirs> dlist {};
+// std::vector<dirs> dlist {};
+dirs dlist {};   //  top-level brothers will be unused
 #else
 dirs *top = NULL;
 #endif
@@ -340,25 +341,25 @@ debug_dump(ktemp->name.c_str(), "call read_dir_tree") ;
 }
 #ifdef  USE_VECTOR
 //*********************************************************
-static bool const tree_sort_name (dirs a, dirs b)
+static bool const tree_sort_name (dirs const a, dirs const b)
 {
    return (_tcsicmp (a.name.c_str(), b.name.c_str()) < 0) ;
 }
 
 //*********************************************************
-static bool const tree_sort_name_rev (dirs a, dirs b)
+static bool const tree_sort_name_rev (dirs const a, dirs const b)
 {
    return (_tcsicmp (b.name.c_str(), a.name.c_str()) < 0);
 }
 
 //*********************************************************
-static bool const tree_sort_size (dirs a, dirs b)
+static bool const tree_sort_size (dirs const a, dirs const b)
 {
    return (a.subdirsecsize < b.subdirsecsize) ;
 }
 
 //*********************************************************
-static bool const tree_sort_size_rev (dirs a, dirs b)
+static bool const tree_sort_size_rev (dirs const a, dirs const b)
 {
    return (b.subdirsecsize < a.subdirsecsize) ;
 }
@@ -547,7 +548,7 @@ static void sort_trees (void)
 //             } ) ;
             
 #ifdef  USE_VECTOR
-static void sort_trees (std::vector<dirs> brothers, TCHAR *parent_name)
+static void sort_trees (std::vector<dirs> brothers)
 {
    if (brothers.empty()) {
       return;
@@ -608,7 +609,7 @@ static void sort_trees (std::vector<dirs> brothers, TCHAR *parent_name)
       // console->dputsf(L"%s %s\n", formstr, ktemp->name.c_str()) ;
 
       level++;
-      sort_trees(ktemp->brothers, (TCHAR *) ktemp->name.c_str());
+      sort_trees(ktemp->brothers);
       level-- ;
    }  //  while not done traversing brothers
 }
@@ -637,7 +638,7 @@ static int build_dir_tree (TCHAR *tpath)
    // // uint idx = dlist.size() - 1 ;
    // dirs *dtemp = &dlist[0] ;
    dlist.brothers.emplace_back();
-   dirs *temp = &dlist.brothers[0] ;
+   dirs *dtemp = &dlist.brothers[0] ;
 #else
    dirs *dtemp = new dirs ;
 #endif   
@@ -699,8 +700,8 @@ void tree_listing (unsigned total_filespec_count)
       //  sort the tree list
 #ifdef  USE_VECTOR
       //  show the tree that we read
-      dirs *temp = &dlist[0] ;
-      sort_trees(temp->brothers, (TCHAR *) temp->name.c_str());
+      // dirs *temp = &dlist.brothers[0] ;
+      sort_trees(dlist.brothers);
 #else
       sort_trees ();
 #endif      

@@ -11,6 +11,10 @@
 #include "conio32.h"
 #include "treelist.h"
 
+//lint -esym(528, display_size, display_tree_filename, formstr)
+//lint -esym(843, formstr) variable could be declared as const
+//lint -esym(552, tree_level_limit)  Symbol not accessed
+
 static TCHAR const * const dhdrl =
    _T("+-----------+-----------+--------------+--------------");
 
@@ -687,8 +691,7 @@ void draw_dir_tree (void)
    
 #ifdef  USE_VECTOR
    // dirs *temp = &dlist.brothers[0] ;
-   dirs *temp = &dlist[0] ;
-   display_dir_tree(temp->brothers);
+   display_dir_tree(dlist.brothers);
 #else   
    display_dir_tree (top);
 #endif   

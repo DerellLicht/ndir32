@@ -1,5 +1,5 @@
-// #define  USE_VECTOR
-#undef  USE_VECTOR
+#define  USE_VECTOR
+// #undef  USE_VECTOR
 
 //**********************************************************
 //  directory structure for directory_tree routines
@@ -26,7 +26,8 @@ struct dirs
 };
 
 #ifdef  USE_VECTOR
-extern std::vector<dirs> dlist ;
+// extern std::vector<dirs> dlist ;
+extern dirs dlist ;   //  top-level brothers will be unused
 #else
 extern dirs *top ;
 #endif

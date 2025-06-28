@@ -48,6 +48,9 @@
 //lint -e734   Loss of precision (assignment) (N bits to K bits)
 //lint -e754   local structure member not referenced
 //lint -e755   global macro not referenced (reqd for scsi_defs.h)
+//lint -e762   Redundantly declared symbol 'sort()' previously declared at line 563
 //lint -e768   global struct member not referenced
 //lint -e778   Constant expression evaluates to 0 in operation '*'
+//lint -e864   Expression involving variable 'brothers' possibly depends on order of evaluation
+//lint -e1746  parameter in function could be made const reference
 
