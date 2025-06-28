@@ -532,6 +532,24 @@ static void sort_trees (void)
 #endif
 
 //***********************************************************************************
+//  debug function
+//***********************************************************************************
+// static void dump_brothers(std::vector<dirs> brothers, uint level, wchar_t *msg)
+// {
+//    if (brothers.size() < 2) {
+//       return ;
+//    }
+//    if (msg != NULL) {
+//       syslog(L"%u: %s\n", level, msg);
+//    }
+//    for(auto &file : brothers) {
+//       dirs *ktemp = &file;
+//       syslog(L"%10u %s\n", ktemp->subdirsecsize, ktemp->name.c_str()) ;
+//    }  //  while not done traversing brothers
+//    syslog(L"\n");
+// }
+
+//***********************************************************************************
 //  recursive routine to traverse all branches of folder tree.
 //  
 //  vector mode:
@@ -541,77 +559,59 @@ static void sort_trees (void)
 //  
 //  Thus, each folder listing will be followed by all lower folder listings...
 //  AKA, depth-first traversal
+//  
+//  Note: parent_name is only used for debugging
 //***********************************************************************************
-//          std::stable_sort(dlist.begin(), dlist.end(), [](const dirs& a, const dirs& b) { 
-//             // return (b.fsize < a.fsize) ;
-//             return (a->subdirsecsize > b->subdirsecsize)
-//             } ) ;
-            
+//lint -esym(715, parent_name)   Symbol not referenced
 #ifdef  USE_VECTOR
-static void sort_trees (std::vector<dirs> brothers)
+static void sort_trees (std::vector<dirs>& brothers, TCHAR *parent_name)
 {
    if (brothers.empty()) {
       return;
-}
-
-   // uint num_folders = brothers.size() ;
-   // console->dputsf(L"found branch with %u brothers, under %s\n", num_folders, parent_name) ;
-   // std::sort(brothers.begin(), brothers.end(), comp);
-   if (n.reverse) {
-      if (n.sort == SORT_SIZE) {
-         // tree_sort_fcn = tree_sort_size_rev;
-         std::sort(brothers.begin(), brothers.end(), tree_sort_size_rev);
-         // std::stable_sort(brothers.begin(), brothers.end(), [](const dirs& a, const dirs& b) { 
-         //    // return (a.fsize < b.fsize) ;
-         //    return (a.subdirsecsize > b.subdirsecsize) ;
-         //    } ) ;
-      }
-      else {
-         // tree_sort_fcn = tree_sort_name_rev;
-         std::sort(brothers.begin(), brothers.end(), tree_sort_name_rev);
-         // std::stable_sort(brothers.begin(), brothers.end(), [](const dirs& a, const dirs& b) { 
-         //    // return (_tcsicmp(a.filename.c_str(), b.filename.c_str()) < 0) ;
-         //    return (_tcsicmp (b.name.c_str(), a.name.c_str()) < 0);
-         //    // return a.filename.compare(b.filename);
-         //    } ) ;
-      }
-   }
-
-   //  normal sort
-   else {
-      if (n.sort == SORT_SIZE) {
-         // tree_sort_fcn = tree_sort_size;
-         std::sort(brothers.begin(), brothers.end(), tree_sort_size);
-         // std::stable_sort(brothers.begin(), brothers.end(), [](const dirs& a, const dirs& b) { 
-         //    // return (a.fsize < b.fsize) ;
-         //    return (a.subdirsecsize < b.subdirsecsize) ;
-         //    } ) ;
-      }
-      else {
-         // tree_sort_fcn = tree_sort_name;
-         std::sort(brothers.begin(), brothers.end(), tree_sort_name);
-         // std::stable_sort(brothers.begin(), brothers.end(), [](const dirs& a, const dirs& b) { 
-         //    // return (_tcsicmp(a.filename.c_str(), b.filename.c_str()) < 0) ;
-         //    return (_tcsicmp (a.name.c_str(), b.name.c_str()) < 0);
-         //    // return a.filename.compare(b.filename);
-         //    } ) ;
-      }
    }
    
-   // uint fcount = 0 ;
+   // dump_brothers(brothers, level, L"before sort");
+   //  if there is only one brother in this folder, skip the sorting step,
+   //  because there is nothing to do...
+   //  However, the subsequent iteration over brothers still needs to run,
+   //  as there may be larger folder sets down there.
+   uint num_folders = brothers.size() ;
+   // console->dputsf(L"found branch with %u brothers, under %s\n", num_folders, parent_name) ;
+   // syslog(_T("L%u %s sort, %u elements\n"), level, parent_name, brothers.size()) ;
+   if (num_folders > 1) {
+      // std::sort(brothers.begin(), brothers.end(), comp);
+      if (n.reverse) {
+         if (n.sort == SORT_SIZE) {
+            std::sort(brothers.begin(), brothers.end(), tree_sort_size_rev);
+         }
+         else {
+            std::sort(brothers.begin(), brothers.end(), tree_sort_name_rev);
+         }
+      }
+
+      //  normal sort
+      else {
+         if (n.sort == SORT_SIZE) {
+            std::sort(brothers.begin(), brothers.end(), tree_sort_size);
+         }
+         else {
+            std::sort(brothers.begin(), brothers.end(), tree_sort_name);
+         }
+      }
+   }
+   // dump_brothers(brothers, level, L"after sort");
+   
    for(auto &file : brothers) {
       dirs *ktemp = &file;
-      // fcount++ ;
-
-      //*****************************************************************
-      //                display data for this branch                      
-      //*****************************************************************
       // console->dputsf(L"%s %s\n", formstr, ktemp->name.c_str()) ;
 
       level++;
-      sort_trees(ktemp->brothers);
+      // syslog(_T("%s sort: next call\n"), ktemp->name.c_str()) ;
+      sort_trees(ktemp->brothers, (TCHAR *) ktemp->name.c_str());
       level-- ;
    }  //  while not done traversing brothers
+   
+   // dump_brothers(brothers, level, L"after recursion");
 }
 #endif
 
@@ -700,8 +700,9 @@ void tree_listing (unsigned total_filespec_count)
       //  sort the tree list
 #ifdef  USE_VECTOR
       //  show the tree that we read
-      // dirs *temp = &dlist.brothers[0] ;
-      sort_trees(dlist.brothers);
+      dirs *temp = &dlist.brothers[0] ;
+      // syslog(_T("%s sort: first call\n"), temp->name.c_str()) ;
+      sort_trees(dlist.brothers, (TCHAR *) temp->name.c_str());
 #else
       sort_trees ();
 #endif      
