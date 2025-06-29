@@ -159,7 +159,7 @@ $(BIN): $(OBJS)
 
 Ndir32.o: der_libs/common.h ndir32.h conio32.h der_libs/qualify.h treelist.h
 cmd_line.o: der_libs/common.h ndir32.h conio32.h
-config.o: der_libs/common.h ndir32.h
+config.o: der_libs/common.h ndir32.h conio32.h
 conio32.o: der_libs/common.h ndir32.h conio32.h
 Diskparm.o: der_libs/common.h ndir32.h
 err_exit.o: der_libs/common.h ndir32.h conio32.h

@@ -12,6 +12,7 @@
 
 #include "common.h"
 #include "ndir32.h"
+#include "conio32.h"
 
 #define  MAX_EXT        200
 struct attrib_list {
@@ -366,8 +367,6 @@ void read_config_file(void)
    //  This will usually mean that we are running under WinNT 4.0,
    //  and the executable is already in the current directory.
    //  Just write the file in the current directory.
-   // printf("ininame=%s\n", ininame) ;
-   // getchar() ;
    if (ininame[0] == 0) {
       _tcscpy(ini_path, local_ini_name) ;
    } 
@@ -384,11 +383,8 @@ void read_config_file(void)
    //  generate default file in appropriate location.
    result = write_default_ini_file(ini_path) ;
    if (result != 0) {
-      // perror(ini_path) ;
-      _stprintf (tempstr, _T("path [%s]\n"), ini_path);
-      nputs (0xA, tempstr);
-      _stprintf (tempstr, _T("FindFirst: %s\n"), get_system_message ());
-      nputs (0xA, tempstr);
+      dputsf(_T("path [%s]\n"), ini_path);
+      dputsf(_T("create failed: %s\n"), get_system_message ());
    }
    //  try to read again, after writing defaults
    read_ini_file(ini_path) ;

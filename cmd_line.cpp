@@ -155,7 +155,7 @@ void parse_command_string (TCHAR *cmdstr)
       case '/':
          cmdstr++;              //  skip the switch char
          while (LOOP_FOREVER) {
-            if (*cmdstr == 13 || *cmdstr == 0)
+            if (*cmdstr == CR || *cmdstr == LF || *cmdstr == 0)
                break;
 
             slen = update_switches (cmdstr);
@@ -184,15 +184,13 @@ void parse_command_string (TCHAR *cmdstr)
          extptr = _tcschr (tempstr, '.');
          //  why worry about length of extension??
          // if (extptr != 0 && _tcslen (extptr) <= 4) 
-         if (extptr != 0) 
-         {
+         if (extptr != 0) {
             update_exclusion_list(extptr) ;
          }
          break;
 
       default:
-         _tcscpy (tempstr, cmdstr);
-         insert_target_filespec (tempstr);
+         insert_target_filespec (cmdstr);
          break;
    }                            //  switch (*cmdstr)
 }
