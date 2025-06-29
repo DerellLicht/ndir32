@@ -377,17 +377,19 @@ static void sort_trees (std::vector<dirs>& brothers, TCHAR *parent_name)
 static int build_dir_tree (TCHAR *tpath)
 {
    int result ;
-   TCHAR *strptr;
    level = 0;
 
    //  Extract base path from first filespec,
    //  and strip off filename
-   _tcscpy (base_path, tpath);
-   strptr = _tcsrchr (base_path, _T('\\'));
-   if (strptr != NULL)
-      *(++strptr) = 0;          //  strip off filename
-   base_len = _tcslen (base_path);
-   get_disk_info (base_path);
+   base_path = tpath ;
+   size_t slen = base_path.find_last_of(L'\\');
+   if (slen != std::wstring::npos) {
+      slen++ ;
+      base_path.resize(slen);
+   }
+   // base_len = base_path.length() ;
+   
+   get_disk_info ((TCHAR *) base_path.c_str());
 
    //  allocate struct for dir listing
    dlist.brothers.emplace_back();
@@ -396,24 +398,20 @@ static int build_dir_tree (TCHAR *tpath)
    dtemp->subdirsecsize = clbytes;
 
    //  derive root path name
-   if (_tcslen (base_path) == 3) {
-      // top->name = (TCHAR *) new TCHAR[8] ;
-      // _tcscpy (top->name, _T("<root>"));
+   if (base_path.length() == 3) {
       dtemp->name = L"<root>" ;
    }
    else {
-      _tcscpy (tempstr, base_path);
-      tempstr[base_len - 1] = 0; //  strip off tailing backslash
-      strptr = _tcsrchr (tempstr, _T('\\'));
-      strptr++;                 //  skip past backslash, to filename
-
-      // top->name = (TCHAR *) new TCHAR[_tcslen (strptr) + 1];
-      // _tcscpy (top->name, strptr);
-      dtemp->name = strptr ;
+      std::wstring ltempstr {};
+      ltempstr = base_path ;
+      slen = ltempstr.find_last_of(L'\\');
+      if (slen != std::wstring::npos) {
+         slen++ ;
+         ltempstr.resize(slen);
+      }
+      dtemp->name = ltempstr ;
    }
-   syslog(L"top: %s\n", dtemp->name.c_str());
-
-   // top->attrib = 0 ;   //  top-level dir is always displayed
+   // syslog(L"top: %s\n", dtemp->name.c_str());
 
    // if (n.ucase)
    //    _tcsupr (top->name);

@@ -55,8 +55,7 @@ std::vector<std::wstring> target {};
 std::wstring volume_name {};
 
 //  name of drive+path without filenames
-TCHAR base_path[MAX_PATH_LEN] ;
-unsigned base_len ;  //  length of base_path
+std::wstring base_path {};
 
 unsigned start, finish ;
 TCHAR tempstr[MAXLINE] ;
@@ -267,7 +266,8 @@ try_next_tail:
 static void process_filespecs(void)
 {
    TCHAR * strptr ;
-   unsigned j ;
+   unsigned j;
+   size_t slen ;
 
    /***********************************************************************/
    /*************************  loop on filespecs  *************************/
@@ -292,16 +292,22 @@ static void process_filespecs(void)
 
       //  Extract base path from first filespec,
       //  and strip off filename
-      _tcscpy(base_path, target[start].c_str()) ;
-      strptr = _tcsrchr(base_path, '\\') ;
-      if (strptr != 0) {
-          strptr++ ;  //lint !e613  skip past backslash, to filename
-         *strptr = 0 ;  //  strip off filename
+      // _tcscpy(base_path, target[start].c_str()) ;
+      // strptr = _tcsrchr(base_path, '\\') ;
+      // if (strptr != 0) {
+      //     strptr++ ;  //lint !e613  skip past backslash, to filename
+      //    *strptr = 0 ;  //  strip off filename
+      // }
+      // base_len = _tcslen(base_path) ;
+      base_path = target[start] ;
+      slen = base_path.find_last_of(L'\\');
+      if (slen != std::wstring::npos) {
+         slen++ ;
+         base_path.resize(slen);
       }
-      base_len = _tcslen(base_path) ;
-
+      // base_len = base_path.length() ;
       //**************************************************
-      get_disk_info(base_path) ;
+      get_disk_info((TCHAR *) base_path.c_str()) ;
 
       //**************************************************
       //  Call directory_tree or file_listing routines,
@@ -324,17 +330,23 @@ static void process_filespecs(void)
 
          //  Extract base path from first filespec,
          //  and strip off filename
-         _tcscpy(base_path, target[start].c_str()) ;
-         //lint -esym(613,strptr) 
-         strptr = _tcsrchr(base_path, '\\') ;
-         if (strptr != 0) {
-            strptr++ ;  // skip past backslash, to filename
-            *strptr = 0 ;  //  strip off filename
+         // _tcscpy(base_path, target[start].c_str()) ;
+         // strptr = _tcsrchr(base_path, '\\') ;
+         // if (strptr != 0) {
+         //    strptr++ ;  // skip past backslash, to filename
+         //    *strptr = 0 ;  //  strip off filename
+         // }
+         // base_len = _tcslen(base_path) ;
+         base_path = target[start] ;
+         slen = base_path.find_last_of(L'\\');
+         if (slen != std::wstring::npos) {
+            slen++ ;
+            base_path.resize(slen);
          }
-         base_len = _tcslen(base_path) ;
+         // base_len = base_path.length() ;
 
          //**************************************************
-         get_disk_info(base_path) ;
+         get_disk_info((TCHAR *) base_path.c_str()) ;
 
          //  seek out all other filespecs with same path
          //  This block sets variable 'finish'
@@ -354,7 +366,7 @@ static void process_filespecs(void)
                *strptr = 0 ;
 
                //  now see if they are equal
-               if (_tcscmp(base_path, tempstr) != 0) {
+               if (_tcscmp(base_path.c_str(), tempstr) != 0) {
                   finish = j-1 ;
                   break;
                }

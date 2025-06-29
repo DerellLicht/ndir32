@@ -91,9 +91,9 @@ static void filehead(void)
    //****************************************************
    if (n.minimize) {
       if (list_count == 0)
-         _stprintf(tempstr, _T("%-38s   "), base_path) ;
+         _stprintf(tempstr, _T("%-38s   "), base_path.c_str()) ;
       else
-         _stprintf(tempstr, _T("%-49s   "), base_path) ;
+         _stprintf(tempstr, _T("%-49s   "), base_path.c_str()) ;
       nputs(n.colornhead, tempstr) ;
 
       if (_where_x() < (wincols - 28)) {
@@ -110,9 +110,10 @@ static void filehead(void)
    else {
       nput_line(n.colorframe, '*') ;
 
-      _stprintf(tempstr, _T("Directory of %-38s "), base_path) ;
+      _stprintf(tempstr, _T("Directory of %-38s "), base_path.c_str()) ;
       nputs(n.colornhead, tempstr) ;
-      if (_tcslen(base_path) > 43)
+      // if (_tcslen(base_path) > 43)
+      if (base_path.length() > 43)
          ncrlf() ;
 
       nputs(n.colornhead, _T("Volume label is ")) ;

@@ -1,4 +1,6 @@
-> dirtree -d3 mode, does not sort on file/folder counts
+> dirtree -d3 mode, does not sort on file/folder counts.
+  At least, doesn't offer an option that I would prefer...
+  It really should sort on file/folder counts, rather than size
 
 > unicode filenames are not working in redirected mode...
   WriteConsole(), which is used Unicode console output, does not work with redirection

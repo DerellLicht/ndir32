@@ -470,12 +470,14 @@ static void printdirheader (void)
 {
    nputs (n.colornhead, _T("Directory of ")); //  len = 13
    
-   _stprintf (tempstr, _T("%s"), base_path);
-   nputs (n.colorxhead, tempstr);
+   // _stprintf (tempstr, _T("%s"), base_path.c_str());
+   // nputs (n.colorxhead, tempstr);
+   nputs (n.colorxhead, base_path.c_str());
 
    // uint vnlen = 16 + _tcslen(volume_name) ; //  16 is length of 'Volume label is '
    uint vnlen = 16 + volume_name.length() ; //  16 is length of 'Volume label is '
-   uint blen  = 13 + _tcslen(base_path) ;   //  13 is length of 'Directory of '
+   // uint blen  = 13 + _tcslen(base_path) ;   //  13 is length of 'Directory of '
+   uint blen  = 13 + base_path.length() ;   //  13 is length of 'Directory of '
    if ((blen + vnlen) >= wincols) 
       ncrlf ();
    else
