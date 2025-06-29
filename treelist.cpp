@@ -27,30 +27,8 @@ static TCHAR dirpath[MAX_PATH_LEN];
 
 unsigned level;
 
-#ifndef  USE_VECTOR
-//***************************************************************************************
-//  the following object is a dummy point structure which is used by merge_sort.  
-//  The main code must allocate a structure for this to point to.
-//  
-//  A global compare function pointer is also required by the sort routine.  
-//  This will point to a function which accepts two structure pointers as arguments, 
-//  and return:
-//  
-//     >0 if a > b
-//    ==0 if a == b
-//     <0 if a < b
-//***************************************************************************************
-static dirs *z = NULL;
-static int (*tree_sort_fcn) (dirs * a, dirs * b);
-static int tree_init_sort (void);
-#endif
-
-#ifdef  USE_VECTOR
 // std::vector<dirs> dlist {};
 dirs dlist {};   //  top-level brothers will be unused
-#else
-dirs *top = NULL;
-#endif
 
 //*********************************************************
 //  "waiting" pattern generator
@@ -90,11 +68,7 @@ static void pattern_update(void)
 //**********************************************************
 static int read_dir_tree (dirs * cur_node)
 {
-#ifdef  USE_VECTOR
    uint idx ;
-#else
-   dirs *dtail = 0;
-#endif   
    bool early_abort = false ;
    // TCHAR *strptr;
    HANDLE handle;
@@ -151,11 +125,7 @@ static int read_dir_tree (dirs * cur_node)
    }
    
    else {
-#ifdef  STL_DIRPATH
       slen = dirpath.length() ;
-#else      
-      slen = _tcslen (dirpath);
-#endif      
    }
 
    //  first, build tree list for current level
@@ -165,11 +135,7 @@ static int read_dir_tree (dirs * cur_node)
    syslog(_T("L%u %s: entry\n"), level, dirpath.c_str()) ;  //  debug dump
 #endif
    err = 0;
-#ifdef  STL_DIRPATH
    handle = FindFirstFile(dirpath.c_str(), &fdata);
-#else   
-   handle = FindFirstFile(dirpath, &fdata);
-#endif   
    if (handle == INVALID_HANDLE_VALUE) {
       err = GetLastError ();
       if (err == ERROR_ACCESS_DENIED) {
@@ -209,26 +175,15 @@ static int read_dir_tree (dirs * cur_node)
 
                // dirs *dtemp = new_dir_node ();
                
-#ifdef  USE_VECTOR
                cur_node->brothers.emplace_back();
                // cur_node->son[0].brothers.emplace_back();
                idx = cur_node->brothers.size() - 1 ;
                dirs *dtemp = &cur_node->brothers[idx] ;
-#else
-               dirs *dtemp = new dirs ;
-#endif   
                dtemp->dirsecsize = clbytes;
                dtemp->subdirsecsize = clbytes;
                dtemp->name = fdata.cFileName ;
                dtemp->attrib = (uchar) fdata.dwFileAttributes;
                // dtail->directs++ ;
-#ifndef  USE_VECTOR
-               if (cur_node->sons == NULL)
-                  cur_node->sons = dtemp;
-               else
-                  dtail->brothers = dtemp;   //lint !e613  NOLINT
-               dtail = dtemp;
-#endif               
             }                   //  if this is not a DOT directory
          }                      //  if this is a directory
 
@@ -290,26 +245,18 @@ static int read_dir_tree (dirs * cur_node)
    FindClose (handle);
 
    //  next, build tree lists for subsequent levels (recursive)
-#ifdef  USE_VECTOR
    for(auto &file : cur_node->brothers) {
       dirs *ktemp = &file;
-#else
-   dirs *ktemp = cur_node->sons;
-   while (ktemp != NULL) {
-#endif
       read_dir_tree (ktemp);
       cur_node->subdirsize    += ktemp->subdirsize;
       cur_node->subdirsecsize += ktemp->subdirsecsize;
       cur_node->subfiles      += ktemp->subfiles;
       cur_node->subdirects    += ktemp->subdirects;
-#ifndef  USE_VECTOR
-      ktemp = ktemp->brothers;
-#endif
    }
 
    //  when done, strip name from path and restore '\*.*'
 #ifdef  STL_DIRPATH
-   // dirpath[slen] = 0 ;
+   // dirpath[slen] = 0 ;  //  string class doesn't know this was done
    dirpath.resize(slen);
    dirpath.append(L"*");
 #else
@@ -320,7 +267,6 @@ static int read_dir_tree (dirs * cur_node)
    level--;
    return 0;   //lint !e438
 }
-#ifdef  USE_VECTOR
 //*********************************************************
 static bool const tree_sort_name (dirs const a, dirs const b)
 {
@@ -344,173 +290,6 @@ static bool const tree_sort_size_rev (dirs const a, dirs const b)
 {
    return (b.subdirsecsize < a.subdirsecsize) ;
 }
-
-#else 
-
-//****************************************************
-//  allocate a dummy structure for merge_sort()
-//****************************************************
-static int tree_init_sort (void)
-{
-   //  switching this statement from malloc() to new()
-   //  changes total exe size from 70,144 to 179,200 !!!
-   //   70144 ->     32256   45.99%    win64/pe     ndir64.exe
-   // z = (dirs *) malloc(sizeof(dirs)) ;
-   // if (z == NULL)
-   //    error_exit (OUT_OF_MEMORY, NULL);
-   //     179200 ->     72704   40.57%    win64/pe     ndir64.exe
-   z = (dirs *) new dirs ;
-   z->sons = NULL;
-   z->brothers = NULL;
-   return DATA_OKAY;
-}
-
-//****************************************************
-// static void free_tree_structs(void)
-//    {
-//    if (z != NULL)  delete z ;
-//    }
-
-//*********************************************************
-static int tree_sort_name (dirs *a, dirs *b)
-{
-   return (_tcsicmp (a->name.c_str(), b->name.c_str()));
-}
-
-//*********************************************************
-static int tree_sort_name_rev (dirs *a, dirs *b)
-{
-   return (_tcsicmp (b->name.c_str(), a->name.c_str()));
-}
-
-//*********************************************************
-static int tree_sort_size (dirs *a, dirs *b)
-{
-   if (a->subdirsecsize > b->subdirsecsize)
-      return (1);
-   else if (b->subdirsecsize > a->subdirsecsize)
-      return (-1);
-   else
-      return (0);
-}
-
-//*********************************************************
-static int tree_sort_size_rev (dirs *a, dirs *b)
-{
-   if (b->subdirsecsize > a->subdirsecsize)
-      return (1);
-   else if (a->subdirsecsize > b->subdirsecsize)
-      return (-1);
-   else
-      return (0);
-}
-
-//*********************************************************
-//  This routine merges two sorted linked lists.
-//*********************************************************
-static dirs *tree_merge (dirs *a, dirs *b)
-{
-   dirs *c;
-   c = z;
-
-   do {
-      int x = tree_sort_fcn (a, b);
-      if (x <= 0) {
-         c->brothers = a;
-         c = a;
-         a = a->brothers;
-      }
-      else {
-         c->brothers = b;
-         c = b;
-         b = b->brothers;
-      }
-   }
-   while ((a != NULL) && (b != NULL));
-
-   if (a == NULL)
-      c->brothers = b;
-   else
-      c->brothers = a;
-   return z->brothers;
-}
-
-//*********************************************************
-//  This routine recursively splits linked lists
-//  into two parts, passing the divided lists to
-//  merge() to merge the two sorted lists.
-//*********************************************************
-static dirs *tree_merge_sort (dirs *c)
-{
-   dirs *a, *b, *prev;
-   int pcount = 0;
-   int j = 0;
-
-   if ((c != NULL) && (c->brothers != NULL)) {
-      a = c;
-      while (a != NULL) {
-         pcount++;
-         a = a->brothers;
-      }
-      a = c;
-      b = c;
-      prev = b;
-      while (j < pcount / 2) {
-         j++;
-         prev = b;
-         b = b->brothers;
-      }
-      prev->brothers = NULL;    //lint !e771
-
-      return tree_merge (tree_merge_sort (a), tree_merge_sort (b));
-   }
-   return c;
-}
-
-//*********************************************************
-//  recursive routine that sorts the sons of each brother
-//*********************************************************
-static dirs *tree_sort_walk (dirs *t)
-{
-   dirs *dptr = t;
-   while (dptr != 0) {
-      dptr->sons = tree_sort_walk (dptr->sons);
-      dptr = dptr->brothers;
-   }
-   return tree_merge_sort (t);
-}
-
-//*********************************************************
-//  This intermediate function is used because I want
-//  merge_sort() to accept a passed parameter,
-//  but in this particular application the initial
-//  list is global.  This function sets up the global
-//  comparison-function pointer and passes the global
-//  list pointer to merge_sort().
-//*********************************************************
-static void sort_trees (void)
-{
-   // tree_sort_fcn = current_sort ;
-
-   if (n.reverse) {
-      if (n.sort == SORT_SIZE)
-         tree_sort_fcn = tree_sort_size_rev;
-      else
-         tree_sort_fcn = tree_sort_name_rev;
-   }
-
-   //  normal sort
-   else {
-      if (n.sort == SORT_SIZE)
-         tree_sort_fcn = tree_sort_size;
-      else
-         tree_sort_fcn = tree_sort_name;
-   }
-
-   //  now, sort the data
-   top = tree_sort_walk (top);
-}
-#endif
 
 //***********************************************************************************
 //  debug function
@@ -544,7 +323,6 @@ static void sort_trees (void)
 //  Note: parent_name is only used for debugging
 //***********************************************************************************
 //lint -esym(715, parent_name)   Symbol not referenced
-#ifdef  USE_VECTOR
 static void sort_trees (std::vector<dirs>& brothers, TCHAR *parent_name)
 {
    if (brothers.empty()) {
@@ -594,7 +372,6 @@ static void sort_trees (std::vector<dirs>& brothers, TCHAR *parent_name)
    
    // dump_brothers(brothers, level, L"after recursion");
 }
-#endif
 
 //**********************************************************
 static int build_dir_tree (TCHAR *tpath)
@@ -613,23 +390,10 @@ static int build_dir_tree (TCHAR *tpath)
    get_disk_info (base_path);
 
    //  allocate struct for dir listing
-   // top = new_dir_node ();
-#ifdef  USE_VECTOR
-   // dlist.emplace_back();
-   // // uint idx = dlist.size() - 1 ;
-   // dirs *dtemp = &dlist[0] ;
    dlist.brothers.emplace_back();
    dirs *dtemp = &dlist.brothers[0] ;
-#else
-   dirs *dtemp = new dirs ;
-#endif   
    dtemp->dirsecsize = clbytes;
    dtemp->subdirsecsize = clbytes;
-#ifdef  USE_VECTOR
-//    dirs *top = dtemp ;
-#else
-   top = dtemp ;
-#endif
 
    //  derive root path name
    if (_tcslen (base_path) == 3) {
@@ -654,11 +418,7 @@ static int build_dir_tree (TCHAR *tpath)
    // if (n.ucase)
    //    _tcsupr (top->name);
 
-#ifdef  STL_DIRPATH
    dirpath = tpath ;
-#else   
-   _tcscpy (dirpath, tpath);
-#endif   
 
    pattern_init(_T("wait; reading directory ")) ;
    result = read_dir_tree (dtemp);
@@ -672,25 +432,14 @@ syslog(_T("read_dir_tree exit\n")) ;
 //*****************************************************************
 void tree_listing (unsigned total_filespec_count)
 {
-#ifndef  USE_VECTOR
-   if (z == 0) {
-      tree_init_sort ();
-   }
-#endif   
-
    for (unsigned l = 0; l < total_filespec_count; l++) {
       //  read and build the dir tree
       build_dir_tree ((TCHAR *) target[l].c_str()) ;
 
       //  sort the tree list
-#ifdef  USE_VECTOR
       //  show the tree that we read
-      dirs *temp = &dlist.brothers[0] ;
-      // syslog(_T("%s sort: first call\n"), temp->name.c_str()) ;
+      dirs *temp = &dlist.brothers[0] ;   //  only needed for (debug) name display
       sort_trees(dlist.brothers, (TCHAR *) temp->name.c_str());
-#else
-      sort_trees ();
-#endif      
 
       //  now display the resulting directory tree
       draw_dir_tree ();

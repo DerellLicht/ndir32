@@ -1,4 +1,7 @@
+> dirtree -d3 mode, does not sort on file/folder counts
+
 > unicode filenames are not working in redirected mode...
-  WriteConsole(), which is used Unicode console output, does not work with redirection.
+  WriteConsole(), which is used Unicode console output, does not work with redirection
+  (actually, it works with ascii data, but not with Unicode filenames)
   _tprintf(), which works with redirection, does not work with Unicode...
   
