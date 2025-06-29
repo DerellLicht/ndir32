@@ -387,8 +387,6 @@ static int build_dir_tree (TCHAR *tpath)
       slen++ ;
       base_path.resize(slen);
    }
-   // base_len = base_path.length() ;
-   
    get_disk_info ((TCHAR *) base_path.c_str());
 
    //  allocate struct for dir listing
