@@ -8,7 +8,6 @@ struct dirs
 {
 #ifdef  USE_VECTOR
    std::vector<dirs> brothers {};
-   // std::vector<dirs> sons {};
 #else   
    dirs *brothers {nullptr};
    dirs *sons {nullptr};
@@ -26,8 +25,7 @@ struct dirs
 };
 
 #ifdef  USE_VECTOR
-// extern std::vector<dirs> dlist ;
-extern dirs dlist ;   //  top-level brothers will be unused
+extern dirs dlist ;
 #else
 extern dirs *top ;
 #endif
@@ -36,5 +34,8 @@ extern unsigned level;
 
 //  treelist.cpp
 void tree_listing (unsigned total_filespec_count);
+
+//  tdisplay.cpp
+void draw_dir_tree (void);
 
 

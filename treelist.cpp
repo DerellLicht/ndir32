@@ -4,7 +4,7 @@
 //*****************************************************************
 
 //  remove this define to remove all the debug messages
-// #define  DESPERATE
+// #define  DEBUG_LOG
 
 #include <windows.h>
 #include <stdio.h>
@@ -17,28 +17,29 @@
 #include "treelist.h"
 
 //************************************************************
+#define STL_DIRPATH
+
+#ifdef  STL_DIRPATH
+static std::wstring dirpath {} ;
+#else
 static TCHAR dirpath[MAX_PATH_LEN];
+#endif
+
 unsigned level;
 
-//************************************************************
-extern void draw_dir_tree (void);
-
-//************************************************************
-//  the following object is a dummy point structure
-//  which is used by merge_sort.  The main code must
-//  allocate a strucure for this to point to.
+#ifndef  USE_VECTOR
+//***************************************************************************************
+//  the following object is a dummy point structure which is used by merge_sort.  
+//  The main code must allocate a structure for this to point to.
 //  
-//  A global function pointer is also required by the
-//  sort routine.  This will point to a function which
-//  accepts two structure pointers as arguments, and
-//  return:
+//  A global compare function pointer is also required by the sort routine.  
+//  This will point to a function which accepts two structure pointers as arguments, 
+//  and return:
 //  
 //     >0 if a > b
 //    ==0 if a == b
 //     <0 if a < b
-//  
-//************************************************************
-#ifndef  USE_VECTOR
+//***************************************************************************************
 static dirs *z = NULL;
 static int (*tree_sort_fcn) (dirs * a, dirs * b);
 static int tree_init_sort (void);
@@ -50,37 +51,6 @@ dirs dlist {};   //  top-level brothers will be unused
 #else
 dirs *top = NULL;
 #endif
-
-//*****************************************************************
-//  this was used for debugging directory-tree read and build
-//*****************************************************************
-#ifdef  DESPERATE
-void debug_dump(TCHAR *fname, TCHAR *msg)
-{
-   syslog(_T("L%u %s: %s\n"), level, fname, msg) ;  //  debug dump
-}
-
-#endif
-
-//**********************************************************
-//  allocate struct for dir listing                         
-//  NOTE:  It is assumed that the caller will               
-//         initialize the name[], ext[], attrib fields!!    
-//**********************************************************
-// static dirs *new_dir_node (void)
-// {
-// #ifdef  USE_VECTOR
-//    dlist.emplace_back();
-//    uint idx = dlist.size() - 1 ;
-//    dirs *dtemp = &dlist[idx] ;
-// #else
-//    dirs *dtemp = new dirs ;
-// #endif   
-//    
-//    dtemp->dirsecsize = clbytes;
-//    dtemp->subdirsecsize = clbytes;
-//    return dtemp;
-// }
 
 //*********************************************************
 //  "waiting" pattern generator
@@ -118,9 +88,6 @@ static void pattern_update(void)
 //**********************************************************
 //  recursive routine to read directory tree
 //**********************************************************
-//  from fileread.cpp
-static int early_abort = 0 ;
-
 static int read_dir_tree (dirs * cur_node)
 {
 #ifdef  USE_VECTOR
@@ -128,7 +95,8 @@ static int read_dir_tree (dirs * cur_node)
 #else
    dirs *dtail = 0;
 #endif   
-   TCHAR *strptr;
+   bool early_abort = false ;
+   // TCHAR *strptr;
    HANDLE handle;
    int slen, done, result;
    DWORD err;
@@ -139,61 +107,81 @@ static int read_dir_tree (dirs * cur_node)
    if (((dircount % 50) == 0)  &&  _kbhit()) {
       result = _getch() ;
       //  check for ESCAPE character
-      if (result == 27) {
+      if (result == ESC) {
          // error_exit(DATA_OKAY, NULL) ;
-         early_abort = 1 ;
+         early_abort = true ;
       }
    }
    //  if early_abort flag gets set, return with "success" flag,
    //  but without reading anything further...
-   if (early_abort) 
+   if (early_abort) {
       return 0;
+   }
 
-#ifdef  DESPERATE
-   dputsf(L"%s: %s\n", cur_node->name.c_str(), L"call read_dir_tree") ;
+#ifdef  DEBUG_LOG
+   syslog(L"read_dir_tree: %s\n", cur_node->name.c_str()) ;
 #endif
 
    pattern_update() ;
    //  Insert next subtree level.
-   //  if level == 0, this is first call, and
-   //  dirpath is already complete
+   //  if level == 0, this is first call, 
+   //  and dirpath is already complete
+   //  
+   //  NOTE: slen that comes out of this block,
+   //  is used at the end to restore original dirpath contents.
    if (level > 0) {
+#ifdef  STL_DIRPATH
+      slen = dirpath.find_last_of(L'\\');
+      slen++ ;
+      // dirpath[slen] = 0 ;  // string class does not know you've done this
+      dirpath.resize(slen);
+      slen = dirpath.length() ;
+      dirpath.append(cur_node->name.c_str());
+      dirpath.append(L"\\*");
+#else   
       //  insert new path name
+      TCHAR *strptr;
       strptr = _tcsrchr (dirpath, _T('\\'));
       strptr++;
       *strptr = 0;
       slen = _tcslen (dirpath);
       _tcscat (dirpath, cur_node->name.c_str());
       _tcscat (dirpath, _T("\\*"));
+#endif      
    }
+   
    else {
+#ifdef  STL_DIRPATH
+      slen = dirpath.length() ;
+#else      
       slen = _tcslen (dirpath);
+#endif      
    }
 
    //  first, build tree list for current level
    level++;
 
-#ifdef  DESPERATE
-debug_dump(dirpath, "entry") ;
+#ifdef  DEBUG_LOG
+   syslog(_T("L%u %s: entry\n"), level, dirpath.c_str()) ;  //  debug dump
 #endif
    err = 0;
+#ifdef  STL_DIRPATH
+   handle = FindFirstFile(dirpath.c_str(), &fdata);
+#else   
    handle = FindFirstFile(dirpath, &fdata);
+#endif   
    if (handle == INVALID_HANDLE_VALUE) {
       err = GetLastError ();
       if (err == ERROR_ACCESS_DENIED) {
-#ifdef  DESPERATE
-         dputsf(L"FindFirstFile access denied\n") ;
+#ifdef  DEBUG_LOG
+         syslog(L"FindFirstFile access denied\n") ;
 #endif
          ;                     //  continue reading
       }
       else {
-#ifdef  DESPERATE
-         dputsf(_T("%s: FindFindFirst: %s\n"), dirpath, get_system_message (err));
+#ifdef  DEBUG_LOG
+         syslog(_T("%s: FindFindFirst: %s\n"), dirpath.c_str(), get_system_message (err));
 #endif
-         // _stprintf (tempstr, "path [%s]\n", dirpath);
-         // nputs (0xA, tempstr);
-         // _stprintf (tempstr, "FindFirst: %s\n", get_system_message ());
-         // nputs (0xA, tempstr);
          return err ;
       }
    }
@@ -231,24 +219,16 @@ debug_dump(dirpath, "entry") ;
 #endif   
                dtemp->dirsecsize = clbytes;
                dtemp->subdirsecsize = clbytes;
-               
+               dtemp->name = fdata.cFileName ;
+               dtemp->attrib = (uchar) fdata.dwFileAttributes;
+               // dtail->directs++ ;
 #ifndef  USE_VECTOR
-               
                if (cur_node->sons == NULL)
                   cur_node->sons = dtemp;
                else
                   dtail->brothers = dtemp;   //lint !e613  NOLINT
                dtail = dtemp;
 #endif               
-                                                           
-               //  convert Unicode filenames to UTF8
-               // dtemp->mb_len = _tcslen(fdata.cFileName) ;
-               // dtemp->name = (TCHAR *) new TCHAR[dtemp->mb_len + 1] ;
-               // _tcscpy (dtemp->name, (TCHAR *) fdata.cFileName);  
-               dtemp->name = fdata.cFileName ;
-
-               dtemp->attrib = (uchar) fdata.dwFileAttributes;
-               // dtail->directs++ ;
             }                   //  if this is not a DOT directory
          }                      //  if this is a directory
 
@@ -282,22 +262,20 @@ debug_dump(dirpath, "entry") ;
          // done = 1;
          err = GetLastError ();
          if (err == ERROR_ACCESS_DENIED) {
-#ifdef  DESPERATE
-syslog(_T("%s: FindNextFile: access denied\n"), dirpath);
-#else
-            ;                     //  continue reading
+#ifdef  DEBUG_LOG
+            syslog(_T("%s: FindNextFile: access denied\n"), dirpath.c_str()));
 #endif
+            ;                     //  continue reading
          }
          else if (err == ERROR_NO_MORE_FILES) {
-#ifdef  DESPERATE
-syslog(_T("FindNextFile: no more files\n")) ;
+#ifdef  DEBUG_LOG
+            syslog(_T("FindNextFile: no more files\n")) ;
 #endif
             done = 1 ;
          }
          else {
-#ifdef  DESPERATE
-_stprintf (tempstr, _T("FindNext: %s\n"), get_system_message (err));
-debug_dump(dirpath, tempstr) ;
+#ifdef  DEBUG_LOG
+            syslog(_T("FindNextFile: %s: %s\n"), dirpath.c_str()), get_system_message (err));
 #endif
             done = 1 ;
          }
@@ -306,8 +284,8 @@ debug_dump(dirpath, tempstr) ;
       }
    }  //  while reading files from directory
 
-#ifdef  DESPERATE
-debug_dump(dirpath, "close") ;
+#ifdef  DEBUG_LOG
+   syslog(_T("%s: close\n"), dirpath.c_str());
 #endif
    FindClose (handle);
 
@@ -318,9 +296,6 @@ debug_dump(dirpath, "close") ;
 #else
    dirs *ktemp = cur_node->sons;
    while (ktemp != NULL) {
-#endif
-#ifdef  DESPERATE
-debug_dump(ktemp->name.c_str(), "call read_dir_tree") ;
 #endif
       read_dir_tree (ktemp);
       cur_node->subdirsize    += ktemp->subdirsize;
@@ -333,7 +308,13 @@ debug_dump(ktemp->name.c_str(), "call read_dir_tree") ;
    }
 
    //  when done, strip name from path and restore '\*.*'
+#ifdef  STL_DIRPATH
+   // dirpath[slen] = 0 ;
+   dirpath.resize(slen);
+   dirpath.append(L"*");
+#else
    _tcscpy (&dirpath[slen], _T("*"));  //lint !e669  string overrun??
+#endif   
 
    //  restore the level number
    level--;
@@ -673,11 +654,15 @@ static int build_dir_tree (TCHAR *tpath)
    // if (n.ucase)
    //    _tcsupr (top->name);
 
+#ifdef  STL_DIRPATH
+   dirpath = tpath ;
+#else   
    _tcscpy (dirpath, tpath);
+#endif   
 
    pattern_init(_T("wait; reading directory ")) ;
    result = read_dir_tree (dtemp);
-#ifdef  DESPERATE
+#ifdef  DEBUG_LOG
 syslog(_T("read_dir_tree exit\n")) ;
 #endif
    pattern_reset() ;
