@@ -360,12 +360,12 @@ static void sort_trees (std::vector<dirs>& brothers, TCHAR *parent_name)
    }
    // dump_brothers(brothers, level, L"after sort");
    
+   //  recurse over the brothers below this folder
    for(auto &file : brothers) {
       dirs *ktemp = &file;
       // console->dputsf(L"%s %s\n", formstr, ktemp->name.c_str()) ;
 
       level++;
-      // syslog(_T("%s sort: next call\n"), ktemp->name.c_str()) ;
       sort_trees(ktemp->brothers, (TCHAR *) ktemp->name.c_str());
       level-- ;
    }  //  while not done traversing brothers
