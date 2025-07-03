@@ -63,78 +63,103 @@ TCHAR tline, bline, vline, dline ;
 unsigned filecount = 0 ;
 unsigned columns ;           //  number of display columns on screen
 
+//  switching from pointer array to vector-of-wstring,
+//  adds 7.2KB to the executable, with little benefit.
+// #define  USE_WSTRING_INFO
 //*********************************************************
 //  NDIR information screen
 //*********************************************************
-static TCHAR *idtxt[] = {
-   _T(" "),
-   _T("Copyright 1990, 1993-2025 by:"),
-   _T(" "),
-   _T("   Derell Licht"),
-   _T("   Email:    derelict@comcast.net"),
-   _T("   Website:  https://derelllicht.42web.io/index.htm"),
-   _T(" "),
-   _T("This program, NDIR.EXE, and its associated files, are distributed under"),
-   _T("Creative Commons CC0 1.0 Universal"),
-   _T("https://creativecommons.org/publicdomain/zero/1.0/"),
-   NULL } ;
+#ifdef USE_WSTRING_INFO
+static std::vector<std::wstring> idtxt {
+#else
+static wchar_t *idtxt[] = {
+#endif
+   L" ",
+   L"Copyright 1990, 1993-2025 by:",
+   L" ",
+   L"   Derell Licht",
+   L"   Email:    derelict@comcast.net",
+   L"   Website:  https://derelllicht.42web.io/index.htm",
+   L" ",
+   L"This program, NDIR.EXE, and its associated files, ",
+   L"are distributed under Creative Commons CC0 1.0 Universal",
+   L"https://creativecommons.org/publicdomain/zero/1.0/",
+#ifndef USE_WSTRING_INFO
+   NULL 
+#endif   
+} ;
 
 //*********************************************************
 //  NDIR help screen
 //*********************************************************
-static TCHAR *helptxt[] = {
-_T(" "),
-_T("USAGE:  NDIR <filespecs> -options or /options !<exclusions>"),
-_T(" "),
-_T(" OPTIONS                      FUNCTIONS"),
-_T("   -a *     List ALL files (hidden, system, read-only, etc.)."),
-_T("   -a1      List attributes in HEX format."),
-_T("   -c *     Clear screen before listing."),
-_T("   -p *     Pause on full screen."),
-_T("   -m *     Minimize size of header and footer."),
-_T("   -w *     Use special colors for system/hidden/readonly files."),
-_T("   -d       dir TREE: normal size display (work with -s, -n (default), -r)."),
-_T("   -d2      dir TREE: file/directory counts"),
-_T("   -d3      dir TREE: mixed size and file/directory counts"),
-_T("   -e       Sort by extension."),
-_T("   -n        \"   by name."),
-_T("   -s        \"   by file size, smallest first."),
-_T("   -t        \"   by Date, oldest first."),
-_T("   -z        \"   by DOS order (no sort)."),
-_T("   -S0      Show sizes in mixed bytes/KB"),
-_T("   -S1      Show sizes in Kilobytes"),
-_T("   -S2      Show sizes in Megabytes"),
-_T("   -r *     Reverse normal sort order."),
-_T("   -1       Display one column,   with name/size/date/attr."),
-_T("   -2          \"    two   \"   ,   with name/size/date."),
-_T("   -4          \"    four  \"   ,   with name/size."),
-_T("   -6          \"    six   \"   ,   with name only."),
-_T("   -i       Display drive summary for all drives in system."),
-_T("   -ii      Display drive summary for all drives in system, with used vs free space."),
-_T("   -k *     Toggle color mode."),
-_T("   -u *     List filenames in UPPERCASE."),
-_T("   -oN      Date/Time display: 0=Last Write, 1=Last Access, 2=File Created"),
-_T("   -x *     List executables only (.EXE,.COM,.BAT)."),
-_T("   -v       Display registration/update information."),
-_T("   -?       Display HELP screen."),
-_T("   -g *     List directories FIRST."),
-_T("   -h *     List files horizontally."),
-_T("   -f *     List files only (No directories)."),
-_T("   -q *     XTDIR mode - list files by extension."),
-_T("   -, *     Dir Tree: show only L level of subdirectories."),
-_T("               L is incremented for each additional comma"),
-_T(" "),
-_T("   -b       Batch mode;  files listed in one column."),
-_T("            (This format can be redirected to a batch file)"),
-_T("   [\"string\"  specifies a string BEFORE each filename (Batch mode)"),
-_T("   ]\"string\"  specifies a string AFTER  each filename (Batch mode)"),
-_T(" "),
-_T("NOTE: items with a * after the flag are TOGGLES"),
-_T(" "),
-NULL } ;
+#ifdef USE_WSTRING_INFO
+static std::vector<std::wstring> helptxt {
+#else
+static wchar_t *helptxt[] = {
+#endif
+L" ",
+L"USAGE:  NDIR <filespecs> -options or /options !<exclusions>",
+L" ",
+L" OPTIONS                      FUNCTIONS",
+L"   -a *     List ALL files (hidden, system, read-only, etc.).",
+L"   -a1      List attributes in HEX format.",
+L"   -c *     Clear screen before listing.",
+L"   -p *     Pause on full screen.",
+L"   -m *     Minimize size of header and footer.",
+L"   -w *     Use special colors for system/hidden/readonly files.",
+L"   -d       dir TREE: normal size display (work with -s, -n (default), -r).",
+L"   -d2      dir TREE: file/directory counts",
+L"   -d3      dir TREE: mixed size and file/directory counts",
+L"   -e       Sort by extension.",
+L"   -n        \"   by name.",
+L"   -s        \"   by file size, smallest first.",
+L"   -t        \"   by Date, oldest first.",
+L"   -z        \"   by DOS order (no sort).",
+L"   -S0      Show sizes in mixed bytes/KB",
+L"   -S1      Show sizes in Kilobytes",
+L"   -S2      Show sizes in Megabytes",
+L"   -r *     Reverse normal sort order.",
+L"   -1       Display one column,   with name/size/date/attr.",
+L"   -2          \"    two   \"   ,   with name/size/date.",
+L"   -4          \"    four  \"   ,   with name/size.",
+L"   -6          \"    six   \"   ,   with name only.",
+L"   -i       Display drive summary for all drives in system.",
+L"   -ii      Display drive summary for all drives in system, with used vs free space.",
+L"   -k *     Toggle color mode.",
+L"   -u *     List filenames in UPPERCASE.",
+L"   -oN      Date/Time display: 0=Last Write, 1=Last Access, 2=File Created",
+L"   -x *     List executables only (.EXE,.COM,.BAT).",
+L"   -v       Display registration/update information.",
+L"   -?       Display HELP screen.",
+L"   -g *     List directories FIRST.",
+L"   -h *     List files horizontally.",
+L"   -f *     List files only (No directories).",
+L"   -q *     XTDIR mode - list files by extension.",
+L"   -, *     Dir Tree: show only L level of subdirectories.",
+L"               L is incremented for each additional comma",
+L" ",
+L"   -b       Batch mode;  files listed in one column.",
+L"            (This format can be redirected to a batch file)",
+L"   [\"string\"  specifies a string BEFORE each filename (Batch mode)",
+L"   ]\"string\"  specifies a string AFTER  each filename (Batch mode)",
+L" ",
+L"NOTE: items with a * after the flag are TOGGLES",
+L" ",
+#ifndef USE_WSTRING_INFO
+NULL 
+#endif
+} ;
 
 //**************************************************
-static void info (TCHAR *data[])
+#ifdef USE_WSTRING_INFO
+static void info(std::vector<std::wstring>& data)
+{
+   for(auto &file : data) {
+      dputsf(L"%s\n", file.c_str());
+   }
+}
+#else
+static void info (wchar_t *data[])
 {
    unsigned j = 0;
 
@@ -142,6 +167,7 @@ static void info (TCHAR *data[])
       dputsf(L"%s\n", data[j++]);
    }
 }
+#endif
 
 //**************************************************
 // #define  USE_SYSLOG
