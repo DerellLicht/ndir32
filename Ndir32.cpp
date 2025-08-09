@@ -19,7 +19,7 @@
 
 //lint -esym(864, target)  Expression involving variable possibly depends on order of evaluation
 
-#define  VER_NUMBER "2.68"
+#define  VER_NUMBER "2.69"
 
 //lint -esym(843, Version, ShortVersion) could be declared as const
 TCHAR *Version = _T(" NDIR.EXE, Version " VER_NUMBER " ") ;
@@ -223,7 +223,6 @@ bool strcmpiwc(const TCHAR *onestr, const TCHAR *twostr)
          return true ;
 
       if (onechar == '?'  ||  twochar == '?') ; //  match continues
-
 
       else if (tolower(onechar) != tolower(twochar)) 
          return false;

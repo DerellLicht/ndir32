@@ -203,16 +203,16 @@ void display_drive_summary (void)
    static TCHAR const spaces18[20] = _T("                  ");
 
    //  draw header
-   nput_line (n.colorframe, '*');
+   // nput_line (n.colorframe, '*');
    nputs (n.colornhead, _T("                               Disk Drive Summary                              \n"));
    nput_line (n.colorframe, '=');
 
    if (n.drive_summary == DSUMMARY_FREE) {
-      nputs (n.colornhead, _T("   file sys      total space          free space     [Cluster Size] UNC path \n"));
+      nputs (n.colornhead, _T("   file sys      total space          free space     pct  [Cluster Size] UNC path \n"));
    } else {
-      nputs (n.colornhead, _T("   file sys      total space          used space     [Cluster Size] UNC path \n"));
+      nputs (n.colornhead, _T("   file sys      total space          used space     pct  [Cluster Size] UNC path \n"));
    }
-   nputs (n.colornhead, _T("   ========  ==================  ==================  ========================\n"));
+      nputs (n.colornhead, _T("   ========  ==================  ==================  ===  ========================\n"));
 
    ULONGLONG lfree = 0;
    ULONGLONG ltotal = 0;
@@ -229,7 +229,7 @@ void display_drive_summary (void)
       dtype = GetDriveType(dpath);
       if (!get_disk_info(dpath)) {
          TCHAR *tp = get_drive_type_string(dtype, dchar);
-         _stprintf(tempstr, _T("%c: %-9s %18s  %18s           no media present\n"), 
+         _stprintf(tempstr, _T("%c: %-9s %18s  %18s                no media present\n"), 
             dchar, tp, spaces18, spaces18) ;
          nputs (n.colordefalt, tempstr);
          continue;
@@ -241,6 +241,7 @@ void display_drive_summary (void)
       }
       convert_to_commas(totals1, disktotal);
       convert_to_commas(frees1, diskavail);
+      uint pct = (uint) ((frees1 * 100) / totals1) ;
 
       //  if network, pull the UNC name, otherwise show drive type
       if (dtype == DRIVE_REMOTE) {
@@ -248,7 +249,7 @@ void display_drive_summary (void)
          UNCpaths.uptr = UNCpaths.ustr;
          bufsize = MAX_PATH_LEN;
 
-         _stprintf(tempstr, _T("%c: %-9s %18s  %18s  "), dchar, fsnbfr, disktotal, diskavail);
+         _stprintf(tempstr, _T("%c: %-9s %18s  %18s  %3u"), dchar, fsnbfr, disktotal, diskavail, pct);
 // syslog(_T("%c: %-9s %18s  %18s  "), dchar, fsnbfr, disktotal, diskavail);
          nputs (n.colordir, tempstr);
 
@@ -265,8 +266,8 @@ void display_drive_summary (void)
       }
       else {
       // else if (dtype == DRIVE_FIXED) {
-         _stprintf(tempstr, _T("%c: %-9s %18s  %18s  [%6u] %s\n"), 
-            dchar, fsn_bfr, disktotal, diskavail, (unsigned) clbytes, volume_name.c_str());
+         _stprintf(tempstr, _T("%c: %-9s %18s  %18s  %3u  [%6u] %s\n"), 
+            dchar, fsn_bfr, disktotal, diskavail, pct, (unsigned) clbytes, volume_name.c_str());
          nputs (n.colordefalt, tempstr);
 // syslog(_T("%s\n"), tempstr) ;
 
