@@ -293,4 +293,4 @@ Version 2.68, 06/23/25
 
 Version 2.69, 08/11/25
   - In disk summary (-i) display, add a percentage-of-total column
-  - dirtree: -y switch now eliminates .git folder from searches.
+  - dirtree: -y switch now eliminates .git folder from searches
