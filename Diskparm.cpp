@@ -241,7 +241,8 @@ void display_drive_summary (void)
       }
       convert_to_commas(totals1, disktotal);
       convert_to_commas(frees1, diskavail);
-      uint pct = (uint) ((frees1 * 100) / totals1) ;
+      double dpct = (double) ((frees1 * 100.0) / totals1) ;
+      uint pct = (uint) round(dpct) ;
 
       //  if network, pull the UNC name, otherwise show drive type
       if (dtype == DRIVE_REMOTE) {
