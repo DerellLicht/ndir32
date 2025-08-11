@@ -59,7 +59,7 @@ std::wstring base_path {};
 
 unsigned start, finish ;
 TCHAR tempstr[MAXLINE] ;
-TCHAR tline, bline, vline, dline ;
+TCHAR tline, vline, dline ;
 unsigned filecount = 0 ;
 unsigned columns ;           //  number of display columns on screen
 

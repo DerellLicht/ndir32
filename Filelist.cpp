@@ -77,10 +77,22 @@ static void display_batch_mode(void)
 }
 
 /*****************************************************************/
+static void draw_horz_bar(void)
+{
+   if (line_len > 0) {
+      for (uint k=1; k<disp_cols; k++) {
+         nput_char(n.colorframe, dline, line_len) ;
+         nput_char(n.colorframe, tline, 1) ;
+      }
+      //  last, draw remaining lines
+      nput_char(n.colorframe, dline, line_len) ;
+   }
+   ncrlf() ;
+}
+
+/*****************************************************************/
 static void filehead(void)
 {
-   // unsigned j ;
-   unsigned k ;
    int wincols = get_window_cols() - 1 ;
    if (is_redirected()) {
       wincols = 80 ;
@@ -108,7 +120,7 @@ static void filehead(void)
    //  If minimize is not selected, display full header/footer
    //****************************************************
    else {
-      nput_line(n.colorframe, '*') ;
+      // nput_line(n.colorframe, '*') ;
 
       _stprintf(tempstr, _T("Directory of %-38s "), base_path.c_str()) ;
       nputs(n.colornhead, tempstr) ;
@@ -123,24 +135,25 @@ static void filehead(void)
       if (flist.empty()) {
          nput_line(n.colorframe, dline) ;
       } else {
+         draw_horz_bar();
          // memset(&tempstr[0], dline, wincols) ;
          // tempstr[wincols] = 0 ;
          // if (col_width[disp_cols] > 0) {
-         if (line_len > 0) {
-            // syslog(_T("line_len: %u, disp_cols: %u\n"), line_len, disp_cols);
-            // j = col_width[disp_cols] ;
-            // j = line_len ;
-            for (k=1; k<disp_cols; k++) {
-               // tempstr[j] = tline ;
-               nput_char(n.colorframe, dline, line_len) ;
-               nput_char(n.colorframe, tline, 1) ;
-               // j += col_width[disp_cols] + 1 ;
-               // j += line_len + 1 ;
-            }
-            //  last, draw remaining lines
-            nput_char(n.colorframe, dline, line_len) ;
-         }
-         ncrlf() ;
+         // if (line_len > 0) {
+         //    // syslog(_T("line_len: %u, disp_cols: %u\n"), line_len, disp_cols);
+         //    // j = col_width[disp_cols] ;
+         //    // j = line_len ;
+         //    for (k=1; k<disp_cols; k++) {
+         //       // tempstr[j] = tline ;
+         //       nput_char(n.colorframe, dline, line_len) ;
+         //       nput_char(n.colorframe, tline, 1) ;
+         //       // j += col_width[disp_cols] + 1 ;
+         //       // j += line_len + 1 ;
+         //    }
+         //    //  last, draw remaining lines
+         //    nput_char(n.colorframe, dline, line_len) ;
+         // }
+         // ncrlf() ;
       } 
    }
 }
@@ -159,11 +172,10 @@ void put_disk_summary(void)
 /*****************************************************************/
 static void fileend(void)
 {
-   unsigned k ;
    ULONGLONG dirsecbytes, clusters ;
    ULONGLONG dbytes, dsbytes ;
    ffdata *ftemp ;
-   int wincols = get_window_cols() - 1 ;
+   // int wincols = get_window_cols() - 1 ;
 
    //  get directory info
    dbytes = 0 ;
@@ -215,24 +227,7 @@ static void fileend(void)
       if (flist.empty()) {
          nput_line(n.colorframe, dline) ;
       } else {
-         memset(&tempstr[0], dline, wincols) ;
-         // tempstr[wincols] = 0 ;
-         // if (col_width[disp_cols] > 0) {
-         if (line_len > 0) {
-            // j = col_width[disp_cols] ;
-            // j = line_len ;
-            for (k=1; k<disp_cols; k++) {
-               // tempstr[j] = bline ;
-               nput_char(n.colorframe, bline, line_len) ;
-               nput_char(n.colorframe, tline, 1) ;
-               // j += col_width[disp_cols] + 1 ;
-               // j += line_len + 1 ;
-            }
-            //  last, draw remaining lines
-            nput_char(n.colorframe, dline, line_len) ;
-         }
-         // nputs(n.colorframe, tempstr) ;
-         ncrlf() ;
+         draw_horz_bar();
       }
 
       //  draw the ending labels

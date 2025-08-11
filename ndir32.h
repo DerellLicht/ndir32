@@ -84,7 +84,7 @@ extern unsigned tree_level_limit ;
 extern ULONGLONG diskbytes, diskfree, clbytes ;
 
 //************************************************************
-extern TCHAR tline, bline, vline, dline ;
+extern TCHAR tline, vline, dline ;
 
 // extern TCHAR* target[20] ;
 extern std::vector<std::wstring> target ;

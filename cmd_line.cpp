@@ -312,7 +312,7 @@ void verify_flags (void)
    //  03/17/25 - as part of Unicode conversion,
    //  just use low ASCII in all cases
    //******************************************************
-   tline = bline = crosschar;
+   tline = crosschar;
    vline = altvlinechar;
    dline = altdvlchar;
 }
