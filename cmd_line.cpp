@@ -109,7 +109,7 @@ static int update_switches (TCHAR *argstr)
       case 'v':  n.info = 1;  break;
       case 'w':  n.showSHRfiles ^= 1;  break;
       case 'x':  n.exec_only ^= 1;  break;
-         // case 'y':
+      case 'y':  n.tree_no_git ^= 1;  break;
       case 'z':  n.sort = 4;  break;
 
       case '1':  n.format = 0;  break;

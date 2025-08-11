@@ -291,6 +291,6 @@ Version 2.68, 06/23/25
   - Fix bugs in handling batch left/right string command-line arguments
   - Check for duplicate filenames in final file list
 
-Version 2.69, 08/09/25
-  In disk summary (-i) display, add a percentage-of-total column
-  
+Version 2.69, 08/11/25
+  - In disk summary (-i) display, add a percentage-of-total column
+  - dirtree: -y switch now eliminates .git folder from searches.

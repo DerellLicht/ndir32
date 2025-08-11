@@ -165,6 +165,9 @@ static int read_dir_tree (dirs * cur_node)
                 _tcscmp(fdata.cFileName, _T("..")) == 0) {
                cut_dot_dirs = true;
             }
+            else if (n.tree_no_git  &&  _tcscmp(fdata.cFileName, _T(".git")) == 0) {
+               cut_dot_dirs = true;
+            }
             else {
                cut_dot_dirs = false;
             }

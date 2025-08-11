@@ -91,6 +91,7 @@ static wchar_t *idtxt[] = {
 
 //*********************************************************
 //  NDIR help screen
+//  unused flags: j l 
 //*********************************************************
 #ifdef USE_WSTRING_INFO
 static std::vector<std::wstring> helptxt {
@@ -110,6 +111,7 @@ L"   -w *     Use special colors for system/hidden/readonly files.",
 L"   -d       dir TREE: normal size display (work with -s, -n (default), -r).",
 L"   -d2      dir TREE: file/directory counts",
 L"   -d3      dir TREE: mixed size and file/directory counts",
+L"   -y *     In dirtree mode, exclude .git folder",
 L"   -e       Sort by extension.",
 L"   -n        \"   by name.",
 L"   -s        \"   by file size, smallest first.",
