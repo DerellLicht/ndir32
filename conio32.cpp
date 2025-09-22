@@ -361,7 +361,7 @@ void dnewline(void)
       // 
       // //  move cursor to beginning of line
       dscroll(original_attribs) ;
-      sinfo.dwCursorPosition.Y = sinfo.dwCursorPosition.Y ;
+      // sinfo.dwCursorPosition.Y = sinfo.dwCursorPosition.Y ; // huh??
    }
    else {
       sinfo.dwCursorPosition.Y++ ;
