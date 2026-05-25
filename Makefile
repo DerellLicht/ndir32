@@ -42,7 +42,8 @@ ifeq ($(USE_64BIT),YES)
 ifeq ($(USE_CLANG),YES)
 TOOLS=d:\clang\bin
 else
-#  with d:\tdm64\bin, NDIR logo does not display correctly
+#  with d:\tdm64\bin, NDIR logo does not display correctly,
+#  probably due to wsprintf() issue noted above
 TOOLS=C:\cygwin64\bin
 #TOOLS=d:\tdm64\bin
 endif
