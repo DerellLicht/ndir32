@@ -1,5 +1,5 @@
 //*****************************************************************************
-//  Copyright (c) 1995-2025  Daniel D Miller
+//  Copyright (c) 1995-2026  Daniel D Miller
 //  DISKPARM.CPP - Display partition information about disk drive.     
 //                                                                     
 //  Written by:   Derell Licht                                     
@@ -13,6 +13,9 @@
 #include <windows.h>
 #include <stdio.h>
 #include <tchar.h>
+#ifndef _lint
+#include <cmath>  //  round()
+#endif
 
 #include "common.h"
 #include "ndir32.h"

@@ -4,6 +4,9 @@
 
 #include <windows.h>
 #include <tchar.h>
+#ifndef _lint
+#include <algorithm> //  fix: error: 'sort' is not a member of 'std'
+#endif
 
 #include "common.h"
 #include "ndir32.h"

@@ -1,5 +1,5 @@
 //*************************************************************************
-//  Copyright (c) 1998-2025 Derell Licht                       
+//  Copyright (c) 1998-2026 Derell Licht                       
 //  NDIR32.CPP - The Ultimate directory program (32-bit).          
 //*************************************************************************
 //  DAN:  Please update revisions.txt with each change.            
@@ -10,11 +10,14 @@
 #include <stdlib.h>     //  getenv(), exit()
 #include <ctype.h>
 #include <tchar.h>
+#ifndef _lint
+#include <algorithm> //  fix: error: 'sort' is not a member of 'std'
+#endif
 
 #include "common.h"
 #include "ndir32.h"
 #include "conio32.h"
-#include "qualify.h" //  must be *after* vector_res.h
+#include "qualify.h"
 #include "treelist.h"
 
 //lint -esym(864, target)  Expression involving variable possibly depends on order of evaluation

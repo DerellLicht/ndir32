@@ -1,7 +1,8 @@
 USE_DEBUG = NO
 USE_64BIT = YES
 USE_UNICODE = YES
-#  tdm64 V5.1.1    ndir: 215KB
+#  tdm64 (old) V5.1.1    ndir: 215KB
+#  tdm64 V10.3.0    ndir: 215KB
 #  clang64 v20.1.6 ndir: 375KB
 USE_CLANG = YES
 # use -static for clang and cygwin/mingw
@@ -13,7 +14,11 @@ USE_CLANG = YES
 # at the cost of a (sometimes significantly) larger executable file.
 # 
 # clang: with -static: 435KB, without -static: 163KB
+ifeq ($(USE_CLANG),YES)
 USE_STATIC = YES
+else
+USE_STATIC = NO
+endif
 
 # the legacy version of qualify.cpp, does not depend upon c++ string class
 USE_LEGACY = NO
@@ -37,11 +42,9 @@ ifeq ($(USE_64BIT),YES)
 ifeq ($(USE_CLANG),YES)
 TOOLS=d:\clang\bin
 else
-#TOOLS=d:\tdm64\bin
-#  the cygwin 64-bit toolchain apparently does not support vector::sort()
-#  how useful...
+#  with d:\tdm64\bin, NDIR logo does not display correctly
 TOOLS=C:\cygwin64\bin
-#TOOLS=c:\tdm-gcc-64\bin
+#TOOLS=d:\tdm64\bin
 endif
 else
 TOOLS=d:\tdm32\bin

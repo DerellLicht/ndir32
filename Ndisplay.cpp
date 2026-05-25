@@ -1,7 +1,15 @@
 //*****************************************************************
-//  Copyright (c) 1998-2025 Derell Licht                       
+//  Copyright (c) 1998-2026 Derell Licht                       
 //  NDISPLAY.CPP - NDIR display handlers                           
 //*****************************************************************
+
+//lint -esym(767, _WIN32_WINNT)
+//lint -e113  Inconsistent enum declaration
+
+//  With tdm64 10.3.0, this is defined as 0x502
+//  this constant is required in fileapi.h, for
+//  GetFinalPathNameByHandle() function
+#define  _WIN32_WINNT   0x0600
 
 #include <windows.h>
 #include <stdio.h>
