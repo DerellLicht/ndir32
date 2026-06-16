@@ -1,5 +1,5 @@
 //*****************************************************************************
-//  Copyright (c) 1995-2026  Daniel D Miller
+//  Copyright (c) 1995-2026  Derell Licht
 //  DISKPARM.CPP - Display partition information about disk drive.     
 //                                                                     
 //  Written by:   Derell Licht                                     

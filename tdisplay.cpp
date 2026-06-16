@@ -1,5 +1,5 @@
 //*****************************************************************
-//  Copyright (c) 1995-2025  Daniel D Miller
+//  Copyright (c) 1995-2025  Derell Licht
 //  tdisplay.cpp: display directory tree                  
 //*****************************************************************
 #include <windows.h>
