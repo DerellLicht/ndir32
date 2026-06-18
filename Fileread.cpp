@@ -128,7 +128,7 @@ static void const read_long_files (std::wstring& target_path)
             ftemp->ft = fdata.ftLastWriteTime;
 
          //  convert file size
-         u64toul iconv;
+         u64toul iconv {};
          iconv.u[0] = fdata.nFileSizeLow;
          iconv.u[1] = fdata.nFileSizeHigh;
          ftemp->fsize = iconv.i;
@@ -141,7 +141,7 @@ static void const read_long_files (std::wstring& target_path)
          
          //  find and extract the file extension, if valid
          size_t ext_length = ftemp->filename.length() ;
-         size_t ext_dot = ftemp->filename.find_last_of(L".");
+         size_t ext_dot = ftemp->filename.find_last_of(L'.');
          if (ext_dot > 0) {
             ext_length = ext_length - ext_dot ;
          }

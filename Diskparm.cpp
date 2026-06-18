@@ -249,7 +249,7 @@ void display_drive_summary (void)
 
       //  if network, pull the UNC name, otherwise show drive type
       if (dtype == DRIVE_REMOTE) {
-         UNC UNCpaths;
+         UNC UNCpaths {};
          UNCpaths.uptr = UNCpaths.ustr;
          bufsize = MAX_PATH_LEN;
 

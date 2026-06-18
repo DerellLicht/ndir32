@@ -9,7 +9,7 @@
 //  With tdm64 10.3.0, this is defined as 0x502
 //  this constant is required in fileapi.h, for
 //  GetFinalPathNameByHandle() function
-#define  _WIN32_WINNT   0x0600
+// #define  _WIN32_WINNT   0x0600
 
 #include <windows.h>
 #include <stdio.h>

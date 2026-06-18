@@ -141,7 +141,7 @@ clean:
 	rm -f $(OBJS) ndir*.exe *~ *.zip
 
 check:
-	cmd /C "d:\clang\bin\clang-tidy.exe $(CHFLAGS) $(CPPSRC) $(CHTAIL)"
+	cmd /C "d:\llvm\bin\clang-tidy.exe $(CHFLAGS) $(CPPSRC) $(CHTAIL)"
 
 dist:
 	rm -f ndir.zip

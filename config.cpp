@@ -224,7 +224,7 @@ struct ini_entry {
    TCHAR  *lvalue ;
    uchar *rvalue ;
 };
-static ini_entry const ndir_ini[] = {
+static ini_entry const ndir_ini[] = {  // NOLINT
 { _T("ucase"),        &n.ucase },
 { _T("sort"),         &n.sort },
 { _T("reverse"),      &n.reverse },

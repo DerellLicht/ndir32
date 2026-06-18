@@ -197,7 +197,7 @@ static int read_dir_tree (dirs * cur_node)
          else {
             // printf("%9ld %04X %s\n", fdata.file_size, fdata.attrib, fdata.fname) ;
             //  convert file size
-            u64toul iconv;
+            u64toul iconv {};
             iconv.u[0] = fdata.nFileSizeLow;
             iconv.u[1] = fdata.nFileSizeHigh;
             cur_node->dirsize += iconv.i;
@@ -274,25 +274,25 @@ static int read_dir_tree (dirs * cur_node)
    return 0;   //lint !e438
 }
 //*********************************************************
-static bool const tree_sort_name (dirs const a, dirs const b)
+static bool const tree_sort_name (dirs const &a, dirs const &b)
 {
    return (_tcsicmp (a.name.c_str(), b.name.c_str()) < 0) ;
 }
 
 //*********************************************************
-static bool const tree_sort_name_rev (dirs const a, dirs const b)
+static bool const tree_sort_name_rev (dirs const &a, dirs const &b)
 {
    return (_tcsicmp (b.name.c_str(), a.name.c_str()) < 0);
 }
 
 //*********************************************************
-static bool const tree_sort_size (dirs const a, dirs const b)
+static bool const tree_sort_size (dirs const &a, dirs const &b)
 {
    return (a.subdirsecsize < b.subdirsecsize) ;
 }
 
 //*********************************************************
-static bool const tree_sort_size_rev (dirs const a, dirs const b)
+static bool const tree_sort_size_rev (dirs const &a, dirs const &b)
 {
    return (b.subdirsecsize < a.subdirsecsize) ;
 }

@@ -16,8 +16,8 @@ bool is_redirected(void);
 CHAR get_char(void);
 WORD get_scode(void);
 unsigned get_window_cols(void);
-int _where_x(void);
-int _where_y(void);
+int _where_x(void);  // NOLINT
+int _where_y(void);  // NOLINT
 void dgotoxy(int x, int y);
 void dclrscr(void);
 void dclreol(void);
