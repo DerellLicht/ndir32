@@ -66,17 +66,10 @@ TCHAR tline, vline, dline ;
 unsigned filecount = 0 ;
 unsigned columns ;           //  number of display columns on screen
 
-//  switching from pointer array to vector-of-wstring,
-//  adds 7.2KB to the executable, with little benefit.
-// #define  USE_WSTRING_INFO
 //*********************************************************
 //  NDIR information screen
 //*********************************************************
-#ifdef USE_WSTRING_INFO
 static std::vector<std::wstring> idtxt {
-#else
-static wchar_t *idtxt[] = {
-#endif
    L" ",
    L"Copyright 1990, 1993-2025 by:",
    L" ",
@@ -87,20 +80,13 @@ static wchar_t *idtxt[] = {
    L"This program, NDIR.EXE, and its associated files, ",
    L"are distributed under Creative Commons CC0 1.0 Universal",
    L"https://creativecommons.org/publicdomain/zero/1.0/",
-#ifndef USE_WSTRING_INFO
-   NULL 
-#endif   
 } ;
 
 //*********************************************************
 //  NDIR help screen
 //  unused flags: j l 
 //*********************************************************
-#ifdef USE_WSTRING_INFO
 static std::vector<std::wstring> helptxt {
-#else
-static wchar_t *helptxt[] = {
-#endif
 L" ",
 L"USAGE:  NDIR <filespecs> -options or /options !<exclusions>",
 L" ",
@@ -150,29 +136,15 @@ L"   ]\"string\"  specifies a string AFTER  each filename (Batch mode)",
 L" ",
 L"NOTE: items with a * after the flag are TOGGLES",
 L" ",
-#ifndef USE_WSTRING_INFO
-NULL 
-#endif
 } ;
 
 //**************************************************
-#ifdef USE_WSTRING_INFO
 static void info(std::vector<std::wstring>& data)
 {
    for(auto &file : data) {
       dputsf(L"%s\n", file.c_str());
    }
 }
-#else
-static void info (wchar_t *data[])
-{
-   unsigned j = 0;
-
-   while (data[j] != NULL) {
-      dputsf(L"%s\n", data[j++]);
-   }
-}
-#endif
 
 //**************************************************
 // #define  USE_SYSLOG
