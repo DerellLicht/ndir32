@@ -40,7 +40,8 @@ ifeq ($(USE_64BIT),YES)
 #  _stprintf(), aka wsprintf(), are not working properly at all,
 #  in TDM64 V10.3.0 with UNICODE enabled
 ifeq ($(USE_CLANG),YES)
-TOOLS=d:\clang\bin
+#TOOLS=d:\clang\bin
+TOOLS=d:\llvm\bin
 else
 #  with d:\tdm64\bin, NDIR logo does not display correctly,
 #  probably due to wsprintf() issue noted above
