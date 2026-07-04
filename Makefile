@@ -166,5 +166,5 @@ treelist.o: der_libs/common.h ndir32.h conio32.h treelist.h
 tdisplay.o: der_libs/common.h ndir32.h conio32.h treelist.h
 mediatype.o: scsi_defs.h
 read_link.o: der_libs/common.h ndir32.h
-der_libs\common_funcs.o: der_libs/common.h
-der_libs\qualify.o: der_libs/common.h der_libs/qualify.h
+der_libs/common_funcs.o: der_libs/common.h
+der_libs/qualify.o: der_libs/common.h der_libs/qualify.h
