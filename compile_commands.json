@@ -1,0 +1,342 @@
+[
+ {
+  "directory": "D:\\SourceCode\\Git\\ndir32",
+  "arguments": [
+   "d:/llvm/bin/x86_64-w64-mingw32-clang++",
+   "-Wall",
+   "-O3",
+   "-c",
+   "-Weffc++",
+   "-Wno-write-strings",
+   "-DUSE_64BIT",
+   "-DUNICODE",
+   "-D_UNICODE",
+   "-Ider_libs",
+   "-c",
+   "Ndir32.cpp",
+   "-o",
+   "Ndir32.o"
+  ],
+  "file": "Ndir32.cpp"
+ },
+ {
+  "directory": "D:\\SourceCode\\Git\\ndir32",
+  "arguments": [
+   "d:/llvm/bin/x86_64-w64-mingw32-clang++",
+   "-Wall",
+   "-O3",
+   "-c",
+   "-Weffc++",
+   "-Wno-write-strings",
+   "-DUSE_64BIT",
+   "-DUNICODE",
+   "-D_UNICODE",
+   "-Ider_libs",
+   "-c",
+   "cmd_line.cpp",
+   "-o",
+   "cmd_line.o"
+  ],
+  "file": "cmd_line.cpp"
+ },
+ {
+  "directory": "D:\\SourceCode\\Git\\ndir32",
+  "arguments": [
+   "d:/llvm/bin/x86_64-w64-mingw32-clang++",
+   "-Wall",
+   "-O3",
+   "-c",
+   "-Weffc++",
+   "-Wno-write-strings",
+   "-DUSE_64BIT",
+   "-DUNICODE",
+   "-D_UNICODE",
+   "-Ider_libs",
+   "-c",
+   "config.cpp",
+   "-o",
+   "config.o"
+  ],
+  "file": "config.cpp"
+ },
+ {
+  "directory": "D:\\SourceCode\\Git\\ndir32",
+  "arguments": [
+   "d:/llvm/bin/x86_64-w64-mingw32-clang++",
+   "-Wall",
+   "-O3",
+   "-c",
+   "-Weffc++",
+   "-Wno-write-strings",
+   "-DUSE_64BIT",
+   "-DUNICODE",
+   "-D_UNICODE",
+   "-Ider_libs",
+   "-c",
+   "conio32.cpp",
+   "-o",
+   "conio32.o"
+  ],
+  "file": "conio32.cpp"
+ },
+ {
+  "directory": "D:\\SourceCode\\Git\\ndir32",
+  "arguments": [
+   "d:/llvm/bin/x86_64-w64-mingw32-clang++",
+   "-Wall",
+   "-O3",
+   "-c",
+   "-Weffc++",
+   "-Wno-write-strings",
+   "-DUSE_64BIT",
+   "-DUNICODE",
+   "-D_UNICODE",
+   "-Ider_libs",
+   "-c",
+   "Diskparm.cpp",
+   "-o",
+   "Diskparm.o"
+  ],
+  "file": "Diskparm.cpp"
+ },
+ {
+  "directory": "D:\\SourceCode\\Git\\ndir32",
+  "arguments": [
+   "d:/llvm/bin/x86_64-w64-mingw32-clang++",
+   "-Wall",
+   "-O3",
+   "-c",
+   "-Weffc++",
+   "-Wno-write-strings",
+   "-DUSE_64BIT",
+   "-DUNICODE",
+   "-D_UNICODE",
+   "-Ider_libs",
+   "-c",
+   "err_exit.cpp",
+   "-o",
+   "err_exit.o"
+  ],
+  "file": "err_exit.cpp"
+ },
+ {
+  "directory": "D:\\SourceCode\\Git\\ndir32",
+  "arguments": [
+   "d:/llvm/bin/x86_64-w64-mingw32-clang++",
+   "-Wall",
+   "-O3",
+   "-c",
+   "-Weffc++",
+   "-Wno-write-strings",
+   "-DUSE_64BIT",
+   "-DUNICODE",
+   "-D_UNICODE",
+   "-Ider_libs",
+   "-c",
+   "Filelist.cpp",
+   "-o",
+   "Filelist.o"
+  ],
+  "file": "Filelist.cpp"
+ },
+ {
+  "directory": "D:\\SourceCode\\Git\\ndir32",
+  "arguments": [
+   "d:/llvm/bin/x86_64-w64-mingw32-clang++",
+   "-Wall",
+   "-O3",
+   "-c",
+   "-Weffc++",
+   "-Wno-write-strings",
+   "-DUSE_64BIT",
+   "-DUNICODE",
+   "-D_UNICODE",
+   "-Ider_libs",
+   "-c",
+   "Fileread.cpp",
+   "-o",
+   "Fileread.o"
+  ],
+  "file": "Fileread.cpp"
+ },
+ {
+  "directory": "D:\\SourceCode\\Git\\ndir32",
+  "arguments": [
+   "d:/llvm/bin/x86_64-w64-mingw32-clang++",
+   "-Wall",
+   "-O3",
+   "-c",
+   "-Weffc++",
+   "-Wno-write-strings",
+   "-DUSE_64BIT",
+   "-DUNICODE",
+   "-D_UNICODE",
+   "-Ider_libs",
+   "-c",
+   "Ndisplay.cpp",
+   "-o",
+   "Ndisplay.o"
+  ],
+  "file": "Ndisplay.cpp"
+ },
+ {
+  "directory": "D:\\SourceCode\\Git\\ndir32",
+  "arguments": [
+   "d:/llvm/bin/x86_64-w64-mingw32-clang++",
+   "-Wall",
+   "-O3",
+   "-c",
+   "-Weffc++",
+   "-Wno-write-strings",
+   "-DUSE_64BIT",
+   "-DUNICODE",
+   "-D_UNICODE",
+   "-Ider_libs",
+   "-c",
+   "nio.cpp",
+   "-o",
+   "nio.o"
+  ],
+  "file": "nio.cpp"
+ },
+ {
+  "directory": "D:\\SourceCode\\Git\\ndir32",
+  "arguments": [
+   "d:/llvm/bin/x86_64-w64-mingw32-clang++",
+   "-Wall",
+   "-O3",
+   "-c",
+   "-Weffc++",
+   "-Wno-write-strings",
+   "-DUSE_64BIT",
+   "-DUNICODE",
+   "-D_UNICODE",
+   "-Ider_libs",
+   "-c",
+   "nsort.cpp",
+   "-o",
+   "nsort.o"
+  ],
+  "file": "nsort.cpp"
+ },
+ {
+  "directory": "D:\\SourceCode\\Git\\ndir32",
+  "arguments": [
+   "d:/llvm/bin/x86_64-w64-mingw32-clang++",
+   "-Wall",
+   "-O3",
+   "-c",
+   "-Weffc++",
+   "-Wno-write-strings",
+   "-DUSE_64BIT",
+   "-DUNICODE",
+   "-D_UNICODE",
+   "-Ider_libs",
+   "-c",
+   "treelist.cpp",
+   "-o",
+   "treelist.o"
+  ],
+  "file": "treelist.cpp"
+ },
+ {
+  "directory": "D:\\SourceCode\\Git\\ndir32",
+  "arguments": [
+   "d:/llvm/bin/x86_64-w64-mingw32-clang++",
+   "-Wall",
+   "-O3",
+   "-c",
+   "-Weffc++",
+   "-Wno-write-strings",
+   "-DUSE_64BIT",
+   "-DUNICODE",
+   "-D_UNICODE",
+   "-Ider_libs",
+   "-c",
+   "tdisplay.cpp",
+   "-o",
+   "tdisplay.o"
+  ],
+  "file": "tdisplay.cpp"
+ },
+ {
+  "directory": "D:\\SourceCode\\Git\\ndir32",
+  "arguments": [
+   "d:/llvm/bin/x86_64-w64-mingw32-clang++",
+   "-Wall",
+   "-O3",
+   "-c",
+   "-Weffc++",
+   "-Wno-write-strings",
+   "-DUSE_64BIT",
+   "-DUNICODE",
+   "-D_UNICODE",
+   "-Ider_libs",
+   "-c",
+   "mediatype.cpp",
+   "-o",
+   "mediatype.o"
+  ],
+  "file": "mediatype.cpp"
+ },
+ {
+  "directory": "D:\\SourceCode\\Git\\ndir32",
+  "arguments": [
+   "d:/llvm/bin/x86_64-w64-mingw32-clang++",
+   "-Wall",
+   "-O3",
+   "-c",
+   "-Weffc++",
+   "-Wno-write-strings",
+   "-DUSE_64BIT",
+   "-DUNICODE",
+   "-D_UNICODE",
+   "-Ider_libs",
+   "-c",
+   "read_link.cpp",
+   "-o",
+   "read_link.o"
+  ],
+  "file": "read_link.cpp"
+ },
+ {
+  "directory": "D:\\SourceCode\\Git\\ndir32",
+  "arguments": [
+   "d:/llvm/bin/x86_64-w64-mingw32-clang++",
+   "-Wall",
+   "-O3",
+   "-c",
+   "-Weffc++",
+   "-Wno-write-strings",
+   "-DUSE_64BIT",
+   "-DUNICODE",
+   "-D_UNICODE",
+   "-Ider_libs",
+   "-c",
+   "der_libs/common_funcs.cpp",
+   "-o",
+   "der_libs/common_funcs.o"
+  ],
+  "file": "der_libs/common_funcs.cpp"
+ },
+ {
+  "directory": "D:\\SourceCode\\Git\\ndir32",
+  "arguments": [
+   "d:/llvm/bin/x86_64-w64-mingw32-clang++",
+   "-Wall",
+   "-O3",
+   "-c",
+   "-Weffc++",
+   "-Wno-write-strings",
+   "-DUSE_64BIT",
+   "-DUNICODE",
+   "-D_UNICODE",
+   "-Ider_libs",
+   "-c",
+   "der_libs/qualify.cpp",
+   "-o",
+   "der_libs/qualify.o"
+  ],
+  "file": "der_libs/qualify.cpp"
+ }
+]

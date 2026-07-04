@@ -41,11 +41,11 @@ ifeq ($(USE_64BIT),YES)
 #  in TDM64 V10.3.0 with UNICODE enabled
 ifeq ($(USE_CLANG),YES)
 #TOOLS=d:\clang\bin
-TOOLS=d:\llvm\bin
+TOOLS=d:/llvm/bin
 else
 #  with d:\tdm64\bin, NDIR logo does not display correctly,
 #  probably due to wsprintf() issue noted above
-TOOLS=C:\cygwin64\bin
+TOOLS=C:/cygwin64/bin
 #TOOLS=d:\tdm64\bin
 endif
 else
@@ -102,12 +102,12 @@ IFLAGS += -DNOMAKEDEPEND
 
 CPPSRC=Ndir32.cpp cmd_line.cpp config.cpp conio32.cpp Diskparm.cpp err_exit.cpp Filelist.cpp \
 Fileread.cpp Ndisplay.cpp nio.cpp nsort.cpp treelist.cpp tdisplay.cpp mediatype.cpp read_link.cpp \
-der_libs\common_funcs.cpp 
+der_libs/common_funcs.cpp 
 
 ifeq ($(USE_LEGACY),YES)
-CPPSRC+=der_libs\qualify_orig.cpp 
+CPPSRC+=der_libs/qualify_orig.cpp 
 else
-CPPSRC+=der_libs\qualify.cpp 
+CPPSRC+=der_libs/qualify.cpp 
 endif
 
 OBJS = $(CPPSRC:.cpp=.o)
@@ -115,20 +115,9 @@ OBJS = $(CPPSRC:.cpp=.o)
 # uuid.lib, ole32.lib : used in read_link.cpp
 LIBS=-lmpr -lshlwapi -luuid -lole32 
 
-#  clang-tidy options
-CHFLAGS = -header-filter=.*
-CHTAIL = -- 
-CHTAIL += -Ider_libs
-ifeq ($(USE_64BIT),YES)
-CHTAIL += -DUSE_64BIT
-endif
-ifeq ($(USE_UNICODE),YES)
-CHTAIL += -DUNICODE -D_UNICODE
-endif
-
 #*************************************************************************
 %.o: %.cpp
-	$(TOOLS)\$(GNAME) $(CFLAGS) -c $< -o $@
+	$(TOOLS)/$(GNAME) $(CFLAGS) -c $< -o $@
 
 ifeq ($(USE_64BIT),NO)
 BIN = ndir32.exe
@@ -142,7 +131,7 @@ clean:
 	rm -f $(OBJS) ndir*.exe *~ *.zip
 
 check:
-	cmd /C "d:\llvm\bin\clang-tidy.exe $(CHFLAGS) $(CPPSRC) $(CHTAIL)"
+	cmd /C "d:\llvm\bin\clang-tidy.exe $(CPPSRC)"
 
 dist:
 	rm -f ndir.zip
@@ -158,7 +147,7 @@ depend:
 	makedepend $(IFLAGS) $(CPPSRC) $(CXXSRC)
 
 $(BIN): $(OBJS)
-	$(TOOLS)\$(GNAME) $(OBJS) $(LFLAGS) -o $(BIN) $(LIBS) 
+	$(TOOLS)/$(GNAME) $(OBJS) $(LFLAGS) -o $(BIN) $(LIBS) 
 
 # DO NOT DELETE
 
