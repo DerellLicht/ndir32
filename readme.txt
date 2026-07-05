@@ -19,7 +19,22 @@ allowed by law.
 You can copy, modify, distribute and perform the work, even for commercial
 purposes, all without asking permission. 
 
-****************************************************************************************
+<hr>
+
+#### building the application
+This application is built using the MinGW toolchain; 
+I recommend the [TDM](http://tdm-gcc.tdragon.net/) distribution, 
+to avoid certain issues with library accessibility. 
+The makefile also requires certain Cygwin tools (rm, make, etc).
+
+#### NOTE: this program requires my ```der_libs``` submodule
+If you clone the repository without the --recursive flag, 
+you can recover the submodule later, with this command:
+
+```git submodule update --init --recursive```
+
+<hr>
+
 NOTES: 
 
 > As of version 2.54 (Sep 2022), NDIR is now a 64-bit program.
