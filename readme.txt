@@ -19,7 +19,7 @@ allowed by law.
 You can copy, modify, distribute and perform the work, even for commercial
 purposes, all without asking permission. 
 
-<hr>
+****************************************************************************************
 
 #### building the application
 This application is built using the MinGW toolchain; 
@@ -33,7 +33,7 @@ you can recover the submodule later, with this command:
 
 ```git submodule update --init --recursive```
 
-<hr>
+****************************************************************************************
 
 NOTES: 
 
