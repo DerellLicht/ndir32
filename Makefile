@@ -130,6 +130,9 @@ all: $(BIN)
 clean:
 	rm -f $(OBJS) ndir*.exe *~ *.zip
 
+cppc:
+	cmd /C "cppcheck --project=compile_commands.json --std=c++14 --suppressions-list=./.suppress.cppcheck"
+
 check:
 	cmd /C "d:\llvm\bin\clang-tidy.exe $(CPPSRC)"
 
