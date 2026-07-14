@@ -138,7 +138,7 @@ check:
 
 dist:
 	rm -f ndir.zip
-	zip ndir.zip $(BIN) readme.txt revisions.txt LICENSE
+	zip ndir.zip $(BIN) readme.txt revisions.txt LICENSE.txt
 
 wc:
 	wc -l $(CPPSRC)
