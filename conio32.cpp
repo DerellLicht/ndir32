@@ -513,7 +513,6 @@ static int is_CRLF_present(const TCHAR *cstr)
 
 //**********************************************************************************
 //  This does not process special characters, but writes faster than dputs().
-//  It also is *only* used by dputs()
 //**********************************************************************************
 static void dputsi(const TCHAR *outstr, int slen)
 {
