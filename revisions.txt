@@ -297,4 +297,5 @@ Version 2.69, 08/11/25
 
 Version 2.70, 07/30/26
   - implement enum values for n.tree, move files_only flag out of this element
-  - implement new value in n.tree, to support "max filename length" display
+  - implement new value in n.tree (-d4), to support "max filename length" display
+  
