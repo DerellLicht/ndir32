@@ -167,9 +167,7 @@ static void const read_long_files (std::wstring& target_path)
          //  V2.62, 01/08/24 - short-filename support removed
 
          //  look up color in table
-         if (n.color) {
-            getcolor (ftemp);
-         }
+         getcolor (ftemp);
       }  //  if file is parseable...
 
 search_next_file:

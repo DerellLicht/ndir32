@@ -47,13 +47,8 @@ static void testpause (void)
          error_exit (DATA_OKAY, NULL);
       }
 
-      if (n.color) {
-         dreturn ();            // CR only!! 
-         dclreol ();
-      }
-      else {
-         _tprintf (_T("\n"));
-      }
+      dreturn ();            // CR only!! 
+      dclreol ();
       linecnt = 1;
    }
 }
@@ -61,28 +56,18 @@ static void testpause (void)
 /******************************************************************/
 void ncrlf_raw(void)
 {
-   if (n.color) {
-      dnewline ();
-   }
-   else {
-      _tprintf (_T("\n"));
-   }
+   dnewline ();
    testpause ();
 }
 
 /******************************************************************/
 void ncrlf (void)
 {
-   if (n.color) {
-      dnewline ();
-   }
-   else {
-      _tprintf (_T("\n"));
-   }
+   dnewline ();
    
-   // testpause ();
    if (!n.pause)
       return;
+   //  don't do 'pause on full screen' if we are redirecting
    if (is_redirected ())
      return;
 
@@ -93,13 +78,8 @@ void ncrlf (void)
          error_exit (DATA_OKAY, NULL);
       }
 
-      if (n.color) {
-         dreturn ();            // CR only!! 
-         dclreol ();
-      }
-      else {
-         _tprintf (_T("\n"));
-      }
+      dreturn ();            // CR only!! 
+      dclreol ();
       linecnt = 1;
    }
 }
@@ -107,28 +87,15 @@ void ncrlf (void)
 /******************************************************************/
 void nputc (uchar attr, const uchar outchr)
 {
-   // unsigned hattr ;
-   if (n.color) {
-      set_text_attr (attr);
-      dputc (outchr);
-   }
-   else
-      _tprintf (_T("%c"), outchr);
+   set_text_attr (attr);
+   dputc (outchr);
 }
 
 /******************************************************************/
 void nputs (uchar attr, const TCHAR *outstr)
 {
-   if (n.color) {
-      set_text_attr (attr);
-      dputs (outstr);
-   }
-   else {
-      _tprintf (_T("%s"), outstr);
-      // int wlen = _tcslen(outstr);
-      // syslog(_T("%s\n"), outstr);
-      // hex_dump((u8 *)outstr, wlen * sizeof(TCHAR));
-   }
+   set_text_attr (attr);
+   dputs (outstr);
 }
 
 /******************************************************************/
@@ -137,31 +104,15 @@ void nput_char (uchar attr, TCHAR chr, int count)
    if (count <= 0) {
       return ;
    }
-   if (n.color) {
-      set_text_attr (attr);
-      dputnchar (chr, attr, count);
-   }
-   else {
-      for (int j = 0; j < count; j++) {
-         _puttchar (chr);
-      }
-   }
+   set_text_attr (attr);
+   dputnchar (chr, attr, count);
 }
 
 /******************************************************************/
 void nput_line (uchar attr, TCHAR chr)
 {
-   int j, wincols = get_window_cols() - 1 ;
-   if (n.color) {
-      dputnchar (chr, attr, wincols);
-   }
-   else {
-      // syslog(_T("nput_line: wincols: %u, color: %u\n"), wincols, n.color);
-      // set_text_attr (attr);
-      for (j = 0; j < wincols; j++) {
-         _puttchar (chr);
-      }
-   }
+   int wincols = get_window_cols() - 1 ;
+   dputnchar (chr, attr, wincols);
    ncrlf ();
 }
 

@@ -66,7 +66,7 @@ struct ndir_data {
    uchar low_ascii {};    //  upper ascii no longer supported
    uchar batch {};                                                                              
    uchar unused1 {};                                                                            
-   uchar color {1};                                                                              
+   // uchar color {1};                                                                              
    uchar showSHRfiles {};                                                                       
    // uchar ega_keep_unused {};     // deprecated on 01.17.23
    uchar drive_summary {DSUMMARY_NONE};//  0 = no, 1 = show free space, 2 = show used space

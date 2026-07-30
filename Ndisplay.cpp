@@ -45,14 +45,6 @@ static TCHAR const monthstr[12][4] = {
    _T("Jul"), _T("Aug"), _T("Sep"), _T("Oct"), _T("Nov"), _T("Dec")
 };
 
-/*****************************************************************/
-static void ngotoxy (int x, int y)
-{
-   if (n.color) {
-      dgotoxy (x, y);
-   }
-}
-
 //**************************************************
 //  linecnt = number of lines written (non-color).
 //**************************************************
@@ -69,13 +61,13 @@ void display_logo (void)
    TCHAR vtemp[50];
    if (n.minimize) {
       _stprintf(vtemp, _T("%s/%u "), ShortVersion, get_build_size());
-      ngotoxy (0, _where_y ());
+      dgotoxy (0, _where_y ());
       nputs (n.colorlogo, vtemp);
    }
    else {
-      // ngotoxy ((80 - _tcslen (Version)) / 2, _where_y ());
+      // dgotoxy ((80 - _tcslen (Version)) / 2, _where_y ());
       _stprintf(vtemp, _T("%s/%u "), Version, get_build_size());
-      ngotoxy (0, _where_y ());
+      dgotoxy (0, _where_y ());
       nputs (n.colorlogo, vtemp);
       ncrlf ();
    }
