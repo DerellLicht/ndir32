@@ -197,9 +197,6 @@ static int read_dir_tree (dirs * cur_node)
                if (cur_node->maxlen < umaxlen) {
                    cur_node->maxlen = umaxlen ;
                }
-               // if (cur_node->submaxlen < umaxlen) {
-               //     cur_node->submaxlen = umaxlen ;
-               // }
             }                   //  if this is not a DOT directory
          }                      //  if this is a directory
 
@@ -230,10 +227,6 @@ static int read_dir_tree (dirs * cur_node)
             if (cur_node->maxlen < umaxlen) {
                 cur_node->maxlen = umaxlen ;
             }
-            // if (cur_node->submaxlen < umaxlen) {
-            //     cur_node->submaxlen = umaxlen ;
-            // }
-
          }                      //  if entry is a file
       }                         //  if no errors detected
 
@@ -265,6 +258,9 @@ static int read_dir_tree (dirs * cur_node)
          err = 0 ;
       }
    }  //  while reading files from directory
+   
+   cur_node->submaxlen = cur_node->maxlen ;
+   // syslog(L"this end: ml: %u, sml: %u\n", cur_node->maxlen, cur_node->submaxlen);
 
 #ifdef  DEBUG_LOG
    syslog(_T("%s: close\n"), dirpath.c_str());
@@ -285,6 +281,7 @@ static int read_dir_tree (dirs * cur_node)
       if (cur_node->submaxlen < ktemp->maxlen) {
          cur_node->submaxlen  = ktemp->maxlen;
       }
+      // syslog(L"delve: ktml: %u, sml: %u\n", ktemp->maxlen, cur_node->submaxlen);
    }
 
    //  when done, strip name from path and restore '\*.*'
