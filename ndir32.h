@@ -29,9 +29,9 @@ extern uchar dtree_colors[MAX_DIR_ENTRY] ;
 enum class eTreeForm : uint8_t {
    TREE_UNUSED = 0,
    DIR_FILE_SIZES = 1,
-   MAX_FNAME_LEN = 2,
-   DIR_FILE_COUNTS = 4,
-   MIXED_COUNT_SIZE = 5
+   DIR_FILE_COUNTS = 2,
+   MIXED_COUNT_SIZE = 3,
+   MAX_FNAME_LEN = 4
 };
 
 struct ndir_data {

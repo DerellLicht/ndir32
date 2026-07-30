@@ -76,6 +76,7 @@ static int read_dir_tree (dirs * cur_node)
    // TCHAR *strptr;
    HANDLE handle;
    int slen, done, result;
+   uint umaxlen {};
    DWORD err;
    ULONGLONG file_clusters, clusters;
    // WIN32_FIND_DATA fdata ; //  long-filename file struct
@@ -176,11 +177,7 @@ static int read_dir_tree (dirs * cur_node)
             }
 
             if (!cut_dot_dirs) {
-               cur_node->directs++;
-               cur_node->subdirects++;
-
                // dirs *dtemp = new_dir_node ();
-               
                cur_node->brothers.emplace_back();
                // cur_node->son[0].brothers.emplace_back();
                idx = cur_node->brothers.size() - 1 ;
@@ -190,6 +187,19 @@ static int read_dir_tree (dirs * cur_node)
                dtemp->name = fdata.cFileName ;
                dtemp->attrib = (uchar) fdata.dwFileAttributes;
                // dtail->directs++ ;
+
+               //  stats for eTreeForm::DIR_FILE_COUNTS and eTreeForm::MIXED_COUNT_SIZE
+               cur_node->directs++;
+               cur_node->subdirects++;
+
+               //  stats for eTreeForm::MAX_FNAME_LEN
+               umaxlen = wcslen(fdata.cFileName) ;
+               if (cur_node->maxlen < umaxlen) {
+                   cur_node->maxlen = umaxlen ;
+               }
+               // if (cur_node->submaxlen < umaxlen) {
+               //     cur_node->submaxlen = umaxlen ;
+               // }
             }                   //  if this is not a DOT directory
          }                      //  if this is a directory
 
@@ -211,8 +221,19 @@ static int read_dir_tree (dirs * cur_node)
             cur_node->dirsecsize += file_clusters;
             cur_node->subdirsecsize += file_clusters;
 
+            //  stats for eTreeForm::DIR_FILE_COUNTS and eTreeForm::MIXED_COUNT_SIZE
             cur_node->files++;
             cur_node->subfiles++;
+            
+            //  stats for eTreeForm::MAX_FNAME_LEN
+            umaxlen = wcslen(fdata.cFileName) ;
+            if (cur_node->maxlen < umaxlen) {
+                cur_node->maxlen = umaxlen ;
+            }
+            // if (cur_node->submaxlen < umaxlen) {
+            //     cur_node->submaxlen = umaxlen ;
+            // }
+
          }                      //  if entry is a file
       }                         //  if no errors detected
 
@@ -254,10 +275,16 @@ static int read_dir_tree (dirs * cur_node)
    for(auto &file : cur_node->brothers) {
       dirs *ktemp = &file;
       read_dir_tree (ktemp);
+      //  stats for eTreeForm::DIR_FILE_COUNTS and eTreeForm::MIXED_COUNT_SIZE
       cur_node->subdirsize    += ktemp->subdirsize;
       cur_node->subdirsecsize += ktemp->subdirsecsize;
       cur_node->subfiles      += ktemp->subfiles;
       cur_node->subdirects    += ktemp->subdirects;
+      //  stats for eTreeForm::MAX_FNAME_LEN
+      // cur_node->maxlen        += ktemp->maxlen;
+      if (cur_node->submaxlen < ktemp->maxlen) {
+         cur_node->submaxlen  = ktemp->maxlen;
+      }
    }
 
    //  when done, strip name from path and restore '\*.*'
@@ -439,7 +466,6 @@ void tree_listing (unsigned total_filespec_count)
       build_dir_tree ((TCHAR *) target[l].c_str()) ;
 
       //  sort the tree list
-      //  show the tree that we read
       dirs *temp = &dlist.brothers[0] ;   //  only needed for (debug) name display
       sort_trees(dlist.brothers, (TCHAR *) temp->name.c_str());
 

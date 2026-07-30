@@ -1,17 +1,9 @@
-#define  USE_VECTOR
-// #undef  USE_VECTOR
-
 //**********************************************************
 //  directory structure for directory_tree routines
 //**********************************************************
 struct dirs
 {
-#ifdef  USE_VECTOR
    std::vector<dirs> brothers {};
-#else   
-   dirs *brothers {nullptr};
-   dirs *sons {nullptr};
-#endif   
    std::wstring name {};
    uchar attrib {};
    ULONGLONG dirsize {};
@@ -22,13 +14,11 @@ struct dirs
    uint directs {};
    uint subfiles {};
    uint subdirects {};
+   uint maxlen {};
+   uint submaxlen {};
 };
 
-#ifdef  USE_VECTOR
 extern dirs dlist ;
-#else
-extern dirs *top ;
-#endif
 
 extern unsigned level;
 

@@ -100,6 +100,7 @@ L"   -w *     Use special colors for system/hidden/readonly files.",
 L"   -d       dir TREE: normal size display (work with -s, -n (default), -r).",
 L"   -d2      dir TREE: file/directory counts",
 L"   -d3      dir TREE: mixed size and file/directory counts",
+L"   -d4      dir TREE: show maximum filename lengths",
 L"   -y *     In dirtree mode, exclude .git folder",
 L"   -e       Sort by extension.",
 L"   -n        \"   by name.",
@@ -281,7 +282,8 @@ static void process_filespecs(void)
    //  filenames were provided.
    //  If such anomalies are presented, unpredictable results will occur.
    //***********************************************************************
-   if (n.tree == eTreeForm::DIR_FILE_SIZES || n.tree == eTreeForm::DIR_FILE_COUNTS || n.tree == eTreeForm::MIXED_COUNT_SIZE) {
+   // if (n.tree == eTreeForm::DIR_FILE_SIZES || n.tree == eTreeForm::DIR_FILE_COUNTS || n.tree == eTreeForm::MIXED_COUNT_SIZE) {
+   if (n.tree != eTreeForm::TREE_UNUSED) {
       tree_listing(target.size()) ;
    }
    else if (target.size() == 1  &&  !n.exec_only) {
