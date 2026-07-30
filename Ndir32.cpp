@@ -22,7 +22,7 @@
 
 //lint -esym(864, target)  Expression involving variable possibly depends on order of evaluation
 
-#define  VER_NUMBER "2.69"
+#define  VER_NUMBER "2.70"
 
 //lint -esym(843, Version, ShortVersion) could be declared as const
 TCHAR *Version = _T(" NDIR.EXE, Version " VER_NUMBER " ") ;
@@ -281,7 +281,7 @@ static void process_filespecs(void)
    //  filenames were provided.
    //  If such anomalies are presented, unpredictable results will occur.
    //***********************************************************************
-   if (n.tree == 1  ||  n.tree == 4  ||  n.tree == 5) {
+   if (n.tree == eTreeForm::DIR_FILE_SIZES || n.tree == eTreeForm::DIR_FILE_COUNTS || n.tree == eTreeForm::MIXED_COUNT_SIZE) {
       tree_listing(target.size()) ;
    }
    else if (target.size() == 1  &&  !n.exec_only) {

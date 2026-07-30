@@ -132,131 +132,131 @@ static void display_dir_tree (std::vector<dirs> brothers)
       display_tree_filename (formstr, ktemp);
       // console->dputsf(L"%s %s\n", formstr, ktemp->name.c_str()) ;
       switch (n.tree) {
-         //  show file/directory sizes only
-         case 1:
-            if (ktemp->dirsize != ktemp->subdirsize ||   //lint !e777
-               ktemp->dirsecsize != ktemp->subdirsecsize) {   //lint !e777
-               // dsize.convert  (ktemp->dirsize);
-               // dssize.convert (ktemp->dirsecsize);
-               // sdsize.convert (ktemp->subdirsize);
+      //  show file/directory sizes only
+      case eTreeForm::DIR_FILE_SIZES:
+         if (ktemp->dirsize != ktemp->subdirsize ||   //lint !e777
+            ktemp->dirsecsize != ktemp->subdirsecsize) {   //lint !e777
+            // dsize.convert  (ktemp->dirsize);
+            // dssize.convert (ktemp->dirsecsize);
+            // sdsize.convert (ktemp->subdirsize);
 
-               //  now, print the normal directory
-               // _stprintf (tempstr, "%11s", dsize.putstr ());
-               // nputs (dtree_colors[level], tempstr);
-
-               // _stprintf(tempstr, "%11s %14s", dssize_ptr, sdsize_ptr) ;
-               // _stprintf (tempstr, "%11s %14s", dssize.putstr (),
-               //   sdsize.putstr ());
-               // nputs (dtree_colors[level], tempstr);
-               display_size(ktemp->dirsize, 13, dtree_colors[level]) ;
-               nputc (n.colorframe, vline);
-               display_size(ktemp->dirsecsize, 13, dtree_colors[level]) ;
-               nputc (dtree_colors[level], _T(' '));
-               display_size(ktemp->subdirsize, 14, dtree_colors[level]) ;
-               nputc (n.colorframe, vline);
-            }
-
-            /*  no subdirectories are under this one  */
-            else {
-               //  now, print the normal directory
-               nputs (dtree_colors[level], _T("             "));
-               nputc (n.colorframe, vline);
-               nputs (dtree_colors[level], _T("              "));
-               // _stprintf(tempstr, "            %14s", sdsize_ptr) ;
-               // sdsize.convert (ktemp->subdirsize);
-               // _stprintf (tempstr, "%14s", sdsize.putstr ());
-               // nputs (dtree_colors[level], tempstr);
-               display_size(ktemp->subdirsize, 14, dtree_colors[level]) ;
-               nputc (n.colorframe, vline);
-            }                   /* end  else !(ktemp->nsdi) */
-
-            // _stprintf(tempstr, "%14s", sdssize_ptr) ;
-            // sdssize.convert (ktemp->subdirsecsize);
-            // _stprintf (tempstr, "%14s", sdssize.putstr ());
-            // nputs (dtree_colors[level], tempstr);
-            display_size(ktemp->subdirsecsize, 14, dtree_colors[level]) ;
-            break;
-
-         //  show file/directory counts only
-         case 4:
-            if ((ktemp->files == ktemp->subfiles) &&
-               (ktemp->directs == ktemp->subdirects)) {
-               //  now, print the normal directory
-               nputs (dtree_colors[level], _T("             "));
-               nputc (n.colorframe, vline);
-
-               // sdsize.convert ((unsigned long long) ktemp->files);
-               // _stprintf (tempstr, "            %12s  ", sdsize.putstr ());
-               // nputs (dtree_colors[level], tempstr);
-               nputs (dtree_colors[level], _T("              "));
-               display_size((ULONGLONG) ktemp->files, 12, dtree_colors[level]) ;
-
-               nputs (dtree_colors[level], _T("  "));
-               nputc (n.colorframe, vline);
-               // _stprintf(tempstr, "%14s", sdssize_ptr) ;
-               // sdssize.convert ((unsigned long long) ktemp->directs);
-               // _stprintf (tempstr, "%10s", sdssize.putstr ());
-               // nputs (dtree_colors[level], tempstr);
-               display_size((ULONGLONG) ktemp->directs, 10, dtree_colors[level]) ;
-            }
-
-            /*  no subdirectories are under this one  */
-            else {
-               //  now, print the normal directory
-               // dsize.convert ((unsigned long long) ktemp->files);
-               // _stprintf (tempstr, "%9s  ", dsize.putstr ());
-               // nputs (dtree_colors[level], tempstr);
-               display_size((ULONGLONG) ktemp->files, 11, dtree_colors[level]) ;
-               nputs (dtree_colors[level], _T("  "));
-               nputc (n.colorframe, vline);
-
-               // dssize.convert ((unsigned long long) ktemp->directs);
-               // sdsize.convert ((unsigned long long) ktemp->subfiles);
-               // _stprintf (tempstr, "%9s   %12s  ", dssize.putstr (),
-               //   sdsize.putstr ());
-               // nputs (dtree_colors[level], tempstr);
-               display_size((ULONGLONG) ktemp->directs, 11, dtree_colors[level]) ;
-               nputs (dtree_colors[level], _T("   "));
-               display_size((ULONGLONG) ktemp->subfiles, 12, dtree_colors[level]) ;
-               nputs (dtree_colors[level], _T("  "));
-               nputc (n.colorframe, vline);
-
-               // sdssize.convert ((unsigned long long) ktemp->subdirects);
-               // _stprintf (tempstr, "%10s", sdssize.putstr ());
-               // nputs (dtree_colors[level], tempstr);
-               display_size((ULONGLONG) ktemp->subdirects, 10, dtree_colors[level]) ;
-            }                   /* end  else !(ktemp->nsdi) */
-            break;
-
-         //  show mixed size, file counts, directory counts
-         case 5:
             //  now, print the normal directory
-            // dsize.convert ((unsigned long long) ktemp->subfiles);
-            // _stprintf (tempstr, "%9s  ", dsize.putstr ());
+            // _stprintf (tempstr, "%11s", dsize.putstr ());
             // nputs (dtree_colors[level], tempstr);
-            display_size((ULONGLONG) ktemp->subfiles, 12, dtree_colors[level]) ;
-            nputs (dtree_colors[level], _T(" "));
-                  nputc (n.colorframe, vline);
 
-            // dssize.convert ((unsigned long long) ktemp->subdirects);
-            // sdsize.convert ((unsigned long long) ktemp->dirsecsize);
-            // _stprintf (tempstr, "%9s   %13s ", dssize.putstr (),
+            // _stprintf(tempstr, "%11s %14s", dssize_ptr, sdsize_ptr) ;
+            // _stprintf (tempstr, "%11s %14s", dssize.putstr (),
             //   sdsize.putstr ());
             // nputs (dtree_colors[level], tempstr);
-            display_size((ULONGLONG) ktemp->subdirects, 12, dtree_colors[level]) ;
-            nputs (dtree_colors[level], _T("  "));
+            display_size(ktemp->dirsize, 13, dtree_colors[level]) ;
+            nputc (n.colorframe, vline);
             display_size(ktemp->dirsecsize, 13, dtree_colors[level]) ;
-            nputs (dtree_colors[level], _T(" "));
-                  nputc (n.colorframe, vline);
+            nputc (dtree_colors[level], _T(' '));
+            display_size(ktemp->subdirsize, 14, dtree_colors[level]) ;
+            nputc (n.colorframe, vline);
+         }
 
-            // sdssize.convert ((unsigned long long) ktemp->subdirsecsize);
-            // _stprintf (tempstr, "%14s", sdssize.putstr ());
+         /*  no subdirectories are under this one  */
+         else {
+            //  now, print the normal directory
+            nputs (dtree_colors[level], _T("             "));
+            nputc (n.colorframe, vline);
+            nputs (dtree_colors[level], _T("              "));
+            // _stprintf(tempstr, "            %14s", sdsize_ptr) ;
+            // sdsize.convert (ktemp->subdirsize);
+            // _stprintf (tempstr, "%14s", sdsize.putstr ());
             // nputs (dtree_colors[level], tempstr);
-            display_size(ktemp->subdirsecsize, 14, dtree_colors[level]) ;
-            break;
+            display_size(ktemp->subdirsize, 14, dtree_colors[level]) ;
+            nputc (n.colorframe, vline);
+         }                   /* end  else !(ktemp->nsdi) */
 
-         default:
-            break;              // make lint happy
+         // _stprintf(tempstr, "%14s", sdssize_ptr) ;
+         // sdssize.convert (ktemp->subdirsecsize);
+         // _stprintf (tempstr, "%14s", sdssize.putstr ());
+         // nputs (dtree_colors[level], tempstr);
+         display_size(ktemp->subdirsecsize, 14, dtree_colors[level]) ;
+         break;
+
+      //  show file/directory counts only
+      case eTreeForm::DIR_FILE_COUNTS:
+         if ((ktemp->files == ktemp->subfiles) &&
+            (ktemp->directs == ktemp->subdirects)) {
+            //  now, print the normal directory
+            nputs (dtree_colors[level], _T("             "));
+            nputc (n.colorframe, vline);
+
+            // sdsize.convert ((unsigned long long) ktemp->files);
+            // _stprintf (tempstr, "            %12s  ", sdsize.putstr ());
+            // nputs (dtree_colors[level], tempstr);
+            nputs (dtree_colors[level], _T("              "));
+            display_size((ULONGLONG) ktemp->files, 12, dtree_colors[level]) ;
+
+            nputs (dtree_colors[level], _T("  "));
+            nputc (n.colorframe, vline);
+            // _stprintf(tempstr, "%14s", sdssize_ptr) ;
+            // sdssize.convert ((unsigned long long) ktemp->directs);
+            // _stprintf (tempstr, "%10s", sdssize.putstr ());
+            // nputs (dtree_colors[level], tempstr);
+            display_size((ULONGLONG) ktemp->directs, 10, dtree_colors[level]) ;
+         }
+
+         /*  no subdirectories are under this one  */
+         else {
+            //  now, print the normal directory
+            // dsize.convert ((unsigned long long) ktemp->files);
+            // _stprintf (tempstr, "%9s  ", dsize.putstr ());
+            // nputs (dtree_colors[level], tempstr);
+            display_size((ULONGLONG) ktemp->files, 11, dtree_colors[level]) ;
+            nputs (dtree_colors[level], _T("  "));
+            nputc (n.colorframe, vline);
+
+            // dssize.convert ((unsigned long long) ktemp->directs);
+            // sdsize.convert ((unsigned long long) ktemp->subfiles);
+            // _stprintf (tempstr, "%9s   %12s  ", dssize.putstr (),
+            //   sdsize.putstr ());
+            // nputs (dtree_colors[level], tempstr);
+            display_size((ULONGLONG) ktemp->directs, 11, dtree_colors[level]) ;
+            nputs (dtree_colors[level], _T("   "));
+            display_size((ULONGLONG) ktemp->subfiles, 12, dtree_colors[level]) ;
+            nputs (dtree_colors[level], _T("  "));
+            nputc (n.colorframe, vline);
+
+            // sdssize.convert ((unsigned long long) ktemp->subdirects);
+            // _stprintf (tempstr, "%10s", sdssize.putstr ());
+            // nputs (dtree_colors[level], tempstr);
+            display_size((ULONGLONG) ktemp->subdirects, 10, dtree_colors[level]) ;
+         }                   /* end  else !(ktemp->nsdi) */
+         break;
+
+      //  show mixed size, file counts, directory counts
+      case eTreeForm::MIXED_COUNT_SIZE:
+         //  now, print the normal directory
+         // dsize.convert ((unsigned long long) ktemp->subfiles);
+         // _stprintf (tempstr, "%9s  ", dsize.putstr ());
+         // nputs (dtree_colors[level], tempstr);
+         display_size((ULONGLONG) ktemp->subfiles, 12, dtree_colors[level]) ;
+         nputs (dtree_colors[level], _T(" "));
+               nputc (n.colorframe, vline);
+
+         // dssize.convert ((unsigned long long) ktemp->subdirects);
+         // sdsize.convert ((unsigned long long) ktemp->dirsecsize);
+         // _stprintf (tempstr, "%9s   %13s ", dssize.putstr (),
+         //   sdsize.putstr ());
+         // nputs (dtree_colors[level], tempstr);
+         display_size((ULONGLONG) ktemp->subdirects, 12, dtree_colors[level]) ;
+         nputs (dtree_colors[level], _T("  "));
+         display_size(ktemp->dirsecsize, 13, dtree_colors[level]) ;
+         nputs (dtree_colors[level], _T(" "));
+               nputc (n.colorframe, vline);
+
+         // sdssize.convert ((unsigned long long) ktemp->subdirsecsize);
+         // _stprintf (tempstr, "%14s", sdssize.putstr ());
+         // nputs (dtree_colors[level], tempstr);
+         display_size(ktemp->subdirsecsize, 14, dtree_colors[level]) ;
+         break;
+
+      default:
+         break;              // make lint happy
       }
       ncrlf ();
 
@@ -315,131 +315,131 @@ static void display_dir_tree (dirs * ktop)
       //*****************************************************************
       display_tree_filename (formstr, ktemp);
       switch (n.tree) {
-         //  show file/directory sizes only
-         case 1:
-            if (ktemp->dirsize != ktemp->subdirsize ||   //lint !e777
-               ktemp->dirsecsize != ktemp->subdirsecsize) {   //lint !e777
-               // dsize.convert  (ktemp->dirsize);
-               // dssize.convert (ktemp->dirsecsize);
-               // sdsize.convert (ktemp->subdirsize);
+      //  show file/directory sizes only
+      case eTreeForm::DIR_FILE_SIZES:
+         if (ktemp->dirsize != ktemp->subdirsize ||   //lint !e777
+            ktemp->dirsecsize != ktemp->subdirsecsize) {   //lint !e777
+            // dsize.convert  (ktemp->dirsize);
+            // dssize.convert (ktemp->dirsecsize);
+            // sdsize.convert (ktemp->subdirsize);
 
-               //  now, print the normal directory
-               // _stprintf (tempstr, "%11s", dsize.putstr ());
-               // nputs (dtree_colors[level], tempstr);
-
-               // _stprintf(tempstr, "%11s %14s", dssize_ptr, sdsize_ptr) ;
-               // _stprintf (tempstr, "%11s %14s", dssize.putstr (),
-               //   sdsize.putstr ());
-               // nputs (dtree_colors[level], tempstr);
-               display_size(ktemp->dirsize, 13, dtree_colors[level]) ;
-               nputc (n.colorframe, vline);
-               display_size(ktemp->dirsecsize, 13, dtree_colors[level]) ;
-               nputc (dtree_colors[level], _T(' '));
-               display_size(ktemp->subdirsize, 14, dtree_colors[level]) ;
-               nputc (n.colorframe, vline);
-            }
-
-            /*  no subdirectories are under this one  */
-            else {
-               //  now, print the normal directory
-               nputs (dtree_colors[level], _T("           "));
-               nputc (n.colorframe, vline);
-               nputs (dtree_colors[level], _T("            "));
-               // _stprintf(tempstr, "            %14s", sdsize_ptr) ;
-               // sdsize.convert (ktemp->subdirsize);
-               // _stprintf (tempstr, "%14s", sdsize.putstr ());
-               // nputs (dtree_colors[level], tempstr);
-               display_size(ktemp->subdirsize, 14, dtree_colors[level]) ;
-               nputc (n.colorframe, vline);
-            }                   /* end  else !(ktemp->nsdi) */
-
-            // _stprintf(tempstr, "%14s", sdssize_ptr) ;
-            // sdssize.convert (ktemp->subdirsecsize);
-            // _stprintf (tempstr, "%14s", sdssize.putstr ());
-            // nputs (dtree_colors[level], tempstr);
-            display_size(ktemp->subdirsecsize, 14, dtree_colors[level]) ;
-            break;
-
-         //  show file/directory counts only
-         case 4:
-            if ((ktemp->files == ktemp->subfiles) &&
-               (ktemp->directs == ktemp->subdirects)) {
-               //  now, print the normal directory
-               nputs (dtree_colors[level], _T("           "));
-               nputc (n.colorframe, vline);
-
-               // sdsize.convert ((unsigned long long) ktemp->files);
-               // _stprintf (tempstr, "            %12s  ", sdsize.putstr ());
-               // nputs (dtree_colors[level], tempstr);
-               nputs (dtree_colors[level], _T("            "));
-               display_size((ULONGLONG) ktemp->files, 12, dtree_colors[level]) ;
-
-               nputs (dtree_colors[level], _T("  "));
-               nputc (n.colorframe, vline);
-               // _stprintf(tempstr, "%14s", sdssize_ptr) ;
-               // sdssize.convert ((unsigned long long) ktemp->directs);
-               // _stprintf (tempstr, "%10s", sdssize.putstr ());
-               // nputs (dtree_colors[level], tempstr);
-               display_size((ULONGLONG) ktemp->directs, 10, dtree_colors[level]) ;
-            }
-
-            /*  no subdirectories are under this one  */
-            else {
-               //  now, print the normal directory
-               // dsize.convert ((unsigned long long) ktemp->files);
-               // _stprintf (tempstr, "%9s  ", dsize.putstr ());
-               // nputs (dtree_colors[level], tempstr);
-               display_size((ULONGLONG) ktemp->files, 9, dtree_colors[level]) ;
-               nputs (dtree_colors[level], _T("  "));
-               nputc (n.colorframe, vline);
-
-               // dssize.convert ((unsigned long long) ktemp->directs);
-               // sdsize.convert ((unsigned long long) ktemp->subfiles);
-               // _stprintf (tempstr, "%9s   %12s  ", dssize.putstr (),
-               //   sdsize.putstr ());
-               // nputs (dtree_colors[level], tempstr);
-               display_size((ULONGLONG) ktemp->directs, 9, dtree_colors[level]) ;
-               nputs (dtree_colors[level], _T("   "));
-               display_size((ULONGLONG) ktemp->subfiles, 12, dtree_colors[level]) ;
-               nputs (dtree_colors[level], _T("  "));
-               nputc (n.colorframe, vline);
-
-               // sdssize.convert ((unsigned long long) ktemp->subdirects);
-               // _stprintf (tempstr, "%10s", sdssize.putstr ());
-               // nputs (dtree_colors[level], tempstr);
-               display_size((ULONGLONG) ktemp->subdirects, 10, dtree_colors[level]) ;
-            }                   /* end  else !(ktemp->nsdi) */
-            break;
-
-         //  show mixed size, file counts, directory counts
-         case 5:
             //  now, print the normal directory
-            // dsize.convert ((unsigned long long) ktemp->subfiles);
-            // _stprintf (tempstr, "%9s  ", dsize.putstr ());
+            // _stprintf (tempstr, "%11s", dsize.putstr ());
             // nputs (dtree_colors[level], tempstr);
-            display_size((ULONGLONG) ktemp->subfiles, 9, dtree_colors[level]) ;
-            nputs (dtree_colors[level], _T("  "));
-                  nputc (n.colorframe, vline);
 
-            // dssize.convert ((unsigned long long) ktemp->subdirects);
-            // sdsize.convert ((unsigned long long) ktemp->dirsecsize);
-            // _stprintf (tempstr, "%9s   %13s ", dssize.putstr (),
+            // _stprintf(tempstr, "%11s %14s", dssize_ptr, sdsize_ptr) ;
+            // _stprintf (tempstr, "%11s %14s", dssize.putstr (),
             //   sdsize.putstr ());
             // nputs (dtree_colors[level], tempstr);
-            display_size((ULONGLONG) ktemp->subdirects, 9, dtree_colors[level]) ;
-            nputs (dtree_colors[level], _T("   "));
+            display_size(ktemp->dirsize, 13, dtree_colors[level]) ;
+            nputc (n.colorframe, vline);
             display_size(ktemp->dirsecsize, 13, dtree_colors[level]) ;
-            nputs (dtree_colors[level], _T(" "));
-                  nputc (n.colorframe, vline);
+            nputc (dtree_colors[level], _T(' '));
+            display_size(ktemp->subdirsize, 14, dtree_colors[level]) ;
+            nputc (n.colorframe, vline);
+         }
 
-            // sdssize.convert ((unsigned long long) ktemp->subdirsecsize);
-            // _stprintf (tempstr, "%14s", sdssize.putstr ());
+         /*  no subdirectories are under this one  */
+         else {
+            //  now, print the normal directory
+            nputs (dtree_colors[level], _T("           "));
+            nputc (n.colorframe, vline);
+            nputs (dtree_colors[level], _T("            "));
+            // _stprintf(tempstr, "            %14s", sdsize_ptr) ;
+            // sdsize.convert (ktemp->subdirsize);
+            // _stprintf (tempstr, "%14s", sdsize.putstr ());
             // nputs (dtree_colors[level], tempstr);
-            display_size(ktemp->subdirsecsize, 14, dtree_colors[level]) ;
-            break;
+            display_size(ktemp->subdirsize, 14, dtree_colors[level]) ;
+            nputc (n.colorframe, vline);
+         }                   /* end  else !(ktemp->nsdi) */
 
-         default:
-            break;              // make lint happy
+         // _stprintf(tempstr, "%14s", sdssize_ptr) ;
+         // sdssize.convert (ktemp->subdirsecsize);
+         // _stprintf (tempstr, "%14s", sdssize.putstr ());
+         // nputs (dtree_colors[level], tempstr);
+         display_size(ktemp->subdirsecsize, 14, dtree_colors[level]) ;
+         break;
+
+      //  show file/directory counts only
+      case eTreeForm::DIR_FILE_COUNTS:
+         if ((ktemp->files == ktemp->subfiles) &&
+            (ktemp->directs == ktemp->subdirects)) {
+            //  now, print the normal directory
+            nputs (dtree_colors[level], _T("           "));
+            nputc (n.colorframe, vline);
+
+            // sdsize.convert ((unsigned long long) ktemp->files);
+            // _stprintf (tempstr, "            %12s  ", sdsize.putstr ());
+            // nputs (dtree_colors[level], tempstr);
+            nputs (dtree_colors[level], _T("            "));
+            display_size((ULONGLONG) ktemp->files, 12, dtree_colors[level]) ;
+
+            nputs (dtree_colors[level], _T("  "));
+            nputc (n.colorframe, vline);
+            // _stprintf(tempstr, "%14s", sdssize_ptr) ;
+            // sdssize.convert ((unsigned long long) ktemp->directs);
+            // _stprintf (tempstr, "%10s", sdssize.putstr ());
+            // nputs (dtree_colors[level], tempstr);
+            display_size((ULONGLONG) ktemp->directs, 10, dtree_colors[level]) ;
+         }
+
+         /*  no subdirectories are under this one  */
+         else {
+            //  now, print the normal directory
+            // dsize.convert ((unsigned long long) ktemp->files);
+            // _stprintf (tempstr, "%9s  ", dsize.putstr ());
+            // nputs (dtree_colors[level], tempstr);
+            display_size((ULONGLONG) ktemp->files, 9, dtree_colors[level]) ;
+            nputs (dtree_colors[level], _T("  "));
+            nputc (n.colorframe, vline);
+
+            // dssize.convert ((unsigned long long) ktemp->directs);
+            // sdsize.convert ((unsigned long long) ktemp->subfiles);
+            // _stprintf (tempstr, "%9s   %12s  ", dssize.putstr (),
+            //   sdsize.putstr ());
+            // nputs (dtree_colors[level], tempstr);
+            display_size((ULONGLONG) ktemp->directs, 9, dtree_colors[level]) ;
+            nputs (dtree_colors[level], _T("   "));
+            display_size((ULONGLONG) ktemp->subfiles, 12, dtree_colors[level]) ;
+            nputs (dtree_colors[level], _T("  "));
+            nputc (n.colorframe, vline);
+
+            // sdssize.convert ((unsigned long long) ktemp->subdirects);
+            // _stprintf (tempstr, "%10s", sdssize.putstr ());
+            // nputs (dtree_colors[level], tempstr);
+            display_size((ULONGLONG) ktemp->subdirects, 10, dtree_colors[level]) ;
+         }                   /* end  else !(ktemp->nsdi) */
+         break;
+
+      //  show mixed size, file counts, directory counts
+      case eTreeForm::MIXED_COUNT_SIZE:
+         //  now, print the normal directory
+         // dsize.convert ((unsigned long long) ktemp->subfiles);
+         // _stprintf (tempstr, "%9s  ", dsize.putstr ());
+         // nputs (dtree_colors[level], tempstr);
+         display_size((ULONGLONG) ktemp->subfiles, 9, dtree_colors[level]) ;
+         nputs (dtree_colors[level], _T("  "));
+               nputc (n.colorframe, vline);
+
+         // dssize.convert ((unsigned long long) ktemp->subdirects);
+         // sdsize.convert ((unsigned long long) ktemp->dirsecsize);
+         // _stprintf (tempstr, "%9s   %13s ", dssize.putstr (),
+         //   sdsize.putstr ());
+         // nputs (dtree_colors[level], tempstr);
+         display_size((ULONGLONG) ktemp->subdirects, 9, dtree_colors[level]) ;
+         nputs (dtree_colors[level], _T("   "));
+         display_size(ktemp->dirsecsize, 13, dtree_colors[level]) ;
+         nputs (dtree_colors[level], _T(" "));
+               nputc (n.colorframe, vline);
+
+         // sdssize.convert ((unsigned long long) ktemp->subdirsecsize);
+         // _stprintf (tempstr, "%14s", sdssize.putstr ());
+         // nputs (dtree_colors[level], tempstr);
+         display_size(ktemp->subdirsecsize, 14, dtree_colors[level]) ;
+         break;
+
+      default:
+         break;              // make lint happy
       }
       ncrlf ();
 
@@ -502,76 +502,76 @@ static void printdirheader (void)
    ncrlf ();
 
    switch (n.tree) {
-      case 1:
-         //**************************************
-         //  Heading line 2
-         //**************************************
-         nput_char (n.colornhead, _T(' '), name_end_col);
-         nputc (n.colorframe, vline);
-         nputs (n.colornhead, _T("     size of requested     "));
-         nputc (n.colorframe, vline);
-         nputs (n.colornhead, _T("    total size,  including"));
-         ncrlf ();
+   case eTreeForm::DIR_FILE_SIZES:
+      //**************************************
+      //  Heading line 2
+      //**************************************
+      nput_char (n.colornhead, _T(' '), name_end_col);
+      nputc (n.colorframe, vline);
+      nputs (n.colornhead, _T("     size of requested     "));
+      nputc (n.colorframe, vline);
+      nputs (n.colornhead, _T("    total size,  including"));
+      ncrlf ();
 
-         //**************************************
-         //  Heading line 3
-         //**************************************
-         nput_char (n.colornhead, _T(' '), name_end_col);
-         // nputs (n.colornhead, "Subdirectory names       ");
-         nputc (n.colorframe, vline);
-         nputs (n.colornhead, _T("         directory         "));
-         nputc (n.colorframe, vline);
-         nputs (n.colornhead, _T("     lower subdirectories"));
-         ncrlf ();
-         break;
-         
+      //**************************************
+      //  Heading line 3
+      //**************************************
+      nput_char (n.colornhead, _T(' '), name_end_col);
+      // nputs (n.colornhead, "Subdirectory names       ");
+      nputc (n.colorframe, vline);
+      nputs (n.colornhead, _T("         directory         "));
+      nputc (n.colorframe, vline);
+      nputs (n.colornhead, _T("     lower subdirectories"));
+      ncrlf ();
+      break;
+      
 
-      case 4:
-         //**************************************
-         //  Heading line 2
-         //**************************************
-         nput_char (n.colornhead, _T(' '), name_end_col);
-         nputc (n.colorframe, vline);
-         nputs (n.colornhead, _T("   files and directories   "));
-         nputc (n.colorframe, vline);
-         nputs (n.colornhead, _T("   files and directories "));
-         ncrlf ();
+   case eTreeForm::DIR_FILE_COUNTS:
+      //**************************************
+      //  Heading line 2
+      //**************************************
+      nput_char (n.colornhead, _T(' '), name_end_col);
+      nputc (n.colorframe, vline);
+      nputs (n.colornhead, _T("   files and directories   "));
+      nputc (n.colorframe, vline);
+      nputs (n.colornhead, _T("   files and directories "));
+      ncrlf ();
 
-         //**************************************
-         //  Heading line 3
-         //**************************************
-         nput_char (n.colornhead, _T(' '), name_end_col);
-         nputc (n.colorframe, vline);
-         nputs (n.colornhead, _T("   in current directory    "));
-         nputc (n.colorframe, vline);
-         nputs (n.colornhead, _T(" in current and lower dirs"));
-         ncrlf ();
-         break;
+      //**************************************
+      //  Heading line 3
+      //**************************************
+      nput_char (n.colornhead, _T(' '), name_end_col);
+      nputc (n.colorframe, vline);
+      nputs (n.colornhead, _T("   in current directory    "));
+      nputc (n.colorframe, vline);
+      nputs (n.colornhead, _T(" in current and lower dirs"));
+      ncrlf ();
+      break;
 
-      case 5:
-         //**************************************
-         //  Heading line 2
-         //**************************************
-         nput_char (n.colornhead, _T(' '), name_end_col);
-         nputc (n.colorframe, vline);
-         nputs (n.colornhead, _T("   files and directories   "));
-         nputc (n.colorframe, vline);
-         nputs (n.colornhead, _T("    files and directories"));
-         ncrlf ();
+   case eTreeForm::MIXED_COUNT_SIZE:
+      //**************************************
+      //  Heading line 2
+      //**************************************
+      nput_char (n.colornhead, _T(' '), name_end_col);
+      nputc (n.colorframe, vline);
+      nputs (n.colornhead, _T("   files and directories   "));
+      nputc (n.colorframe, vline);
+      nputs (n.colornhead, _T("    files and directories"));
+      ncrlf ();
 
-         //**************************************
-         //  Heading line 3
-         //**************************************
-         nput_char (n.colornhead, _T(' '), name_end_col);
-         nputc (n.colorframe, vline);
-         nputs (n.colornhead, _T("     cumulative counts     "));
-         nputc (n.colorframe, vline);
-         nputs (n.colornhead, _T("       cumulative sizes   "));
-         ncrlf ();
-         break;
+      //**************************************
+      //  Heading line 3
+      //**************************************
+      nput_char (n.colornhead, _T(' '), name_end_col);
+      nputc (n.colorframe, vline);
+      nputs (n.colornhead, _T("     cumulative counts     "));
+      nputc (n.colorframe, vline);
+      nputs (n.colornhead, _T("       cumulative sizes   "));
+      ncrlf ();
+      break;
 
-      default:
-         break;                 // make lint happy
+   default:
+      break;                 // make lint happy
    }
 
    //**************************************
@@ -595,41 +595,41 @@ static void printdirheader (void)
       
    nputc (n.colorframe, vline);
    switch (n.tree) {
-      case 1:
-         nputs (n.colornhead, _T("   in bytes  "));
-         nputc (n.colorframe, vline);
-         nputs (n.colornhead, _T("  disk space "));
-         nputc (n.colorframe, vline);
-         nputs (n.colornhead, _T("   in bytes   "));
-         nputc (n.colorframe, vline);
-         nputs (n.colornhead, _T("  disk space"));
-         ncrlf ();
-         break;
+   case eTreeForm::DIR_FILE_SIZES:
+      nputs (n.colornhead, _T("   in bytes  "));
+      nputc (n.colorframe, vline);
+      nputs (n.colornhead, _T("  disk space "));
+      nputc (n.colorframe, vline);
+      nputs (n.colornhead, _T("   in bytes   "));
+      nputc (n.colorframe, vline);
+      nputs (n.colornhead, _T("  disk space"));
+      ncrlf ();
+      break;
 
-      case 4:
-         nputs (n.colornhead, _T("     files   "));
-         nputc (n.colorframe, vline);
-         nputs (n.colornhead, _T(" directories "));
-         nputc (n.colorframe, vline);
-         nputs (n.colornhead, _T("       files  "));
-         nputc (n.colorframe, vline);
-         nputs (n.colornhead, _T(" directories"));
-         ncrlf ();
-         break;
+   case eTreeForm::DIR_FILE_COUNTS:
+      nputs (n.colornhead, _T("     files   "));
+      nputc (n.colorframe, vline);
+      nputs (n.colornhead, _T(" directories "));
+      nputc (n.colorframe, vline);
+      nputs (n.colornhead, _T("       files  "));
+      nputc (n.colorframe, vline);
+      nputs (n.colornhead, _T(" directories"));
+      ncrlf ();
+      break;
 
-      case 5:
-         nputs (n.colornhead, _T("     files   "));
-         nputc (n.colorframe, vline);
-         nputs (n.colornhead, _T(" directories "));
-         nputc (n.colorframe, vline);
-         nputs (n.colornhead, _T("  disk space  "));
-         nputc (n.colorframe, vline);
-         nputs (n.colornhead, _T("  disk space"));
-         ncrlf ();
-         break;
+   case eTreeForm::MIXED_COUNT_SIZE:
+      nputs (n.colornhead, _T("     files   "));
+      nputc (n.colorframe, vline);
+      nputs (n.colornhead, _T(" directories "));
+      nputc (n.colorframe, vline);
+      nputs (n.colornhead, _T("  disk space  "));
+      nputc (n.colorframe, vline);
+      nputs (n.colornhead, _T("  disk space"));
+      ncrlf ();
+      break;
 
-      default:
-         break;                 // make lint happy
+   default:
+      break;                 // make lint happy
    }
 
    //**************************************

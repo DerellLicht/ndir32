@@ -45,19 +45,23 @@ static int update_switches (TCHAR *argstr)
       case 'c':  n.clear ^= 1;  break;
       case 'd':
          if (*argstr == '2') {
-            n.tree = 4;
+            n.tree = eTreeForm::DIR_FILE_COUNTS;
             argstr++;
          }
          else if (*argstr == '3') {
-            n.tree = 5;
+            n.tree = eTreeForm::MIXED_COUNT_SIZE;
+            argstr++;
+         }
+         else if (*argstr == '4') {
+            n.tree = eTreeForm::MAX_FNAME_LEN;
             argstr++;
          }
          else {
-            n.tree = 1;
+            n.tree = eTreeForm::DIR_FILE_SIZES;
          }
          break;
       case 'e':  n.sort = 0;  break;
-      case 'f':  n.tree = 2;  break;
+      case 'f':  n.files_only ^= 1;  break;
       case 'g':  n.dir_first ^= 1;  break;
       case 'h':  n.horz ^= 1;  break;
       case 'i':  
@@ -239,9 +243,8 @@ void verify_flags (void)
       n.color = 0 ;
    }
 
-
    /************************************************/
-   if (n.tree == 1 || n.tree == 4 || n.tree == 5) {
+   if (n.tree == eTreeForm::DIR_FILE_SIZES || n.tree == eTreeForm::DIR_FILE_COUNTS || n.tree == eTreeForm::MIXED_COUNT_SIZE) {
       n.exec_only = 0;
    }
 
@@ -271,8 +274,9 @@ void verify_flags (void)
    // }
 
    /*  Set 'dir tree' conditions  */
-   if (n.tree == 1 || n.tree == 4 || n.tree == 5 || n.drive_summary > DSUMMARY_NONE)
+   if (n.tree == eTreeForm::DIR_FILE_SIZES || n.tree == eTreeForm::DIR_FILE_COUNTS || n.tree == eTreeForm::MIXED_COUNT_SIZE || n.drive_summary > DSUMMARY_NONE) {
       n.minimize = 0;
+   }
 
    /* If not 'find all'  then don't use attr bits = 0x27  */
    // findattr = IFF (n.show_all)  THENN 0xF7  ELSSE 0x10 ;
@@ -286,7 +290,7 @@ void verify_flags (void)
    //****************************************************
    //  fix up the format specifiers
    //****************************************************
-   if (n.tree == 1 || n.tree == 4) {
+   if (n.tree == eTreeForm::DIR_FILE_SIZES || n.tree == eTreeForm::DIR_FILE_COUNTS) {
       columns = 0;
    }
    else if (n.horz == 2) {

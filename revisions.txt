@@ -294,3 +294,7 @@ Version 2.68, 06/23/25
 Version 2.69, 08/11/25
   - In disk summary (-i) display, add a percentage-of-total column
   - dirtree: -y switch now eliminates .git folder from searches
+
+Version 2.70, 07/30/26
+  - implement enum values for n.tree, move files_only flag out of this element
+  - implement new value in n.tree, to support "max filename length" display

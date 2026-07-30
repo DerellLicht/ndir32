@@ -96,7 +96,7 @@ static void const read_long_files (std::wstring& target_path)
       else if ((fdata.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != FILE_ATTRIBUTE_DIRECTORY)
          fn_okay = true;
       //  everything past here is a folder   
-      else if (n.tree == 2)     //  "files only" flag
+      else if (n.files_only != 0)     //  "files only" flag
          fn_okay = false;
       //  skip '.' and '..', but NOT .ncftp (for example)
       else if (_tcscmp(fdata.cFileName, _T("."))  == 0  ||

@@ -21,10 +21,19 @@ extern uchar dtree_colors[MAX_DIR_ENTRY] ;
 //*****************************************************************
 //                  CONFIGURATION VARIABLES (new style)
 //
-//  NOTE: These must stay in this order, in order for
-//        NDIRMOD and NDINSTAL to work properly!!
+//  NOTE: These must stay in this order, 
+//        in order for NDIRMOD and NDINSTAL to work properly!!
+//        [ 07/30/26 - Although those utilities have not been used in some 30 years... ]
 //
 //*****************************************************************
+enum class eTreeForm : uint8_t {
+   TREE_UNUSED = 0,
+   DIR_FILE_SIZES = 1,
+   MAX_FNAME_LEN = 2,
+   DIR_FILE_COUNTS = 4,
+   MIXED_COUNT_SIZE = 5
+};
+
 struct ndir_data {
    uchar colorlogo   {0x13};
    uchar colornhead  {0x02};
@@ -45,10 +54,12 @@ struct ndir_data {
    uchar pause {1};                                                                              
    uchar format {2};      //  0=1col, 1=2col, 2=4col, 3=6col, 4=dirtree, 5=3col
    uchar minimize {};                                                                           
-   uchar tree {};         //  0=all, 1=dir tree, 2=files only, 3=unused
+   // uchar tree {};         //  0=all, 1=dir tree, 2=files only, 3=unused
+   eTreeForm tree {eTreeForm::TREE_UNUSED};
    uchar show_all {1};                                                                           
    uchar dir_first {1};                                                                          
    uchar exec_only {};                                                                          
+   uchar files_only {};                                                                          
    uchar help {};                                                                               
    uchar info {};                                                                               
    uchar horz {};                                                                               
