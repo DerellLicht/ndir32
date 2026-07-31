@@ -354,25 +354,20 @@ static void dscroll(WORD tBG)
 //**********************************************************
 void dnewline(void)
 {
-   // if (n.color) {
-      sinfo.dwCursorPosition.X = 0 ;
-      //  *this* probably shouldn't use dwSize.Y either...
-      if (sinfo.dwCursorPosition.Y >= (sinfo.dwSize.Y-1)) {
-         // dclreol() ;
-         // 
-         // //  move cursor to beginning of line
-         dscroll(original_attribs) ;
-         // sinfo.dwCursorPosition.Y = sinfo.dwCursorPosition.Y ; // huh??
-      }
-      else {
-         sinfo.dwCursorPosition.Y++ ;
-      }
+   sinfo.dwCursorPosition.X = 0 ;
+   //  *this* probably shouldn't use dwSize.Y either...
+   if (sinfo.dwCursorPosition.Y >= (sinfo.dwSize.Y-1)) {
+      // dclreol() ;
+      // 
+      // //  move cursor to beginning of line
+      dscroll(original_attribs) ;
+      // sinfo.dwCursorPosition.Y = sinfo.dwCursorPosition.Y ; // huh??
+   }
+   else {
+      sinfo.dwCursorPosition.Y++ ;
+   }
 
-      SetConsoleCursorPosition(hStdOut, sinfo.dwCursorPosition) ;
-   // }
-   // else {
-   //    dputs (_T("\n"));
-   // }
+   SetConsoleCursorPosition(hStdOut, sinfo.dwCursorPosition) ;
 }   
    
 //**********************************************************
@@ -542,10 +537,6 @@ static void dputsi(const TCHAR *outstr, int slen)
 //**********************************************************
 void dputc(const TCHAR c)
 {
-   // DWORD wrlen ;
-   // WriteConsole(hStdOut, &c, 1, &wrlen, 0) ;
-   // sinfo.dwCursorPosition.X++ ;
-   
    wchar_t tstr[2];
    tstr[0] = c ;
    tstr[1] = L'\0' ;
@@ -570,8 +561,6 @@ void dputs(const TCHAR *outstr)
    // SetConsoleOutputCP(65001); 
    //  if entire string fits on line, do this the easy way.
    if (!is_CRLF_present(outstr)  &&  rlen >= slen) {
-      // WriteConsole(hStdOut, outstr, slen, &wrlen, 0) ;
-      // sinfo.dwCursorPosition.X += slen ;
       dputsi(outstr, slen);
    }
 
