@@ -10,3 +10,4 @@ lnk_files/
 .vs/
 test/
 long.ext.filenames
+output.txt
