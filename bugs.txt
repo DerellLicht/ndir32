@@ -2,6 +2,8 @@
 
 > file view with -k no longer works properly
 
+> dirtree -d4 mode (max filename lengths), does not sort on this counter.
+
 > dirtree -d3 mode (mixed file/folder counts and sizes), does not sort on file/folder counts.
   At least, doesn't offer an option that I would prefer...
   It really should sort on file/folder counts, rather than sizes...
