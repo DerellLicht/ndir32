@@ -548,24 +548,29 @@ static void print_dir_end (void)
 }
 
 //*********************************************************
-//================================================================================
+constexpr int DFLT_TREE_HEADER_DX = 59 ;
+
+// =====================================+===========================+=============================
+//                                      |     size of requested     |    total size,  including
+//                                      |         directory         |     lower subdirectories
+//                                      +-------------+-------------+--------------+--------------
+// Subdirectory names                   |   in bytes  |  disk space |   in bytes   |  disk space
+// =====================================+=============+=============+==============+==============
+
 void draw_dir_tree (void)
 {
    level = 0;
-   wincols = get_window_cols() ;
    //  this is necessary because if redirection is in place,
-   //  'console width' may not be valid`
+   //  'console width' may not be valid
    if (is_redirected()) {
       wincols = DFLT_WINDOW_COLS ;
    }
-
-   if (wincols != DFLT_WINDOW_COLS) {
-      name_end_col = wincols - (DFLT_WINDOW_COLS-21) ;
+   else {
+      wincols = get_window_cols() ;
    }
+   name_end_col = wincols - (DFLT_TREE_HEADER_DX) ;
 
-   // syslog("level before displaying: %u\n", level);
    printdirheader ();
-   
    // dirs *temp = &dlist.brothers[0] ;
    display_dir_tree(dlist.brothers);
    print_dir_end ();

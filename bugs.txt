@@ -1,6 +1,3 @@
-> tree view is not using screen width
-> tree view (when redirected) is not using DFLT_WINDOW_COLS
-
 > tree view -d4 mode (max filename lengths), does not sort on this counter.
 
 > tree view -d3 mode (mixed file/folder counts and sizes), does not sort on file/folder counts.

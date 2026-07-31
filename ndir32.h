@@ -34,7 +34,6 @@ enum class eFileLayout : uint8_t {
    FL_QWISE = 2
 };
 
-
 enum class eTreeForm : uint8_t {
    TREE_UNUSED = 0,
    DIR_FILE_SIZES = 1,
