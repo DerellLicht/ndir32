@@ -300,4 +300,5 @@ Version 2.70, 07/31/26
   - implement new value in n.tree (-d4), to support "max filename length" display
   - redirection now outputs Unicode strings correctly
   - removed flags for "no color" and "uppercase only"
+  - tree display ("max filename length" option) now sorts on overall maxlen (normal or reversed)
   

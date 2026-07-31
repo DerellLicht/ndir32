@@ -328,6 +328,18 @@ static bool const tree_sort_size_rev (dirs const &a, dirs const &b)
    return (b.subdirsecsize < a.subdirsecsize) ;
 }
 
+//*********************************************************
+static bool const tree_sort_maxlen (dirs const &a, dirs const &b)
+{
+   return (a.submaxlen < b.submaxlen) ;
+}
+
+//*********************************************************
+static bool const tree_sort_maxlen_rev (dirs const &a, dirs const &b)
+{
+   return (b.submaxlen < a.submaxlen) ;
+}
+
 //***********************************************************************************
 //  debug function
 //***********************************************************************************
@@ -376,8 +388,12 @@ static void sort_trees (std::vector<dirs>& brothers, TCHAR *parent_name)
    // syslog(_T("L%u %s sort, %u elements\n"), level, parent_name, brothers.size()) ;
    if (num_folders > 1) {
       // std::sort(brothers.begin(), brothers.end(), comp);
+      
       if (n.reverse) {
-         if (n.sort == SORT_SIZE) {
+         if (n.tree == eTreeForm::MAX_FNAME_LEN) {
+            std::sort(brothers.begin(), brothers.end(), tree_sort_maxlen_rev);
+         }
+         else if (n.sort == SORT_SIZE) {
             std::sort(brothers.begin(), brothers.end(), tree_sort_size_rev);
          }
          else {
@@ -387,7 +403,10 @@ static void sort_trees (std::vector<dirs>& brothers, TCHAR *parent_name)
 
       //  normal sort
       else {
-         if (n.sort == SORT_SIZE) {
+         if (n.tree == eTreeForm::MAX_FNAME_LEN) {
+            std::sort(brothers.begin(), brothers.end(), tree_sort_maxlen);
+         }
+         else if (n.sort == SORT_SIZE) {
             std::sort(brothers.begin(), brothers.end(), tree_sort_size);
          }
          else {
