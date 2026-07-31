@@ -28,6 +28,13 @@ constexpr int DFLT_WINDOW_COLS = 100;
 //        [ 07/30/26 - Although those utilities have not been used in some 30 years... ]
 //
 //*****************************************************************
+enum class eFileLayout : uint8_t {
+   FL_VERT = 0,
+   FL_HORZ = 1,
+   FL_QWISE = 2
+};
+
+
 enum class eTreeForm : uint8_t {
    TREE_UNUSED = 0,
    DIR_FILE_SIZES = 1,
@@ -58,13 +65,13 @@ struct ndir_data {
    uchar minimize {};                                                                           
    // uchar tree {};         //  0=all, 1=dir tree, 2=files only, 3=unused
    eTreeForm tree {eTreeForm::TREE_UNUSED};
-   uchar show_all {1};                                                                           
-   uchar dir_first {1};                                                                          
-   uchar exec_only {};                                                                          
-   uchar files_only {};                                                                          
-   uchar help {};                                                                               
-   uchar info {};                                                                               
-   uchar horz {};                                                                               
+   uchar show_all {1};
+   uchar dir_first {1};
+   uchar exec_only {};
+   uchar files_only {};
+   uchar help {};
+   uchar info {};
+   eFileLayout horz {eFileLayout::FL_VERT}; 
    uchar low_ascii {};    //  upper ascii no longer supported
    uchar batch {};                                                                              
    uchar unused1 {};                                                                            

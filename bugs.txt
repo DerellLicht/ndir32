@@ -1,11 +1,9 @@
 > tree view is not using screen width
 > tree view (when redirected) is not using DFLT_WINDOW_COLS
 
-> file view with -k no longer works properly
+> tree view -d4 mode (max filename lengths), does not sort on this counter.
 
-> dirtree -d4 mode (max filename lengths), does not sort on this counter.
-
-> dirtree -d3 mode (mixed file/folder counts and sizes), does not sort on file/folder counts.
+> tree view -d3 mode (mixed file/folder counts and sizes), does not sort on file/folder counts.
   At least, doesn't offer an option that I would prefer...
   It really should sort on file/folder counts, rather than sizes...
   except... which to sort on, files or folders ??  I'm not sure...

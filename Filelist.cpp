@@ -613,10 +613,12 @@ void display_files(void)
    //************************************************
    //  present normal file listings
    //************************************************
-   if (n.horz & 2)
+   if (n.horz == eFileLayout::FL_QWISE) {
       list_files_qwise() ; //  XTDIR mode
-   else if (n.horz & 1)
+   }
+   else if (n.horz == eFileLayout::FL_HORZ) {
       list_files_horizontally() ;
+   }
    else {
       list_files_vertically() ;
    }

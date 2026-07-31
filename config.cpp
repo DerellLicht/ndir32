@@ -158,7 +158,7 @@ static int write_default_ini_file(TCHAR *ini_str)
    _ftprintf(ofile, _T("\n")) ;
    
    //  generate state flags
-   _ftprintf(ofile, _T("ucase=%u     ; use upper-case for all names\n"), n.ucase) ;
+   // _ftprintf(ofile, _T("ucase=%u     ; use upper-case for all names\n"), n.ucase) ;
    _ftprintf(ofile, _T("sort=%u      ; 0=ext, 1=name, 2=size, 3=date/time, 4=none\n"), n.sort) ;
    _ftprintf(ofile, _T("reverse=%u   ; reverse normal sort order\n"), n.reverse) ;
    _ftprintf(ofile, _T("clear=%u     ; clear screen before display\n"), n.clear) ;
@@ -169,9 +169,9 @@ static int write_default_ini_file(TCHAR *ini_str)
    _ftprintf(ofile, _T("dir_first=%u ; list directories only\n"), n.dir_first) ;
    _ftprintf(ofile, _T("exec_only=%u ; show executables only (exe,com,bat,btm)\n"), n.exec_only) ;
    _ftprintf(ofile, _T("long_attr=%u ; show executables only (exe,com,bat,btm)\n"), n.long_attr) ;
-   _ftprintf(ofile, _T("horz=%u      ; list files horizontally\n"), n.horz) ;
+   _ftprintf(ofile, _T("horz=%u      ; list files horizontally\n"), (uchar) n.horz) ;
    // _ftprintf(ofile, _T("low_ascii=%u\n"), n.low_ascii) ;
-   _ftprintf(ofile, _T("color=%u\n"), n.color) ;
+   // _ftprintf(ofile, _T("color=%u\n"), n.color) ;
    _ftprintf(ofile, _T("showSHRfiles=%u  ; use diff attrib for S/H/R files\n"), n.showSHRfiles) ;
    // _ftprintf(ofile, "ega_keep=%u  ; switch to 50-line mode\n", n.ega_keep) ;
    _ftprintf(ofile, _T("fdate_option=%u  ; 0=LastWriteTime (default), 1=LastAccessTime, 2=CreationTime\n"), n.fdate_option) ;
@@ -225,7 +225,7 @@ struct ini_entry {
    uchar *rvalue ;
 };
 static ini_entry const ndir_ini[] = {  // NOLINT
-{ _T("ucase"),        &n.ucase },
+// { _T("ucase"),        &n.ucase },
 { _T("sort"),         &n.sort },
 { _T("reverse"),      &n.reverse },
 { _T("clear"),        &n.clear },
@@ -235,9 +235,9 @@ static ini_entry const ndir_ini[] = {  // NOLINT
 { _T("show_all"),     &n.show_all },
 { _T("dir_first"),    &n.dir_first },
 { _T("exec_only"),    &n.exec_only },
-{ _T("horz"),         &n.horz },
+{ _T("horz"),         (uchar *) &n.horz },
 // { _T("low_ascii"),    &n.low_ascii },
-{ _T("color"),        &n.color },
+// { _T("color"),        &n.color },
 { _T("showSHRfiles"), &n.showSHRfiles },
 // { _T("ega_keep"),     &n.ega_keep },
 // { _T("lfn_off"),      &n.lfn_off },

@@ -117,8 +117,8 @@ L"   -4          \"    four  \"   ,   with name/size.",
 L"   -6          \"    six   \"   ,   with name only.",
 L"   -i       Display drive summary for all drives in system.",
 L"   -ii      Display drive summary for all drives in system, with used vs free space.",
-L"   -k *     Toggle color mode.",
-L"   -u *     List filenames in UPPERCASE.",
+// L"   -k *     Toggle color mode.",
+// L"   -u *     List filenames in UPPERCASE.",
 L"   -oN      Date/Time display: 0=Last Write, 1=Last Access, 2=File Created",
 L"   -x *     List executables only (.EXE,.COM,.BAT).",
 L"   -v       Display registration/update information.",
@@ -265,7 +265,6 @@ try_next_tail:
 /**********************************************************************/
 /**                     File listing routines                        **/        
 /**********************************************************************/
-//lint -esym(745, process_filespecs)   function has no explicit type or class, int assumed
 static void process_filespecs(void)
 {
    TCHAR * strptr ;

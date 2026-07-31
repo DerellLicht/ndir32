@@ -63,7 +63,10 @@ static int update_switches (TCHAR *argstr)
       case 'e':  n.sort = 0;  break;
       case 'f':  n.files_only ^= 1;  break;
       case 'g':  n.dir_first ^= 1;  break;
-      case 'h':  n.horz ^= 1;  break;
+      case 'h':  n.horz = (n.horz == eFileLayout::FL_VERT) 
+                        ? eFileLayout::FL_HORZ 
+                        : eFileLayout::FL_VERT ;
+         break;
       case 'i':  
          if (*argstr == 'i') {
             n.drive_summary = DSUMMARY_USED;
@@ -74,7 +77,7 @@ static int update_switches (TCHAR *argstr)
          }         
          break;
       // case 'j':  n.low_ascii ^= 1;  break;
-      case 'k':  n.color ^= 1;  break;     //  redirection flag
+      // case 'k':  n.color ^= 1;  break;
       //  V2.62, 01/08/24 - short-filename support removed
       // case 'l':  n.lfn_off ^= 1;  break;   //  toggle long_filename flag
       case 'm':
@@ -94,7 +97,7 @@ static int update_switches (TCHAR *argstr)
          slen = 2;
          break;
       case 'p':  n.pause ^= 1;  break;
-      case 'q':  n.horz ^= 2;  break;
+      case 'q':  n.horz = eFileLayout::FL_QWISE;  break;
       case 'r':  n.reverse ^= 1;  break;
       case 's':  n.sort = 2;  break;
       case 'S':  //  our first case-sensitive switch!!
@@ -109,7 +112,7 @@ static int update_switches (TCHAR *argstr)
          slen++ ;
          break;
       case 't':  n.sort = 3;  break;
-      case 'u':  n.ucase ^= 1;  break;
+      // case 'u':  n.ucase ^= 1;  break;
       case 'v':  n.info = 1;  break;
       case 'w':  n.showSHRfiles ^= 1;  break;
       case 'x':  n.exec_only ^= 1;  break;
@@ -243,11 +246,6 @@ void verify_flags (void)
       n.color = 0 ;
    }
 
-   /************************************************/
-   if (n.tree != eTreeForm::TREE_UNUSED) {
-      n.exec_only = 0;
-   }
-
    //******************************************************
    //  at this point, if exec_only is set, stuff the       
    //  executable filespec into target[]                   
@@ -269,25 +267,18 @@ void verify_flags (void)
       n.minimize = 0;
    }
 
-   /* If not 'find all'  then don't use attr bits = 0x27  */
-   // findattr = IFF (n.show_all)  THENN 0xF7  ELSSE 0x10 ;
-
-   if (n.horz & 2) {
-      n.horz &= ~1;
-      n.reverse = 0;
-      n.sort = 0;
-   }
-
    //****************************************************
    //  fix up the format specifiers
    //****************************************************
    //  tree view doesn't even *use* columns, so this is not relevant
    if (n.tree != eTreeForm::TREE_UNUSED) {
+      n.exec_only = 0;
       columns = 0;
    }
-   else if (n.horz == 2) {
+   else if (n.horz == eFileLayout::FL_QWISE) {
       columns = 1;
       n.sort = 0;               //  force sort-by-extension
+      n.reverse = 0;
    }
    else {
       switch (n.format) {
