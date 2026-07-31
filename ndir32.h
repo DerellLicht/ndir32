@@ -18,6 +18,8 @@ extern uchar dtree_colors[MAX_DIR_ENTRY] ;
 #define DSUMMARY_FREE   1
 #define DSUMMARY_USED   2
 
+constexpr int DFLT_WINDOW_COLS = 100;
+
 //*****************************************************************
 //                  CONFIGURATION VARIABLES (new style)
 //

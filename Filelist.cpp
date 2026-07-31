@@ -95,7 +95,7 @@ static void filehead(void)
 {
    int wincols = get_window_cols() - 1 ;
    if (is_redirected()) {
-      wincols = 80 ;
+      wincols = DFLT_WINDOW_COLS ;
    }
 
    //****************************************************
@@ -264,7 +264,7 @@ static void lfn_get_columns(void)
    //  this is necessary because if redirection is in place,
    //  'console width' may not be valid`
    if (is_redirected()) {
-      wincols = 80 ;
+      wincols = DFLT_WINDOW_COLS ;
    }
    //  compute line length (don't forget space between items
    switch (columns) {
@@ -378,8 +378,7 @@ static void list_files_qwise(void)
 
    prev_ext[0] = 0 ; //  make lint happy
 
-   width = (is_redirected()) ? 80 : get_window_cols() ;
-   // width = get_window_cols() ;
+   width = get_window_cols() ;   //  this checks is_redirected()
 
    //  first, find the longest extension in the current file list
    unsigned maxext = 0 ;

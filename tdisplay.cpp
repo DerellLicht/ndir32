@@ -23,7 +23,7 @@ static TCHAR const * const dhdrl =
 //=========================+===========+===========+==============+==============
 static TCHAR formstr[50];
 
-static uint wincols      = 80 ;
+static uint wincols      = DFLT_WINDOW_COLS ;
 static uint name_end_col = 25 ;
 
 //**********************************************************
@@ -556,11 +556,11 @@ void draw_dir_tree (void)
    //  this is necessary because if redirection is in place,
    //  'console width' may not be valid`
    if (is_redirected()) {
-      wincols = 80 ;
+      wincols = DFLT_WINDOW_COLS ;
    }
 
-   if (wincols != 80) {
-      name_end_col = wincols - (80-21) ;
+   if (wincols != DFLT_WINDOW_COLS) {
+      name_end_col = wincols - (DFLT_WINDOW_COLS-21) ;
    }
 
    // syslog("level before displaying: %u\n", level);

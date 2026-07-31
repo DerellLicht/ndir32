@@ -32,18 +32,15 @@ void nclrscr(void)
 //*********************************************************
 static void testpause (void)
 {
-   if (!n.pause)
-      return;
    if (is_redirected ())
      return;
+   if (!n.pause)
+      return;
 
    if (++linecnt >= lines - 1) {
       nputs (n.colornhead, _T("Press any key to continue (or ESC to exit)"));
       unsigned inkey = get_scode ();
       if (inkey == ESC) {
-         // if ((curlines != lines) && (!(n.ega_keep))) {
-         //    set_lines (25);
-         // }
          error_exit (DATA_OKAY, NULL);
       }
 
@@ -52,22 +49,10 @@ static void testpause (void)
          dclreol ();
       }
       else {
-         _tprintf (_T("\n"));
+         dputc (_T('\n'));
       }
       linecnt = 1;
    }
-}
-
-/******************************************************************/
-void ncrlf_raw(void)
-{
-   if (n.color) {
-      dnewline ();
-   }
-   else {
-      _tprintf (_T("\n"));
-   }
-   testpause ();
 }
 
 /******************************************************************/
@@ -77,43 +62,20 @@ void ncrlf (void)
       dnewline ();
    }
    else {
-      _tprintf (_T("\n"));
+      // _tprintf (_T("\n"));
+      dputc (_T('\n'));
    }
    
-   // testpause ();
-   if (!n.pause)
-      return;
-   if (is_redirected ())
-     return;
-
-   if (++linecnt >= lines - 1) {
-      nputs (n.colornhead, _T("Press any key to continue (or ESC to exit)"));
-      unsigned inkey = get_scode ();
-      if (inkey == ESC) {
-         error_exit (DATA_OKAY, NULL);
-      }
-
-      if (n.color) {
-         dreturn ();            // CR only!! 
-         dclreol ();
-      }
-      else {
-         _tprintf (_T("\n"));
-      }
-      linecnt = 1;
-   }
+   testpause ();
 }
 
 /******************************************************************/
 void nputc (uchar attr, const uchar outchr)
 {
-   // unsigned hattr ;
    if (n.color) {
       set_text_attr (attr);
-      dputc (outchr);
    }
-   else
-      _tprintf (_T("%c"), outchr);
+   dputc (outchr);
 }
 
 /******************************************************************/
@@ -121,14 +83,8 @@ void nputs (uchar attr, const TCHAR *outstr)
 {
    if (n.color) {
       set_text_attr (attr);
-      dputs (outstr);
    }
-   else {
-      _tprintf (_T("%s"), outstr);
-      // int wlen = _tcslen(outstr);
-      // syslog(_T("%s\n"), outstr);
-      // hex_dump((u8 *)outstr, wlen * sizeof(TCHAR));
-   }
+   dputs (outstr);
 }
 
 /******************************************************************/
@@ -139,13 +95,8 @@ void nput_char (uchar attr, TCHAR chr, int count)
    }
    if (n.color) {
       set_text_attr (attr);
-      dputnchar (chr, attr, count);
    }
-   else {
-      for (int j = 0; j < count; j++) {
-         _puttchar (chr);
-      }
-   }
+   dputnchar (chr, attr, count);
 }
 
 /******************************************************************/
@@ -156,10 +107,9 @@ void nput_line (uchar attr, TCHAR chr)
       dputnchar (chr, attr, wincols);
    }
    else {
-      // syslog(_T("nput_line: wincols: %u, color: %u\n"), wincols, n.color);
-      // set_text_attr (attr);
       for (j = 0; j < wincols; j++) {
-         _puttchar (chr);
+         // _puttchar (chr);
+         dputc (chr);
       }
    }
    ncrlf ();

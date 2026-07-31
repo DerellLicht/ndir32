@@ -91,7 +91,7 @@ static BOOL WINAPI control_handler(DWORD dwCtrlType)
 unsigned get_window_cols(void)
 {
    if (is_redirected()) {
-      return 80 ;
+      return DFLT_WINDOW_COLS ;
    }
    else {
       return (unsigned) (int) (sinfo.srWindow.Right - sinfo.srWindow.Left + 1) ;
@@ -354,30 +354,35 @@ static void dscroll(WORD tBG)
 //**********************************************************
 void dnewline(void)
 {
-   sinfo.dwCursorPosition.X = 0 ;
-   //  *this* probably shouldn't use dwSize.Y either...
-   if (sinfo.dwCursorPosition.Y >= (sinfo.dwSize.Y-1)) {
-      // dclreol() ;
-      // 
-      // //  move cursor to beginning of line
-      dscroll(original_attribs) ;
-      // sinfo.dwCursorPosition.Y = sinfo.dwCursorPosition.Y ; // huh??
-   }
-   else {
-      sinfo.dwCursorPosition.Y++ ;
-   }
+   // if (n.color) {
+      sinfo.dwCursorPosition.X = 0 ;
+      //  *this* probably shouldn't use dwSize.Y either...
+      if (sinfo.dwCursorPosition.Y >= (sinfo.dwSize.Y-1)) {
+         // dclreol() ;
+         // 
+         // //  move cursor to beginning of line
+         dscroll(original_attribs) ;
+         // sinfo.dwCursorPosition.Y = sinfo.dwCursorPosition.Y ; // huh??
+      }
+      else {
+         sinfo.dwCursorPosition.Y++ ;
+      }
 
-   SetConsoleCursorPosition(hStdOut, sinfo.dwCursorPosition) ;
+      SetConsoleCursorPosition(hStdOut, sinfo.dwCursorPosition) ;
+   // }
+   // else {
+   //    dputs (_T("\n"));
+   // }
 }   
    
 //**********************************************************
 //  CR only, no LF
 //**********************************************************
 void dreturn(void)
-   {
+{
    sinfo.dwCursorPosition.X = 0 ;
    SetConsoleCursorPosition(hStdOut, sinfo.dwCursorPosition) ;
-   }   
+}   
 
 //**********************************************************
 void dprintc(unsigned row, unsigned col, const TCHAR outchr)
@@ -511,15 +516,6 @@ static int is_CRLF_present(const TCHAR *cstr)
    return 0;
 }   
 
-//**********************************************************
-void dputc(const TCHAR c)
-{
-   DWORD wrlen ;
-   // WriteFile(hStdOut, &c, 1 * sizeof(TCHAR), &wrlen, 0) ;
-   WriteConsole(hStdOut, &c, 1, &wrlen, 0) ;
-   sinfo.dwCursorPosition.X++ ;
-}
-
 //**********************************************************************************
 //  This does not process special characters, but writes faster than dputs().
 //  It also is *only* used by dputs()
@@ -527,15 +523,39 @@ void dputc(const TCHAR c)
 static void dputsi(const TCHAR *outstr, int slen)
 {
    DWORD wrlen ;
-   // WriteFile(hStdOut, outstr, slen, &wrlen, 0) ;
-   WriteConsole(hStdOut, outstr, slen, &wrlen, 0) ;
-   sinfo.dwCursorPosition.X += slen ;
+   if (is_redirected()) {
+      std::wstring text = outstr ;
+      int utf8Len = WideCharToMultiByte(CP_UTF8, 0, text.c_str(), static_cast<int>(text.size()),
+                                         nullptr, 0, nullptr, nullptr);
+      std::string utf8(utf8Len, '\0');
+      WideCharToMultiByte(CP_UTF8, 0, text.c_str(), static_cast<int>(text.size()),
+                           &utf8[0], utf8Len, nullptr, nullptr);
+
+      WriteFile(hStdOut, utf8.data(), static_cast<DWORD>(utf8.size()), &wrlen, nullptr);
+   }
+   else {
+      WriteConsole(hStdOut, outstr, slen, &wrlen, 0) ;
+      sinfo.dwCursorPosition.X += slen ;
+   }
+}
+
+//**********************************************************
+void dputc(const TCHAR c)
+{
+   // DWORD wrlen ;
+   // WriteConsole(hStdOut, &c, 1, &wrlen, 0) ;
+   // sinfo.dwCursorPosition.X++ ;
+   
+   wchar_t tstr[2];
+   tstr[0] = c ;
+   tstr[1] = L'\0' ;
+   dputsi(tstr, 1);
 }
 
 //**********************************************************
 void dputs(const TCHAR *outstr)
    {
-   DWORD wrlen ;
+   // DWORD wrlen ;
    WORD slen = _tcslen(outstr) ;
    WORD rlen = sinfo.dwSize.X - sinfo.dwCursorPosition.X ;
    WORD Xi   = sinfo.dwCursorPosition.X ;
@@ -550,22 +570,9 @@ void dputs(const TCHAR *outstr)
    // SetConsoleOutputCP(65001); 
    //  if entire string fits on line, do this the easy way.
    if (!is_CRLF_present(outstr)  &&  rlen >= slen) {
-// #ifdef UNICODE   
-//       SetConsoleOutputCP(CP_UTF8);
-//       int bufferSize = WideCharToMultiByte(CP_UTF8, 0, outstr, -1, NULL, 0, NULL, NULL);
-//       LPSTR dname = (LPSTR) malloc(bufferSize + 1); //lint !e732
-//       if (dname == NULL) {
-//          error_exit(OUT_OF_MEMORY, NULL);
-//       }
-//       WideCharToMultiByte(CP_UTF8, 0, outstr, -1, dname, bufferSize, NULL, NULL);
-//       WriteFile(hStdOut, dname, slen, &wrlen, 0) ;
-//       SetConsoleOutputCP(CP_ACP);
-// #else   
-      // WriteFile(hStdOut, outstr, slen * sizeof(TCHAR), &wrlen, 0) ;
-      WriteConsole(hStdOut, outstr, slen, &wrlen, 0) ;
-      // _tprintf(_T("%s"), outstr);
-// #endif   
-      sinfo.dwCursorPosition.X += slen ;
+      // WriteConsole(hStdOut, outstr, slen, &wrlen, 0) ;
+      // sinfo.dwCursorPosition.X += slen ;
+      dputsi(outstr, slen);
    }
 
    //  if string has newlines in it, or if it does not
@@ -626,30 +633,6 @@ void dprints(unsigned row, unsigned col, const TCHAR* outstr)
    dputs(outstr) ;
 }   
 
-//******************************************************************************
-//  these two functions, dputx() and dputsf(), are raw-output functions,
-//  mostly used for debug output and other outputs that do not need
-//  screen positioning, color, etc.
-//******************************************************************************
-//lint -esym(759, dputx)  header declaration for symbol could be moved from header to module
-void dputx(const TCHAR *outstr)
-{
-   DWORD wrlen ;
-
-   //  watch out for trouble conditions
-   if (outstr == NULL  ||  *outstr == 0)
-      return ;
-
-   if (is_redirected()) {
-      _tprintf(_T("%s"), outstr);
-   }
-   else {
-      WORD slen = (WORD) _tcslen(outstr) ;
-      WriteConsole(hStdOut, outstr, slen, &wrlen, 0) ;
-      sinfo.dwCursorPosition.X += slen ;  //lint !e734
-   }
-}
-
 //********************************************************************
 //  Interesting note: 
 //  If I call dputsf() with L"", then newline is not recognized,
@@ -666,11 +649,10 @@ int dputsf(const TCHAR *fmt, ...)
    TCHAR consoleBuffer[3000] ;
    va_list al; //lint !e522
 
-//lint -esym(526, __builtin_va_start)
-//lint -esym(628, __builtin_va_start)
    va_start(al, fmt);   //lint !e1055 !e530
    _vstprintf(consoleBuffer, fmt, al);   //lint !e64
-   dputx(consoleBuffer) ;
+   // dputx(consoleBuffer) ;
+   dputsi(consoleBuffer, _tcslen(consoleBuffer));
    va_end(al);
    return 1;
 }

@@ -52,9 +52,14 @@ static void pattern_init(TCHAR *lstr)
 
 static void pattern_reset(void)
 {
-   dgotoxy(0, lrow) ;
-   dclreol() ;
-   dgotoxy(0, lrow) ;
+   if (n.color) {
+      dgotoxy(0, lrow) ;
+      dclreol() ;
+      dgotoxy(0, lrow) ;
+   }
+   else {
+      dnewline ();
+   }
 }
 
 static void pattern_update(void)
@@ -100,7 +105,9 @@ static int read_dir_tree (dirs * cur_node)
    syslog(L"read_dir_tree: %s\n", cur_node->name.c_str()) ;
 #endif
 
-   pattern_update() ;
+   if (!is_redirected ()) {
+      pattern_update() ;
+   }
    //  Insert next subtree level.
    //  if level == 0, this is first call, 
    //  and dirpath is already complete
@@ -446,12 +453,16 @@ static int build_dir_tree (TCHAR *tpath)
 
    dirpath = tpath ;
 
-   pattern_init(_T("wait; reading directory ")) ;
+   if (!is_redirected ()) {
+      pattern_init(_T("wait; reading directory ")) ;
+   }
    result = read_dir_tree (dtemp);
 #ifdef  DEBUG_LOG
 syslog(_T("read_dir_tree exit\n")) ;
 #endif
-   pattern_reset() ;
+   if (!is_redirected ()) {
+      pattern_reset() ;
+   }
    return result ;
 }
 

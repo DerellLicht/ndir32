@@ -244,7 +244,7 @@ void verify_flags (void)
    }
 
    /************************************************/
-   if (n.tree == eTreeForm::DIR_FILE_SIZES || n.tree == eTreeForm::DIR_FILE_COUNTS || n.tree == eTreeForm::MIXED_COUNT_SIZE) {
+   if (n.tree != eTreeForm::TREE_UNUSED) {
       n.exec_only = 0;
    }
 
@@ -263,18 +263,9 @@ void verify_flags (void)
       insert_target_filespec (_T("*.cmd"));
    }
 
-   //*********************************************
-   //  If -3 or -5 was used, set 43/50-line mode
-   //  deprecated on 01.17.23
-   //*********************************************
-   // if (n.ega_keep) {
-   //    set_lines (50);
-   //    curlines = lines;
-   //    lines = 50;
-   // }
-
    /*  Set 'dir tree' conditions  */
-   if (n.tree == eTreeForm::DIR_FILE_SIZES || n.tree == eTreeForm::DIR_FILE_COUNTS || n.tree == eTreeForm::MIXED_COUNT_SIZE || n.drive_summary > DSUMMARY_NONE) {
+   if (n.tree != eTreeForm::TREE_UNUSED || 
+       n.drive_summary > DSUMMARY_NONE) {
       n.minimize = 0;
    }
 
@@ -290,7 +281,8 @@ void verify_flags (void)
    //****************************************************
    //  fix up the format specifiers
    //****************************************************
-   if (n.tree == eTreeForm::DIR_FILE_SIZES || n.tree == eTreeForm::DIR_FILE_COUNTS) {
+   //  tree view doesn't even *use* columns, so this is not relevant
+   if (n.tree != eTreeForm::TREE_UNUSED) {
       columns = 0;
    }
    else if (n.horz == 2) {
