@@ -1,4 +1,5 @@
-> tree view is no longer using screen width
+> tree view is not using screen width
+> tree view (when redirected) is not using DFLT_WINDOW_COLS
 
 > file view with -k no longer works properly
 
