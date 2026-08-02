@@ -548,14 +548,13 @@ static void print_dir_end (void)
 }
 
 //*********************************************************
-constexpr int DFLT_TREE_HEADER_DX = 59 ;
-
 // =====================================+===========================+=============================
 //                                      |     size of requested     |    total size,  including
 //                                      |         directory         |     lower subdirectories
 //                                      +-------------+-------------+--------------+--------------
 // Subdirectory names                   |   in bytes  |  disk space |   in bytes   |  disk space
 // =====================================+=============+=============+==============+==============
+constexpr int DFLT_TREE_HEADER_DX = 59 ;
 
 void draw_dir_tree (void)
 {
