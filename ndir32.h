@@ -55,7 +55,7 @@ struct ndir_data {
    uchar colorSHR    {0x18};
    uchar colordefalt {0x06};
 
-   uchar ucase {};                                                                              
+   // uchar ucase {};                                                                              
    uchar sort {1};        //  0=ext, 1=name, 2=size, 3=date/time, 4=none
    uchar reverse {};      //  reverse normal sort order
    uchar clear {1};                                                                              
@@ -71,9 +71,10 @@ struct ndir_data {
    uchar help {};
    uchar info {};
    eFileLayout horz {eFileLayout::FL_VERT}; 
-   uchar low_ascii {};    //  upper ascii no longer supported
-   uchar batch {};                                                                              
-   uchar color {1};                                                                              
+   // uchar low_ascii {};    //  upper ascii no longer supported
+   // uchar unused1 {};
+   uchar batch {};
+   uchar color {1};
    uchar showSHRfiles {};                                                                       
    // uchar ega_keep_unused {};     // deprecated on 01.17.23
    uchar drive_summary {DSUMMARY_NONE};//  0 = no, 1 = show free space, 2 = show used space

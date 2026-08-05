@@ -1,0 +1,2 @@
+scsi_defs.h:288  # _SCSI_PASS_THROUGH_WITH_BUFFERS::Filler
+scsi_defs.h:289  # _SCSI_PASS_THROUGH_WITH_BUFFERS::SenseBuf

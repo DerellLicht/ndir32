@@ -136,6 +136,9 @@ cppc:
 check:
 	cmd /C "d:\llvm\bin\clang-tidy.exe $(CPPSRC)"
 
+clint:
+	cmd /C "python ..\ClaudeLint.py --exclude der_libs"
+
 dist:
 	rm -f ndir.zip
 	zip ndir.zip $(BIN) readme.txt revisions.txt LICENSE.txt

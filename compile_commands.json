@@ -1,6 +1,6 @@
 [
  {
-  "directory": "D:\\SourceCode\\Git\\ndir32",
+  "directory": "D:\\SourceCode\\Git\\ndir64",
   "arguments": [
    "d:/llvm/bin/x86_64-w64-mingw32-clang++",
    "-Wall",
@@ -19,7 +19,7 @@
   "file": "Ndir32.cpp"
  },
  {
-  "directory": "D:\\SourceCode\\Git\\ndir32",
+  "directory": "D:\\SourceCode\\Git\\ndir64",
   "arguments": [
    "d:/llvm/bin/x86_64-w64-mingw32-clang++",
    "-Wall",
@@ -38,7 +38,7 @@
   "file": "cmd_line.cpp"
  },
  {
-  "directory": "D:\\SourceCode\\Git\\ndir32",
+  "directory": "D:\\SourceCode\\Git\\ndir64",
   "arguments": [
    "d:/llvm/bin/x86_64-w64-mingw32-clang++",
    "-Wall",
@@ -57,7 +57,7 @@
   "file": "config.cpp"
  },
  {
-  "directory": "D:\\SourceCode\\Git\\ndir32",
+  "directory": "D:\\SourceCode\\Git\\ndir64",
   "arguments": [
    "d:/llvm/bin/x86_64-w64-mingw32-clang++",
    "-Wall",
@@ -76,7 +76,7 @@
   "file": "conio32.cpp"
  },
  {
-  "directory": "D:\\SourceCode\\Git\\ndir32",
+  "directory": "D:\\SourceCode\\Git\\ndir64",
   "arguments": [
    "d:/llvm/bin/x86_64-w64-mingw32-clang++",
    "-Wall",
@@ -95,7 +95,7 @@
   "file": "Diskparm.cpp"
  },
  {
-  "directory": "D:\\SourceCode\\Git\\ndir32",
+  "directory": "D:\\SourceCode\\Git\\ndir64",
   "arguments": [
    "d:/llvm/bin/x86_64-w64-mingw32-clang++",
    "-Wall",
@@ -114,7 +114,7 @@
   "file": "err_exit.cpp"
  },
  {
-  "directory": "D:\\SourceCode\\Git\\ndir32",
+  "directory": "D:\\SourceCode\\Git\\ndir64",
   "arguments": [
    "d:/llvm/bin/x86_64-w64-mingw32-clang++",
    "-Wall",
@@ -133,7 +133,7 @@
   "file": "Filelist.cpp"
  },
  {
-  "directory": "D:\\SourceCode\\Git\\ndir32",
+  "directory": "D:\\SourceCode\\Git\\ndir64",
   "arguments": [
    "d:/llvm/bin/x86_64-w64-mingw32-clang++",
    "-Wall",
@@ -152,7 +152,7 @@
   "file": "Fileread.cpp"
  },
  {
-  "directory": "D:\\SourceCode\\Git\\ndir32",
+  "directory": "D:\\SourceCode\\Git\\ndir64",
   "arguments": [
    "d:/llvm/bin/x86_64-w64-mingw32-clang++",
    "-Wall",
@@ -171,7 +171,7 @@
   "file": "Ndisplay.cpp"
  },
  {
-  "directory": "D:\\SourceCode\\Git\\ndir32",
+  "directory": "D:\\SourceCode\\Git\\ndir64",
   "arguments": [
    "d:/llvm/bin/x86_64-w64-mingw32-clang++",
    "-Wall",
@@ -190,7 +190,7 @@
   "file": "nio.cpp"
  },
  {
-  "directory": "D:\\SourceCode\\Git\\ndir32",
+  "directory": "D:\\SourceCode\\Git\\ndir64",
   "arguments": [
    "d:/llvm/bin/x86_64-w64-mingw32-clang++",
    "-Wall",
@@ -209,7 +209,7 @@
   "file": "nsort.cpp"
  },
  {
-  "directory": "D:\\SourceCode\\Git\\ndir32",
+  "directory": "D:\\SourceCode\\Git\\ndir64",
   "arguments": [
    "d:/llvm/bin/x86_64-w64-mingw32-clang++",
    "-Wall",
@@ -228,7 +228,7 @@
   "file": "treelist.cpp"
  },
  {
-  "directory": "D:\\SourceCode\\Git\\ndir32",
+  "directory": "D:\\SourceCode\\Git\\ndir64",
   "arguments": [
    "d:/llvm/bin/x86_64-w64-mingw32-clang++",
    "-Wall",
@@ -247,7 +247,7 @@
   "file": "tdisplay.cpp"
  },
  {
-  "directory": "D:\\SourceCode\\Git\\ndir32",
+  "directory": "D:\\SourceCode\\Git\\ndir64",
   "arguments": [
    "d:/llvm/bin/x86_64-w64-mingw32-clang++",
    "-Wall",
@@ -266,7 +266,7 @@
   "file": "mediatype.cpp"
  },
  {
-  "directory": "D:\\SourceCode\\Git\\ndir32",
+  "directory": "D:\\SourceCode\\Git\\ndir64",
   "arguments": [
    "d:/llvm/bin/x86_64-w64-mingw32-clang++",
    "-Wall",
@@ -285,7 +285,7 @@
   "file": "read_link.cpp"
  },
  {
-  "directory": "D:\\SourceCode\\Git\\ndir32",
+  "directory": "D:\\SourceCode\\Git\\ndir64",
   "arguments": [
    "d:/llvm/bin/x86_64-w64-mingw32-clang++",
    "-Wall",
@@ -304,7 +304,7 @@
   "file": "der_libs/common_funcs.cpp"
  },
  {
-  "directory": "D:\\SourceCode\\Git\\ndir32",
+  "directory": "D:\\SourceCode\\Git\\ndir64",
   "arguments": [
    "d:/llvm/bin/x86_64-w64-mingw32-clang++",
    "-Wall",
