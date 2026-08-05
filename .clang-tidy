@@ -10,7 +10,7 @@ Checks: |
   -bugprone-incorrect-roundings,
   -bugprone-assignment-in-if-condition,
   -bugprone-reserved-identifier,
-  clang-analyzer-security.*,
+  clang-analyzer-*,
   -clang-analyzer-security.insecureAPI.strcpy,
   clang-diagnostic-*,
   -clang-diagnostic-writable-strings,
@@ -49,4 +49,8 @@ Checks: |
   performance-*,
   -performance-no-int-to-ptr,
   -performance-enum-size,
+  readability-*,
+  -readability-isolate-declaration,
+  -readability-identifier-length,
+  -readability-magic-numbers,
   

@@ -73,7 +73,6 @@ struct ndir_data {
    eFileLayout horz {eFileLayout::FL_VERT}; 
    uchar low_ascii {};    //  upper ascii no longer supported
    uchar batch {};                                                                              
-   uchar unused1 {};                                                                            
    uchar color {1};                                                                              
    uchar showSHRfiles {};                                                                       
    // uchar ega_keep_unused {};     // deprecated on 01.17.23

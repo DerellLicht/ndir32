@@ -10,5 +10,8 @@ lnk_files/
 .vs/
 test/
 long.ext.filenames
-output.txt
+output*.txt
 backup/
+phase0_spike.py
+pip.install.notes.txt
+

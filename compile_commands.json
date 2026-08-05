@@ -12,7 +12,6 @@
    "-DUNICODE",
    "-D_UNICODE",
    "-Ider_libs",
-   "-c",
    "Ndir32.cpp",
    "-o",
    "Ndir32.o"
@@ -32,7 +31,6 @@
    "-DUNICODE",
    "-D_UNICODE",
    "-Ider_libs",
-   "-c",
    "cmd_line.cpp",
    "-o",
    "cmd_line.o"
@@ -52,7 +50,6 @@
    "-DUNICODE",
    "-D_UNICODE",
    "-Ider_libs",
-   "-c",
    "config.cpp",
    "-o",
    "config.o"
@@ -72,7 +69,6 @@
    "-DUNICODE",
    "-D_UNICODE",
    "-Ider_libs",
-   "-c",
    "conio32.cpp",
    "-o",
    "conio32.o"
@@ -92,7 +88,6 @@
    "-DUNICODE",
    "-D_UNICODE",
    "-Ider_libs",
-   "-c",
    "Diskparm.cpp",
    "-o",
    "Diskparm.o"
@@ -112,7 +107,6 @@
    "-DUNICODE",
    "-D_UNICODE",
    "-Ider_libs",
-   "-c",
    "err_exit.cpp",
    "-o",
    "err_exit.o"
@@ -132,7 +126,6 @@
    "-DUNICODE",
    "-D_UNICODE",
    "-Ider_libs",
-   "-c",
    "Filelist.cpp",
    "-o",
    "Filelist.o"
@@ -152,7 +145,6 @@
    "-DUNICODE",
    "-D_UNICODE",
    "-Ider_libs",
-   "-c",
    "Fileread.cpp",
    "-o",
    "Fileread.o"
@@ -172,7 +164,6 @@
    "-DUNICODE",
    "-D_UNICODE",
    "-Ider_libs",
-   "-c",
    "Ndisplay.cpp",
    "-o",
    "Ndisplay.o"
@@ -192,7 +183,6 @@
    "-DUNICODE",
    "-D_UNICODE",
    "-Ider_libs",
-   "-c",
    "nio.cpp",
    "-o",
    "nio.o"
@@ -212,7 +202,6 @@
    "-DUNICODE",
    "-D_UNICODE",
    "-Ider_libs",
-   "-c",
    "nsort.cpp",
    "-o",
    "nsort.o"
@@ -232,7 +221,6 @@
    "-DUNICODE",
    "-D_UNICODE",
    "-Ider_libs",
-   "-c",
    "treelist.cpp",
    "-o",
    "treelist.o"
@@ -252,7 +240,6 @@
    "-DUNICODE",
    "-D_UNICODE",
    "-Ider_libs",
-   "-c",
    "tdisplay.cpp",
    "-o",
    "tdisplay.o"
@@ -272,7 +259,6 @@
    "-DUNICODE",
    "-D_UNICODE",
    "-Ider_libs",
-   "-c",
    "mediatype.cpp",
    "-o",
    "mediatype.o"
@@ -292,7 +278,6 @@
    "-DUNICODE",
    "-D_UNICODE",
    "-Ider_libs",
-   "-c",
    "read_link.cpp",
    "-o",
    "read_link.o"
@@ -312,7 +297,6 @@
    "-DUNICODE",
    "-D_UNICODE",
    "-Ider_libs",
-   "-c",
    "der_libs/common_funcs.cpp",
    "-o",
    "der_libs/common_funcs.o"
@@ -332,7 +316,6 @@
    "-DUNICODE",
    "-D_UNICODE",
    "-Ider_libs",
-   "-c",
    "der_libs/qualify.cpp",
    "-o",
    "der_libs/qualify.o"

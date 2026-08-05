@@ -103,10 +103,12 @@ bool get_disk_info(TCHAR *dstr)
    TCHAR volume_name_local[MAX_PATH_LEN] = _T("");
 
    dpath[0] = *dstr ;
-   if (*(dstr+1) == ':')
+   if (*(dstr+1) == ':') {
       dirptr = dpath ;
-   else
+   }
+   else {
       dirptr = dstr ;
+   }
 
    // sprintf(tempstr, "trying %s\n", dirptr) ;
    // nputs(n.colordefalt, tempstr) ;
@@ -224,8 +226,9 @@ void display_drive_summary (void)
    DWORD mask ;
    char dchar = 'a' ;
    for (mask=1; mask != 0; mask <<= 1, dchar++) {
-      if ((gld_return & mask) == 0)
+      if ((gld_return & mask) == 0) {
          continue;
+      }
 
       // dpath[0] = (char) dltr + 'a';
       dpath[0] = dchar ;

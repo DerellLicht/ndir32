@@ -117,7 +117,7 @@ LIBS=-lmpr -lshlwapi -luuid -lole32
 
 #*************************************************************************
 %.o: %.cpp
-	$(TOOLS)/$(GNAME) $(CFLAGS) -c $< -o $@
+	$(TOOLS)/$(GNAME) $(CFLAGS) $< -o $@
 
 ifeq ($(USE_64BIT),NO)
 BIN = ndir32.exe
