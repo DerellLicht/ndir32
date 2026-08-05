@@ -138,6 +138,9 @@ check:
 
 clint:
 	cmd /C "python ..\ClaudeLint.py --exclude der_libs"
+	
+cstale:
+	cmd /C "python ..\check_compile_commands_stale.py"
 
 dist:
 	rm -f ndir.zip
