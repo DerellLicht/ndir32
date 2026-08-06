@@ -60,3 +60,4 @@ Checks: |
   -readability-braces-around-statements,
   -readability-redundant-parentheses,
   -readability-function-cognitive-complexity,
+  
