@@ -1,3 +1,5 @@
+> help screen does not provide the command for resolving symlinks
+
 > n *.cpp picks up .suppress.cppcheck
 
 > tree view -d3 mode (mixed file/folder counts and sizes), does not sort on file/folder counts.
