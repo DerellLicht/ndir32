@@ -102,10 +102,12 @@ static void filehead(void)
    //  If minimize is selected, display short header/footer
    //****************************************************
    if (n.minimize) {
-      if (list_count == 0)
+      if (list_count == 0) {
          _stprintf(tempstr, _T("%-38s   "), base_path.c_str()) ;
-      else
+      }
+      else {
          _stprintf(tempstr, _T("%-49s   "), base_path.c_str()) ;
+      }
       nputs(n.colornhead, tempstr) ;
 
       if (_where_x() < (wincols - 28)) {
@@ -125,8 +127,9 @@ static void filehead(void)
       _stprintf(tempstr, _T("Directory of %-38s "), base_path.c_str()) ;
       nputs(n.colornhead, tempstr) ;
       // if (_tcslen(base_path) > 43)
-      if (base_path.length() > 43)
+      if (base_path.length() > 43) {
          ncrlf() ;
+      }
 
       nputs(n.colornhead, _T("Volume label is ")) ;
       nputs(n.colorxhead, volume_name.c_str()) ;
@@ -136,24 +139,6 @@ static void filehead(void)
          nput_line(n.colorframe, dline) ;
       } else {
          draw_horz_bar();
-         // memset(&tempstr[0], dline, wincols) ;
-         // tempstr[wincols] = 0 ;
-         // if (col_width[disp_cols] > 0) {
-         // if (line_len > 0) {
-         //    // syslog(_T("line_len: %u, disp_cols: %u\n"), line_len, disp_cols);
-         //    // j = col_width[disp_cols] ;
-         //    // j = line_len ;
-         //    for (k=1; k<disp_cols; k++) {
-         //       // tempstr[j] = tline ;
-         //       nput_char(n.colorframe, dline, line_len) ;
-         //       nput_char(n.colorframe, tline, 1) ;
-         //       // j += col_width[disp_cols] + 1 ;
-         //       // j += line_len + 1 ;
-         //    }
-         //    //  last, draw remaining lines
-         //    nput_char(n.colorframe, dline, line_len) ;
-         // }
-         // ncrlf() ;
       } 
    }
 }
@@ -301,8 +286,9 @@ static void lfn_get_columns(void)
    disp_cols = wincols / (line_len + 1) ;  //lint !e573
 
    //  shortcut solution for very long filenames
-   if (disp_cols == 0)
+   if (disp_cols == 0) {
       disp_cols = 1 ;
+   }
    //  shortcut solution for very short filenames
    // else if (disp_cols > (unsigned) columns)
    //    disp_cols = (unsigned) columns ;
@@ -360,8 +346,9 @@ static void list_files_horizontally(void)
    }
 
    //  put in closing newline, if needed
-   if (j != 0)
+   if (j != 0) {
       ncrlf() ;
+   }
    fileend() ;
 }
 
@@ -385,8 +372,9 @@ static void list_files_qwise(void)
    for(auto &file : flist) {
       // ftemp = &file ;
       slen = file.ext.length() ;
-      if (maxext < slen)
+      if (maxext < slen) {
           maxext = slen ;
+      }
    }
    
    //  then list the files
@@ -396,10 +384,12 @@ static void list_files_qwise(void)
       ftemp = &file ;
       //  see if file extention is changing
       if (first_line  ||  _tcsicmp(prev_ext, ftemp->ext.c_str()) != 0) {
-         if (first_line)
+         if (first_line) {
             first_line = false ;
-         else 
+         }
+         else {
             ncrlf() ;
+         }
          _stprintf(tempstr, _T("%-*s: "), maxext, ftemp->ext.c_str()) ;   
          nputs(ftemp->color, tempstr) ;
          col = maxext+2 ;
@@ -475,8 +465,8 @@ static void list_files_vertically(void)
    }
    
    // syslog(_T("filecount: %u\n"), filecount);
-   rows = (unsigned) filecount / disp_cols ;
-   partrows = (unsigned) filecount % disp_cols ;
+   rows = filecount / disp_cols ;
+   partrows = filecount % disp_cols ;
 
    for (j=0; j< disp_cols ; j++) {
       vcolumns[j].rows = rows ;
@@ -510,8 +500,10 @@ static void list_files_vertically(void)
    // row 8:  8  18  28  38  47  56
    // row 9:  9  19  29
 
-   vcolumns[0].ftemp = &flist[0] ;
-   vcolumns[1].ftemp = &flist[0] ;
+   // vcolumns[0].ftemp = &flist[0] ;
+   // vcolumns[1].ftemp = &flist[0] ;
+   vcolumns[0].ftemp = flist.data() ;
+   vcolumns[1].ftemp = flist.data() ;
    filehead() ;   //  uses rows, columns
    j = 0 ;
    ffdata *ftemp ;
@@ -567,11 +559,12 @@ static void check_for_duplicate_files(void)
       //  the current head index.
       //  Note that the number of elements in the list may vary
       //  as items are deleted by this operation.
-      for (idxTail=idxHead+1   ; idxTail < ltcount ; idxTail++) {
+      for (idxTail=idxHead+1 ; idxTail < ltcount ; idxTail++) {
 try_next_tail:
          //  Scan file name and extension for equality.
          //  If both filename and extension are equal, delete one.
-         if (flist[idxHead].filename.compare(flist[idxTail].filename) == 0) {
+         // if (flist[idxHead].filename.compare(flist[idxTail].filename) == 0) {
+         if (flist[idxHead].filename == flist[idxTail].filename) {
             flist.erase(flist.begin()+idxTail) ;
             ltcount-- ;
             //  we don't want to increment idxTail after deleting element;

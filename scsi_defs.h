@@ -290,7 +290,7 @@ typedef struct _SCSI_PASS_THROUGH_WITH_BUFFERS {
     UCHAR             DataBuf[SPTWB_DATA_LENGTH];
 } SCSI_PASS_THROUGH_WITH_BUFFERS, *PSCSI_PASS_THROUGH_WITH_BUFFERS;
 
-#if 0
+#if 0 // NOLINT(readability-avoid-unconditional-preprocessor-if)
 // Old structure from Web.
 typedef struct _SCSI_PASS_THROUGH_WITH_BUFFERS {
     SCSI_PASS_THROUGH ScsiPassThrough;

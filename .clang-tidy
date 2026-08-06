@@ -53,4 +53,6 @@ Checks: |
   -readability-isolate-declaration,
   -readability-identifier-length,
   -readability-magic-numbers,
-  
+  -readability-avoid-const-params-in-decls,
+  -readability-use-std-min-max,
+  -readability-implicit-bool-conversion,

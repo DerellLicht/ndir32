@@ -35,7 +35,7 @@ static attrib_list const attr_default_list[] = {
 { 0x02, _T(".DOC") }, { 0x0C, _T(".EXE") }, { 0x0D, _T(".H")   }, { 0x0D, _T(".HEX") }, 
 { 0x03, _T(".HPP") }, { 0x0D, _T(".INC") }, { 0x0D, _T(".LIB") }, { 0x0A, _T(".LST") },
 { 0x05, _T(".MAP") }, { 0x02, _T(".ME")  }, { 0x02, _T(".NOW") }, { 0x0D, _T(".OBJ") }, 
-{ 0x03, _T(".PAS") }, { 0x02, _T(".TXT") }, {    0, _T("") }                 
+{ 0x03, _T(".PAS") }, { 0x02, _T(".TXT") }, { 0x13, _T(".BAK") }, {    0, _T("") }                 
 } ;
 
 //  default directory colors
@@ -171,7 +171,7 @@ static int write_default_ini_file(TCHAR *ini_str)
    _ftprintf(ofile, _T("long_attr=%u ; show executables only (exe,com,bat,btm)\n"), n.long_attr) ;
    _ftprintf(ofile, _T("horz=%u      ; list files horizontally\n"), (uchar) n.horz) ;
    // _ftprintf(ofile, _T("low_ascii=%u\n"), n.low_ascii) ;
-   // _ftprintf(ofile, _T("color=%u\n"), n.color) ;
+   _ftprintf(ofile, _T("color=%u\n"), n.color) ;
    _ftprintf(ofile, _T("showSHRfiles=%u  ; use diff attrib for S/H/R files\n"), n.showSHRfiles) ;
    // _ftprintf(ofile, "ega_keep=%u  ; switch to 50-line mode\n", n.ega_keep) ;
    _ftprintf(ofile, _T("fdate_option=%u  ; 0=LastWriteTime (default), 1=LastAccessTime, 2=CreationTime\n"), n.fdate_option) ;
@@ -204,7 +204,7 @@ static int write_default_ini_file(TCHAR *ini_str)
    _ftprintf(ofile, _T("; Note that period is required for each extension\n")) ;
    for (j=0; attr_default_list[j].ext[0] != 0; j++) {
       _ftprintf(ofile, _T("%s=%u\n"), attr_default_list[j].ext, 
-                                attr_default_list[j].attr ) ;
+                                      attr_default_list[j].attr ) ;
    }
 
    //  generate directory-tree colors
@@ -237,7 +237,7 @@ static ini_entry const ndir_ini[] = {  // NOLINT
 { _T("exec_only"),    &n.exec_only },
 { _T("horz"),         (uchar *) &n.horz },
 // { _T("low_ascii"),    &n.low_ascii },
-// { _T("color"),        &n.color },
+{ _T("color"),        &n.color },
 { _T("showSHRfiles"), &n.showSHRfiles },
 // { _T("ega_keep"),     &n.ega_keep },
 // { _T("lfn_off"),      &n.lfn_off },
