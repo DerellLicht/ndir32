@@ -91,13 +91,16 @@ static void const read_long_files (std::wstring& target_path)
          }
       }
       //  filter out directories if not requested
-      if ((fdata.dwFileAttributes & FILE_ATTRIBUTE_VOLID) != 0)
+      if ((fdata.dwFileAttributes & FILE_ATTRIBUTE_VOLID) != 0) {
          fn_okay = false;
-      else if ((fdata.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != FILE_ATTRIBUTE_DIRECTORY)
+      }
+      else if ((fdata.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != FILE_ATTRIBUTE_DIRECTORY) {
          fn_okay = true;
+      }
       //  everything past here is a folder   
-      else if (n.files_only != 0)     //  "files only" flag
+      else if (n.files_only != 0) {  //  "files only" flag
          fn_okay = false;
+      }
       //  skip '.' and '..', but NOT .ncftp (for example)
       else if (_tcscmp(fdata.cFileName, _T("."))  == 0  ||
                _tcscmp(fdata.cFileName, _T("..")) == 0) {
@@ -133,7 +136,7 @@ static void const read_long_files (std::wstring& target_path)
          iconv.u[1] = fdata.nFileSizeHigh;
          ftemp->fsize = iconv.i;
 
-         ftemp->dirflag = ((ftemp->attrib & FILE_ATTRIBUTE_DIRECTORY) != 0) ? true : false ;
+         ftemp->dirflag = ((ftemp->attrib & FILE_ATTRIBUTE_DIRECTORY) != 0) ? true : false ; // NOLINT(readability-simplify-boolean-expr)
          
          //  convert Unicode filenames to UTF8
          ftemp->mb_len = _tcslen(fdata.cFileName) ;

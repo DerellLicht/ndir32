@@ -115,9 +115,9 @@ struct ffdata {
    u16            attrib {}; //  expand this to allow for extended file attributes
    FILETIME       ft {};
    ULONGLONG      fsize {};
-   std::wstring   filename {};
-   std::wstring   name {};
-   std::wstring   ext {};
+   std::wstring   filename ;
+   std::wstring   name ;
+   std::wstring   ext ;
    uchar          color {};
    bool           dirflag {};
    bool           is_link_file {};

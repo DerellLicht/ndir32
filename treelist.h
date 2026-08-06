@@ -3,8 +3,8 @@
 //**********************************************************
 struct dirs
 {
-   std::vector<dirs> brothers {};
-   std::wstring name {};
+   std::vector<dirs> brothers ;
+   std::wstring name ;
    uchar attrib {};
    ULONGLONG dirsize {};
    ULONGLONG dirsecsize {};

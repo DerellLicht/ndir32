@@ -78,13 +78,11 @@ static int read_dir_tree (dirs * cur_node)
 {
    uint idx ;
    bool early_abort = false ;
-   // TCHAR *strptr;
    HANDLE handle;
    int slen, done, result;
    uint umaxlen {};
    DWORD err;
    ULONGLONG file_clusters, clusters;
-   // WIN32_FIND_DATA fdata ; //  long-filename file struct
    WIN32_FIND_DATA fdata ; //  long-filename file struct
 
    if (((dircount % 50) == 0)  &&  _kbhit()) {
@@ -121,7 +119,8 @@ static int read_dir_tree (dirs * cur_node)
       // dirpath[slen] = 0 ;  // string class does not know you've done this
       dirpath.resize(slen);
       slen = dirpath.length() ;
-      dirpath.append(cur_node->name.c_str());
+      // dirpath.append(cur_node->name.c_str());
+      dirpath.append(cur_node->name);
       dirpath.append(L"\\*");
 #else   
       //  insert new path name
@@ -134,7 +133,6 @@ static int read_dir_tree (dirs * cur_node)
       _tcscat (dirpath, _T("\\*"));
 #endif      
    }
-   
    else {
       slen = dirpath.length() ;
    }
@@ -427,7 +425,7 @@ static void sort_trees (std::vector<dirs>& brothers, TCHAR *parent_name)
    }  //  while not done traversing brothers
    
    // dump_brothers(brothers, level, L"after recursion");
-}
+}  //  parent_name
 
 //**********************************************************
 static int build_dir_tree (TCHAR *tpath)
@@ -447,7 +445,8 @@ static int build_dir_tree (TCHAR *tpath)
 
    //  allocate struct for dir listing
    dlist.brothers.emplace_back();
-   dirs *dtemp = &dlist.brothers[0] ;
+   // dirs *dtemp = &dlist.brothers[0] ;
+   dirs *dtemp = dlist.brothers.data() ;
    dtemp->dirsecsize = clbytes;
    dtemp->subdirsecsize = clbytes;
 
@@ -493,7 +492,9 @@ void tree_listing (unsigned total_filespec_count)
       build_dir_tree ((TCHAR *) target[l].c_str()) ;
 
       //  sort the tree list
-      dirs *temp = &dlist.brothers[0] ;   //  only needed for (debug) name display
+      // dirs *temp = &dlist.brothers[0] ;   //  only needed for (debug) name display
+      dirs *temp = dlist.brothers.data() ;   //  only needed for (debug) name display
+      
       sort_trees(dlist.brothers, (TCHAR *) temp->name.c_str());
 
       //  now display the resulting directory tree

@@ -56,3 +56,7 @@ Checks: |
   -readability-avoid-const-params-in-decls,
   -readability-use-std-min-max,
   -readability-implicit-bool-conversion,
+  -readability-const-return-type,
+  -readability-braces-around-statements,
+  -readability-redundant-parentheses,
+  -readability-function-cognitive-complexity,

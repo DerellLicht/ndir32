@@ -247,7 +247,8 @@ static void check_for_duplicate_targets(void)
 try_next_tail:
          //  Scan file name and extension for equality.
          //  If both filename and extension are equal, delete one.
-         if (target[idxHead].compare(target[idxTail]) == 0) {
+         // if (target[idxHead].compare(target[idxTail]) == 0) {
+         if (target[idxHead] == target[idxTail]) {
             target.erase(target.begin()+idxTail) ;
             ltcount-- ;
             //  we don't want to increment idxTail after deleting element;
@@ -361,21 +362,18 @@ static void process_filespecs(void)
                finish = j-1 ;
                break;
             }
-            else {
-               //  strip filename from next argument
-               _tcscpy(tempstr, target[j].c_str()) ;
-               strptr = _tcsrchr(tempstr, '\\') ;   //lint !e613
-               strptr++ ;
-               *strptr = 0 ;
+            //  strip filename from next argument
+            _tcscpy(tempstr, target[j].c_str()) ;
+            strptr = _tcsrchr(tempstr, '\\') ;   //lint !e613
+            strptr++ ;
+            *strptr = 0 ;
 
-               //  now see if they are equal
-               if (_tcscmp(base_path.c_str(), tempstr) != 0) {
-                  finish = j-1 ;
-                  break;
-               }
-               else 
-                  j++ ;
+            //  now see if they are equal
+            if (_tcscmp(base_path.c_str(), tempstr) != 0) {
+               finish = j-1 ;
+               break;
             }
+            j++ ;
          }
 
          check_for_duplicate_targets();
@@ -403,19 +401,21 @@ static void process_filespecs(void)
 //**************************************************
 bool const comp(std::wstring const &a, std::wstring const &b)
 {
-   return (a.compare(b) < 0) ;
+   // warning: Method called on moved-from object of type 'std::basic_string' [clang-analyzer-cplusplus.Move]
+   // Comments from Claude.AI, 08/06/26
+   // Good news — you've hit a well-documented false positive, not a real bug. 
+   // This is tracked upstream as LLVM issue #78132
+   // https://github.com/llvm/llvm-project/issues/78132
+   return (a.compare(b) < 0) ;   // NOLINT(clang-analyzer-cplusplus.Move)
 }
 
 //**************************************************
 //  Sort filespecs alphabetically,
 //  to group those in one directory.
 //**************************************************
-//lint -esym(745, sort_target_paths)  function has no explicit type or class, int assumed
-//lint -esym(533, sort_target_paths)  function should return a value
 static void sort_target_paths(void)
 {
    std::sort(target.begin(), target.end(), comp);
-   // dump_target(_T("sorted list\n"));
 }
 
 //********************************************************************************
@@ -553,7 +553,8 @@ int main(int argc, char **argv)
    }
    else {
       //  If no filespec was given, insert current path with *.*
-      if (target.size() == 0) {
+      // if (target.size() == 0) {
+      if (target.empty()) {
          insert_target_filespec(_T(".")) ;
       }
 

@@ -26,10 +26,12 @@ void error_exit(int index, TCHAR* outstr)
    if (index == DATA_OKAY) {
       ;
    }
-   else if (outstr == NULL)
+   else if (outstr == NULL) {
       syslog(_T("%s\n"), error_text[index]) ;
-   else
+   }
+   else {
       syslog(_T("%s: %s\n"), outstr, error_text[index]) ;
+   }
 
    restore_console_attribs();
 

@@ -93,15 +93,13 @@ unsigned get_window_cols(void)
    if (is_redirected()) {
       return DFLT_WINDOW_COLS ;
    }
-   else {
-      return (unsigned) (int) (sinfo.srWindow.Right - sinfo.srWindow.Left + 1) ;
-   }
+   return (unsigned) (sinfo.srWindow.Right - sinfo.srWindow.Left + 1) ;
 }
 
 //**********************************************************
 static unsigned get_window_rows(void)
 {
-   return (unsigned) (int) (sinfo.srWindow.Bottom - sinfo.srWindow.Top + 1) ;
+   return (unsigned) (sinfo.srWindow.Bottom - sinfo.srWindow.Top + 1) ;
 }
 
 //**********************************************************
@@ -456,7 +454,7 @@ void dclreos(void)
    
    width = sinfo.dwMaximumWindowSize.X ;
    rows  = sinfo.srWindow.Bottom - ctemp.Y ;  //  full rows
-   slen  = rows * width + (width - ctemp.X) ;
+   slen  = (rows * width) + (width - ctemp.X) ;
 
    FillConsoleOutputCharacter(hStdOut, ' ', slen, ctemp, &wrlen) ;
    FillConsoleOutputAttribute(hStdOut,   7, slen, ctemp, &wrlen) ;
@@ -524,7 +522,8 @@ static void dputsi(const TCHAR *outstr, int slen)
                                          nullptr, 0, nullptr, nullptr);
       std::string utf8(utf8Len, '\0');
       WideCharToMultiByte(CP_UTF8, 0, text.c_str(), static_cast<int>(text.size()),
-                           &utf8[0], utf8Len, nullptr, nullptr);
+                           // &utf8[0], utf8Len, nullptr, nullptr);
+                           utf8.data(), utf8Len, nullptr, nullptr);
 
       WriteFile(hStdOut, utf8.data(), static_cast<DWORD>(utf8.size()), &wrlen, nullptr);
    }

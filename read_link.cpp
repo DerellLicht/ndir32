@@ -153,7 +153,7 @@ HRESULT ResolveShortcut(/*in*/ LPCTSTR lpszShortcutPath,
 
       // IPersistFile is using LPCOLESTR,
       // so make sure that the string is Unicode
-#if !defined _UNICODE
+#ifndef _UNICODE
       MultiByteToWideChar(CP_ACP, 0, lpszShortcutPath, -1, wszTemp, MAX_PATH); //lint !e534
 #else
       wcsncpy(wszTemp, lpszShortcutPath, MAX_PATH);
