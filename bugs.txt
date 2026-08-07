@@ -1,4 +1,6 @@
 > help screen does not provide the command for resolving symlinks
+  Side issue: lnk_files doesn't even *have* any symlinks any more,
+              and create_link.exe doesn't create them...
 
 > n *.cpp picks up .suppress.cppcheck
 

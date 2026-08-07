@@ -130,18 +130,18 @@ all: $(BIN)
 clean:
 	rm -f $(OBJS) ndir*.exe *~ *.zip
 
+check:
+	cmd /C "d:\llvm\bin\clang-tidy.exe $(CPPSRC)"
+
 cppc:
 	cmd /C "cppcheck --project=compile_commands.json --std=c++14 --suppressions-list=./.suppress.cppcheck"
 
-check:
-	cmd /C "d:\llvm\bin\clang-tidy.exe $(CPPSRC)"
+cstale:
+	cmd /C "python ..\check_compile_commands_stale.py"
 
 clint:
 	cmd /C "python ..\ClaudeLint.py --exclude der_libs"
 	
-cstale:
-	cmd /C "python ..\check_compile_commands_stale.py"
-
 dist:
 	rm -f ndir.zip
 	zip ndir.zip $(BIN) readme.txt revisions.txt LICENSE.txt
