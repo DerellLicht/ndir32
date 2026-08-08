@@ -163,17 +163,50 @@ HRESULT ResolveShortcut(/*in*/ LPCTSTR lpszShortcutPath,
       if (SUCCEEDED(hRes)) {
          // Try to find the target of a shortcut,
          // even if it has been moved or renamed
-         hRes = psl->Resolve(NULL, SLR_UPDATE); //lint !e641
+         // hRes = psl->Resolve(NULL, SLR_UPDATE); //lint !e641
+         // even if it has been moved or renamed.
+         // NOTE: SLR_UPDATE alone can make Resolve() pop up a
+         // "browse for target" dialog when the target is missing,
+         // and since this is a console app with no message pump,
+         // that dialog silently blocks forever. SLR_NO_UI suppresses
+         // it; the timeout in the high word of fFlags (here 500ms)
+         // bounds how long Resolve() will silently search before
+         // giving up and returning a failure code instead of hanging.
+         hRes = psl->Resolve(NULL, SLR_UPDATE | SLR_NO_UI | (500 << 16)); //lint !e641
          if (SUCCEEDED(hRes)) {
-            // Get the path to the shortcut target
-            hRes = psl->GetPath(szPath, MAX_PATH, &wfd, SLGP_RAWPATH); //lint !e641
+            // Get the path to the shortcut target.
+            // NOTE: deliberately NOT passing SLGP_RAWPATH here.
+            // Per docs, SLGP_RAWPATH returns "the raw path name...
+            // something that might not exist" - i.e. it just echoes
+            // back whatever path is stored in the .lnk's binary data,
+            // with no filesystem verification at all. Combined with
+            // Resolve() above being able to return S_OK even when it
+            // could not actually verify/relocate the target (it just
+            // gives up cleanly under SLR_NO_UI), that raw-echo path
+            // is not trustworthy proof the target exists.
+            hRes = psl->GetPath(szPath, MAX_PATH, &wfd, 0); //lint !e641
             if (FAILED(hRes)) {
                // printf("GetPath error\n");
                goto error_exit;
                // return hRes;
             }
-            // printf("path: %s\n", szPath);
+
+            // Copy the path out to the caller BEFORE the existence
+            // check below. Even if the target turns out to be missing,
+            // the caller still gets the resolved path so it can be
+            // reported (e.g. tagged as a dead/"LOST" link) rather than
+            // discarded just because hRes ends up indicating failure.
             lstrcpyn(lpszFilePath, szPath, MAX_PATH);
+
+            // Belt-and-suspenders: explicitly confirm the resolved
+            // path exists on disk rather than trusting the HRESULT
+            // chain above. GetFileAttributesW is the standard WinAPI
+            // call for this.
+            if (GetFileAttributes(szPath) == INVALID_FILE_ATTRIBUTES) {
+               hRes = HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND);
+               goto error_exit;
+            }
+            // printf("path: %s\n", szPath);
 
             // Get the description of the target
             // hRes = psl->GetDescription(szDesc, MAX_PATH);
@@ -284,7 +317,7 @@ bool read_shortcut_file(ffdata * fptr, TCHAR *shortcut_path)
    //  we need to build a full path+filename string here
    TCHAR szFullSrcPath[MAX_PATH];
    _stprintf(szFullSrcPath, _T("%s\\%s"), base_path.c_str(), fptr->filename.c_str());   //lint !e560: argument no. 4 should be a pointer (and it is...)
-   syslog(_T("[%s]\n"), szFullSrcPath);
+   // syslog(_T("[%s]\n"), szFullSrcPath);
 
    CoInitialize(NULL);  //lint !e534
    // NOTE: HRESULT is an unsigned value!!
@@ -329,6 +362,15 @@ bool read_shortcut_file(ffdata * fptr, TCHAR *shortcut_path)
       }
       target_exists = true ;
       // syslog("link: %s\n", shortcut_path);
+   }
+   else if (szFilePath[0] != 0) {
+      // Resolve/GetPath ran far enough to produce a path, but the
+      // target failed the existence check (or some other step after
+      // that failed) - hand the dead path back anyway so the caller
+      // can report it (e.g. tagged "LOST") instead of losing the
+      // information that a target used to be here.
+      _tcscpy(shortcut_path, szFilePath);
+      // target_exists stays false
    }
    return target_exists ;
 }

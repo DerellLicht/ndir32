@@ -131,6 +131,7 @@ static void const read_long_files (std::wstring& target_path)
          
       if (fn_okay) {
          // syslog(L"   [%s]\n", fdata.cFileName);
+         
          //  to deal with the reality of *.cpp matching .suppress.cppcheck ,
          //  we need to do some special handling...
          //  In file search loop, compare length of this extension
@@ -197,6 +198,9 @@ static void const read_long_files (std::wstring& target_path)
          else {
             ftemp->name = ftemp->filename.substr(0, ext_dot);
             ftemp->ext  = ftemp->filename.substr(ext_dot);
+         }
+         if (wcscmp(ftemp->ext.c_str(), L".lnk") == 0) {
+            ftemp->is_link_file = true ;
          }
          // syslog(_T("%d/%d/%d: %s: [%s].[%s]\n"), 
          //    ext_dot, ext_length, ext_length-ext_dot, ftemp->filename.c_str(), ftemp->name.c_str(), ftemp->ext.c_str());

@@ -227,7 +227,17 @@ void print1 (ffdata * fptr)
          
 #ifdef USE_64BIT
       //  if this file is a symlink, try to display the actual file
+      //*********************************************************************
+      //  Steps for creating a Reparse Point for testing this
+      // 
+      // [in User console] mklink rev_link.txt ..\revisions.txt
+      // This does *not* create a visible link, but...
+      // [in Admin console] mklink rev_link.txt ..\revisions.txt
+      // This creates the symlink, but it is only visible to Admin,
+      // unless the User step was executed first.
+      //*********************************************************************
       if ((fptr->attrib & FILE_ATTRIBUTE_REPARSE_POINT)) {
+         // syslog(L"We found reparse_point\n");
          ncrlf() ;
          nputs (n.colorsize, _T("               "));
          nputs (attrclr, _T("=====> "));
@@ -242,6 +252,12 @@ void print1 (ffdata * fptr)
             ncrlf() ;
             nputs (n.colorsize, _T("               "));
             nputs (attrclr, _T("=====> "));
+            nputs (fptr->color, szFilePath);
+         }
+         else {
+            ncrlf() ;
+            nputs (n.colorsize, _T("               "));
+            nputs (attrclr, _T("LOST=> "));
             nputs (fptr->color, szFilePath);
          }
       }
