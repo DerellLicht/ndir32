@@ -1,2 +1,4 @@
 scsi_defs.h:288  # _SCSI_PASS_THROUGH_WITH_BUFFERS::Filler
 scsi_defs.h:289  # _SCSI_PASS_THROUGH_WITH_BUFFERS::SenseBuf
+D:\SourceCode\Git\ndir64\GetLinkTarget.cpp:42  # '_APPEXECLINK_REPARSE_BUFFER::ReparseDataLength'
+D:\SourceCode\Git\ndir64\GetLinkTarget.cpp:43  # '_APPEXECLINK_REPARSE_BUFFER::Reserved'

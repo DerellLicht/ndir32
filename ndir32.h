@@ -213,3 +213,5 @@ void display_drive_summary(void);
 //  read_link.cpp
 bool read_shortcut_file(ffdata *fptr, TCHAR *shortcut_path);
 
+//  GetLinkTarget.cpp
+TCHAR *GetLinkTarget(TCHAR const * const symlink_name) ;

@@ -297,6 +297,25 @@
    "-DUNICODE",
    "-D_UNICODE",
    "-Ider_libs",
+   "GetLinkTarget.cpp",
+   "-o",
+   "GetLinkTarget.o"
+  ],
+  "file": "GetLinkTarget.cpp"
+ },
+ {
+  "directory": "D:\\SourceCode\\Git\\ndir64",
+  "arguments": [
+   "d:/llvm/bin/x86_64-w64-mingw32-clang++",
+   "-Wall",
+   "-O3",
+   "-c",
+   "-Weffc++",
+   "-Wno-write-strings",
+   "-DUSE_64BIT",
+   "-DUNICODE",
+   "-D_UNICODE",
+   "-Ider_libs",
    "der_libs/common_funcs.cpp",
    "-o",
    "der_libs/common_funcs.o"

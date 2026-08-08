@@ -101,7 +101,8 @@ IFLAGS += -Ider_libs
 IFLAGS += -DNOMAKEDEPEND
 
 CPPSRC=Ndir32.cpp cmd_line.cpp config.cpp conio32.cpp Diskparm.cpp err_exit.cpp Filelist.cpp \
-Fileread.cpp Ndisplay.cpp nio.cpp nsort.cpp treelist.cpp tdisplay.cpp mediatype.cpp read_link.cpp \
+Fileread.cpp Ndisplay.cpp nio.cpp nsort.cpp treelist.cpp tdisplay.cpp mediatype.cpp \
+read_link.cpp GetLinkTarget.cpp \
 der_libs/common_funcs.cpp 
 
 ifeq ($(USE_LEGACY),YES)
@@ -172,5 +173,6 @@ treelist.o: der_libs/common.h ndir32.h conio32.h treelist.h
 tdisplay.o: der_libs/common.h ndir32.h conio32.h treelist.h
 mediatype.o: scsi_defs.h
 read_link.o: der_libs/common.h ndir32.h
+GetLinkTarget.o: der_libs/common.h ndir32.h
 der_libs/common_funcs.o: der_libs/common.h
 der_libs/qualify.o: der_libs/common.h der_libs/qualify.h
