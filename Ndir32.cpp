@@ -22,7 +22,7 @@
 
 //lint -esym(864, target)  Expression involving variable possibly depends on order of evaluation
 
-#define  VER_NUMBER "2.70"
+#define  VER_NUMBER "2.71"
 
 //lint -esym(843, Version, ShortVersion) could be declared as const
 TCHAR *Version = _T(" NDIR.EXE, Version " VER_NUMBER " ") ;

@@ -302,3 +302,7 @@ Version 2.70, 07/31/26
   - removed flags for "no color" and "uppercase only"
   - tree display ("max filename length" option) now sorts on overall maxlen (normal or reversed)
   
+Version 2.71, 08/08/26
+  - fixed: search for *.cpp would include .suppress.cppcheck
+  
+  

@@ -61,20 +61,38 @@ void clear_existing_file_list(void)
 //*********************************************************
 static void const read_long_files (std::wstring& target_path)
 {
-   bool fn_okay ;  //, result;
    HANDLE handle;
-   // TCHAR *strptr;
    ffdata *ftemp;
-   // WIN32_FIND_DATA fdata ; //  long-filename file struct
-   WIN32_FIND_DATA fdata ; //  long-filename file struct
+   WIN32_FIND_DATAW fdata ; //  long-filename file struct
 
-   // syslog("%s\n", target[i]);
-   handle = FindFirstFile (target_path.c_str(), &fdata);
-   // handle = FindFirstFileW(wfilespec, &fdata);
-   //  according to MSDN, Jan 1999, the following is equivalent to the preceding... 
-   //  unfortunately, under Win98SE, it's not...
-   // handle = FindFirstFileEx(target[i], FindExInfoStandard, &fdata, 
-   //                      FindExSearchNameMatch, NULL, 0) ;
+   //  to deal with the reality of *.cpp matching .suppress.cppcheck ,
+   //  we need to do some special handling...
+   //  At top, just save copy of the extension in filespec,
+   //  unless filespec ends with *
+   wchar_t last_char = target_path.back();
+   bool check_ext = (last_char != L'*');
+   std::wstring target_ext ;
+   size_t ext_len = 0 ;
+   if (check_ext) {
+      std::size_t found = target_path.find_last_of(L'.');
+      if (found == std::string::npos) {
+         check_ext = false ;
+         // syslog(L"[%s] didn't find period for extension\n", target_path.c_str());
+      }
+      else {
+         target_ext = target_path.substr(found);
+         ext_len = target_ext.length();
+         // syslog(L"%s ext: %s\n", target_path.c_str(), target_ext.c_str());
+      }
+   }
+   
+   handle = FindFirstFileExW(target_path.c_str(), 
+      FindExInfoBasic,       // skip short-name population
+      &fdata,
+      FindExSearchNameMatch,
+      nullptr,
+      0);  // add FIND_FIRST_EX_LARGE_FETCH if you want, optional perf flag
+      
    if (handle == INVALID_HANDLE_VALUE) {
       syslog(_T("FindFirstFile: %s"), get_system_message());
       return;
@@ -83,6 +101,7 @@ static void const read_long_files (std::wstring& target_path)
    //  loop on find_next
    bool done = false;
    while (!done) {
+      bool fn_okay ;
       if (n.show_all == 0) {
          if ((fdata.dwFileAttributes & 
             (FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_READONLY | FILE_ATTRIBUTE_SYSTEM)) != 0) {
@@ -111,6 +130,23 @@ static void const read_long_files (std::wstring& target_path)
       }
          
       if (fn_okay) {
+         // syslog(L"   [%s]\n", fdata.cFileName);
+         //  to deal with the reality of *.cpp matching .suppress.cppcheck ,
+         //  we need to do some special handling...
+         //  In file search loop, compare length of this extension
+         //  with length of filespec extension.
+         if (check_ext) {
+            // std::wstring target_ext ;
+            // ext_len = target_ext.length();
+            wchar_t *cExt = wcsrchr(fdata.cFileName, L'.');
+            if (cExt != nullptr) {
+               size_t cxlen = wcslen(cExt) ;
+               if (cxlen != ext_len) {
+                  // syslog(L"rejecting [%s]\n", fdata.cFileName);
+                  goto search_next_file;
+               }
+            }
+         }
 
          //****************************************************
          //  allocate and initialize the structure
