@@ -172,7 +172,7 @@ HRESULT ResolveShortcut(/*in*/ LPCTSTR lpszShortcutPath,
          // it; the timeout in the high word of fFlags (here 500ms)
          // bounds how long Resolve() will silently search before
          // giving up and returning a failure code instead of hanging.
-         hRes = psl->Resolve(NULL, SLR_UPDATE | SLR_NO_UI | (500 << 16)); //lint !e641
+         hRes = psl->Resolve(NULL, SLR_UPDATE | SLR_NO_UI | (500 << 16));
          if (SUCCEEDED(hRes)) {
             // Get the path to the shortcut target.
             // NOTE: deliberately NOT passing SLGP_RAWPATH here.
