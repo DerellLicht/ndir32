@@ -136,9 +136,6 @@ check:
 cppc:
 	cmd /C "cppcheck --project=compile_commands.json --std=c++14 --suppressions-list=./.suppress.cppcheck"
 
-cstale:
-	cmd /C "python ..\check_compile_commands_stale.py"
-
 clint:
 	cmd /C "python ..\ClaudeLint.py --exclude der_libs"
 	
