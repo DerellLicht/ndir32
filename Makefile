@@ -42,24 +42,16 @@ ifeq ($(USE_64BIT),YES)
 ifeq ($(USE_CLANG),YES)
 #TOOLS=d:\llvm\bin
 TOOLS=d:/llvm/bin
+GNAME=x86_64-w64-mingw32-clang++
 else
 #  with d:\tdm64\bin, NDIR logo does not display correctly,
 #  probably due to wsprintf() issue noted above
 TOOLS=C:/cygwin64/bin
-#TOOLS=d:\tdm64\bin
-endif
-else
-TOOLS=d:\tdm32\bin
-endif
-
-ifeq ($(USE_64BIT),YES)
-ifeq ($(USE_CLANG),YES)
-GNAME=x86_64-w64-mingw32-clang++
-else
 #GNAME=g++
 GNAME=x86_64-w64-mingw32-g++
 endif
 else
+TOOLS=d:\tdm32\bin
 GNAME=g++
 endif
 
