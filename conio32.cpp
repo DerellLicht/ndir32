@@ -556,8 +556,6 @@ void dputs(const TCHAR *outstr)
    if (outstr == 0  ||  *outstr == 0  ||  rlen > sinfo.dwSize.X)  //lint !e774
       return ;
 
-   // _setmode(_fileno(stdout), _O_WTEXT); 
-   // SetConsoleOutputCP(65001); 
    //  if entire string fits on line, do this the easy way.
    if (!is_CRLF_present(outstr)  &&  rlen >= slen) {
       dputsi(outstr, slen);
@@ -607,8 +605,9 @@ void dputs(const TCHAR *outstr)
 
          }  //  end switch
       }  // end while
-   //  print last line fragment
-   dputsi(hdptr, ccount) ;
+      
+      //  print last line fragment
+      dputsi(hdptr, ccount) ;
    }   
 }
 
