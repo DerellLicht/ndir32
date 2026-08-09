@@ -1,19 +1,13 @@
 USE_DEBUG = NO
 USE_64BIT = YES
 USE_UNICODE = YES
-#  tdm64 (old) V5.1.1    ndir: 215KB
-#  tdm64 V10.3.0    ndir: 215KB
-#  clang64 v20.1.6 ndir: 375KB
 USE_CLANG = YES
 # use -static for clang and cygwin/mingw
-# most MinGW toolchains link to a .dll file (typically libg++.dll) that needs to be present 
-# for the program to work.  This can be an unpleasant surprise for a user who obtains the 
-# program but doesn't have the library present.
-# This obstacle can be avoided by using the -static linker flag, which links in all
-# required library functions; this eliminates the need for the .dll file, 
-# at the cost of a (sometimes significantly) larger executable file.
-# 
-# clang: with -static: 435KB, without -static: 163KB
+#  clang vs tdm
+#  clang gives *much* clearer compiler error messages...
+#  However, programs built with clang++ will require libc++.dll and libunwind.dll
+#  in order to be used elsewhere 
+#  (unless built with -static, which significantly boosts file size)
 ifeq ($(USE_CLANG),YES)
 USE_STATIC = YES
 else
