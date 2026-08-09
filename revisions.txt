@@ -304,5 +304,6 @@ Version 2.70, 07/31/26
   
 Version 2.71, 08/08/26
   - fixed: search for *.cpp would include .suppress.cppcheck
+  - all symlinks and .lnk files now resolve targets successfully
   
   
