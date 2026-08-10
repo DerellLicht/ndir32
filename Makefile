@@ -8,11 +8,6 @@ USE_CLANG = YES
 #  However, programs built with clang++ will require libc++.dll and libunwind.dll
 #  in order to be used elsewhere 
 #  (unless built with -static, which significantly boosts file size)
-ifeq ($(USE_CLANG),YES)
-USE_STATIC = YES
-else
-USE_STATIC = NO
-endif
 
 # the legacy version of qualify.cpp, does not depend upon c++ string class
 USE_LEGACY = NO
@@ -37,16 +32,19 @@ ifeq ($(USE_CLANG),YES)
 #TOOLS=d:\llvm\bin
 TOOLS=d:/llvm/bin
 GNAME=x86_64-w64-mingw32-clang++
+USE_STATIC = YES
 else
 #  with d:\tdm64\bin, NDIR logo does not display correctly,
 #  probably due to wsprintf() issue noted above
 TOOLS=C:/cygwin64/bin
 #GNAME=g++
 GNAME=x86_64-w64-mingw32-g++
+USE_STATIC = YES
 endif
 else
 TOOLS=d:\tdm32\bin
 GNAME=g++
+USE_STATIC = NO
 endif
 
 ifeq ($(USE_DEBUG),YES)
@@ -61,13 +59,10 @@ CFLAGS += -Wno-write-strings
 ifeq ($(USE_64BIT),YES)
 CFLAGS += -DUSE_64BIT
 endif
-# this was only needed for old tdm64 V5.1.1
-#CFLAGS += -std=c++11
 
 ifeq ($(USE_UNICODE),YES)
 CFLAGS += -DUNICODE -D_UNICODE
 LiFLAGS += -dUNICODE -d_UNICODE
-LFLAGS += -dUNICODE -d_UNICODE
 IFLAGS += -DUNICODE -D_UNICODE
 endif
 
