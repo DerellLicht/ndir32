@@ -9,7 +9,7 @@
 #ifdef _lint
 #include <stdlib.h>  //  MAX_PATH_LEN
 #endif
-#ifdef USE_64BIT
+#ifdef _WIN64
 #include <fileapi.h>
 #endif
 #include <tchar.h>

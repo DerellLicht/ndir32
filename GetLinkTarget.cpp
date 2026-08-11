@@ -8,7 +8,7 @@
 //  
 //************************************************************************
 #include <windows.h>
-#ifdef USE_64BIT
+#ifdef _WIN64
 #include <fileapi.h>
 #endif
 #include <tchar.h>
@@ -20,7 +20,7 @@
 //  return final filename from symlink
 //  this will only work with a 64-bit build
 //************************************************************************
-#ifdef USE_64BIT
+#ifdef _WIN64
 
 #ifndef IO_REPARSE_TAG_APPEXECLINK
 #define IO_REPARSE_TAG_APPEXECLINK 0x8000001BL

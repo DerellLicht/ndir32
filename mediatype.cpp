@@ -9,7 +9,7 @@
 #include <initguid.h>   // Guid definition
 // #include <devguid.h>    // Device guids
 // #include <setupapi.h>   // for SetupDiXxx functions.
-#ifdef USE_64BIT
+#ifdef _WIN64
 #include <cfgmgr32.h>   // for SetupDiXxx functions.
 #include <ntdddisk.h>
 #include <ntddscsi.h>
@@ -50,8 +50,8 @@ ProfileInfo_t const ProfileInfo[] = {
 { _T("DVD+RW_DL"), 0x2A },  // Dual Layer DVD+Rewritable Dual Layer
 { _T("DVD+R_DL"),  0x2B },  // DVD+R Dual Layer DVD+Recordable Dual Layer
 { _T("BluRayRom"), 0x40 },  // BD-ROM Blu-ray Disc ROM
-{ _T("BluRayBDR"), 0x41 },  // BD-R SRM Blu-ray Disc Recordable – Sequential Recording
-{ _T("BluRayRRM"), 0x42 },  // Blu-ray Disc Recordable – Random Recording Mode
+{ _T("BluRayBDR"), 0x41 },  // BD-R SRM Blu-ray Disc Recordable ï¿½ Sequential Recording
+{ _T("BluRayRRM"), 0x42 },  // Blu-ray Disc Recordable ï¿½ Random Recording Mode
 { _T("BluRayRE"),  0x43 },  // BD-RE Blu-ray Disc Rewritable
 { _T("HDDVDROM"),  0x50 },  // HD DVD-ROM Read-only HD DVD
 { _T("HDDVDR"),    0x51 },  // HD DVD-R Write-once HD DVD

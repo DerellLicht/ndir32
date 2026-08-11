@@ -16,7 +16,7 @@
 #ifdef _lint
 #include <stdlib.h>  //  MAX_PATH_LEN
 #endif
-#ifdef USE_64BIT
+#ifdef _WIN64
 #include <fileapi.h>
 #endif
 #include <tchar.h>
@@ -183,7 +183,7 @@ void print1 (ffdata * fptr)
          nputs(fptr->color, fptr->filename.c_str());
       }
          
-#ifdef USE_64BIT
+#ifdef _WIN64
       //  if this file is a symlink, try to display the actual file
       //*****************************************************************************
       //  Steps for creating a Reparse Point for testing this
