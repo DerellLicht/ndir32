@@ -15,7 +15,7 @@ USE_CYGWIN = NO
 # the legacy version of qualify.cpp, does not depend upon c++ string class
 USE_LEGACY = NO
 
-include ..\tool_select.mak 
+include der_libs\tool_select.mak
 
 ifeq ($(USE_DEBUG),YES)
 CFLAGS = -Wall -g -c
