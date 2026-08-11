@@ -15,56 +15,7 @@ USE_CYGWIN = NO
 # the legacy version of qualify.cpp, does not depend upon c++ string class
 USE_LEGACY = NO
 
-#**********************************************************
-#  64-bit build options
-#**********************************************************
-#  NOTE: TDM64 is deprecated, and especially should not be used for UNICODE projects.
-#  _stprintf(), aka wsprintf(), are not working properly at all,
-#  in TDM64 V10.3.0 with UNICODE enabled
-#**********************************************************
-ifeq ($(USE_64BIT),YES)
-ifeq ($(USE_CLANG),YES)
-#TOOLS=d:\llvm\bin
-TOOLS=d:/llvm/bin
-GNAME=x86_64-w64-mingw32-clang++
-WRNAME:=x86_64-w64-mingw32-windres.exe
-USE_STATIC = YES
-else
-ifeq ($(USE_CYGWIN),YES)
-TOOLS:=C:/cygwin64/bin
-GNAME:=x86_64-w64-mingw32-g++
-WRNAME:=x86_64-w64-mingw32-windres.exe
-USE_STATIC = YES
-else
-$(error "echo Either CLANG or CYGWIN must be specified for 64-bit build")
-endif	# if USE_CYGWIN
-endif # if USE_CLANG
-
-#**********************************************************
-#  32-bit build options
-#**********************************************************
-else	# if NOT USE_64BIT
-
-ifeq ($(USE_CLANG),YES)
-TOOLS=d:/llvm/bin
-GNAME=i686-w64-mingw32-clang++
-WRNAME:=i686-w64-mingw32-windres.exe
-USE_STATIC = YES
-else
-ifeq ($(USE_CYGWIN),YES)
-TOOLS:=C:/cygwin64/bin
-GNAME:=i686-w64-mingw32-g++
-WRNAME:=i686-w64-mingw32-windres.exe
-USE_STATIC = YES
-
-else
-TOOLS=d:\tdm32\bin
-GNAME=g++
-WRNAME:=windres.exe
-USE_STATIC = NO
-endif	# if USE_CYGWIN
-endif # if USE_CLANG
-endif	# if !USE_64BIT
+include ..\tool_select.mak 
 
 ifeq ($(USE_DEBUG),YES)
 CFLAGS = -Wall -g -c
