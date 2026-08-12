@@ -216,7 +216,6 @@ void insert_target_filespec(TCHAR *fstr)
 {
    target.emplace_back(fstr);
    uint idx = target.size() - 1 ;
-
    unsigned result = qualify(target[idx]) ;
    if ((result & (QUAL_INV_DRIVE | QUAL_NO_PATH)) != 0) {
       syslog(_T("qualify failed: %s\n"), target[idx].c_str());

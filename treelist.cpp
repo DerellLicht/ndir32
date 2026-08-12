@@ -76,7 +76,6 @@ static void pattern_update(void)
 //**********************************************************
 static int read_dir_tree (dirs * cur_node)
 {
-   uint idx ;
    bool early_abort = false ;
    HANDLE handle;
    int slen, done, result;
@@ -164,6 +163,7 @@ static int read_dir_tree (dirs * cur_node)
    //  loop on find_next
    done = 0;
    while (!done) {
+      // uint idx ;
       if (!err) {
          //  we found a directory
          if (fdata.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
@@ -183,10 +183,10 @@ static int read_dir_tree (dirs * cur_node)
 
             if (!cut_dot_dirs) {
                // dirs *dtemp = new_dir_node ();
-               cur_node->brothers.emplace_back();
+               dirs *dtemp = &cur_node->brothers.emplace_back();
                // cur_node->son[0].brothers.emplace_back();
-               idx = cur_node->brothers.size() - 1 ;
-               dirs *dtemp = &cur_node->brothers[idx] ;
+               // idx = cur_node->brothers.size() - 1 ;
+               // dirs *dtemp = &cur_node->brothers[idx] ;
                dtemp->dirsecsize = clbytes;
                dtemp->subdirsecsize = clbytes;
                dtemp->name = fdata.cFileName ;

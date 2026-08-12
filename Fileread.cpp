@@ -152,9 +152,9 @@ static void const read_long_files (std::wstring& target_path)
          //****************************************************
          //  allocate and initialize the structure
          //****************************************************
-         flist.emplace_back();
-         uint idx = flist.size() - 1 ;
-         ftemp = &flist[idx] ;
+         ftemp = &flist.emplace_back();
+         // uint idx = flist.size() - 1 ;
+         // ftemp = &flist[idx] ;
          filecount++;
          
          ftemp->attrib = (u16) fdata.dwFileAttributes;
@@ -173,7 +173,8 @@ static void const read_long_files (std::wstring& target_path)
          iconv.u[1] = fdata.nFileSizeHigh;
          ftemp->fsize = iconv.i;
 
-         ftemp->dirflag = ((ftemp->attrib & FILE_ATTRIBUTE_DIRECTORY) != 0) ? true : false ; // NOLINT(readability-simplify-boolean-expr)
+         // ftemp->dirflag = ((ftemp->attrib & FILE_ATTRIBUTE_DIRECTORY) != 0) ? true : false ; // NOLINT(readability-simplify-boolean-expr)
+         ftemp->dirflag = ((ftemp->attrib & FILE_ATTRIBUTE_DIRECTORY) != 0) ;
          
          //  convert Unicode filenames to UTF8
          ftemp->mb_len = _tcslen(fdata.cFileName) ;
