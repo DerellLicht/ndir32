@@ -90,7 +90,7 @@ check:
 
 dist:
 	rm -f ndir.zip
-	zip ndir.zip $(BIN) readme.txt revisions.txt LICENSE.txt
+	zip ndir.zip $(BIN) readme.txt LICENSE.txt CHANGELOG.md
 
 wc:
 	wc -l $(CPPSRC)

@@ -13,6 +13,10 @@ This project is licensed under Creative Commons CC0 1.0 Universal;
 See the file LICENSE.txt for detailed information about this license
 ****************************************************************************************
 
+See [Changelog](CHANGELOG.md) for the full revision history.
+
+****************************************************************************************
+
 #### building the application
 This application is built using the MinGW toolchain; 
 I recommend the [TDM](http://tdm-gcc.tdragon.net/) distribution, 
