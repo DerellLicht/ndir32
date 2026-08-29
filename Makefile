@@ -107,6 +107,8 @@ release:
 	gh release create v$(VERSION) ./$(DIST_ZIP) ./CHANGELOG.md --notes-file temp_notes.md
 	rm temp_notes.md
 	cmd /C "@echo Release v$(VERSION) successfully uploaded to GitHub!"wc:
+	
+wc:	
 	wc -l $(CPPSRC)
 
 lint:
