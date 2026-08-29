@@ -64,20 +64,28 @@ OBJS = $(CPPSRC:.cpp=.o)
 # uuid.lib, ole32.lib : used in read_link.cpp
 LIBS=-lmpr -lshlwapi -luuid -lole32 
 
+BASE := ndir
+
+# Automatically parse the latest version block
+VERSION := $(shell grep -oE '\[[0-9]+\.[0-9]+\]' CHANGELOG.md | head -n 1 | tr -d '[]')
+DIST_ZIP := $(BASE)V$(VERSION).zip
 #*************************************************************************
 %.o: %.cpp
 	$(TOOLS)/$(GNAME) $(CFLAGS) $< -o $@
 
 ifeq ($(USE_64BIT),NO)
-BIN = ndir32.exe
+BIN = $(BASE)32.exe
 else
-BIN = ndir64.exe
+BIN = $(BASE)64.exe
 endif
 
 all: $(BIN)
 
 clean:
 	rm -f $(OBJS) ndir*.exe *~ *.zip
+	
+testme:	
+	@cmd /C "@echo Preparing GitHub release for v$(VERSION)...dist: $(DIST_ZIP) "
 
 clint:
 	cmd /C "python ..\ClaudeLint.py --exclude der_libs"
@@ -89,10 +97,16 @@ check:
 	cmd /C "d:\llvm\bin\clang-tidy.exe $(CPPSRC)"
 
 dist:
-	rm -f ndir.zip
-	zip ndir.zip $(BIN) readme.txt LICENSE.txt CHANGELOG.md
+	rm -f $(DIST_ZIP)
+	zip $(DIST_ZIP) $(BIN) readme.txt LICENSE.txt CHANGELOG.md
 
-wc:
+# Your new automated release workflow
+release:
+	cmd /C "@echo Preparing GitHub release for v$(VERSION)..."
+	sed -n '/## \['$(VERSION)'\]/,/## \[/p' CHANGELOG.md | sed '$$d' > temp_notes.md
+	gh release create v$(VERSION) ./$(DIST_ZIP) --notes-file temp_notes.md
+	rm temp_notes.md
+	cmd /C "@echo Release v$(VERSION) successfully uploaded to GitHub!"wc:
 	wc -l $(CPPSRC)
 
 lint:
