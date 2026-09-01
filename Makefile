@@ -108,10 +108,9 @@ release: dist
 	rm temp_notes.md
 	@cmd /C "@echo Release v$(VERSION) successfully uploaded to GitHub!"
 	
-# Your new update-in-place pipeline
+# Your corrected, bulletproof update-in-place pipeline
 update: dist
 	@cmd /C "@echo Updating assets for existing release v$(VERSION)..."
-	@# Uploads and overwrites the .zip file and CHANGELOG.md on GitHub
 	gh release upload v$(VERSION) ./$(DIST_ZIP) ./CHANGELOG.md --clobber
 	@cmd /C "@echo Release v$(VERSION) assets successfully updated on GitHub!"
 
