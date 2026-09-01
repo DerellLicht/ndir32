@@ -1,10 +1,9 @@
 NDIR - The Ultimate Color Directory Program
 
-Written by:
-Derell Licht
-Fremont, CA
+Written by:  
+Derell Licht  
+Fremont, CA  
 
-Email: derelict@comcast.net
 Web:   https://derelllicht.42web.io/
 
 ****************************************************************************************
@@ -30,7 +29,7 @@ you can recover the submodule later, with this command:
    `git submodule update --init --recursive`
 
 ****************************************************************************************
-
+<pre>
 NOTES: 
 
 > As of version 2.54 (Sep 2022), NDIR is now a 64-bit program.
@@ -361,3 +360,4 @@ copy ndirzip.bat b:
 copy nupdate.bat b:
 
 ------------------------------------------------
+</pre>
