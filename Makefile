@@ -84,9 +84,6 @@ all: $(BIN)
 clean:
 	rm -vf $(OBJS) ndir*.exe *~ *.zip
 	
-testme:	
-	@cmd /C "@echo Preparing GitHub release for v$(VERSION)...dist: $(DIST_ZIP) "
-
 clint:
 	cmd /C "python ..\ClaudeLint.py --exclude der_libs"
 	

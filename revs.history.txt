@@ -85,8 +85,9 @@
 1.90/2.03       - Mainly, converting to INI files for configuration, instead of NDIRMOD.
                 - A variety of minor bug fixes that I never documented
 
-1.91/2.04       - Expand -o to support all three file date/time options.  
-                  -o now has an optional following number.
+1.91/2.04       2001-01-16
+    - Expand -o to support all three file date/time options.  
+    - -o now has an optional following number.
 
 1.91/2.05/2.05  - Add the NDIRH html lister
                 - Fix a variety of minor display bugs
@@ -95,7 +96,8 @@
                 - ndir32: fix a bug with WinNT windows that had
                   screen buffer larger than displayed size.
 
-1.93/2.13/2.06  - Fix screen scrolling with ndir32 on Win9x.
+1.93/2.13/2.06  2002-04-18
+                - Fix screen scrolling with ndir32 on Win9x.
                 - The Steven Bensky mod (1) - restore -q listing to
                   ndir32 - also, improve it with long filenames
                   in both implementations.
@@ -147,7 +149,7 @@
                   .jpg, and .gif will be supported.
                 - Update email and website data
 
-1.98/2.25/1.04      
+1.98/2.25/1.04  2004-08-09    
   - Jason Hood: Fix scrolling problem when buffer size
     is greater than screen size
   - Eliminate html-redirection; this is broken in Bash shells

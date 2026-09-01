@@ -155,7 +155,7 @@
 * **The Compiler Environment:** Developed inside a Cygwin environment leveraging the legendary `-mno-cygwin` compilation flag to build independent, zero-dependency native Win32 executables via MinGW/GCC without requiring an external POSIX DLL.
 * **Shell Optimization:** Refined extensively to ensure flawless color restoration, column alignment, and screen buffer navigation within power-user terminal environments—specifically JPSoftware's 4NT / Take Command console wrappers rather than standard cmd.exe.
 
-## [2.25] - 
+## [2.25] - 2004-08-09
 - Jason Hood: Fix scrolling problem when buffer size is greater than screen size
 - Eliminate html-redirection; this is broken in Bash shells
 
@@ -189,7 +189,7 @@
 - Remove extra blank line at end of multiple- filespec listings.
 - ndir16: fix decade-old bug in LFNFindFile, where I wasn't restoring DS before using it.
 
-## [2.13] - 
+## [2.13] - 2002-04-18
 - Fix screen scrolling with ndir32 on Win9x.
 - The Steven Bensky mod (1) - restore -q listing to ndir32 - also, improve it with long filenames in both implementations.
 - The Steven Bensky mod (2) - Implement short filename display in ndir32.
@@ -199,7 +199,7 @@
 - Change my email and web addresses
 - ndir32: fix a bug with WinNT windows that had screen buffer larger than displayed size.
 
-## [2.04] - 
+## [2.04] - 2001-01-16
 - Expand -o to support all three file date/time options.
 - o now has an optional following number.
 
