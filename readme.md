@@ -10,24 +10,24 @@ Web:   https://derelllicht.42web.io/
 ****************************************************************************************
 This project is licensed under Creative Commons CC0 1.0 Universal;  
 
-See the file LICENSE.txt for detailed information about this license
+See the [License](LICENSE.txt) file for detailed information about this license
 ****************************************************************************************
 
 See [Changelog](CHANGELOG.md) for the full revision history.
 
 ****************************************************************************************
 
-#### building the application
+## building the application
 This application is built using the MinGW toolchain; 
 I recommend the [TDM](http://tdm-gcc.tdragon.net/) distribution, 
 to avoid certain issues with library accessibility. 
 The makefile also requires certain Cygwin tools (rm, make, etc).
 
-#### NOTE: this program requires my der_libs submodule
-If you clone the repository without the --recursive flag, 
+## NOTE: this program requires my `der_libs` submodule
+If you clone the repository without the `--recursive` flag, 
 you can recover the submodule later, with this command:
 
-    git submodule update --init --recursive
+   `git submodule update --init --recursive`
 
 ****************************************************************************************
 

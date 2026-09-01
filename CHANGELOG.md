@@ -151,6 +151,10 @@
 ## [2.27] - 2005-12-24
 - Fix "disk params" display so it aligns correctly for sizes > 99GB
 
+### Toolchain & Shell Compatibility Note (V2.03 - V2.25)
+* **The Compiler Environment:** Developed inside a Cygwin environment leveraging the legendary `-mno-cygwin` compilation flag to build independent, zero-dependency native Win32 executables via MinGW/GCC without requiring an external POSIX DLL.
+* **Shell Optimization:** Refined extensively to ensure flawless color restoration, column alignment, and screen buffer navigation within power-user terminal environments—specifically JPSoftware's 4NT / Take Command console wrappers rather than standard cmd.exe.
+
 ## [2.25] - 
 - Jason Hood: Fix scrolling problem when buffer size is greater than screen size
 - Eliminate html-redirection; this is broken in Bash shells

@@ -98,7 +98,7 @@ check:
 
 dist:
 	rm -f $(DIST_ZIP)
-	zip $(DIST_ZIP) $(BIN) readme.txt LICENSE.txt CHANGELOG.md
+	zip $(DIST_ZIP) $(BIN) readme.md LICENSE.txt CHANGELOG.md
 
 # Your new automated release workflow
 release: dist
