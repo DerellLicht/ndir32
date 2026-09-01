@@ -4,7 +4,7 @@ Written by:
 Derell Licht  
 Fremont, CA  
 
-Web:   https://derelllicht.42web.io/
+Web:   https://derelllicht.42web.io/ndir_info.html
 
 ****************************************************************************************
 This project is licensed under Creative Commons CC0 1.0 Universal;  
