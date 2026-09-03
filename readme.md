@@ -29,6 +29,31 @@ you can recover the submodule later, with this command:
    `git submodule update --init --recursive`
 
 ****************************************************************************************
+## Notes regarding AI and recently-added features
+
+In the current release of this program, a number of features are working
+perfectly now, that have never previously worked quite right.
+
+I owe this accomplishment to https://claude.ai/new, who advised me on implementation
+details that I have never previously been able to get clear info on.
+In some cases, he even wrote code for me, with clear comments that 
+explained the issues that were involved in the code.  
+
+The issues that Claude worked on with me include, but are not limited to:  
+
+- making console output work consistently for Unicode filenames
+- make re-direction to file work consistently for Unicode filenames
+- resolving different types of link files
+  Claude clarified the difference between 'shortcuts' and 'symbolic links',
+  and showed me how to manage each type in my code.
+- Claude wrote a group of functions that let me browse for folders
+  without having to use awkward earlier WinAPI functions 
+  
+At the end, Claude clarified for me that, per the terms of their license agreement,
+any code that Claude and I wrote together, was entirely owned by me, and was
+released under Creative Commons CC0 license (the same license that I use for my programs).
+
+****************************************************************************************
 <pre>
 NOTES: 
 

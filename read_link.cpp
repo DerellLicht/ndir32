@@ -2,6 +2,27 @@
 //  build: g++ -Wall read_link.cpp -o read_link.exe -lole32 -luuid
 //  uuid.lib reqd for IID_IPersistFile
 
+//*********************************************************************************************
+// Claude AI: 
+// That clarifies it. Here's the Windows-correct terminology for those two:
+// 
+// .lnk files (like showin.lnk) — these are shortcuts. Not a filesystem link at all — a
+// shortcut is just an ordinary file (a COM structured-storage/binary blob) that Explorer
+// knows how to interpret, containing a stored path, working directory, icon, etc. Resolving
+// one means parsing that file's contents via IShellLink, which is exactly what your
+// ResolveShortcut() in read_link.cpp does.
+// Links created via mklink — these are symbolic links (or junctions, if created with mklink
+// /J, which is directory-only). Both are true filesystem-level constructs implemented as
+// reparse points — the OS itself resolves them transparently at the
+// CreateFile()/FindFirstFile() level, no parsing required on your part.
+// 
+// So the real distinction isn't "soft vs. hard" — it's shortcut (an ordinary file
+// Explorer/your code interprets) vs. symbolic link/junction (an OS-level reparse point the
+// filesystem resolves). That maps cleanly onto the two code paths already in your ndir.md
+// notes: ResolveShortcut() for .lnk files, and the GetLinkTarget()/reparse-tag logic for
+// mklink-created links.
+//*********************************************************************************************
+
 // #define  STAND_ALONE    1
 
 #include <windows.h>
