@@ -1,5 +1,11 @@
+> when scanning a large number of folders, corruption is occurring on last line of page:
+
+Disk capacity = 3,996,379,975,680 bytes; Free disk space = 3,579,623,821,312 bytes
+缠 缠 缠缠缠缠缠缠缠缠缠缠缠缠缠缠缠缠缠缠缠缠缠缠缠缠 
+  
 > tree view -d3 mode (mixed file/folder counts and sizes), does not sort on file/folder counts.
   At least, doesn't offer an option that I would prefer...
   It really should sort on file/folder counts, rather than sizes...
   except... which to sort on, files or folders ??  I'm not sure...
+  
 
