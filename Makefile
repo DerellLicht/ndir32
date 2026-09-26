@@ -3,7 +3,6 @@ USE_64BIT = YES
 USE_UNICODE = YES
 USE_CLANG = YES
 
-# sadly, cygwin mingw does not support gdiplus...
 USE_CYGWIN = NO
 # use -static for clang and cygwin/mingw
 #  clang vs tdm
