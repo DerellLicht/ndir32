@@ -21,8 +21,8 @@ ifeq ($(USE_DEBUG),YES)
 CFLAGS = -Wall -g -c
 LFLAGS = -g
 else
-CFLAGS = -Wall -O3 -c
-LFLAGS = -s -O3
+CFLAGS = -Wall -O2 -c
+LFLAGS = -s -O2
 endif
 CFLAGS += -Weffc++
 CFLAGS += -Wno-write-strings
