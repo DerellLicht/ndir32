@@ -271,21 +271,8 @@ static void process_filespecs(void)
    unsigned j;
    size_t slen ;
 
-   /***********************************************************************/
-   /*************************  loop on filespecs  *************************/
-   /***********************************************************************/
-
-   //***********************************************************************
-   //  when tree listing is selected, it is assumed that each specified
-   //  argument is a separate path, and that no wildcards nor specific 
-   //  filenames were provided.
-   //  If such anomalies are presented, unpredictable results will occur.
-   //***********************************************************************
-   // if (n.tree == eTreeForm::DIR_FILE_SIZES || n.tree == eTreeForm::DIR_FILE_COUNTS || n.tree == eTreeForm::MIXED_COUNT_SIZE) {
-   if (n.tree != eTreeForm::TREE_UNUSED) {
-      tree_listing(target.size()) ;
-   }
-   else if (target.size() == 1  &&  !n.exec_only) {
+   //  handle single filespec
+   if (target.size() == 1  &&  !n.exec_only) {
       start = finish = 0 ;
 
       //  in lfn format, convert /3 to /4
@@ -312,12 +299,9 @@ static void process_filespecs(void)
       //**************************************************
       get_disk_info((TCHAR *) base_path.c_str()) ;
 
-      //**************************************************
-      //  Call directory_tree or file_listing routines,
-      //  as specified by flags.
-      //**************************************************
       file_listing() ;
    }
+   //  handle multiple filespecs
    else {
       int temp_columns = columns ;
 
@@ -538,16 +522,14 @@ int main(int argc, char **argv)
    //***********************************************************
    //  Execute the requested command
    //***********************************************************
+   display_logo() ;
    if (n.help) {
-      display_logo() ;
       info(helptxt) ;
    }
    else if (n.info) {
-      display_logo() ;
       info(idtxt) ;
    }
    else if (n.drive_summary > DSUMMARY_NONE) {
-      display_logo() ;
       display_drive_summary() ;
    }
    else {
@@ -558,8 +540,19 @@ int main(int argc, char **argv)
       }
 
       sort_target_paths() ;
-      display_logo() ;
-      process_filespecs() ;
+      
+      //***********************************************************************
+      //  when tree listing is selected, it is assumed that each specified
+      //  argument is a separate path, and that no wildcards nor specific 
+      //  filenames were provided.
+      //  If such anomalies are presented, unpredictable results will occur.
+      //***********************************************************************
+      if (n.tree != eTreeForm::TREE_UNUSED) {
+         tree_listing(target.size()) ;
+      }
+      else {
+         process_filespecs() ;
+      }
    }
 
    error_exit(DATA_OKAY, NULL) ;

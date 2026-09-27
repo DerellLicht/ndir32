@@ -2,6 +2,8 @@
 
 Disk capacity = 3,996,379,975,680 bytes; Free disk space = 3,579,623,821,312 bytes
 缠 缠 缠缠缠缠缠缠缠缠缠缠缠缠缠缠缠缠缠缠缠缠缠缠缠缠 
+
+> -y argument, to filter out .git entries, only works on top-level folder
   
 > tree view -d3 mode (mixed file/folder counts and sizes), does not sort on file/folder counts.
   At least, doesn't offer an option that I would prefer...
