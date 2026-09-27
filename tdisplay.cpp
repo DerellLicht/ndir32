@@ -306,7 +306,7 @@ static void display_dir_tree (std::vector<dirs> brothers)
 
 
 /*****************************************************************/
-static void printdirheader (void)
+static void print_dir_header (void)
 {
    nputs (n.colornhead, _T("Directory of ")); //  len = 13
    
@@ -531,7 +531,7 @@ static void printdirheader (void)
 //    6,144,636|  6,152,192    945,328,679|   945,377,280
 // ============+==========================+==============
 //  01234567890 01234567890123456789012345 01234567890123
-static void print_dir_end (void)
+static void print_dir_footer (void)
 {
    //  draw divider line for bottom of data
    nput_char(n.colorframe, dline, name_end_col) ;
@@ -569,8 +569,8 @@ void draw_dir_tree (void)
    }
    name_end_col = wincols - (DFLT_TREE_HEADER_DX) ;
 
-   printdirheader ();
+   print_dir_header ();
    // dirs *temp = &dlist.brothers[0] ;
    display_dir_tree(dlist.brothers);
-   print_dir_end ();
+   print_dir_footer ();
 }
