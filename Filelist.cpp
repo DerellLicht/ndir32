@@ -19,11 +19,6 @@
 //*****************************************************************
 static unsigned list_count = 0 ;
 
-//lint -esym(715,fptr)
-static void print_null(ffdata *fptr) 
-{
-}
-
 extern void lfn_print2(ffdata *fptr);
 extern void lfn_print4(ffdata *fptr);
 extern void lfn_print6(ffdata *fptr);
@@ -31,12 +26,12 @@ extern void lfn_print6(ffdata *fptr);
 //lint -esym(843, fprint, lfn_fprint)  could be declared as const
 static void (*lfn_fprint[7])(ffdata *fptr) = 
 {
-   print_null,
+   nullptr,
    print1,
    lfn_print2,
-   print_null,
+   nullptr,
    lfn_print4,
-   print_null,
+   nullptr,
    lfn_print6,
 } ;
 
@@ -333,21 +328,26 @@ static void list_files_horizontally(void)
    lfn_get_columns() ;  //  set disp_cols, name_width
 
    filehead() ;
-   //  then list the files
-   for(auto &file : flist) {
-      ffdata *ftemp = &file ;
-      lfn_fprint[columns](ftemp) ;  //  horizontal listing
-      if (++j == disp_cols) {
-         ncrlf() ;
-         j = 0 ;
-      } else {
-         nput_char(n.colorframe, vline, 1) ;
-      }
+   if (lfn_fprint[columns] == nullptr) {
+      dputsf(L"columns: %u, no print function defined...\n", columns);
    }
+   else {
+      //  then list the files
+      for(auto &file : flist) {
+         ffdata *ftemp = &file ;
+         lfn_fprint[columns](ftemp) ;  //  horizontal listing
+         if (++j == disp_cols) {
+            ncrlf() ;
+            j = 0 ;
+         } else {
+            nput_char(n.colorframe, vline, 1) ;
+         }
+      }
 
-   //  put in closing newline, if needed
-   if (j != 0) {
-      ncrlf() ;
+      //  put in closing newline, if needed
+      if (j != 0) {
+         ncrlf() ;
+      }
    }
    fileend() ;
 }
@@ -512,7 +512,7 @@ static void list_files_vertically(void)
    unsigned row_num = 0 ;
    // console->dputsf(L"\nrow %u  ", row_num);
    while (LOOP_FOREVER) {
-      if (fcount < filecount) {
+      if (lfn_fprint[columns] != nullptr && fcount < filecount) {
          idxFile = vcolumns[j].top_col_idx + row_num ;
          // console->dputsf(L"%u  ", idxFile);
          ftemp = &flist[idxFile] ;

@@ -1,15 +1,10 @@
 USE_DEBUG = NO
 USE_64BIT = YES
 USE_UNICODE = YES
-USE_CLANG = YES
-
-USE_CYGWIN = NO
-# use -static for clang and cygwin/mingw
-#  clang vs tdm
-#  clang gives *much* clearer compiler error messages...
-#  However, programs built with clang++ will require libc++.dll and libunwind.dll
-#  in order to be used elsewhere 
-#  (unless built with -static, which significantly boosts file size)
+# ndir64.exe = 584KB
+USE_CLANG = NO
+# ndir64.exe = 487KB
+USE_CYGWIN = YES
 
 # the legacy version of qualify.cpp, does not depend upon c++ string class
 USE_LEGACY = NO
@@ -21,10 +16,11 @@ ifeq ($(USE_DEBUG),YES)
 CFLAGS = -Wall -g -c
 LFLAGS = -g
 else
-CFLAGS = -Wall -O2 -c
+CFLAGS = -Wall -Wextra -O2 -c
 LFLAGS = -s -O2
 endif
-CFLAGS += -Weffc++
+#CFLAGS += -Weffc++
+CFLAGS += -Wextra -Wno-sign-compare -Wno-ignored-qualifiers -Wno-unused-parameter
 CFLAGS += -Wno-write-strings
 
 ifeq ($(USE_UNICODE),YES)
@@ -82,6 +78,16 @@ all: $(BIN)
 clean:
 	rm -vf $(OBJS) ndir*.exe *~ *.zip
 	
+.PHONY: ccjson
+
+ccjson:
+	cmd /C "compiledb make -B"
+ifeq ($(USE_64BIT),NO)
+	python ..\fix_compile_commands.py --32
+else
+	python ..\fix_compile_commands.py --64
+endif
+
 clint:
 	cmd /C "python ..\ClaudeLint.py --exclude der_libs"
 	
