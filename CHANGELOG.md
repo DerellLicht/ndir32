@@ -2,6 +2,7 @@
 
 ## [2.72] - 2026-09-27
 - fixed long-standing bug in dirtree - data corrupted at end of console buffer
+- Modified build process so that program version number is extracted from CHANGELOG.md
 
 ## [2.71] - 2026-08-08
 - fixed: search for *.cpp would include .suppress.cppcheck
