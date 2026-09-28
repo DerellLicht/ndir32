@@ -116,7 +116,7 @@ check:
 	cmd /C "d:\llvm\bin\clang-tidy.exe $(CPPSRC)"
 
 dist:
-	rm -f $(DIST_ZIP)
+	rm -f *.zip
 	zip $(DIST_ZIP) $(BIN) readme.md LICENSE.txt CHANGELOG.md
 
 wc:	
