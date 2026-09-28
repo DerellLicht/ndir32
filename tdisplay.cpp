@@ -126,7 +126,8 @@ static void display_dir_tree (std::vector<dirs> brothers)
       }
 
       //*****************************************************************
-      //                display data for this level                      
+      //  display data for this level                      
+      //  This displays one row of data
       //*****************************************************************
       display_tree_filename (formstr, ktemp);
       // console->dputsf(L"%s %s\n", formstr, ktemp->name.c_str()) ;
@@ -235,7 +236,7 @@ static void display_dir_tree (std::vector<dirs> brothers)
          // nputs (dtree_colors[level], tempstr);
          display_size((ULONGLONG) ktemp->subfiles, 12, dtree_colors[level]) ;
          nputs (dtree_colors[level], _T(" "));
-               nputc (n.colorframe, vline);
+         nputc (n.colorframe, vline);
 
          // dssize.convert ((unsigned long long) ktemp->subdirects);
          // sdsize.convert ((unsigned long long) ktemp->dirsecsize);
@@ -246,7 +247,7 @@ static void display_dir_tree (std::vector<dirs> brothers)
          nputs (dtree_colors[level], _T("  "));
          display_size(ktemp->dirsecsize, 13, dtree_colors[level]) ;
          nputs (dtree_colors[level], _T(" "));
-               nputc (n.colorframe, vline);
+         nputc (n.colorframe, vline);
 
          // sdssize.convert ((unsigned long long) ktemp->subdirsecsize);
          // _stprintf (tempstr, "%14s", sdssize.putstr ());

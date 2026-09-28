@@ -169,8 +169,8 @@ void console_init(TCHAR *title)
       redirected = true ;
       return ; 
    }
-   // [33240] dwSize: 200x2000, cursor: 0x0, max: 200x109, window: L0, T0, R199, B49
-   // syslog("dwSize: %ux%u, cursor: %u,%u, max: %ux%u, window: L%u, T%u, R%u, B%u\n",
+   // dwSize: 135x2000, cursor: 0,50, max: 135x127, window: L0, T1, R134, B50   
+   // syslog(L"dwSize: %ux%u, cursor: %u,%u, max: %ux%u, window: L%u, T%u, R%u, B%u\n",
    //    sinfo.dwSize.X, sinfo.dwSize.Y,
    //    sinfo.dwCursorPosition.X,
    //    sinfo.dwCursorPosition.Y,
@@ -319,32 +319,45 @@ void set_text_attr(WORD tFGBG)
 //   CONST CHAR_INFO *lpFill              // address of fill character and color
 // );
 //**********************************************************
+//  BUG (found 2026-09-27, corruption past row 2000 in on-screen tree listings): 
+//  ScrollConsoleScreenBuffer is a TCHAR-mapped macro --
+//  it resolves to ScrollConsoleScreenBufferW when UNICODE is defined,
+//  and ScrollConsoleScreenBufferA otherwise. 
+//  The W entry point reads the fill cell as CHAR_INFO.Char.UnicodeChar (2 bytes); 
+//  the A entry point reads CHAR_INFO.Char.AsciiChar (1 byte). 
+//  Char is a union of the two, so writing the wrong member for whichever 
+//  entry point actually gets called leaves the other bytes of the union as
+//  whatever was on the stack -- and `ci` here was never initialized
+//  in the first place. In a UNICODE build this meant every row
+//  "blanked" during a scroll was filled with a garbage wide character
+//  instead of a real space -- exactly the corrupted glyphs seen once a
+//  tree listing passes row dwSize.Y-1 (2000) and dnewline() starts
+//  calling dscroll() on every line. Redirected output never takes this
+//  path (see the is_redirected() branch in dputsi()), which is why
+//  target.output.txt stayed clean at 4600+ lines.
+//
+//  Fix: zero-init ci (so nothing is ever left as garbage) and set
+//  whichever Char union member the active entry point actually reads.
+//**********************************************************
 static void dscroll(WORD tBG)
 {
-   SMALL_RECT src ;
-   // SMALL_RECT dest ;
    COORD co = { 0, 0 } ;
-   // CHAR_INFO ci = { ' ', tBG } ;
-   CHAR_INFO ci ;
-   ci.Char.AsciiChar = ' ' ;
+   CHAR_INFO ci = { } ;    //  zero-init so no field is left as garbage
+#ifdef UNICODE
+   ci.Char.UnicodeChar = L' ' ;   //  ScrollConsoleScreenBufferW reads this member
+#else
+   ci.Char.AsciiChar = ' ' ;      //  ScrollConsoleScreenBufferA reads this member
+#endif
    ci.Attributes = tBG ;
 
    // GetConsoleScreenBufferInfo(hStdOut, &sinfo) ;
-   // src.Left   = sinfo.srWindow.Left ;
-   // src.Right  = sinfo.srWindow.Right ;
-   // src.Top    = sinfo.srWindow.Top + 1 ;
-   // src.Bottom = sinfo.srWindow.Bottom ;
 
    // Jason Hood's "buffer > screen" fix
+   SMALL_RECT src ;
    src.Left   = 0 ;
    src.Right  = sinfo.dwSize.X - 1;
    src.Top    = 1 ;
    src.Bottom = sinfo.dwSize.Y - 1;
-
-   // dest.Left   = sinfo.srWindow.Left ;
-   // dest.Right  = sinfo.srWindow.Right ;
-   // dest.Top    = sinfo.srWindow.Top ;
-   // dest.Bottom = sinfo.srWindow.Bottom ;
 
    ScrollConsoleScreenBuffer(hStdOut, &src, 0, co, &ci) ;
 }

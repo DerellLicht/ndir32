@@ -1,5 +1,8 @@
 # NDIR32/64 Changelog
 
+## [2.72] - 2026-09-27
+- fixed long-standing bug in dirtree - data corrupted at end of console buffer
+
 ## [2.71] - 2026-08-08
 - fixed: search for *.cpp would include .suppress.cppcheck
 - all symlinks and .lnk files now resolve targets successfully
