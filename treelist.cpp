@@ -175,6 +175,7 @@ static int read_dir_tree (dirs * cur_node)
                cut_dot_dirs = true;
             }
             else if (n.tree_no_git  &&  _tcscmp(fdata.cFileName, _T(".git")) == 0) {
+               // syslog(L"skipping %s/%s\n", dirpath.c_str(), fdata.cFileName);
                cut_dot_dirs = true;
             }
             else {
