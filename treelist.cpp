@@ -328,6 +328,33 @@ static bool const tree_sort_size_rev (dirs const &a, dirs const &b)
 }
 
 //*********************************************************
+//  I am undecided as to whether "sort on size",
+//  in "count files and folders" mode, should sort on 
+//  file count or folder count.
+//  This options lets me switch these at will
+// #define  SORT_ON_SUBDIRS
+#undef  SORT_ON_SUBDIRS
+
+static bool const tree_sort_fcount (dirs const &a, dirs const &b)
+{
+#ifdef  SORT_ON_SUBDIRS
+   return (a.subdirects < b.subdirects) ;
+#else   
+   return (a.subfiles < b.subfiles) ;
+#endif   
+}
+
+//*********************************************************
+static bool const tree_sort_fcount_rev (dirs const &a, dirs const &b)
+{
+#ifdef  SORT_ON_SUBDIRS
+   return (b.subdirects < a.subdirects) ;
+#else   
+   return (b.subfiles < a.subfiles) ;
+#endif   
+}
+
+//*********************************************************
 static bool const tree_sort_maxlen (dirs const &a, dirs const &b)
 {
    return (a.submaxlen < b.submaxlen) ;
@@ -392,6 +419,9 @@ static void sort_trees (std::vector<dirs>& brothers, TCHAR *parent_name)
          if (n.tree == eTreeForm::MAX_FNAME_LEN) {
             std::sort(brothers.begin(), brothers.end(), tree_sort_maxlen_rev);
          }
+         else if (n.tree == eTreeForm::DIR_FILE_COUNTS) {
+            std::sort(brothers.begin(), brothers.end(), tree_sort_fcount_rev);
+         }
          else if (n.sort == SORT_SIZE) {
             std::sort(brothers.begin(), brothers.end(), tree_sort_size_rev);
          }
@@ -404,6 +434,9 @@ static void sort_trees (std::vector<dirs>& brothers, TCHAR *parent_name)
       else {
          if (n.tree == eTreeForm::MAX_FNAME_LEN) {
             std::sort(brothers.begin(), brothers.end(), tree_sort_maxlen);
+         }
+         else if (n.tree == eTreeForm::DIR_FILE_COUNTS) {
+            std::sort(brothers.begin(), brothers.end(), tree_sort_fcount);
          }
          else if (n.sort == SORT_SIZE) {
             std::sort(brothers.begin(), brothers.end(), tree_sort_size);

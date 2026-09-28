@@ -1,7 +1,7 @@
 # NDIR32/64 Changelog
 
 ## [2.73] - 2026-09-28
-- placeholder for next version
+- fixed: dirtree: "sort on size" sorts by sub-file counts
 
 ## [2.72] - 2026-09-27
 - fixed long-standing bug in dirtree - data corrupted at end of console buffer
