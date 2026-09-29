@@ -96,16 +96,6 @@ all: $(BIN)
 clean:
 	rm -vf $(OBJS) ndir*.exe *~ *.zip version.h
 	
-.PHONY: ccjson
-
-ccjson:
-	cmd /C "compiledb make -B"
-ifeq ($(USE_64BIT),NO)
-	python ..\fix_compile_commands.py --32
-else
-	python ..\fix_compile_commands.py --64
-endif
-
 clint:
 	cmd /C "python ..\ClaudeLint.py --exclude der_libs"
 	
