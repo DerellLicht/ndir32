@@ -52,13 +52,12 @@ void clear_existing_file_list(void)
    filecount = 0 ;
 }
 
-//*********************************************************
+//*******************************************************************
 //  This loops thru all files in one subdirectory,
-//  calling update_filelist() to add files to the
-//  global linked list.
+//  calling update_filelist() to add files to the global vector.
 //  This differs from read_files() in that it uses
 //  the MSDOS 7.00 long-filename functions
-//*********************************************************
+//*******************************************************************
 static void const read_long_files (std::wstring& target_path)
 {
    HANDLE handle;
